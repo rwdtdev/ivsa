@@ -1,0 +1,24 @@
+variables:
+  GIT_DEPTH: '150'
+
+stages:
+  - lint
+  - build_dev
+  - test
+  - build
+
+test:
+  rules:
+    - if: '$CI_COMMIT_BRANCH'
+      when: always
+      allow_failure: false
+  variables:
+    FF_NETWORK_PER_BUILD: 1
+    NODE_ENV: 'test'
+  # services: run PSQL 14 from docker-registry
+  # before_script:
+  #   - sleep 15
+  script:
+    - npm install && npm install --only=dev
+    - npm run build
+    - npm run test

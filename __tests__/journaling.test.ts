@@ -1,60 +1,115 @@
-describe('Testing internal operations journaling', () => {
+import { storeRecord, getRecords } from "../lib/journaling";
 
-//  const VALID_PAYLOADS_TO_STORE = [];
-//  const SUBSYSTEM_IDS = [];
-//  const USER_IDS = [];
+describe('Testing internal operations journaling', () => {
+  const VALID_PAYLOADS_TO_STORE = [
+    {
+      id: 'payload_001',
+      some_data_1: 'string data_001_1',
+      some_data_002: [ 1, 2, 3, 4 ]
+    },
+    {
+      id: 'payload_002',
+      some_data_1: 'string data_002_1',
+      some_data_002: [ 5, 6, 7, 8 ]
+    },
+    {
+      id: 'payload_003',
+      some_data_1: 'string data_003_1',
+      some_data_002: [ 9, 10, 11, 12 ]
+    }
+  ];
+  const SUBSYSTEM_IDS = [ 'sub-sys-001', 'sub-sys-002', 'sub-sys-003' ];
+  const USER_IDS = [ 'uid-001', 'uid-002', 'uid-003' ];
 
   describe('store a journal entry', () => {
 
     describe('input validity checks', () => {
       it('valid input', () => {
-        // ...
-        expect(true).toBeTruthy();
+        const retVal = storeRecord(USER_IDS[0], SUBSYSTEM_IDS[0], VALID_PAYLOADS_TO_STORE[0]);
+        expect(retVal.success).toBeTruthy();
       });
 
       it('missing subsystem id', () => {
-        // ...
-        expect(true).toBeTruthy();
+        const retVal = storeRecord(USER_IDS[0], '', VALID_PAYLOADS_TO_STORE[0]);
+        expect(retVal.success).toBeFalsy();
+        expect(retVal.errorMessage).toEqual('Missing subsystem id');
       });
 
       it('missing user id', () => {
-        // ...
-        expect(true).toBeTruthy();
+        const retVal = storeRecord('', SUBSYSTEM_IDS[0], VALID_PAYLOADS_TO_STORE[0]);
+        expect(retVal.success).toBeFalsy();
+        expect(retVal.errorMessage).toEqual('Missing user id');
       });
 
       it('missing or malformed payload', () => {
-        // ...
-        expect(true).toBeTruthy();
+        const retVal = storeRecord('', SUBSYSTEM_IDS[0], {});
+        expect(retVal.success).toBeFalsy();
+        expect(retVal.errorMessage).toEqual('Empty payload');
       });
-
     });
 
     it('store an entry', () => {
       // store an entry
       // retrieve the entry stored
       // check if stored payloads and metadata match the retrieved
-      expect(true).toBeTruthy();
+      const retVal = storeRecord(USER_IDS[0], SUBSYSTEM_IDS[0], VALID_PAYLOADS_TO_STORE[0]);
+      expect(retVal.success).toBeTruthy();
+
+      const retrievedEntry = getRecords({
+        userIds: [ USER_IDS[0] ],
+        subSystemIds: [ SUBSYSTEM_IDS[0] ]
+      });
+      expect(retrievedEntry.success).toBeTruthy();
+      expect(retrievedEntry.records[0].payload).toMatchObject(VALID_PAYLOADS_TO_STORE[0]);
     });
 
   });
 
   describe('retrieve stored entries from journal', () => {
+    beforeEach(() => {
+      storeRecord(USER_IDS[0], SUBSYSTEM_IDS[0], VALID_PAYLOADS_TO_STORE[0]);
+      storeRecord(USER_IDS[0], SUBSYSTEM_IDS[0], VALID_PAYLOADS_TO_STORE[1]);
+      storeRecord(USER_IDS[0], SUBSYSTEM_IDS[1], VALID_PAYLOADS_TO_STORE[0]);
+      storeRecord(USER_IDS[0], SUBSYSTEM_IDS[2], VALID_PAYLOADS_TO_STORE[2]);
+      storeRecord(USER_IDS[1], SUBSYSTEM_IDS[0], VALID_PAYLOADS_TO_STORE[0]);
+      storeRecord(USER_IDS[1], SUBSYSTEM_IDS[1], VALID_PAYLOADS_TO_STORE[1]);
+      storeRecord(USER_IDS[2], SUBSYSTEM_IDS[0], VALID_PAYLOADS_TO_STORE[2]);
+    })
 
-    it('retrieve a single entry', () => {
-      // ...
-      expect(true).toBeTruthy();
+    it('retrieve a single entry by limiting maxRecordsToReturn', () => {
+      const retrievedEntry = getRecords({
+        userIds: [ USER_IDS[0] ],
+        subSystemIds: [ SUBSYSTEM_IDS[0] ],
+        maxRecordsToReturn: 1
+      });
+      expect(retrievedEntry.success).toBeTruthy();
+      expect(retrievedEntry.records).toHaveLength(1);
     });
 
     it('retrieve a non-existant entry', () => {
-      // ...
-      expect(true).toBeTruthy();
+      const retrievedEntry = getRecords({
+        userIds: [ USER_IDS[2] ],
+        subSystemIds: [ SUBSYSTEM_IDS[1] ]
+      });
+      expect(retrievedEntry.success).toBeFalsy();
+      expect(retrievedEntry.records).toHaveLength(0);
     });
 
-    it('retrieve multiple entries', () => {
-      // timestamps range, list of subsystem ids, list of user ids
-      expect(true).toBeTruthy();
+    it('retrieve multiple entries [any subsystem, any timestamp, a list of users]', () => {
+      const retrievedEntry = getRecords({
+        userIds: [ USER_IDS[0], USER_IDS[1] ]
+      });
+      expect(retrievedEntry.success).toBeTruthy();
+      expect(retrievedEntry.records).toHaveLength(6);
     });
 
+    it('retrieve multiple entries [any subsystem, any timestamp, a list of users]', () => {
+      const retrievedEntry = getRecords({
+        subSystemIds: [ SUBSYSTEM_IDS[1], SUBSYSTEM_IDS[2] ]
+      });
+      expect(retrievedEntry.success).toBeTruthy();
+      expect(retrievedEntry.records).toHaveLength(3);
+    });
   });
 
 });

@@ -14,7 +14,7 @@ export default function Loading() {
 
   return (
     <div className='h-dvh content-center'>
-      <Progress value={progress} className='w-[30%]' />;
+      <Progress value={progress} className='w-[30%]' />
     </div>
   );
 }

@@ -14,7 +14,7 @@ export const authConfig: AuthOptions = {
         username: { label: 'username', type: 'text' },
         password: { label: 'password', type: 'password' }
       },
-      async authorize(credentials) {
+      async authorize(credentials): Promise<any> {
         if (!credentials?.username || !credentials.password) {
           return null;
         }
@@ -25,9 +25,13 @@ export const authConfig: AuthOptions = {
             password: credentials.password
           });
 
-          return user;
+          if (user) {
+            return user;
+          }
+
+          return null;
         } catch (err) {
-          throw err;
+          return null;
         }
       }
     })

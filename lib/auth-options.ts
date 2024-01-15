@@ -1,7 +1,6 @@
 import { AuthOptions } from 'next-auth';
 import CredentialsProvider from 'next-auth/providers/credentials';
 import { login } from '@/server/services/users';
-import ApiError from '@/server/utils/error';
 
 export const authConfig: AuthOptions = {
   pages: {

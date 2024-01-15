@@ -9,11 +9,11 @@ const Main = () => {
 
   if (session && session.user) {
     return (
-      <div style={{ textAlign: 'center' }}>
+      <div className='text-center'>
         <p>
           Hi, {session.user.name} ({session.user.email})
         </p>
-        <button style={{ padding: '5px' }} onClick={() => signOut()}>
+        <button className='p-5' onClick={() => signOut()}>
           Logout
         </button>
       </div>
@@ -21,10 +21,10 @@ const Main = () => {
   }
 
   return (
-    <div style={{ textAlign: 'center' }}>
+    <div className='text-center'>
       <p>Hi, Anonymus.</p>
       <Link href='/login'>
-        <button style={{ padding: '5px' }}>Login</button>
+        <button className='p-5'>Login</button>
       </Link>
     </div>
   );

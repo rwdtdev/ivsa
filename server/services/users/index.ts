@@ -274,3 +274,18 @@ export const updateUser = async (
 
   return user;
 };
+
+export const deleteUser = async (id: string) => {
+  console.log(id);
+  const user = await prisma.user.findFirst({
+    where: { id }
+  });
+
+  if (!user) {
+    throw new ApiError(`User with id (${id}) not found`, 404);
+  }
+
+  await prisma.user.delete({
+    where: { id }
+  });
+};

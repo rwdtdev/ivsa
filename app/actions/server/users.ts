@@ -3,6 +3,7 @@
 import { createUser } from '@/server/services/users';
 import { validate } from '@/server/utils/validate';
 import { CreateUserSchema } from '@/server/validations/users';
+import { revalidatePath } from 'next/cache';
 
 export async function createUserAction(formData: FormData) {
   const name = formData.get('name');
@@ -47,3 +48,11 @@ export async function createUserAction(formData: FormData) {
 }
 
 export async function updateUser(formData: FormData) {}
+
+export async function getUserById(id: string) {
+  return getUserById(id);
+}
+
+export async function deleteUser(id: string) {
+  await deleteUser(id);
+}

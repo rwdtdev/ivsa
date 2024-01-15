@@ -10,7 +10,7 @@
     "prismix": "npx prismix && prisma format",
     "lint": "next lint",
     "test": "vitest",
-    "jtest": "jest",
+    "jtest": "jest --roots ./__tests__",
     "test:coverage": "vitest run --coverage",
     "prisma:seed": "npm run generateModels && npx prisma db seed",
     "prisma:migrate:dev": "npm run generateModels && npx prisma migrate dev --skip-seed"

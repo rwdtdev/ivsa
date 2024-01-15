@@ -1,4 +1,7 @@
-import { storeRecord, getRecords } from "../lib/journaling";
+import {
+  storeRecord,
+  getRecords
+} from "../lib/journaling";
 
 describe('Testing internal operations journaling', () => {
   const VALID_PAYLOADS_TO_STORE = [

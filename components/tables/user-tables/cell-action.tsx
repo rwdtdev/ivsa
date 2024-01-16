@@ -1,5 +1,6 @@
 'use client';
-import { deleteUser } from '@/app/actions/server/users';
+
+import { deleteUserAction } from '@/app/actions/server/users';
 import { AlertModal } from '@/components/modal/alert-modal';
 import { Button } from '@/components/ui/button';
 import {
@@ -9,13 +10,13 @@ import {
   DropdownMenuLabel,
   DropdownMenuTrigger
 } from '@/components/ui/dropdown-menu';
-import { User } from '@prisma/client';
+import { UserTableView } from '@/types/composition';
 import { Edit, MoreHorizontal, Trash, Bell } from 'lucide-react';
 import { useRouter } from 'next/navigation';
 import { useState } from 'react';
 
 interface CellActionProps {
-  data: User;
+  data: UserTableView;
 }
 
 export const CellAction: React.FC<CellActionProps> = ({ data }) => {
@@ -25,9 +26,7 @@ export const CellAction: React.FC<CellActionProps> = ({ data }) => {
 
   const router = useRouter();
 
-  const onConfirmRemoveUser = async () => {
-    await deleteUser(data.id);
-  };
+  const onConfirmRemoveUser = async () => deleteUserAction(data.id);
 
   const onConfirmResetPassword = async () => {
     console.log('Password reset');
@@ -56,9 +55,7 @@ export const CellAction: React.FC<CellActionProps> = ({ data }) => {
         </DropdownMenuTrigger>
         <DropdownMenuContent align='end'>
           <DropdownMenuLabel>Действия</DropdownMenuLabel>
-          <DropdownMenuItem
-            onClick={() => router.push(`/admin/users/${data.id}`)}
-          >
+          <DropdownMenuItem onClick={() => router.push(`/admin/users/${data.id}`)}>
             <Edit className='mr-2 h-4 w-4' /> Изменить
           </DropdownMenuItem>
           <DropdownMenuItem onClick={() => setOpenResetPassword(true)}>

@@ -24,11 +24,7 @@ export const columns: ColumnDef<User>[] = [
         <ul>
           {roles.map((role, index) => {
             if (UserRoles[role as keyof typeof UserRoles]) {
-              return (
-                <li key={index}>
-                  {UserRoles[role as keyof typeof UserRoles].ru}
-                </li>
-              );
+              return <li key={index}>{UserRoles[role as keyof typeof UserRoles].ru}</li>;
             }
           })}
         </ul>

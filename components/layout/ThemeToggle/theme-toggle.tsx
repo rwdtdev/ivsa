@@ -22,12 +22,8 @@ export default function ThemeToggle({}: CompProps) {
         </Button>
       </DropdownMenuTrigger>
       <DropdownMenuContent align='end'>
-        <DropdownMenuItem onClick={() => setTheme('light')}>
-          Светлая
-        </DropdownMenuItem>
-        <DropdownMenuItem onClick={() => setTheme('dark')}>
-          Темная
-        </DropdownMenuItem>
+        <DropdownMenuItem onClick={() => setTheme('light')}>Светлая</DropdownMenuItem>
+        <DropdownMenuItem onClick={() => setTheme('dark')}>Темная</DropdownMenuItem>
       </DropdownMenuContent>
     </DropdownMenu>
   );

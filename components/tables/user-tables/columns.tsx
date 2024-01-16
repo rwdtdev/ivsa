@@ -2,12 +2,11 @@
 import { ColumnDef } from '@tanstack/react-table';
 import { CellAction } from './cell-action';
 import { Badge } from '@/components/ui/badge';
-// import { User } from '@/constants/data';
 import { Checkbox } from '@/components/ui/checkbox';
-import { User } from '@prisma/client';
 import { UserRoles, UserStatus } from '@/constants';
+import { UserTableView } from '@/types/composition';
 
-export const columns: ColumnDef<User>[] = [
+export const columns: ColumnDef<UserTableView>[] = [
   {
     id: 'select',
     header: ({ table }) => (
@@ -45,11 +44,7 @@ export const columns: ColumnDef<User>[] = [
         <ul>
           {roles.map((role, index) => {
             if (UserRoles[role as keyof typeof UserRoles]) {
-              return (
-                <li key={index}>
-                  {UserRoles[role as keyof typeof UserRoles].ru}
-                </li>
-              );
+              return <li key={index}>{UserRoles[role as keyof typeof UserRoles].ru}</li>;
             }
           })}
         </ul>
@@ -86,14 +81,14 @@ export const columns: ColumnDef<User>[] = [
     }
   },
   {
-    accessorKey: 'organisationId',
+    accessorKey: 'organisationName',
     header: 'Организация',
-    cell: ({ row }) => row.getValue('organisationId') || '-'
+    cell: ({ row }) => row.getValue('organisationName') || '-'
   },
   {
-    accessorKey: 'departmentId',
+    accessorKey: 'departmentName',
     header: 'Отдел',
-    cell: ({ row }) => row.getValue('departmentId') || '-'
+    cell: ({ row }) => row.getValue('departmentName') || '-'
   },
   {
     id: 'actions',

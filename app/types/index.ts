@@ -3,9 +3,7 @@ export type UserCredentials = {
   password: string;
 };
 
-export type ProviderCredentials =
-  | Record<'username' | 'password', string>
-  | undefined;
+export type ProviderCredentials = Record<'username' | 'password', string> | undefined;
 
 export type ReactChildren = {
   children: React.ReactNode;

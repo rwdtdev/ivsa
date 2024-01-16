@@ -1,7 +1,5 @@
 import * as z from 'zod';
 
-export type ForgotPasswordFormData = z.infer<typeof ForgotPasswordFormSchema>;
-
 export const ForgotPasswordFormSchema = z.object({
   email: z
     .string({ required_error: 'Не может быть пустым' })
@@ -10,3 +8,5 @@ export const ForgotPasswordFormSchema = z.object({
     })
     .email({ message: 'Неверный формат' })
 });
+
+export type ForgotPasswordFormData = z.infer<typeof ForgotPasswordFormSchema>;

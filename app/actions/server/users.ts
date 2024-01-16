@@ -1,6 +1,6 @@
 'use server';
 
-import { createUser } from '@/server/services/users';
+import { createUser, deleteUser } from '@/server/services/users';
 import { validate } from '@/server/utils/validate';
 import { CreateUserSchema } from '@/server/validations/users';
 import { revalidatePath } from 'next/cache';
@@ -53,6 +53,19 @@ export async function getUserById(id: string) {
   return getUserById(id);
 }
 
-export async function deleteUser(id: string) {
-  await deleteUser(id);
+export async function deleteUserAction(id: string) {
+  try {
+    await deleteUser(id);
+  } catch (err) {
+    throw err;
+  }
+
+  revalidatePath('/admin/users');
+}
+
+export async function resetPasswordAction(userId: string) {
+  try {
+  } catch (err) {
+    throw err;
+  }
 }

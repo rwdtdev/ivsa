@@ -1,15 +1,15 @@
 'use server';
 
 import jwt from 'jsonwebtoken';
+import nodemailer from 'nodemailer';
+import { getUserByEmail } from '@/server/services/users';
 import {
   ForgotPasswordFormData,
   ForgotPasswordFormSchema
-} from '@/components/ForgotPasswordForm/schema';
-import { getUserByEmail, updateUser } from '@/server/services/users';
-import { generatePasswordAsync } from '@/server/utils/password-generator';
-import nodemailer from 'nodemailer';
+} from '@/lib/form-validation-schemas/forgot-password-schema';
+import { JwtSecret } from '@/constants/jwt';
 
-export async function resetPassword(data: ForgotPasswordFormData) {
+export async function sendNewPassword(data: ForgotPasswordFormData) {
   const result = ForgotPasswordFormSchema.safeParse(data);
 
   if (!result.success) {
@@ -17,25 +17,22 @@ export async function resetPassword(data: ForgotPasswordFormData) {
   }
 
   const { email } = result.data;
-
   const user = await getUserByEmail(email);
 
   if (!user) {
     return { success: false, error: '' };
   }
 
-  const passwordWithoutSlashes = user.password.replace(/\//g, '');
-
-  const token = jwt.sign({ username: user.username }, 'secret', {
-    expiresIn: '1h'
+  const token = jwt.sign({ username: user.username }, JwtSecret, {
+    expiresIn: '15m'
   });
 
   try {
     const message = {
       from: 'email@example.com',
-      to: email,
+      to: user.email,
       subject: 'Восстановление пароля',
-      text: `Ссылка для восстановления пароля: http://127.0.0.1:3000/forgot-password/${token}/`
+      text: `Ссылка для восстановления пароля: ${process.env.NEXTAUTH_URL}/forgot-password/${token}`
     };
 
     const transporter = nodemailer.createTransport({
@@ -51,9 +48,7 @@ export async function resetPassword(data: ForgotPasswordFormData) {
 
     const info = await transporter.sendMail(message);
 
-    console.debug(
-      `Sent mail to ${email} and received msgId: ${info.messageId}`
-    );
+    console.debug(`Sent mail to ${email} and received msgId: ${info.messageId}`);
     return info.messageId;
   } catch (err) {
     throw err;

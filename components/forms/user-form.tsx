@@ -1,5 +1,5 @@
 'use client';
-import * as z from 'zod';
+
 import { useState } from 'react';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { useForm } from 'react-hook-form';
@@ -10,7 +10,6 @@ import { Button } from '@/components/ui/button';
 import {
   Form,
   FormControl,
-  FormDescription,
   FormField,
   FormItem,
   FormLabel,
@@ -25,28 +24,12 @@ import {
   SelectTrigger,
   SelectValue
 } from '@/components/ui/select';
-import { Checkbox } from '@/components/ui/checkbox';
-// import FileUpload from "@/components/FileUpload";
 import { useToast } from '../ui/use-toast';
-import { UserRole } from '@/server/services/user-roles/UserRole';
 import { UserRoles } from '@/constants';
-
-const formSchema = z.object({
-  username: z.string().min(3, { message: 'Не менее 3 символов' }),
-  password: z
-    .string()
-    .min(12, { message: 'Не менее 12 символов' })
-    .max(32, { message: 'Не более 32 символов' }),
-  name: z.string().min(10, { message: 'Не менее 10 символов' }),
-  // organisationId: z.string(),
-  // departmentId: z.string(),
-  email: z.string().email('Неверный формат'),
-  tabelNumber: z.string().min(1, { message: 'Не менее 1 символа' }), //@TODO сколько?
-  phone: z.string().min(10, { message: 'Не менее 10 символов' })
-  // roles: z.enum([UserRoles.admin.ru, UserRoles.user.ru])
-});
-
-type UserFormValues = z.infer<typeof formSchema>;
+import {
+  UserFormData,
+  UserFormSchema
+} from '@/lib/form-validation-schemas/user-form-schema';
 
 interface UserFormProps {
   initialData: any | null;
@@ -87,12 +70,12 @@ export const UserForm: React.FC<UserFormProps> = ({
         roles: []
       };
 
-  const form = useForm<UserFormValues>({
-    resolver: zodResolver(formSchema),
+  const form = useForm<UserFormData>({
+    resolver: zodResolver(UserFormSchema),
     defaultValues
   });
 
-  const onSubmit = async (data: UserFormValues) => {
+  const onSubmit = async (data: UserFormData) => {
     try {
       setLoading(true);
       if (initialData) {
@@ -155,10 +138,7 @@ export const UserForm: React.FC<UserFormProps> = ({
       </div>
       <Separator />
       <Form {...form}>
-        <form
-          onSubmit={form.handleSubmit(onSubmit)}
-          className='w-full space-y-8'
-        >
+        <form onSubmit={form.handleSubmit(onSubmit)} className='w-full space-y-8'>
           <div className='gap-8 md:grid md:grid-cols-3'>
             <FormField
               control={form.control}
@@ -167,11 +147,7 @@ export const UserForm: React.FC<UserFormProps> = ({
                 <FormItem>
                   <FormLabel>Логин</FormLabel>
                   <FormControl>
-                    <Input
-                      disabled={loading}
-                      placeholder='Имя пользователя'
-                      {...field}
-                    />
+                    <Input disabled={loading} placeholder='Имя пользователя' {...field} />
                   </FormControl>
                   <FormMessage />
                 </FormItem>
@@ -197,11 +173,7 @@ export const UserForm: React.FC<UserFormProps> = ({
                 <FormItem>
                   <FormLabel>ФИО</FormLabel>
                   <FormControl>
-                    <Input
-                      disabled={loading}
-                      placeholder='ФИО пользователя'
-                      {...field}
-                    />
+                    <Input disabled={loading} placeholder='ФИО пользователя' {...field} />
                   </FormControl>
                   <FormMessage />
                 </FormItem>
@@ -277,15 +249,13 @@ export const UserForm: React.FC<UserFormProps> = ({
                     </FormControl>
                     <SelectContent>
                       {/* @ts-ignore  */}
-                      {[
-                        'Не выбрано',
-                        UserRoles.admin.ru,
-                        UserRoles.user.ru
-                      ].map((role, idx) => (
-                        <SelectItem key={idx} value={role}>
-                          {role}
-                        </SelectItem>
-                      ))}
+                      {['Не выбрано', UserRoles.admin.ru, UserRoles.user.ru].map(
+                        (role, idx) => (
+                          <SelectItem key={idx} value={role}>
+                            {role}
+                          </SelectItem>
+                        )
+                      )}
                     </SelectContent>
                   </Select>
                   <FormMessage />
@@ -312,10 +282,7 @@ export const UserForm: React.FC<UserFormProps> = ({
                     <SelectContent>
                       {/* @ts-ignore  */}
                       {organisations.map((orgnisation) => (
-                        <SelectItem
-                          key={orgnisation._id}
-                          value={orgnisation._id}
-                        >
+                        <SelectItem key={orgnisation._id} value={orgnisation._id}>
                           {orgnisation.name}
                         </SelectItem>
                       ))}

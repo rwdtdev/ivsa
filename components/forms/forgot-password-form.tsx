@@ -1,6 +1,7 @@
 'use client';
 
 import * as React from 'react';
+import * as z from 'zod';
 import { SubmitHandler, useForm } from 'react-hook-form';
 import { useRouter } from 'next/navigation';
 import { zodResolver } from '@hookform/resolvers/zod';
@@ -24,8 +25,11 @@ import {
 } from '@/components/ui/form';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
-import { ForgotPasswordFormData, ForgotPasswordFormSchema } from './schema';
-import { resetPassword } from '@/app/actions/server/reset-password';
+import { sendNewPassword } from '@/app/actions/server/send-new-password';
+import {
+  ForgotPasswordFormData,
+  ForgotPasswordFormSchema
+} from '@/lib/form-validation-schemas/forgot-password-schema';
 
 const ForgotPasswordForm = () => {
   const [isSubmitted, setIsSubmitted] = React.useState(false);
@@ -38,7 +42,7 @@ const ForgotPasswordForm = () => {
   });
 
   const processForm: SubmitHandler<ForgotPasswordFormData> = async (data) => {
-    const sent = await resetPassword(data);
+    const sent = await sendNewPassword(data);
     if (!sent) {
       toast({
         title: 'Ошибка',
@@ -58,16 +62,12 @@ const ForgotPasswordForm = () => {
       <CardHeader>
         <CardTitle>Восстановление пароля</CardTitle>
         <CardDescription>
-          На указанный адрес электронной почты будет выслан новый
-          сгенерированный пароль
+          На указанный адрес электронной почты будет выслан новый сгенерированный пароль
         </CardDescription>
       </CardHeader>
       <CardContent>
         <Form {...form}>
-          <form
-            className='w-full space-y-6'
-            onSubmit={form.handleSubmit(processForm)}
-          >
+          <form className='w-full space-y-6' onSubmit={form.handleSubmit(processForm)}>
             <FormField
               control={form.control}
               name='email'

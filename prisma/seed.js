@@ -61,10 +61,7 @@ class SeedSingleton {
       const isInternalClient = !prisma;
       const prismaClient = isInternalClient ? new PrismaClient() : prisma;
 
-      SeedSingleton.instance = new SeedSingleton(
-        prismaClient,
-        isInternalClient
-      );
+      SeedSingleton.instance = new SeedSingleton(prismaClient, isInternalClient);
     }
     return SeedSingleton.instance;
   }
@@ -104,9 +101,7 @@ class SeedSingleton {
     console.log('Truncating tables ...');
 
     const truncatePromises = tables.map((table) =>
-      this.prisma.$queryRawUnsafe(
-        `TRUNCATE TABLE "${table}" RESTART IDENTITY CASCADE`
-      )
+      this.prisma.$queryRawUnsafe(`TRUNCATE TABLE "${table}" RESTART IDENTITY CASCADE`)
     );
     await this.prisma.$transaction(truncatePromises);
 
@@ -130,18 +125,13 @@ class SeedSingleton {
       });
       console.log(`Created organisation: ${createdOrganisation.name}`);
 
-      const departments = createDepartments(
-        numberOfDepartments,
-        createdOrganisation.id
-      );
+      const departments = createDepartments(numberOfDepartments, createdOrganisation.id);
 
       for (const department of departments) {
         const createdDepartment = await this.prisma.department.create({
           data: department
         });
-        console.log(
-          `Created organisation department: ${createdDepartment.name}`
-        );
+        console.log(`Created organisation department: ${createdDepartment.name}`);
 
         const users = createUsers(
           numberOfUsers,

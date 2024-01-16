@@ -14,11 +14,7 @@ interface ImageUploadProps {
   value: UploadFileResponse[];
 }
 
-export default function FileUpload({
-  onChange,
-  onRemove,
-  value
-}: ImageUploadProps) {
+export default function FileUpload({ onChange, onRemove, value }: ImageUploadProps) {
   const { toast } = useToast();
   const onDeleteFile = (key: string) => {
     const files = value;

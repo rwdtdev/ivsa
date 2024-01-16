@@ -1,6 +1,5 @@
 import ThemeToggle from '@/components/layout/ThemeToggle/theme-toggle';
 import { cn } from '@/lib/utils';
-import { MobileSidebar } from './mobile-sidebar';
 import { UserNav } from './user-nav';
 import Link from 'next/link';
 
@@ -26,9 +25,6 @@ export default function Header() {
               <path d='M15 6v12a3 3 0 1 0 3-3H6a3 3 0 1 0 3 3V6a3 3 0 1 0-3 3h12a3 3 0 1 0-3-3' />
             </svg>
           </Link>
-        </div>
-        <div className={cn('block sm:!hidden')}>
-          <MobileSidebar />
         </div>
 
         <div className='flex items-center gap-2'>

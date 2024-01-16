@@ -1,12 +1,15 @@
-/** https://www.prisma.io/docs/concepts/components/prisma-client/excluding-fields */
+/**
+ * @link https://www.prisma.io/docs/concepts/components/prisma-client/excluding-fields
+ */
 export const exclude = <T, Key extends keyof T>(
-  model: T,
+  item: T,
   ...keys: Key[]
 ): Omit<T, Key> => {
-  if (!model) throw new Error('Model arg is missing.');
+  if (!item) throw new Error('Item arg is missing.');
 
   for (const key of keys) {
-    delete model[key];
+    delete item[key];
   }
-  return model;
+
+  return item;
 };

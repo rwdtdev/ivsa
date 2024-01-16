@@ -5,7 +5,6 @@ import { SubmitHandler, useForm } from 'react-hook-form';
 import { useRouter, useSearchParams } from 'next/navigation';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { useToast } from '@/components/ui/use-toast';
-
 import {
   Card,
   CardContent,
@@ -28,8 +27,11 @@ import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { Checkbox } from '@/components/ui/checkbox';
-import { LoginFormData, LoginFormSchema } from './shema';
 import { authenticate } from '@/app/actions/client/auth';
+import {
+  LoginFormData,
+  LoginFormSchema
+} from '@/lib/form-validation-schemas/login-form-schema';
 
 const LoginForm = () => {
   const router = useRouter();
@@ -76,10 +78,7 @@ const LoginForm = () => {
       </CardHeader>
       <CardContent>
         <Form {...form}>
-          <form
-            className='w-full space-y-6'
-            onSubmit={form.handleSubmit(processForm)}
-          >
+          <form className='w-full space-y-6' onSubmit={form.handleSubmit(processForm)}>
             <FormField
               control={form.control}
               name='username'
@@ -101,11 +100,7 @@ const LoginForm = () => {
                 <FormItem>
                   <FormLabel>Пароль</FormLabel>
                   <FormControl>
-                    <Input
-                      type='password'
-                      autoComplete='current-password'
-                      {...field}
-                    />
+                    <Input type='password' autoComplete='current-password' {...field} />
                   </FormControl>
                   <FormDescription></FormDescription>
                   <FormMessage />
@@ -123,10 +118,7 @@ const LoginForm = () => {
         </Form>
       </CardContent>
       <CardFooter className='justify-center'>
-        <Link
-          className='text-sm font-medium hover:underline'
-          href='/forgot-password'
-        >
+        <Link className='text-sm font-medium hover:underline' href='/forgot-password'>
           Забыли пароль?
         </Link>
       </CardFooter>

@@ -20,8 +20,7 @@ export const isStrong = (password: string) => {
 };
 
 export const generatePassword = (password: string = ''): string => {
-  const randomLength =
-    Math.floor(Math.random() * (maxLength - minLength)) + minLength;
+  const randomLength = Math.floor(Math.random() * (maxLength - minLength)) + minLength;
 
   return !isStrong(password)
     ? generatePassword(generate(randomLength, false, /[\w\d\W]/))

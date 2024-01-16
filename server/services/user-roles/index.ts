@@ -11,8 +11,7 @@ import {
  * That may be in the some database or storage.
  */
 
-export const getRoles = async (): Promise<UserRolesDictionary> =>
-  userRolesDictionary;
+export const getRoles = async (): Promise<UserRolesDictionary> => userRolesDictionary;
 
 export const getRole = async (name: UserRole): Promise<UserRoleObject> => {
   const found = userRolesDictionary.find((role) => role.name === name);

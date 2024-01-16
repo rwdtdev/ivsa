@@ -7,11 +7,7 @@ export const metadata: Metadata = {
   description: 'Панель управления'
 };
 
-export default function DashboardLayout({
-  children
-}: {
-  children: React.ReactNode;
-}) {
+export default function DashboardLayout({ children }: { children: React.ReactNode }) {
   return (
     <>
       <Header />

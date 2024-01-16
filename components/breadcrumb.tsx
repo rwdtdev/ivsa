@@ -15,10 +15,7 @@ type BreadCrumbPropsType = {
 export default function BreadCrumb({ items }: BreadCrumbPropsType) {
   return (
     <div className='mb-4 flex items-center space-x-1 text-sm text-muted-foreground'>
-      <Link
-        href={'/admin'}
-        className='overflow-hidden text-ellipsis whitespace-nowrap'
-      >
+      <Link href={'/admin'} className='overflow-hidden text-ellipsis whitespace-nowrap'>
         Справочники
       </Link>
       {items?.map((item: BreadCrumbType, index: number) => (

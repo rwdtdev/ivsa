@@ -1,17 +1,14 @@
 import bcrypt from 'bcryptjs';
 import prisma from '@/server/services/prisma';
-import {
-  ClientUser,
-  UserCreateData,
-  UserUpdateData,
-  UsersGetData
-} from './types';
+import { ClientUser, UserCreateData, UserUpdateData, UsersGetData } from './types';
 import { PaginatedResponse, SortDirection } from '@/server/types';
 import { filterSearchTerm } from '@/server/utils';
 import ApiError from '@/server/utils/error';
 import { generatePasswordAsync } from '@/server/utils/password-generator';
 import { UserCredentials } from '@/app/types';
 import { User } from '@prisma/client';
+import { exclude } from '@/server/utils/exclude';
+import { UserView } from '@/types/user';
 
 const defaultLimit = 100;
 
@@ -24,9 +21,7 @@ const WrongCredentialsError = new ApiError('Wrong credentials!', 401);
 const FailedLoginError = new ApiError('Failed to login', 500);
 const UserNotFoundError = new ApiError('User is not found', 404);
 
-export const login = async (
-  credentials: UserCredentials
-): Promise<ClientUser> => {
+export const login = async (credentials: UserCredentials): Promise<ClientUser> => {
   if (!credentials) throw WrongCredentialsError;
 
   try {
@@ -38,10 +33,7 @@ export const login = async (
 
     if (!user) throw WrongCredentialsError;
 
-    const isPasswordCorrect = await bcrypt.compare(
-      credentials.password,
-      user.password
-    );
+    const isPasswordCorrect = await bcrypt.compare(credentials.password, user.password);
 
     if (!isPasswordCorrect) throw WrongCredentialsError;
 
@@ -91,7 +83,7 @@ export const getUserByUsername = async (username: string): Promise<User> => {
 
 export const getUsers = async (
   usersGetData: UsersGetData = {}
-): Promise<PaginatedResponse<ClientUser>> => {
+): Promise<PaginatedResponse<UserView>> => {
   const {
     page = 1,
     limit = defaultLimit,
@@ -104,11 +96,7 @@ export const getUsers = async (
   const where = {
     where: {
       ...(search && {
-        OR: [
-          { name: { search } },
-          { username: { search } },
-          { email: { search } }
-        ]
+        OR: [{ name: { search } }, { username: { search } }, { email: { search } }]
       })
     }
   };
@@ -125,7 +113,7 @@ export const getUsers = async (
   });
 
   return {
-    items: users,
+    items: users.map(excludeFromUser),
     pagination: {
       total: totalCount,
       pagesCount: Math.ceil(totalCount / limit),
@@ -138,19 +126,9 @@ export const getUsers = async (
   };
 };
 
-export const createUser = async (
-  userCreateData: UserCreateData
-): Promise<ClientUser> => {
-  const {
-    name,
-    username,
-    email,
-    phone,
-    departmentId,
-    organisationId,
-    roles,
-    status
-  } = userCreateData;
+export const createUser = async (userCreateData: UserCreateData): Promise<ClientUser> => {
+  const { name, username, email, phone, departmentId, organisationId, roles, status } =
+    userCreateData;
 
   const isExistWithEmail = await prisma.user.findFirst({
     where: { email }
@@ -289,3 +267,6 @@ export const deleteUser = async (id: string) => {
     where: { id }
   });
 };
+
+export const excludeFromUser = (user: User) =>
+  exclude(user, 'password', 'passwordHashes');

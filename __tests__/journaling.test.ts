@@ -1,6 +1,8 @@
 import {
   storeRecord,
-  getRecords
+  getRecords,
+  payloadValidationErrors,
+  storeRecordErrors
 } from "../lib/journaling";
 
 describe('Testing internal operations journaling', () => {
@@ -35,19 +37,30 @@ describe('Testing internal operations journaling', () => {
       it('missing subsystem id', () => {
         const retVal = storeRecord(USER_IDS[0], '', VALID_PAYLOADS_TO_STORE[0]);
         expect(retVal.success).toBeFalsy();
-        expect(retVal.errorMessage).toEqual('Missing subsystem id');
+        expect(retVal.errorMessage).toEqual(storeRecordErrors.NO_SUBSYSTEMID);
       });
 
       it('missing user id', () => {
         const retVal = storeRecord('', SUBSYSTEM_IDS[0], VALID_PAYLOADS_TO_STORE[0]);
         expect(retVal.success).toBeFalsy();
-        expect(retVal.errorMessage).toEqual('Missing user id');
+        expect(retVal.errorMessage).toEqual(storeRecordErrors.NO_USERID);
       });
 
-      it('missing or malformed payload', () => {
-        const retVal = storeRecord('', SUBSYSTEM_IDS[0], {});
+      it('missing payload', () => {
+        const retVal = storeRecord(USER_IDS[0], SUBSYSTEM_IDS[0], {});
         expect(retVal.success).toBeFalsy();
-        expect(retVal.errorMessage).toEqual('Empty payload');
+        expect(retVal.errorMessage).toEqual(payloadValidationErrors.EMPTY_OBJECT);
+      });
+
+      it('malformed payload', () => {
+        const MALFORMED_PAYLOAD = {
+          a: 'aaa',
+          b: 'bbb',
+          c: (a: number) => a * a
+        };
+        const retVal = storeRecord(USER_IDS[0], SUBSYSTEM_IDS[0], MALFORMED_PAYLOAD);
+        expect(retVal.success).toBeFalsy();
+        expect(retVal.errorMessage).toEqual(payloadValidationErrors.NON_SERIALIZABLE_OBJECT);
       });
     });
 

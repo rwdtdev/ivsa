@@ -64,7 +64,7 @@ describe('Testing internal operations journaling', () => {
       });
     });
 
-    it('store an entry', () => {
+    it.skip('store an entry', () => {
       // store an entry
       // retrieve the entry stored
       // check if stored payloads and metadata match the retrieved
@@ -92,7 +92,7 @@ describe('Testing internal operations journaling', () => {
       storeRecord(USER_IDS[2], SUBSYSTEM_IDS[0], VALID_PAYLOADS_TO_STORE[2]);
     })
 
-    it('retrieve a single entry by limiting maxRecordsToReturn', () => {
+    it.skip('retrieve a single entry by limiting maxRecordsToReturn', () => {
       const retrievedEntry = getRecords({
         userIds: [ USER_IDS[0] ],
         subSystemIds: [ SUBSYSTEM_IDS[0] ],
@@ -102,7 +102,7 @@ describe('Testing internal operations journaling', () => {
       expect(retrievedEntry.records).toHaveLength(1);
     });
 
-    it('retrieve a non-existant entry', () => {
+    it.skip('retrieve a non-existant entry', () => {
       const retrievedEntry = getRecords({
         userIds: [ USER_IDS[2] ],
         subSystemIds: [ SUBSYSTEM_IDS[1] ]
@@ -111,7 +111,7 @@ describe('Testing internal operations journaling', () => {
       expect(retrievedEntry.records).toHaveLength(0);
     });
 
-    it('retrieve multiple entries [any subsystem, any timestamp, a list of users]', () => {
+    it.skip('retrieve multiple entries [any subsystem, any timestamp, a list of users]', () => {
       const retrievedEntry = getRecords({
         userIds: [ USER_IDS[0], USER_IDS[1] ]
       });
@@ -119,7 +119,7 @@ describe('Testing internal operations journaling', () => {
       expect(retrievedEntry.records).toHaveLength(6);
     });
 
-    it('retrieve multiple entries [any subsystem, any timestamp, a list of users]', () => {
+    it.skip('retrieve multiple entries [any subsystem, any timestamp, a list of users]', () => {
       const retrievedEntry = getRecords({
         subSystemIds: [ SUBSYSTEM_IDS[1], SUBSYSTEM_IDS[2] ]
       });

@@ -36,6 +36,7 @@ N.B.: Пока `record.payload` это произвольный сериализ
 
 #### Функции:
 - **`storeRecord`**
+- **`storeRecordSync`**
 
 - **`getRecords`**
-
+- **`getRecordsSync`**

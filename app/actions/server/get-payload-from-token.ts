@@ -2,7 +2,6 @@
 
 import { JwtSecret } from '@/constants/jwt';
 import { verify } from 'jsonwebtoken';
-import { useSession } from 'next-auth/react';
 
 export async function getPayload(token: string): Promise<string | null> {
   let payload = null;
@@ -17,8 +16,6 @@ export async function getPayload(token: string): Promise<string | null> {
     } else {
       payload = decoded.username;
     }
-
-    useSession;
   });
 
   return payload;

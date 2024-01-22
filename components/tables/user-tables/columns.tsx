@@ -1,10 +1,12 @@
 'use client';
+
 import { ColumnDef } from '@tanstack/react-table';
 import { CellAction } from './cell-action';
 import { Badge } from '@/components/ui/badge';
 import { Checkbox } from '@/components/ui/checkbox';
-import { UserRoles, UserStatus } from '@/constants';
+import { UserRoles } from '@/constants';
 import { UserTableView } from '@/types/composition';
+import { UserStatus } from '@prisma/client';
 
 export const columns: ColumnDef<UserTableView>[] = [
   {
@@ -57,7 +59,7 @@ export const columns: ColumnDef<UserTableView>[] = [
     cell: ({ row }) => {
       const status: string = row.getValue('status');
 
-      if (status === UserStatus.active) {
+      if (status === UserStatus.ACTIVE) {
         return (
           <Badge
             variant='secondary'
@@ -68,13 +70,24 @@ export const columns: ColumnDef<UserTableView>[] = [
         );
       }
 
-      if (status === UserStatus.blocked) {
+      if (status === UserStatus.BLOCKED) {
         return (
           <Badge
             variant='secondary'
             className='pointer-events-none bg-red-300 hover:bg-red-300'
           >
             Заблокирован
+          </Badge>
+        );
+      }
+
+      if (status === UserStatus.RECUSED) {
+        return (
+          <Badge
+            variant='secondary'
+            className='pointer-events-none bg-yellow-300 hover:bg-yellow-300'
+          >
+            Освобожден от должности
           </Badge>
         );
       }

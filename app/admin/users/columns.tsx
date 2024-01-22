@@ -1,7 +1,8 @@
 'use client';
 
 import { ColumnDef } from '@tanstack/react-table';
-import { UserRoles, UserStatus } from '@/constants';
+import { UserRoles } from '@/constants';
+import { UserStatus } from '@prisma/client';
 
 export type User = {};
 
@@ -37,11 +38,11 @@ export const columns: ColumnDef<User>[] = [
     cell: ({ row }) => {
       const status: string = row.getValue('status');
 
-      if (status === UserStatus.active) {
+      if (status === UserStatus.ACTIVE) {
         return 'Активен';
       }
 
-      if (status === UserStatus.blocked) {
+      if (status === UserStatus.BLOCKED) {
         return 'Заблокирован';
       }
     }

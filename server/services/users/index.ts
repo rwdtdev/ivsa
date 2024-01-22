@@ -1,14 +1,15 @@
 import bcrypt from 'bcryptjs';
 import prisma from '@/server/services/prisma';
+import ApiError from '@/server/utils/error';
 import { ClientUser, UserCreateData, UserUpdateData, UsersGetData } from './types';
 import { PaginatedResponse, SortDirection } from '@/server/types';
 import { filterSearchTerm } from '@/server/utils';
-import ApiError from '@/server/utils/error';
 import { generatePasswordAsync } from '@/server/utils/password-generator';
 import { UserCredentials } from '@/app/types';
-import { User } from '@prisma/client';
+import { PrismaClient, User, UserStatus } from '@prisma/client';
 import { exclude } from '@/server/utils/exclude';
 import { UserView } from '@/types/user';
+import { TransactionSession } from '@/types/prisma';
 
 const defaultLimit = 100;
 
@@ -20,6 +21,49 @@ type GetUserParams = {
 const WrongCredentialsError = new ApiError('Wrong credentials!', 401);
 const FailedLoginError = new ApiError('Failed to login', 500);
 const UserNotFoundError = new ApiError('User is not found', 404);
+
+export class UserService {
+  private prisma: PrismaClient | TransactionSession;
+
+  constructor(transactionSession?: TransactionSession) {
+    this.prisma = transactionSession ?? prisma;
+  }
+
+  static withSession(session: TransactionSession) {
+    return new this(session);
+  }
+
+  assertExist = async (id: string): Promise<void> => {
+    const count = await this.prisma.user.count({ where: { id } });
+
+    if (!count || count === 0) {
+      throw new ApiError(`User with id (${id}) not found`, 404);
+    }
+  };
+
+  getUserById = async (id: string) => {
+    const user = await this.prisma.user.findFirst({ where: { id } });
+
+    if (!user) {
+      throw new ApiError(`User with id (${id}) not found`, 404);
+    }
+
+    return user;
+  };
+
+  setNewStatus = async (id: string, status: UserStatus) => {
+    const user = await prisma.user.findFirst({ where: { id } });
+
+    if (!user) {
+      throw new ApiError(`User with id (${id}) not found`, 404);
+    }
+
+    await this.prisma.user.update({
+      where: { id },
+      data: { status }
+    });
+  };
+}
 
 export const login = async (credentials: UserCredentials): Promise<ClientUser> => {
   if (!credentials) throw WrongCredentialsError;
@@ -38,6 +82,7 @@ export const login = async (credentials: UserCredentials): Promise<ClientUser> =
     if (!isPasswordCorrect) throw WrongCredentialsError;
 
     user.password = '';
+    user.passwordHashes = '';
     return user;
   } catch (err) {
     console.debug(err);
@@ -254,7 +299,6 @@ export const updateUser = async (
 };
 
 export const deleteUser = async (id: string) => {
-  console.log(id);
   const user = await prisma.user.findFirst({
     where: { id }
   });
@@ -263,9 +307,7 @@ export const deleteUser = async (id: string) => {
     throw new ApiError(`User with id (${id}) not found`, 404);
   }
 
-  await prisma.user.delete({
-    where: { id }
-  });
+  await prisma.user.delete({ where: { id } });
 };
 
 export const excludeFromUser = (user: User) =>

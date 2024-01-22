@@ -1,8 +1,4 @@
-import { verify } from 'jsonwebtoken';
-import { usePathname } from 'next/navigation';
 import ResetPasswordForm from '@/components/forms/reset-password-form';
-import { Card, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
-import { JwtSecret } from '@/constants/jwt';
 
 const ForgotPasswordPage = async () => {
   return (

@@ -25,7 +25,7 @@ import {
 } from '@/components/ui/form';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
-import { sendNewPassword } from '@/app/actions/server/send-new-password';
+import { sendRecoveryLinkAction } from '@/app/actions/server/user-password';
 import {
   ForgotPasswordFormData,
   ForgotPasswordFormSchema
@@ -42,13 +42,13 @@ const ForgotPasswordForm = () => {
   });
 
   const processForm: SubmitHandler<ForgotPasswordFormData> = async (data) => {
-    const sent = await sendNewPassword(data);
+    const sent = await sendRecoveryLinkAction(data);
     if (!sent) {
       toast({
         title: 'Ошибка',
         description: (
           <pre className='mt-2 w-[340px] rounded-md bg-red-200 p-4'>
-            <p className='text-black'>При отправке пароля произошла ошибка</p>
+            <p className='text-black'>При отправке произошла ошибка</p>
           </pre>
         )
       });
@@ -62,7 +62,7 @@ const ForgotPasswordForm = () => {
       <CardHeader>
         <CardTitle>Восстановление пароля</CardTitle>
         <CardDescription>
-          На указанный адрес электронной почты будет выслан новый сгенерированный пароль
+          На указанный адрес электронной почты будет выслана ссылка восстановления пароля
         </CardDescription>
       </CardHeader>
       <CardContent>
@@ -99,7 +99,7 @@ const ForgotPasswordForm = () => {
       <CardHeader>
         <CardTitle>Отправлено</CardTitle>
         <CardDescription>
-          Ссылка для восстановления пароля успешно отправлено.
+          Ссылка для восстановления пароля успешно отправлена.
         </CardDescription>
       </CardHeader>
     </Card>

@@ -47,7 +47,7 @@ export const UserForm: React.FC<UserFormProps> = ({
   const { toast } = useToast();
   const [open, setOpen] = useState(false);
   const [loading, setLoading] = useState(false);
-  const title = initialData ? 'Редактировать' : 'Добавление пользователя';
+  const title = initialData ? 'Добавление пользователя' : 'Редактирование пользователя';
   const description = initialData
     ? 'Изменить данные пользователя.'
     : 'Добавить нового пользователя в систему ASVI';
@@ -221,7 +221,7 @@ export const UserForm: React.FC<UserFormProps> = ({
                 <FormItem>
                   <FormLabel>Рабочий телефон</FormLabel>
                   <FormControl>
-                    <Input disabled={loading} {...field} />
+                    <Input disabled={loading} placeholder='Рабочий телефон' {...field} />
                   </FormControl>
                   <FormMessage />
                 </FormItem>
@@ -281,11 +281,13 @@ export const UserForm: React.FC<UserFormProps> = ({
                     </FormControl>
                     <SelectContent>
                       {/* @ts-ignore  */}
-                      {organisations.map((orgnisation) => (
-                        <SelectItem key={orgnisation._id} value={orgnisation._id}>
-                          {orgnisation.name}
-                        </SelectItem>
-                      ))}
+                      {[{ name: 'Не выбрано', _id: '123' }, ...organisations].map(
+                        (orgnisation, idx) => (
+                          <SelectItem key={idx} value={orgnisation._id}>
+                            {orgnisation.name}
+                          </SelectItem>
+                        )
+                      )}
                     </SelectContent>
                   </Select>
                   <FormMessage />
@@ -311,11 +313,13 @@ export const UserForm: React.FC<UserFormProps> = ({
                     </FormControl>
                     <SelectContent>
                       {/* @ts-ignore  */}
-                      {departments.map((department) => (
-                        <SelectItem key={department._id} value={department._id}>
-                          {department.name}
-                        </SelectItem>
-                      ))}
+                      {[{ name: 'Не выбрано', _id: '123' }, ...departments].map(
+                        (department) => (
+                          <SelectItem key={department._id} value={department._id}>
+                            {department.name}
+                          </SelectItem>
+                        )
+                      )}
                     </SelectContent>
                   </Select>
                   <FormMessage />

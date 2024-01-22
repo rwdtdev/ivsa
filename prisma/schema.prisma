@@ -14,6 +14,8 @@ model Organisation {
   description String
   Department  Department[]
   User        User[]
+  createdAt   DateTime     @default(now())
+  updatedAt   DateTime     @updatedAt
 
   @@map("organisations")
 }
@@ -25,26 +27,35 @@ model Department {
   organisationId String?
   organisation   Organisation? @relation(fields: [organisationId], references: [id])
   User           User[]
+  createdAt      DateTime      @default(now())
+  updatedAt      DateTime      @updatedAt
 
   @@map("departments")
 }
 
 model User {
-  id             String        @id @default(cuid())
-  name           String
-  username       String        @unique
-  email          String        @unique
-  phone          String
-  password       String
-  passwordHashes String
-  roles          String
-  status         String
-  createdAt      DateTime      @default(now()) @map(name: "created_at")
-  updatedAt      DateTime      @updatedAt @map(name: "updated_at")
-  organisationId String?
-  organisation   Organisation? @relation(fields: [organisationId], references: [id])
-  departmentId   String?
-  department     Department?   @relation(fields: [departmentId], references: [id])
+  id                     String        @id @default(cuid())
+  name                   String
+  username               String        @unique
+  email                  String        @unique
+  phone                  String
+  password               String
+  passwordHashes         String
+  roles                  String
+  status                 UserStatus
+  createdAt              DateTime      @default(now())
+  updatedAt              DateTime      @updatedAt
+  organisationId         String?
+  lastUpdatePasswordDate DateTime      @default(now())
+  organisation           Organisation? @relation(fields: [organisationId], references: [id])
+  departmentId           String?
+  department             Department?   @relation(fields: [departmentId], references: [id])
 
   @@map("users")
+}
+
+enum UserStatus {
+  ACTIVE
+  BLOCKED
+  RECUSED
 }

@@ -49,9 +49,9 @@ export async function createUserAction(formData: FormData) {
 
 export async function updateUser(formData: FormData) {}
 
-export async function getUserById(id: string) {
-  return getUserById(id);
-}
+// export async function getUserById(id: string) {
+//   return getUserById(id);
+// }
 
 export async function deleteUserAction(id: string) {
   try {
@@ -61,11 +61,4 @@ export async function deleteUserAction(id: string) {
   }
 
   revalidatePath('/admin/users');
-}
-
-export async function resetPasswordAction(userId: string) {
-  try {
-  } catch (err) {
-    throw err;
-  }
 }

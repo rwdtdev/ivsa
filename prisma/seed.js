@@ -1,4 +1,4 @@
-const { PrismaClient } = require('@prisma/client');
+const { PrismaClient, UserStatus } = require('@prisma/client');
 const { hashSync } = require('bcryptjs');
 const { lorem, phone } = require('@faker-js/faker').faker;
 const { loadEnvConfig } = require('@next/env');
@@ -42,7 +42,7 @@ const createUsers = (n, departmentId, organisationId) => {
       password,
       passwordHashes: password,
       roles: index === 0 ? 'admin' : 'user',
-      status: 'active',
+      status: UserStatus.ACTIVE,
       departmentId,
       organisationId
     }));
@@ -156,7 +156,7 @@ class SeedSingleton {
           password: adminPassword,
           passwordHashes: adminPassword,
           roles: 'admin',
-          status: 'active',
+          status: UserStatus.ACTIVE,
           departmentId: null,
           organisationId: null
         }

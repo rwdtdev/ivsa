@@ -1,0 +1,2 @@
+-- AlterTable
+ALTER TABLE "users" ADD COLUMN     "lastUpdatePasswordDate" TIMESTAMP(3) NOT NULL DEFAULT CURRENT_TIMESTAMP;

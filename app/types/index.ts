@@ -1,6 +1,6 @@
 export type UserCredentials = {
-  username: string;
-  password: string;
+  username?: string;
+  password?: string;
 };
 
 export type ProviderCredentials = Record<'username' | 'password', string> | undefined;

@@ -1,11 +1,21 @@
-import { getUserById } from '@/app/actions/server/users';
 import BreadCrumb from '@/components/breadcrumb';
 import { UserForm } from '@/components/forms/user-form';
 import { usePathname } from 'next/navigation';
 import React from 'react';
 import { headers } from 'next/headers';
+import { getServerSession } from 'next-auth';
+import { UserService } from '@/server/services/users';
 
-export default function Page() {
+export default async function Page() {
+  const data = await getServerSession();
+
+  const userService = new UserService();
+
+  const currentUser = await userService.getUserBy({
+    name: data.name,
+    email: data.email
+  });
+
   //   const pathname = usePathname();
 
   //   const splitted = pathname.split('/');

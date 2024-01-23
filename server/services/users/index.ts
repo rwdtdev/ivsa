@@ -51,6 +51,16 @@ export class UserService {
     return user;
   };
 
+  getUserBy = async (query: Partial<ClientUser>): Promise<ClientUser | null> => {
+    const user = await prisma.user.findFirst({
+      where: query
+    });
+
+    if (!user) throw UserNotFoundError;
+
+    return user;
+  };
+
   setNewStatus = async (id: string, status: UserStatus) => {
     const user = await prisma.user.findFirst({ where: { id } });
 
@@ -64,31 +74,6 @@ export class UserService {
     });
   };
 }
-
-export const login = async (credentials: UserCredentials): Promise<ClientUser> => {
-  if (!credentials) throw WrongCredentialsError;
-
-  try {
-    const user = await prisma.user.findFirst({
-      where: {
-        username: credentials.username
-      }
-    });
-
-    if (!user) throw WrongCredentialsError;
-
-    const isPasswordCorrect = await bcrypt.compare(credentials.password, user.password);
-
-    if (!isPasswordCorrect) throw WrongCredentialsError;
-
-    user.password = '';
-    user.passwordHashes = '';
-    return user;
-  } catch (err) {
-    console.debug(err);
-    throw FailedLoginError;
-  }
-};
 
 export const getUserBy = async ({
   password,

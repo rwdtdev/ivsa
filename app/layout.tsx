@@ -15,6 +15,9 @@ export const metadata = {
 
 export default async function RootLayout({ children }: ReactChildren) {
   const session = await getServerSession();
+
+  console.log('Server session: ', session);
+
   return (
     <html lang='en'>
       <body className={inter.className}>

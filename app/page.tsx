@@ -7,6 +7,8 @@ import { signOut, useSession } from 'next-auth/react';
 const Main = () => {
   const { data: session } = useSession();
 
+  console.log('Client session: ', session);
+
   if (session && session.user) {
     return (
       <div className='text-center'>

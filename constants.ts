@@ -1,14 +1,13 @@
 export const UserRoles = {
-  // @TODO: для маппинга ролей.
-  admin: {
-    ru: 'Администратор',
-    en: 'Administrator'
-  },
-  user: {
-    ru: 'Пользователь',
-    en: 'User'
-  }
+  admin: 'Администратор',
+  user: 'Пользователь'
 } as const;
+
+export const UserStatuses = {
+  ACTIVE: 'Активен',
+  BLOCKED: 'Заблокирован',
+  RECUSED: 'Освобожден от должности'
+};
 
 export const UserStatus = {
   active: 'active',

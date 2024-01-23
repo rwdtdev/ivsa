@@ -1,6 +1,6 @@
 'use client';
 
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { useForm } from 'react-hook-form';
 import { Trash } from 'lucide-react';
@@ -25,11 +25,13 @@ import {
   SelectValue
 } from '@/components/ui/select';
 import { useToast } from '../ui/use-toast';
-import { UserRoles } from '@/constants';
+import { UserRoles, UserStatuses } from '@/constants';
 import {
   UserFormData,
   UserFormSchema
 } from '@/lib/form-validation-schemas/user-form-schema';
+import { Department, Organisation, UserStatus } from '@prisma/client';
+import { UserRole } from '@/server/services/user-roles/UserRole';
 
 interface UserFormProps {
   initialData: any | null;
@@ -47,7 +49,7 @@ export const UserForm: React.FC<UserFormProps> = ({
   const { toast } = useToast();
   const [open, setOpen] = useState(false);
   const [loading, setLoading] = useState(false);
-  const title = initialData ? 'Добавление пользователя' : 'Редактирование пользователя';
+  const title = initialData ? 'Редактирование пользователя' : 'Добавление пользователя';
   const description = initialData
     ? 'Изменить данные пользователя.'
     : 'Добавить нового пользователя в систему ASVI';
@@ -62,6 +64,7 @@ export const UserForm: React.FC<UserFormProps> = ({
         username: '',
         password: '',
         name: '',
+        status: '',
         orgnisationId: '',
         departmentId: '',
         email: '',
@@ -74,6 +77,21 @@ export const UserForm: React.FC<UserFormProps> = ({
     resolver: zodResolver(UserFormSchema),
     defaultValues
   });
+
+  useEffect(() => {
+    if (initialData) {
+      form.setValue('username', initialData.username);
+      form.setValue('password', initialData.password);
+      form.setValue('name', initialData.name);
+      form.setValue('status', initialData.status);
+      form.setValue('organisationId', initialData.organisationId);
+      form.setValue('departmentId', initialData.departmentId);
+      form.setValue('email', initialData.email);
+      form.setValue('tabelNumber', initialData.tabelNumber);
+      form.setValue('phone', initialData.phone);
+      form.setValue('roles', initialData.roles);
+    }
+  }, [initialData]);
 
   const onSubmit = async (data: UserFormData) => {
     try {
@@ -125,7 +143,7 @@ export const UserForm: React.FC<UserFormProps> = ({
       /> */}
       <div className='flex items-center justify-between'>
         <Heading title={title} description={description} />
-        {initialData && (
+        {/* {initialData && (
           <Button
             disabled={loading}
             variant='destructive'
@@ -134,12 +152,25 @@ export const UserForm: React.FC<UserFormProps> = ({
           >
             <Trash className='h-4 w-4' />
           </Button>
-        )}
+        )} */}
       </div>
       <Separator />
       <Form {...form}>
         <form onSubmit={form.handleSubmit(onSubmit)} className='w-full space-y-8'>
           <div className='gap-8 md:grid md:grid-cols-3'>
+            <FormField
+              control={form.control}
+              name='name'
+              render={({ field }) => (
+                <FormItem>
+                  <FormLabel>ФИО</FormLabel>
+                  <FormControl>
+                    <Input disabled={loading} placeholder='ФИО пользователя' {...field} />
+                  </FormControl>
+                  <FormMessage />
+                </FormItem>
+              )}
+            />
             <FormField
               control={form.control}
               name='username'
@@ -161,19 +192,6 @@ export const UserForm: React.FC<UserFormProps> = ({
                   <FormLabel>Пароль</FormLabel>
                   <FormControl>
                     <Input disabled={loading} placeholder='Пароль' {...field} />
-                  </FormControl>
-                  <FormMessage />
-                </FormItem>
-              )}
-            />
-            <FormField
-              control={form.control}
-              name='name'
-              render={({ field }) => (
-                <FormItem>
-                  <FormLabel>ФИО</FormLabel>
-                  <FormControl>
-                    <Input disabled={loading} placeholder='ФИО пользователя' {...field} />
                   </FormControl>
                   <FormMessage />
                 </FormItem>
@@ -232,7 +250,7 @@ export const UserForm: React.FC<UserFormProps> = ({
               name='roles'
               render={({ field }) => (
                 <FormItem>
-                  <FormLabel>Роли</FormLabel>
+                  <FormLabel>Роль</FormLabel>
                   <Select
                     disabled={loading}
                     onValueChange={field.onChange}
@@ -248,14 +266,11 @@ export const UserForm: React.FC<UserFormProps> = ({
                       </SelectTrigger>
                     </FormControl>
                     <SelectContent>
-                      {/* @ts-ignore  */}
-                      {['Не выбрано', UserRoles.admin.ru, UserRoles.user.ru].map(
-                        (role, idx) => (
-                          <SelectItem key={idx} value={role}>
-                            {role}
-                          </SelectItem>
-                        )
-                      )}
+                      {[UserRole.Admin, UserRole.User].map((role, idx) => (
+                        <SelectItem key={idx} value={role}>
+                          {UserRoles[role]}
+                        </SelectItem>
+                      ))}
                     </SelectContent>
                   </Select>
                   <FormMessage />
@@ -280,14 +295,11 @@ export const UserForm: React.FC<UserFormProps> = ({
                       </SelectTrigger>
                     </FormControl>
                     <SelectContent>
-                      {/* @ts-ignore  */}
-                      {[{ name: 'Не выбрано', _id: '123' }, ...organisations].map(
-                        (orgnisation, idx) => (
-                          <SelectItem key={idx} value={orgnisation._id}>
-                            {orgnisation.name}
-                          </SelectItem>
-                        )
-                      )}
+                      {organisations.map((organisation: Organisation, idx: number) => (
+                        <SelectItem key={idx} value={organisation.id}>
+                          {organisation.name}
+                        </SelectItem>
+                      ))}
                     </SelectContent>
                   </Select>
                   <FormMessage />
@@ -312,11 +324,39 @@ export const UserForm: React.FC<UserFormProps> = ({
                       </SelectTrigger>
                     </FormControl>
                     <SelectContent>
-                      {/* @ts-ignore  */}
-                      {[{ name: 'Не выбрано', _id: '123' }, ...departments].map(
-                        (department) => (
-                          <SelectItem key={department._id} value={department._id}>
-                            {department.name}
+                      {departments.map((department: Department, idx: number) => (
+                        <SelectItem key={idx} value={department.id}>
+                          {department.name}
+                        </SelectItem>
+                      ))}
+                    </SelectContent>
+                  </Select>
+                  <FormMessage />
+                </FormItem>
+              )}
+            />
+            <FormField
+              control={form.control}
+              name='status'
+              render={({ field }) => (
+                <FormItem>
+                  <FormLabel>Статус</FormLabel>
+                  <Select
+                    disabled={loading}
+                    onValueChange={field.onChange}
+                    value={field.value}
+                    defaultValue={field.value}
+                  >
+                    <FormControl>
+                      <SelectTrigger>
+                        <SelectValue defaultValue={field.value} />
+                      </SelectTrigger>
+                    </FormControl>
+                    <SelectContent>
+                      {[UserStatus.ACTIVE, UserStatus.BLOCKED, UserStatus.RECUSED].map(
+                        (status, idx) => (
+                          <SelectItem key={idx} value={status}>
+                            {UserStatuses[status]}
                           </SelectItem>
                         )
                       )}

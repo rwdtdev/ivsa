@@ -1,9 +1,14 @@
 'use server';
 
-import { createUser, deleteUser } from '@/server/services/users';
+import { UserService, createUser, deleteUser } from '@/server/services/users';
 import { validate } from '@/server/utils/validate';
 import { CreateUserSchema } from '@/server/validations/users';
 import { revalidatePath } from 'next/cache';
+import Cache from 'node-cache';
+
+const cache = new Cache({
+  checkperiod: 120
+});
 
 export async function createUserAction(formData: FormData) {
   const name = formData.get('name');
@@ -57,4 +62,23 @@ export async function deleteUserAction(id: string) {
   }
 
   revalidatePath('/admin/users');
+}
+
+export async function getUserByIdAction(id: string) {
+  try {
+    const cacheKey = `user_${id}`;
+
+    let data = cache.get(cacheKey);
+
+    if (!data) {
+      const userService = new UserService();
+      const data = await userService.getUserById(id);
+
+      cache.set(cacheKey, data);
+    }
+
+    return data;
+  } catch (err) {
+    throw err;
+  }
 }

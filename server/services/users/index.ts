@@ -5,7 +5,6 @@ import { ClientUser, UserCreateData, UserUpdateData, UsersGetData } from './type
 import { PaginatedResponse, SortDirection } from '@/server/types';
 import { filterSearchTerm } from '@/server/utils';
 import { generatePasswordAsync } from '@/server/utils/password-generator';
-import { UserCredentials } from '@/app/types';
 import { PrismaClient, User, UserStatus } from '@prisma/client';
 import { exclude } from '@/server/utils/exclude';
 import { UserView } from '@/types/user';
@@ -18,8 +17,6 @@ type GetUserParams = {
   username: string;
 };
 
-const WrongCredentialsError = new ApiError('Wrong credentials!', 401);
-const FailedLoginError = new ApiError('Failed to login', 500);
 const UserNotFoundError = new ApiError('User is not found', 404);
 
 export class UserService {
@@ -41,7 +38,7 @@ export class UserService {
     }
   };
 
-  getUserById = async (id: string) => {
+  async getUserById(id: string) {
     const user = await this.prisma.user.findFirst({ where: { id } });
 
     if (!user) {
@@ -49,10 +46,10 @@ export class UserService {
     }
 
     return user;
-  };
+  }
 
   getUserBy = async (query: Partial<ClientUser>): Promise<ClientUser | null> => {
-    const user = await prisma.user.findFirst({
+    const user = await this.prisma.user.findFirst({
       where: query
     });
 
@@ -62,7 +59,7 @@ export class UserService {
   };
 
   setNewStatus = async (id: string, status: UserStatus) => {
-    const user = await prisma.user.findFirst({ where: { id } });
+    const user = await this.prisma.user.findFirst({ where: { id } });
 
     if (!user) {
       throw new ApiError(`User with id (${id}) not found`, 404);

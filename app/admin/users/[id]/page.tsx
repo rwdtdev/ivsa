@@ -1,33 +1,33 @@
+'use client';
+
 import BreadCrumb from '@/components/breadcrumb';
 import { UserForm } from '@/components/forms/user-form';
 import { usePathname } from 'next/navigation';
-import React from 'react';
-import { headers } from 'next/headers';
-import { getServerSession } from 'next-auth';
+import { useContext, useEffect, useOptimistic, useState, useTransition } from 'react';
 import { UserService } from '@/server/services/users';
+import { DataContext } from '@/providers/DataProvider';
+import { getUserByIdAction } from '@/app/actions/server/users';
 
-export default async function Page() {
-  const data = await getServerSession();
+export default function Page() {
+  const { departments, organisations } = useContext(DataContext);
+  const pathname = usePathname();
 
-  const userService = new UserService();
+  const [userInitialData, setUserInitialData] = useState({});
 
-  const currentUser = await userService.getUserBy({
-    name: data.name,
-    email: data.email
-  });
+  const pathnameChunks = pathname.split('/');
+  const userId = pathnameChunks[pathnameChunks.length - 1].trim();
 
-  //   const pathname = usePathname();
+  const getSelectedUser = async () => {
+    const user = await getUserByIdAction(userId);
 
-  //   const splitted = pathname.split('/');
-  //   const userId = splitted[splitted.length - 1];
+    if (user) {
+      setUserInitialData(user);
+    }
+  };
 
-  //   const headersList = headers();
-  //   const url = headersList.get('x-url') || '';
-
-  //   const splitted = url.split('/');
-  const userId = '';
-
-  //   console.log(url);
+  useEffect(() => {
+    getSelectedUser();
+  }, []);
 
   const breadcrumbItems = [
     { title: 'Пользователи', link: '/admin/users' },
@@ -38,16 +38,9 @@ export default async function Page() {
     <div className='flex-1 space-y-4 p-8'>
       <BreadCrumb items={breadcrumbItems} />
       <UserForm
-        organisations={[
-          { _id: 'organisation_1', name: 'Организация 1' },
-          { _id: 'organisation_2', name: 'Организация 2' }
-        ]}
-        departments={[
-          { _id: 'department_1', name: 'Отдел 1' },
-          { _id: 'department_2', name: 'Отдел 2' }
-        ]}
-        initialData={null}
-        key={null}
+        organisations={organisations}
+        departments={departments}
+        initialData={userInitialData}
       />
     </div>
   );

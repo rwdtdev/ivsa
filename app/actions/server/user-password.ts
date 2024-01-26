@@ -27,14 +27,12 @@ export async function sendRecoveryLinkAction(data: ForgotPasswordFormData) {
   const token = jwt.sign({ username: user.username }, JwtSecret, { expiresIn: '15m' });
 
   try {
-    const message = {
+    await transporter.sendMail({
       from: process.env.TRANSPORT_FROM,
       to: email,
       subject: 'Восстановление пароля',
       text: `Ссылка для восстановления пароля: ${process.env.NEXTAUTH_URL}/forgot-password/${token}`
-    };
-
-    await transporter.sendMail(message);
+    });
   } catch (err) {
     throw err;
   }

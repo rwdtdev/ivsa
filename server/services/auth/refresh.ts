@@ -32,7 +32,7 @@ export const refresh = async (refreshToken?: string): Promise<string> => {
           email: user.email,
           name: user.name,
           username: user.username,
-          roles: user.roles,
+          role: user.role,
           phone: user.phone,
           status: user.status,
           organisationId: user.organisationId,

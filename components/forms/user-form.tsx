@@ -3,8 +3,7 @@
 import { useEffect, useState } from 'react';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { useForm } from 'react-hook-form';
-import { Trash } from 'lucide-react';
-import { useParams, useRouter } from 'next/navigation';
+import { useParams, usePathname, useRouter } from 'next/navigation';
 import { Input } from '@/components/ui/input';
 import { Button } from '@/components/ui/button';
 import {
@@ -30,8 +29,9 @@ import {
   UserFormData,
   UserFormSchema
 } from '@/lib/form-validation-schemas/user-form-schema';
-import { Department, Organisation, UserStatus } from '@prisma/client';
-import { UserRole } from '@/server/services/user-roles/UserRole';
+import { Department, Organisation, UserRole, UserStatus } from '@prisma/client';
+import { PasswordInput } from '../password-input';
+import { createUserAction, updateUserAction } from '@/app/actions/server/users';
 
 interface UserFormProps {
   initialData: any | null;
@@ -47,6 +47,7 @@ export const UserForm: React.FC<UserFormProps> = ({
   const params = useParams();
   const router = useRouter();
   const { toast } = useToast();
+  const pathname = usePathname();
   const [open, setOpen] = useState(false);
   const [loading, setLoading] = useState(false);
   const title = initialData ? 'Редактирование пользователя' : 'Добавление пользователя';
@@ -70,7 +71,7 @@ export const UserForm: React.FC<UserFormProps> = ({
         email: '',
         tabelNumber: '',
         phone: '',
-        roles: []
+        role: ''
       };
 
   const form = useForm<UserFormData>({
@@ -81,7 +82,6 @@ export const UserForm: React.FC<UserFormProps> = ({
   useEffect(() => {
     if (initialData) {
       form.setValue('username', initialData.username);
-      form.setValue('password', initialData.password);
       form.setValue('name', initialData.name);
       form.setValue('status', initialData.status);
       form.setValue('organisationId', initialData.organisationId);
@@ -89,27 +89,45 @@ export const UserForm: React.FC<UserFormProps> = ({
       form.setValue('email', initialData.email);
       form.setValue('tabelNumber', initialData.tabelNumber);
       form.setValue('phone', initialData.phone);
-      form.setValue('roles', initialData.roles);
+      form.setValue('role', initialData.role);
     }
   }, [initialData]);
 
+  const serializeDataForDB = (data: UserFormData) => {
+    const enumFields = ['roles', 'status'];
+
+    for (let key in data) {
+      if (typeof key === 'string' && !enumFields.includes(key)) {
+        data[key] = data[key].trim();
+      }
+    }
+
+    return data;
+  };
+
   const onSubmit = async (data: UserFormData) => {
     try {
+      const pathnameChunks = pathname.split('/');
+      const userId = pathnameChunks[pathnameChunks.length - 1];
+      // const userData = serializeDataForDB(data);
+
       setLoading(true);
       if (initialData) {
-        // await axios.post(`/api/products/edit-product/${initialData._id}`, data);
+        await updateUserAction(userId, data);
+        toast({
+          variant: 'success',
+          title: 'Успех.',
+          description: 'Информация о пользователе успешно обновлена.'
+        });
       } else {
-        // const res = await axios.post(`/api/products/create-product`, data);
-        // console.log("product", res);
+        await createUserAction(data);
+        toast({
+          variant: 'success',
+          title: 'Успех.',
+          description: 'Пользователь успешно добавлен.'
+        });
       }
-      router.refresh();
-      router.push(`/admin/users`);
-      toast({
-        variant: 'destructive',
-        title: 'Что-то пошло не так.',
-        description: 'Возникла проблема при выполнении запроса.'
-      });
-    } catch (error: any) {
+    } catch (err) {
       toast({
         variant: 'destructive',
         title: 'Что-то пошло не так.',
@@ -184,19 +202,21 @@ export const UserForm: React.FC<UserFormProps> = ({
                 </FormItem>
               )}
             />
-            <FormField
-              control={form.control}
-              name='password'
-              render={({ field }) => (
-                <FormItem>
-                  <FormLabel>Пароль</FormLabel>
-                  <FormControl>
-                    <Input disabled={loading} placeholder='Пароль' {...field} />
-                  </FormControl>
-                  <FormMessage />
-                </FormItem>
-              )}
-            />
+            {!initialData && (
+              <FormField
+                control={form.control}
+                name='password'
+                render={({ field }) => (
+                  <FormItem>
+                    <FormLabel>Пароль</FormLabel>
+                    <FormControl>
+                      <PasswordInput disabled={loading} placeholder='Пароль' {...field} />
+                    </FormControl>
+                    <FormMessage />
+                  </FormItem>
+                )}
+              />
+            )}
             <FormField
               control={form.control}
               name='email'
@@ -247,7 +267,7 @@ export const UserForm: React.FC<UserFormProps> = ({
             />
             <FormField
               control={form.control}
-              name='roles'
+              name='role'
               render={({ field }) => (
                 <FormItem>
                   <FormLabel>Роль</FormLabel>
@@ -266,7 +286,7 @@ export const UserForm: React.FC<UserFormProps> = ({
                       </SelectTrigger>
                     </FormControl>
                     <SelectContent>
-                      {[UserRole.Admin, UserRole.User].map((role, idx) => (
+                      {[UserRole.ADMIN, UserRole.USER].map((role, idx) => (
                         <SelectItem key={idx} value={role}>
                           {UserRoles[role]}
                         </SelectItem>

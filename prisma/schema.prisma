@@ -41,7 +41,7 @@ model User {
   phone                  String
   password               String
   passwordHashes         String
-  roles                  String
+  role                   UserRole
   status                 UserStatus
   createdAt              DateTime      @default(now())
   updatedAt              DateTime      @updatedAt
@@ -59,4 +59,9 @@ enum UserStatus {
   ACTIVE
   BLOCKED
   RECUSED
+}
+
+enum UserRole {
+  ADMIN
+  USER
 }

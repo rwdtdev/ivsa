@@ -1,7 +1,7 @@
 'use client';
 
 import { sendNewPasswordAction } from '@/app/actions/server/user-password';
-import { deleteUserAction } from '@/app/actions/server/users';
+import { deleteUserAction, updateUserAction } from '@/app/actions/server/users';
 import { AlertModal } from '@/components/modal/alert-modal';
 import { Button } from '@/components/ui/button';
 import {
@@ -11,7 +11,9 @@ import {
   DropdownMenuLabel,
   DropdownMenuTrigger
 } from '@/components/ui/dropdown-menu';
+import { UserFormData } from '@/lib/form-validation-schemas/user-form-schema';
 import { UserTableView } from '@/types/composition';
+import { UserStatus } from '@prisma/client';
 import { Edit, MoreHorizontal, Trash, Bell, UserRoundX } from 'lucide-react';
 import { useRouter } from 'next/navigation';
 import { useState } from 'react';
@@ -22,16 +24,16 @@ interface CellActionProps {
 
 export const CellAction: React.FC<CellActionProps> = ({ data }) => {
   const [loading, setLoading] = useState(false);
-  const [openRemoveUser, setOpenRemoveUser] = useState(false);
+  const [openRecuseUser, setOpenRecuseUser] = useState(false);
   const [openResetPassword, setOpenResetPassword] = useState(false);
 
   const router = useRouter();
 
-  const onConfirmRemoveUser = async () => {
+  const onConfirmRecuseUser = async () => {
     setLoading(true);
-    await deleteUserAction(data.id);
+    await updateUserAction(data.id, { status: UserStatus.RECUSED } as UserFormData);
     setLoading(false);
-    setOpenRemoveUser(false);
+    setOpenRecuseUser(false);
   };
 
   const onConfirmResetPassword = async () => {
@@ -44,9 +46,9 @@ export const CellAction: React.FC<CellActionProps> = ({ data }) => {
   return (
     <>
       <AlertModal
-        isOpen={openRemoveUser}
-        onClose={() => setOpenRemoveUser(false)}
-        onConfirm={onConfirmRemoveUser}
+        isOpen={openRecuseUser}
+        onClose={() => setOpenRecuseUser(false)}
+        onConfirm={onConfirmRecuseUser}
         loading={loading}
       />
       <AlertModal
@@ -70,7 +72,7 @@ export const CellAction: React.FC<CellActionProps> = ({ data }) => {
           <DropdownMenuItem onClick={() => setOpenResetPassword(true)}>
             <Bell className='mr-2 h-4 w-4' /> Сбросить пароль
           </DropdownMenuItem>
-          <DropdownMenuItem onClick={() => setOpenRemoveUser(true)}>
+          <DropdownMenuItem onClick={() => setOpenRecuseUser(true)}>
             <UserRoundX className='mr-2 h-4 w-4' /> Освободить от должности
           </DropdownMenuItem>
         </DropdownMenuContent>

@@ -154,7 +154,7 @@ export const getUsers = async (
 };
 
 export const createUser = async (userCreateData: UserCreateData): Promise<ClientUser> => {
-  const { name, username, email, phone, departmentId, organisationId, roles, status } =
+  const { name, username, email, phone, departmentId, organisationId, role, status } =
     userCreateData;
 
   const isExistWithEmail = await prisma.user.findFirst({
@@ -202,7 +202,7 @@ export const createUser = async (userCreateData: UserCreateData): Promise<Client
       status,
       departmentId,
       organisationId,
-      roles: roles.join(','),
+      role,
       password: passwordHash,
       passwordHashes: passwordHash
     }
@@ -251,8 +251,8 @@ export const updateUser = async (
   if (data.phone) {
     updateData.phone = data.phone;
   }
-  if (data.roles) {
-    updateData.roles = data.roles.join(',');
+  if (data.role) {
+    updateData.role = data.role;
   }
   if (data.status) {
     updateData.status = data.status;

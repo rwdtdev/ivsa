@@ -12,11 +12,11 @@ export const navItems: NavItem[] = [
     href: '/admin/users',
     icon: 'user',
     label: 'user'
+  },
+  {
+    title: 'Архив видеоинвентаризаций',
+    href: '/admin/events/audit',
+    icon: 'archive',
+    label: 'audit-events'
   }
-  //   {
-  //     title: 'Profile',
-  //     href: '/dashboard/profile',
-  //     icon: 'profile',
-  //     label: 'profile'
-  //   }
 ];

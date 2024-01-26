@@ -1,6 +1,6 @@
 'use client';
 
-import * as React from 'react';
+import { useState } from 'react';
 import { SubmitHandler, useForm } from 'react-hook-form';
 import { useRouter, useSearchParams } from 'next/navigation';
 import { zodResolver } from '@hookform/resolvers/zod';
@@ -25,13 +25,12 @@ import {
 import Link from 'next/link';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
-import { Label } from '@/components/ui/label';
-import { Checkbox } from '@/components/ui/checkbox';
 import { authenticate } from '@/app/actions/client/auth';
 import {
   LoginFormData,
   LoginFormSchema
 } from '@/lib/form-validation-schemas/login-form-schema';
+import { PasswordInput } from '../password-input';
 
 const LoginForm = () => {
   const router = useRouter();
@@ -100,17 +99,13 @@ const LoginForm = () => {
                 <FormItem>
                   <FormLabel>Пароль</FormLabel>
                   <FormControl>
-                    <Input type='password' autoComplete='current-password' {...field} />
+                    <PasswordInput {...field} />
                   </FormControl>
                   <FormDescription></FormDescription>
                   <FormMessage />
                 </FormItem>
               )}
             />
-            <div className='flex items-center space-x-2'>
-              <Checkbox id='remember-me' />
-              <Label htmlFor='remember-me'>Запомнить меня</Label>
-            </div>
             <Button className='w-full' type='submit'>
               Войти
             </Button>

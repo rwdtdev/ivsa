@@ -1,58 +1,44 @@
 'use server';
 
-import { UserService, createUser, deleteUser } from '@/server/services/users';
-import { validate } from '@/server/utils/validate';
-import { CreateUserSchema } from '@/server/validations/users';
-import { revalidatePath } from 'next/cache';
+import { UserFormData } from '@/lib/form-validation-schemas/user-form-schema';
+import {
+  UserService,
+  createUser,
+  deleteUser,
+  getUsers,
+  updateUser
+} from '@/server/services/users';
+import { SearchParams } from '@/types';
+import { revalidatePath, revalidateTag } from 'next/cache';
+import { redirect } from 'next/navigation';
+import { searchParamsSchema } from '@/lib/query-params-validation';
+
 import Cache from 'node-cache';
+import { UserView } from '@/types/user';
 
 const cache = new Cache({
   checkperiod: 120
 });
 
-export async function createUserAction(formData: FormData) {
-  const name = formData.get('name');
-  const username = formData.get('username');
-  const phone = formData.get('phone');
-  const email = formData.get('email');
-  const status = formData.get('status');
+export async function createUserAction(formData: UserFormData & { password: string }) {
+  try {
+    await createUser(formData);
+  } catch (err) {
+    throw err;
+  }
 
-  /**
-   * @TODO
-   *    It will be a name of department or id?
-   *    Need check for existing department in organisation
-   */
-  const departmentId = formData.get('department');
-
-  /**
-   * @TODO
-   *    It will be a name of orgasniation or id?
-   *    Need check for existing organisation
-   */
-  const organisationId = formData.get('orgasniastion');
-
-  /**
-   * @TODO
-   *    It will be a string or array of string?
-   *    If primitive string need split by "," character.
-   */
-  const roles = formData.get('roles');
-
-  const userCreateData = validate(CreateUserSchema, {
-    name,
-    username,
-    phone,
-    email,
-    status,
-    departmentId,
-    organisationId,
-    roles
-  });
-
-  await createUser(userCreateData);
+  redirect('/admin/users');
 }
 
-export async function updateUser(formData: FormData) {}
+export async function updateUserAction(userId: string, formData: UserFormData) {
+  try {
+    await updateUser(userId, formData);
+  } catch (err) {
+    throw err;
+  }
+
+  redirect('/admin/users');
+}
 
 export async function deleteUserAction(id: string) {
   try {
@@ -80,5 +66,36 @@ export async function getUserByIdAction(id: string) {
     return data;
   } catch (err) {
     throw err;
+  }
+}
+
+export async function getUsersAction(searchParams: SearchParams) {
+  const { page, per_page, sort, title, status, priority, operator } =
+    searchParamsSchema.parse(searchParams);
+
+  // Fallback page for invalid page numbers
+  const pageAsNumber = Number(page);
+  const fallbackPage = isNaN(pageAsNumber) || pageAsNumber < 1 ? 1 : pageAsNumber;
+  // Number of items per page
+  const perPageAsNumber = Number(per_page);
+  const limit = isNaN(perPageAsNumber) ? 10 : perPageAsNumber;
+  // Number of items to skip
+  const offset = fallbackPage > 0 ? (fallbackPage - 1) * limit : 0;
+  // Column and order to sort by
+  // Spliting the sort string by "." to get the column and order
+  // Example: "title.desc" => ["title", "desc"]
+  const [column, order] = (sort?.split('.') as [
+    keyof UserView | undefined,
+    1 | 0 | undefined
+  ]) ?? ['name', 1];
+
+  return await getUsers({
+    page: pageAsNumber,
+    limit
+  });
+
+  try {
+  } catch (err) {
+    return { data: [], pagesCount: 0 };
   }
 }

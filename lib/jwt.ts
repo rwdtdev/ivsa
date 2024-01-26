@@ -20,7 +20,7 @@ export const verifyToken = (token: string, secret: string): Promise<UserSession>
         const userSession: UserSession = {
           id: userDecoded.id,
           email: userDecoded.email,
-          roles: userDecoded.roles,
+          role: userDecoded.role,
           name: userDecoded.name,
           status: userDecoded.status,
           organisationId: userDecoded.organisationId,

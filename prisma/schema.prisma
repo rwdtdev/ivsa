@@ -45,6 +45,7 @@ model User {
   status                 UserStatus
   createdAt              DateTime      @default(now())
   updatedAt              DateTime      @updatedAt
+  tabelNumber            String        @unique
   organisationId         String?
   refreshToken           String?
   lastUpdatePasswordDate DateTime      @default(now())

@@ -123,7 +123,12 @@ export const getUsers = async (
   const where = {
     where: {
       ...(search && {
-        OR: [{ name: { search } }, { username: { search } }, { email: { search } }]
+        OR: [
+          { name: { search } },
+          { username: { search } },
+          { email: { search } },
+          { tabelNumber: { search } }
+        ]
       })
     }
   };
@@ -154,8 +159,17 @@ export const getUsers = async (
 };
 
 export const createUser = async (userCreateData: UserCreateData): Promise<ClientUser> => {
-  const { name, username, email, phone, departmentId, organisationId, role, status } =
-    userCreateData;
+  const {
+    name,
+    username,
+    email,
+    phone,
+    departmentId,
+    organisationId,
+    role,
+    status,
+    tabelNumber
+  } = userCreateData;
 
   const isExistWithEmail = await prisma.user.findFirst({
     where: { email }
@@ -203,6 +217,7 @@ export const createUser = async (userCreateData: UserCreateData): Promise<Client
       departmentId,
       organisationId,
       role,
+      tabelNumber,
       password: passwordHash,
       passwordHashes: passwordHash
     }
@@ -259,6 +274,9 @@ export const updateUser = async (
   }
   if (data.username) {
     updateData.username = data.username;
+  }
+  if (data.tabelNumber) {
+    updateData.tabelNumber = data.tabelNumber;
   }
   if (data.name) {
     updateData.name = data.name;

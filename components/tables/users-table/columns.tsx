@@ -90,6 +90,11 @@ export function fetchUsersTableColumnDefs(
       }
     },
     {
+      accessorKey: 'tabelNumber',
+      header: 'Табельный номер',
+      cell: ({ row }) => row.getValue('tabelNumber')
+    },
+    {
       accessorKey: 'organisationName',
       header: 'Организация',
       cell: ({ row }) => row.getValue('organisationName') || emptyCell

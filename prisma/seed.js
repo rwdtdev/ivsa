@@ -41,6 +41,7 @@ const createUsers = (n, departmentId, organisationId) => {
       phone: phone.number(),
       password,
       passwordHashes: password,
+      tabelNumber: `${index}${index}${index}${index}-${index}${index}${index}${index}-${departmentId}`,
       role: UserRole.USER,
       status: UserStatus.ACTIVE,
       departmentId,
@@ -156,6 +157,7 @@ class SeedSingleton {
           password: adminPassword,
           passwordHashes: adminPassword,
           role: UserRole.ADMIN,
+          tabelNumber: '1111-1111-111',
           status: UserStatus.ACTIVE,
           departmentId: null,
           organisationId: null

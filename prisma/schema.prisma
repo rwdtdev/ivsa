@@ -46,6 +46,7 @@ model User {
   createdAt              DateTime      @default(now())
   updatedAt              DateTime      @updatedAt
   tabelNumber            String        @unique
+  ivaProfileId           String?       @unique
   organisationId         String?
   refreshToken           String?
   lastUpdatePasswordDate DateTime      @default(now())

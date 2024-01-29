@@ -9,6 +9,7 @@ import { PrismaClient, User, UserStatus } from '@prisma/client';
 import { exclude } from '@/server/utils/exclude';
 import { UserView } from '@/types/user';
 import { TransactionSession } from '@/types/prisma';
+import { createIvaUser } from '../iva';
 
 const defaultLimit = 100;
 
@@ -207,6 +208,16 @@ export const createUser = async (userCreateData: UserCreateData): Promise<Client
   const salt = await bcrypt.genSalt(10);
   const passwordHash = await bcrypt.hash(password, salt);
 
+  const ivaUser = await createIvaUser({
+    login: username,
+    userType: role,
+    securityLevel: 'UNCLASSIFIED',
+    name,
+    email: { value: email, privacy: "AUTHORIZED" },
+    phone: { value: phone, privacy: "AUTHORIZED" },
+    password
+  });
+
   const user = await prisma.user.create({
     data: {
       name,
@@ -218,6 +229,7 @@ export const createUser = async (userCreateData: UserCreateData): Promise<Client
       organisationId,
       role,
       tabelNumber,
+      ivaProfileId: ivaUser.profileId,
       password: passwordHash,
       passwordHashes: passwordHash
     }

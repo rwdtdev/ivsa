@@ -9,9 +9,8 @@
 
 ### Development setup
 
-Easiest way to get started is to use [NIX package manager](https://nixos.org/download).
-It can be used on Linux, WSL and MacOS.
-To install nix package manager run:
+Easiest way to get started is to use [NIX package manager](https://nixos.org/download). It
+can be used on Linux, WSL and MacOS. To install nix package manager run:
 
 ```bash
 sh <(curl -L https://nixos.org/nix/install) --daemon
@@ -61,4 +60,14 @@ npm run dev
 
 ```bash
 ➜ npm run test
+```
+
+### Generate and serve database models docs
+
+```bash
+# See docs on 5858 port
+➜ npm run prisma:docs
+# Prisma studio for database management
+➜ npx prisma studio
+
 ```

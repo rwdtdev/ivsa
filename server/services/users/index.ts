@@ -339,8 +339,6 @@ export const updateUser = async (
 
     updateData.lastUpdatePasswordDate = new Date();
   }
-  if (data.passwordHashes) {
-  }
   if (data.phone) {
     updateData.phone = data.phone;
   }

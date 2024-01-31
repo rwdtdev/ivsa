@@ -1,6 +1,5 @@
 import { RequiredNotNull } from '@/server/types';
-import { User } from '@prisma/client';
-import { UserRole } from '../user-roles/UserRole';
+import { User, UserRole } from '@prisma/client';
 import { SortOrder } from '@/constants/data';
 
 export enum UserStatus {

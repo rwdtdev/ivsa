@@ -41,3 +41,6 @@ next-env.d.ts
 
 # VSCode settings
 .vscode
+
+# Compiled faker functions for create entities into prisma seeds
+/prisma/fixtures/faker-data.js

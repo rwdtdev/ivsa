@@ -277,8 +277,8 @@ export const createUser = async (userCreateData: UserCreateData): Promise<Client
     userType: role,
     securityLevel: 'UNCLASSIFIED',
     name,
-    email: { value: email, privacy: "AUTHORIZED" },
-    phone: { value: phone, privacy: "AUTHORIZED" },
+    email: { value: email, privacy: 'AUTHORIZED' },
+    phone: { value: phone, privacy: 'AUTHORIZED' },
     password
   });
 
@@ -344,8 +344,6 @@ export const updateUser = async (
   if (data.phone) {
     updateData.phone = data.phone;
   }
-  if (data.role) {
-    updateData.role = data.role;
   if (data.role) {
     updateData.role = data.role;
   }

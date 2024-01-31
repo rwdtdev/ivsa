@@ -22,8 +22,6 @@ export function UsersTable({ users }: UsersTableProps) {
     [isPending]
   );
 
-  console.log(items);
-
   const { dataTable } = useDataTable({
     data: items,
     columns,

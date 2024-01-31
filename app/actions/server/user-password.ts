@@ -26,7 +26,7 @@ export async function sendRecoveryLinkAction(data: ForgotPasswordFormData) {
 
     const token = jwt.sign({ username: user.username }, JwtSecret, { expiresIn: '15m' });
 
-    await transporter.sendMail({
+    return await transporter.sendMail({
       from: process.env.TRANSPORT_FROM,
       to: user.email,
       subject: 'Восстановление пароля',

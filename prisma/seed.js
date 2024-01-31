@@ -15,12 +15,12 @@ const numberOfUsers = 5;
 const createOrganisations = (n) =>
   Array.from(Array(n).keys())
     .reverse()
-    .map(() => fakeOrganisation());
+    .map((_, index) => ({ ...fakeOrganisation(), name: `Организация ${index}` }));
 
 const createDepartments = (n, organisationId) =>
   Array.from(Array(n).keys())
     .reverse()
-    .map(() => ({ ...fakeDepartment(), organisationId }));
+    .map((_, index) => ({ ...fakeDepartment(index), organisationId }));
 
 const createUsers = (n, departmentId, organisationId) =>
   Array.from(Array(n).keys())

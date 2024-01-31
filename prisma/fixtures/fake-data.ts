@@ -10,9 +10,9 @@ export function fakeOrganisation() {
   };
 }
 
-export function fakeDepartment() {
+export function fakeDepartment(idx) {
   return {
-    name: faker.lorem.word(),
+    name: `Отдел ${idx}${faker.string.numeric({ length: 2 })}`,
     description: faker.lorem.words(5)
   };
 }

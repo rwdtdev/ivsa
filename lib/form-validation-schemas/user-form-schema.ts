@@ -12,7 +12,7 @@ export const UserFormSchema = z.object({
   organisationId: z.string().optional(),
   departmentId: z.string().optional(),
   email: z.string().email('Неверный формат'),
-  tabelNumber: z.string().min(1, { message: 'Не менее 1 символа' }), //@TODO сколько?
+  tabelNumber: z.string().length(8, { message: 'Должен содержать 8 символов' }),
   phone: z.string().min(10, { message: 'Не менее 10 символов' }),
   status: z.nativeEnum(UserStatus, {
     errorMap: () => {

@@ -1,5 +1,3 @@
-'use server';
-
 import ForgotPasswordForm from '@/components/forms/forgot-password-form';
 
 const ForgotPasswordPage = () => {

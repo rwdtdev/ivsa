@@ -123,7 +123,9 @@ export function useDataTable<TData, TValue>({
 
   // Table states
   const [rowSelection, setRowSelection] = React.useState({});
-  const [columnVisibility, setColumnVisibility] = React.useState<VisibilityState>({});
+  const [columnVisibility, setColumnVisibility] = React.useState<VisibilityState>({
+    id: false
+  });
   const [columnFilters, setColumnFilters] =
     React.useState<ColumnFiltersState>(initialColumnFilters);
 
@@ -165,7 +167,7 @@ export function useDataTable<TData, TValue>({
   // Handle server-side sorting
   const [sorting, setSorting] = React.useState<SortingState>([
     {
-      id: column ?? '',
+      id: column ?? 'name',
       desc: order === 'desc'
     }
   ]);
@@ -209,7 +211,7 @@ export function useDataTable<TData, TValue>({
     for (const column of debouncedSearchableColumnFilters) {
       if (typeof column.value === 'string') {
         Object.assign(newParamsObject, {
-          [column.id]: typeof column.value === 'string' ? column.value : null
+          search: typeof column.value === 'string' ? column.value : null
         });
       }
     }
@@ -269,7 +271,7 @@ export function useDataTable<TData, TValue>({
     getFacetedRowModel: getFacetedRowModel(),
     getFacetedUniqueValues: getFacetedUniqueValues(),
     manualPagination: true,
-    manualSorting: true,
+    manualSorting: false,
     manualFiltering: true
   });
 

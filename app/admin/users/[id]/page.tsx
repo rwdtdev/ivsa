@@ -1,32 +1,40 @@
 'use client';
 
+import _ from 'underscore';
 import BreadCrumb from '@/components/breadcrumb';
 import { UserForm } from '@/components/forms/user-form';
 import { usePathname } from 'next/navigation';
-import { useContext, useEffect, useOptimistic, useState, useTransition } from 'react';
-import { UserService } from '@/server/services/users';
-import { DataContext } from '@/providers/DataProvider';
+import { useEffect, useState } from 'react';
 import { getUserByIdAction } from '@/app/actions/server/users';
+import { getOrganisationsAction } from '@/app/actions/server/organisations';
+import { getDepartmentsAction } from '@/app/actions/server/departments';
+import { Department, Organisation } from '@prisma/client';
 
-export default function Page() {
-  const { departments, organisations } = useContext(DataContext);
+export default function UpdateUserPage() {
   const pathname = usePathname();
 
   const [userInitialData, setUserInitialData] = useState({});
+  const [departments, setDepartments] = useState<Department[]>([]);
+  const [organisations, setOrganisations] = useState<Organisation[]>([]);
 
   const pathnameChunks = pathname.split('/');
   const userId = pathnameChunks[pathnameChunks.length - 1].trim();
 
-  const getSelectedUser = async () => {
+  const setInitialState = async () => {
     const user = await getUserByIdAction(userId);
 
     if (user) {
+      const listOfDepartments = await getDepartmentsAction();
+      const listOfORganisations = await getOrganisationsAction();
+
       setUserInitialData(user);
+      setDepartments(listOfDepartments);
+      setOrganisations(listOfORganisations);
     }
   };
 
   useEffect(() => {
-    getSelectedUser();
+    setInitialState();
   }, []);
 
   const breadcrumbItems = [

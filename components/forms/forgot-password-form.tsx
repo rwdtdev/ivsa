@@ -1,7 +1,6 @@
 'use client';
 
-import * as React from 'react';
-import * as z from 'zod';
+import { useRef, useState } from 'react';
 import { SubmitHandler, useForm } from 'react-hook-form';
 import { useRouter } from 'next/navigation';
 import { zodResolver } from '@hookform/resolvers/zod';
@@ -32,8 +31,9 @@ import {
 } from '@/lib/form-validation-schemas/forgot-password-schema';
 
 const ForgotPasswordForm = () => {
-  const [isSubmitted, setIsSubmitted] = React.useState(false);
+  const [isSubmitted, setIsSubmitted] = useState(false);
   const router = useRouter();
+  const emailInputRef = useRef(null);
   const { toast } = useToast();
 
   const form = useForm<ForgotPasswordFormData>({
@@ -75,7 +75,7 @@ const ForgotPasswordForm = () => {
                 <FormItem>
                   <FormLabel>Адрес электронной почты (E-mail)</FormLabel>
                   <FormControl>
-                    <Input autoFocus {...field} />
+                    <Input autoFocus {...field} ref={emailInputRef} />
                   </FormControl>
                   <FormDescription></FormDescription>
                   <FormMessage />

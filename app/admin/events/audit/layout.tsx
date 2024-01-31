@@ -1,6 +1,5 @@
+import { ReactChildren } from '@/app/types';
 import Header from '@/components/layout/header';
-import DataProvider from '@/providers/DataProvider';
-import { getUsers } from '@/server/services/users';
 import type { Metadata } from 'next';
 
 export const metadata: Metadata = {
@@ -8,16 +7,12 @@ export const metadata: Metadata = {
   description: 'Справочник пользователей системы ASVI'
 };
 
-export default async function EventsLayout({ children }: { children: React.ReactNode }) {
-  const users = await getUsers();
-
+export default async function AuditEventsLayout({ children }: ReactChildren) {
   return (
     <>
       <Header />
       <div className='flex h-screen overflow-hidden'>
-        <DataProvider data={{ users: users.items }}>
-          <main className='w-full pt-16'>{children}</main>
-        </DataProvider>
+        <main className='w-full pt-16'>{children}</main>
       </div>
     </>
   );

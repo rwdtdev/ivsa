@@ -2,7 +2,7 @@
 
 import { getAllDepartments } from '@/server/services/departments';
 
-export async function getDepartments() {
+export async function getDepartmentsAction() {
   try {
     return getAllDepartments();
   } catch (err) {

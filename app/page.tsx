@@ -4,7 +4,7 @@ import React from 'react';
 import Link from 'next/link';
 import { signOut, useSession } from 'next-auth/react';
 
-const Main = () => {
+export default function Main() {
   const { data: session } = useSession();
 
   console.log('Client session: ', session);
@@ -30,6 +30,4 @@ const Main = () => {
       </Link>
     </div>
   );
-};
-
-export default Main;
+}

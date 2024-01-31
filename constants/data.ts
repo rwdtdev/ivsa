@@ -1,3 +1,4 @@
+import { SortDirection } from '@/server/types';
 import { NavItem } from '@/types';
 
 export const navItems: NavItem[] = [
@@ -20,3 +21,10 @@ export const navItems: NavItem[] = [
     label: 'audit-events'
   }
 ];
+
+export const SortOrder = {
+  Ascending: 'asc',
+  Descending: 'desc'
+} as const;
+
+export type SortOrder = (typeof SortOrder)[keyof typeof SortOrder];

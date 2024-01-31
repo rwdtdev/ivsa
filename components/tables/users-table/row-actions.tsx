@@ -1,7 +1,7 @@
 'use client';
 
-import { sendNewPasswordAction } from '@/app/actions/server/user-password';
-import { deleteUserAction, updateUserAction } from '@/app/actions/server/users';
+import { setActiveAndSendRecoveryLinkAction } from '@/app/actions/server/user-password';
+import { updateUserAction } from '@/app/actions/server/users';
 import { AlertModal } from '@/components/modal/alert-modal';
 import { Button } from '@/components/ui/button';
 import {
@@ -12,14 +12,14 @@ import {
   DropdownMenuTrigger
 } from '@/components/ui/dropdown-menu';
 import { UserFormData } from '@/lib/form-validation-schemas/user-form-schema';
-import { UserTableView } from '@/types/composition';
+import { UserView } from '@/types/user';
 import { UserStatus } from '@prisma/client';
-import { Edit, MoreHorizontal, Trash, Bell, UserRoundX } from 'lucide-react';
+import { Edit, MoreHorizontal, Bell, UserRoundX } from 'lucide-react';
 import { useRouter } from 'next/navigation';
 import { useState } from 'react';
 
 interface CellActionProps {
-  data: UserTableView;
+  data: UserView;
 }
 
 export const CellAction: React.FC<CellActionProps> = ({ data }) => {
@@ -38,7 +38,7 @@ export const CellAction: React.FC<CellActionProps> = ({ data }) => {
 
   const onConfirmResetPassword = async () => {
     setLoading(true);
-    await sendNewPasswordAction(data.id, data.email);
+    await setActiveAndSendRecoveryLinkAction(data.id, data.email);
     setLoading(false);
     setOpenResetPassword(false);
   };

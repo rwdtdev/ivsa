@@ -11,6 +11,8 @@ import { Button, buttonVariants } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { DataTableFacetedFilter } from '@/components/data-table/data-table-faceted-filter';
 import { DataTableViewOptions } from '@/components/data-table/data-table-view-options';
+import { useSearchParams, usePathname, useRouter } from 'next/navigation';
+import { useDebounce } from '@/hooks/use-debounce';
 
 interface DataTableToolbarProps<TData> {
   table: Table<TData>;
@@ -23,33 +25,84 @@ interface DataTableToolbarProps<TData> {
 export function DataTableToolbar<TData>({
   table,
   filterableColumns = [],
-  searchableColumns = [],
   newRowLink,
   deleteRowsAction
 }: DataTableToolbarProps<TData>) {
-  const isFiltered = table.getState().columnFilters.length > 0;
+  const [query, setQuery] = React.useState('');
+  const [isFiltered, setFiltered] = React.useState(false);
+  const debounceValue = useDebounce(query, 300);
+
+  const router = useRouter();
+  const searchParams = useSearchParams();
+  const pathname = usePathname();
+
   const [isPending, startTransition] = React.useTransition();
 
+  const createQueryString = React.useCallback(
+    (params: Record<string, string | number | null>) => {
+      const newSearchParams = new URLSearchParams(searchParams?.toString());
+
+      for (const [key, value] of Object.entries(params)) {
+        if (value === null) {
+          newSearchParams.delete(key);
+        } else {
+          newSearchParams.set(key, String(value));
+        }
+      }
+
+      return newSearchParams.toString();
+    },
+    [searchParams]
+  );
+
+  React.useEffect(() => {
+    if (debounceValue.length > 0) {
+      router.push(
+        `${pathname}?${createQueryString({
+          page: searchParams.get('page'),
+          per_page: searchParams.get('per_page'),
+          search: debounceValue
+        })}`,
+        {
+          scroll: false
+        }
+      );
+    }
+
+    if (!debounceValue || debounceValue.length === 0) {
+      router.push(
+        `${pathname}?${createQueryString({
+          page: searchParams.get('page'),
+          per_page: searchParams.get('per_page'),
+          search: null
+        })}`,
+        {
+          scroll: false
+        }
+      );
+    }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [debounceValue]);
+
   return (
-    <div className='flex w-full items-center justify-between space-x-2 overflow-auto p-1'>
+    <div className='flex w-full items-center justify-between space-x-2 overflow-auto'>
       <div className='flex flex-1 items-center space-x-2'>
-        {searchableColumns.length > 0 &&
-          searchableColumns.map(
-            (column) =>
-              table.getColumn(column.id ? String(column.id) : '') && (
-                <Input
-                  key={String(column.id)}
-                  placeholder={`Поиск по ${column.title}...`}
-                  value={
-                    (table.getColumn(String(column.id))?.getFilterValue() as string) ?? ''
-                  }
-                  onChange={(event) =>
-                    table.getColumn(String(column.id))?.setFilterValue(event.target.value)
-                  }
-                  className='h-8 w-[150px] lg:w-[250px]'
-                />
-              )
-          )}
+        <Input
+          placeholder={`Поиск...`}
+          value={query}
+          onChange={(event) => {
+            const value = event?.target.value;
+
+            if (value === '') {
+              setQuery('');
+              setFiltered(false);
+            } else {
+              setQuery(value);
+              setFiltered(true);
+            }
+          }}
+          className='h-8 w-[150px] focus:border-2 focus:border-black lg:w-[250px]'
+        />
         {filterableColumns.length > 0 &&
           filterableColumns.map(
             (column) =>
@@ -67,7 +120,10 @@ export function DataTableToolbar<TData>({
             aria-label='Reset filters'
             variant='ghost'
             className='h-8 px-2 lg:px-3'
-            onClick={() => table.resetColumnFilters()}
+            onClick={() => {
+              setQuery('');
+              setFiltered(false);
+            }}
           >
             Сбросить
             <Cross2Icon className='ml-2 size-4' aria-hidden='true' />

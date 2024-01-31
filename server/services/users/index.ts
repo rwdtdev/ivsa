@@ -2,13 +2,14 @@ import bcrypt from 'bcryptjs';
 import prisma from '@/server/services/prisma';
 import ApiError from '@/server/utils/error';
 import { ClientUser, UserCreateData, UserUpdateData, UsersGetData } from './types';
-import { PaginatedResponse, SortDirection } from '@/server/types';
+import { PaginatedResponse } from '@/server/types';
 import { filterSearchTerm } from '@/server/utils';
 import { generatePasswordAsync } from '@/server/utils/password-generator';
 import { PrismaClient, User, UserStatus } from '@prisma/client';
 import { exclude } from '@/server/utils/exclude';
 import { UserView } from '@/types/user';
 import { TransactionSession } from '@/types/prisma';
+import { SortOrder } from '@/constants/data';
 import { createIvaUser } from '../iva';
 
 const defaultLimit = 100;
@@ -58,6 +59,61 @@ export class UserService {
 
     return user;
   };
+
+  async getUsers(usersGetData: UsersGetData = {}): Promise<PaginatedResponse<UserView>> {
+    const {
+      page = 1,
+      limit = defaultLimit,
+      searchTerm,
+      sortDirection = SortOrder.Descending
+    } = usersGetData;
+
+    const containsSearchTerm = { contains: searchTerm, mode: 'insensitive' };
+
+    const where = {
+      where: {
+        ...(searchTerm && {
+          OR: [
+            { name: containsSearchTerm },
+            { username: containsSearchTerm },
+            { email: containsSearchTerm },
+            { tabelNumber: containsSearchTerm },
+            { phone: containsSearchTerm }
+          ]
+        })
+      }
+    };
+
+    // @ts-ignore
+    const totalCount = await prisma.user.count({ ...where });
+
+    // @ts-ignore
+    const users = await prisma.user.findMany({
+      ...where,
+      include: {
+        department: true,
+        organisation: true
+      },
+      skip: (page - 1) * limit,
+      take: limit,
+      orderBy: {
+        createdAt: sortDirection
+      }
+    });
+
+    return {
+      items: users.map(excludeFromUser),
+      pagination: {
+        total: totalCount,
+        pagesCount: Math.ceil(totalCount / limit),
+        currentPage: page,
+        perPage: limit,
+        from: (page - 1) * limit + 1,
+        to: (page - 1) * limit + users.length,
+        hasMore: page < Math.ceil(totalCount / limit)
+      }
+    };
+  }
 
   setNewStatus = async (id: string, status: UserStatus) => {
     const user = await this.prisma.user.findFirst({ where: { id } });
@@ -138,10 +194,14 @@ export const getUsers = async (
 
   const users = await prisma.user.findMany({
     ...where,
+    include: {
+      department: true,
+      organisation: true
+    },
     skip: (page - 1) * limit,
     take: limit,
     orderBy: {
-      createdAt: sortDirection as SortDirection
+      createdAt: sortDirection
     }
   });
 
@@ -188,20 +248,24 @@ export const createUser = async (userCreateData: UserCreateData): Promise<Client
     throw new ApiError(`Username: ${username} is already taken.`, 409);
   }
 
-  const isExistOrganisation = await prisma.organisation.findFirst({
-    where: { id: organisationId }
-  });
+  if (organisationId) {
+    const isExistOrganisation = await prisma.organisation.findFirst({
+      where: { id: organisationId }
+    });
 
-  if (!isExistOrganisation) {
-    throw new ApiError('Wrong organisation id', 409);
+    if (!isExistOrganisation) {
+      throw new ApiError('Wrong organisation id', 409);
+    }
   }
 
-  const isExistDepartment = await prisma.department.findFirst({
-    where: { id: departmentId }
-  });
+  if (departmentId) {
+    const isExistDepartment = await prisma.department.findFirst({
+      where: { id: departmentId }
+    });
 
-  if (!isExistDepartment) {
-    throw new ApiError('Wrong department id', 409);
+    if (!isExistDepartment) {
+      throw new ApiError('Wrong department id', 409);
+    }
   }
 
   const password = await generatePasswordAsync();
@@ -272,12 +336,16 @@ export const updateUser = async (
     }
     hashes.push(passwordHash);
     updateData.passwordHashes = hashes.join(',');
+
+    updateData.lastUpdatePasswordDate = new Date();
   }
   if (data.passwordHashes) {
   }
   if (data.phone) {
     updateData.phone = data.phone;
   }
+  if (data.role) {
+    updateData.role = data.role;
   if (data.role) {
     updateData.role = data.role;
   }

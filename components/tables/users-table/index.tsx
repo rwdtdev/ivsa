@@ -1,41 +1,44 @@
 'use client';
 
-import { DataTable } from '@/components/ui/data-table';
 import { fetchUsersTableColumnDefs } from './columns';
-import { UserTableView } from '@/types/composition';
 import React from 'react';
 import { useDataTable } from '@/hooks/use-data-table';
+import { PaginatedResponse } from '@/server/types';
+import { UserView } from '@/types/user';
+import { DataTable } from '@/components/data-table/data-table';
+import { ColumnDef } from '@tanstack/react-table';
 
 interface UsersTableProps {
-  usersPromise: any;
+  users: PaginatedResponse<UserView> | { items: []; pagination: { pagesCount: number } };
 }
 
-export function UsersTable({ usersPromise }: UsersTableProps) {
-  const { data, pageCount } = React.use(usersPromise);
+export function UsersTable({ users }: UsersTableProps) {
+  const { items, pagination } = users;
 
   const [isPending, startTransition] = React.useTransition();
 
-  const columns = React.useMemo<ColumnDef<UserTableView, unknown>[]>(
+  const columns = React.useMemo<ColumnDef<UserView, unknown>[]>(
     () => fetchUsersTableColumnDefs(isPending, startTransition),
     [isPending]
   );
 
+  console.log(items);
+
   const { dataTable } = useDataTable({
-    data,
+    data: items,
     columns,
-    pageCount
-    // searchableColumns,
-    // filterableColumns
+    pageCount: pagination.pagesCount
+    // searchableColumns: searchableColumns
+    // filterableColumns: []
   });
 
   return (
     <DataTable
       dataTable={dataTable}
       columns={columns}
-      searchableColumns={searchableColumns}
-      filterableColumns={filterableColumns}
-      floatingBarContent={TasksTableFloatingBarContent(dataTable)}
-      deleteRowsAction={(event) => deleteSelectedRows(dataTable, event)}
+      // filterableColumns={[]}
+      // floatingBarContent={TasksTableFloatingBarContent(dataTable)}
+      // deleteRowsAction={(event) => deleteSelectedRows(dataTable, event)}
     />
   );
 }

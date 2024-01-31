@@ -2,7 +2,7 @@
 
 import { getAllOrgnaisations } from '@/server/services/organisations';
 
-export async function getOrganisations() {
+export async function getOrganisationsAction() {
   try {
     return getAllOrgnaisations();
   } catch (err) {

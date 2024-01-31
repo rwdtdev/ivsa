@@ -1,9 +1,9 @@
-import { User } from '@prisma/client';
+import { Department, Organisation, User } from '@prisma/client';
 
-export type UserView = Omit<
-  User,
-  'password' | 'passwordHashes' | 'refreshToken' | 'lastUpdatePasswordDate'
->;
+export type UserView = Omit<User, 'password' | 'passwordHashes' | 'refreshToken'> & {
+  organisation?: Organisation;
+  department?: Department;
+};
 
 export type UserSession = Omit<
   User,

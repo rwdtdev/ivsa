@@ -2,11 +2,12 @@ import ApiError from '@/server/utils/error';
 import { TransactionSession } from '@/types/prisma';
 import { Prisma } from '@prisma/client';
 
-export const doTransaction = async (fn: Function) => {
-  await prisma.$transaction(
+export const doTransaction = async (fn: Function): Promise<any> => {
+  return await prisma.$transaction(
     async (session: TransactionSession) => {
       try {
-        await fn(session);
+        const result = await fn(session);
+        return result;
       } catch (err) {
         throw new ApiError(`Server Error: ${err}`, 500);
       }

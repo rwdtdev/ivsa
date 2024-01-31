@@ -28,12 +28,6 @@ export const sleep = (seconds: number) => {
   return new Promise<void>((resolve) => setTimeout(resolve, seconds * 1000));
 };
 
-// this is not perfect, should be called in all jest.config.js
-// jest imports with node, not ts-node
-export const isGithubActionsAppEnv = (): boolean => {
-  return process.env.APP_ENV === 'ci';
-};
-
 /**
  * Note: this might give wrong path in tests
  */
@@ -53,7 +47,7 @@ export const filterSearchTerm = (
     searchTerm &&
     searchTerm
       .trim()
-      .replace(/[^a-z0-9\s]+/gi, '') // remove special chars
+      // .replace(/[^a-z0-9\s]+/gi, '') // remove special chars
       .split(/\s+/)
       .join(joinBy)
   );

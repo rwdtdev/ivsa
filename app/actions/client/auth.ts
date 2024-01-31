@@ -1,4 +1,7 @@
-import { LoginFormData, LoginFormSchema } from '@/components/LoginForm/shema';
+import {
+  LoginFormData,
+  LoginFormSchema
+} from '@/lib/form-validation-schemas/login-form-schema';
 import { signIn } from 'next-auth/react';
 
 export async function authenticate(data: LoginFormData): Promise<boolean> {

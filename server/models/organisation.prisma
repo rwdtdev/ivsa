@@ -1,7 +1,0 @@
-model Organisation {
-    id          String @id @default(cuid())
-    name        String @unique
-    description String
-
-    @@map("organisations")
-}

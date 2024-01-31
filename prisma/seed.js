@@ -1,4 +1,4 @@
-const { PrismaClient } = require('@prisma/client');
+const { PrismaClient, UserStatus, UserRole } = require('@prisma/client');
 const { hashSync } = require('bcryptjs');
 const { lorem, phone } = require('@faker-js/faker').faker;
 const { loadEnvConfig } = require('@next/env');
@@ -41,8 +41,9 @@ const createUsers = (n, departmentId, organisationId) => {
       phone: phone.number(),
       password,
       passwordHashes: password,
-      roles: index === 0 ? 'admin' : 'user',
-      status: 'active',
+      tabelNumber: `${index}${index}${index}${index}-${index}${index}${index}${index}-${departmentId}`,
+      role: UserRole.USER,
+      status: UserStatus.ACTIVE,
       departmentId,
       organisationId
     }));
@@ -61,10 +62,7 @@ class SeedSingleton {
       const isInternalClient = !prisma;
       const prismaClient = isInternalClient ? new PrismaClient() : prisma;
 
-      SeedSingleton.instance = new SeedSingleton(
-        prismaClient,
-        isInternalClient
-      );
+      SeedSingleton.instance = new SeedSingleton(prismaClient, isInternalClient);
     }
     return SeedSingleton.instance;
   }
@@ -104,9 +102,7 @@ class SeedSingleton {
     console.log('Truncating tables ...');
 
     const truncatePromises = tables.map((table) =>
-      this.prisma.$queryRawUnsafe(
-        `TRUNCATE TABLE "${table}" RESTART IDENTITY CASCADE`
-      )
+      this.prisma.$queryRawUnsafe(`TRUNCATE TABLE "${table}" RESTART IDENTITY CASCADE`)
     );
     await this.prisma.$transaction(truncatePromises);
 
@@ -130,18 +126,13 @@ class SeedSingleton {
       });
       console.log(`Created organisation: ${createdOrganisation.name}`);
 
-      const departments = createDepartments(
-        numberOfDepartments,
-        createdOrganisation.id
-      );
+      const departments = createDepartments(numberOfDepartments, createdOrganisation.id);
 
       for (const department of departments) {
         const createdDepartment = await this.prisma.department.create({
           data: department
         });
-        console.log(
-          `Created organisation department: ${createdDepartment.name}`
-        );
+        console.log(`Created organisation department: ${createdDepartment.name}`);
 
         const users = createUsers(
           numberOfUsers,
@@ -165,8 +156,9 @@ class SeedSingleton {
           phone: phone.number(),
           password: adminPassword,
           passwordHashes: adminPassword,
-          roles: 'admin',
-          status: 'active',
+          role: UserRole.ADMIN,
+          tabelNumber: '1111-1111-111',
+          status: UserStatus.ACTIVE,
           departmentId: null,
           organisationId: null
         }

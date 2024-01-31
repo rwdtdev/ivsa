@@ -1,13 +1,12 @@
 import { z } from 'zod';
-import { UserRole } from '@/server/services/user-roles/UserRole';
-import { UserStatus } from '@/server/services/users/types';
+import { UserRole, UserStatus } from '@prisma/client';
 
 export const CreateUserSchema = z.object({
   name: z.string().min(1),
   username: z.string().min(1),
   phone: z.string().min(1),
   email: z.string().min(1).email(),
-  status: z.enum([UserStatus.Active, UserStatus.Blocked]),
+  status: z.enum([UserStatus.ACTIVE, UserStatus.BLOCKED, UserStatus.RECUSED]),
   departmentId: z.string().min(1),
-  roles: z.enum([UserRole.Admin, UserRole.User]).array()
+  role: z.enum([UserRole.ADMIN, UserRole.USER])
 });

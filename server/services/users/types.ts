@@ -1,25 +1,30 @@
+import { SortOrder } from '@/constants/data';
 import { RequiredNotNull } from '@/server/types';
-import { User } from '@prisma/client';
-import { SortDirection } from 'powerbi-models';
-import { UserRole } from '../user-roles/UserRole';
-
-export enum UserStatus {
-  Active = 'active',
-  Blocked = 'blocked'
-}
+import { User, UserRole } from '@prisma/client';
 
 export type ClientUser = Omit<User, 'password'>;
 
 export type UserCreateData = RequiredNotNull<
-  Omit<User, 'id' | 'createdAt' | 'updatedAt' | 'roles' | 'passwordHashes'> & {
-    roles: UserRole[];
-  }
-> &
-  Pick<User, 'departmentId'>;
+  Omit<
+    User,
+    | 'id'
+    | 'createdAt'
+    | 'updatedAt'
+    | 'password'
+    | 'passwordHashes'
+    | 'refreshToken'
+    | 'lastUpdatePasswordDate'
+    | 'organisationId'
+    | 'departmentId'
+  >
+> & {
+  departmentId?: string;
+  organisationId?: string;
+};
 
 export type UserUpdateData = Partial<
-  Omit<User, 'id' | 'createdAt' | 'updatedAt' | 'roles' | 'passwordHashes'> & {
-    roles: UserRole[];
+  Omit<User, 'id' | 'createdAt' | 'updatedAt' | 'role' | 'passwordHashes'> & {
+    role: UserRole;
     passwordHashes: string[];
   }
 >;
@@ -28,7 +33,7 @@ export type UsersGetData = Partial<{
   page: number;
   limit: number;
   searchTerm: string;
-  sortDirection: SortDirection;
+  sortDirection: SortOrder;
 }>;
 
 export type UserGetData = Partial<{

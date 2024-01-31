@@ -1,17 +1,15 @@
-import bcrypt from 'bcrypt';
+import bcrypt from 'bcryptjs';
 import prisma from '@/server/services/prisma';
-import {
-  ClientUser,
-  UserCreateData,
-  UserUpdateData,
-  UsersGetData
-} from './types';
-import { PaginatedResponse, SortDirection } from '@/server/types';
-import { filterSearchTerm } from '@/server/utils';
 import ApiError from '@/server/utils/error';
+import { ClientUser, UserCreateData, UserUpdateData, UsersGetData } from './types';
+import { PaginatedResponse } from '@/server/types';
+import { filterSearchTerm } from '@/server/utils';
 import { generatePasswordAsync } from '@/server/utils/password-generator';
-import { UserCredentials } from '@/app/types';
-import { User } from '@prisma/client';
+import { PrismaClient, User, UserStatus } from '@prisma/client';
+import { exclude } from '@/server/utils/exclude';
+import { UserView } from '@/types/user';
+import { TransactionSession } from '@/types/prisma';
+import { SortOrder } from '@/constants/data';
 
 const defaultLimit = 100;
 
@@ -20,38 +18,115 @@ type GetUserParams = {
   username: string;
 };
 
-const WrongCredentialsError = new ApiError('Wrong credentials!', 401);
-const FailedLoginError = new ApiError('Failed to login', 500);
 const UserNotFoundError = new ApiError('User is not found', 404);
 
-export const login = async (
-  credentials: UserCredentials
-): Promise<ClientUser> => {
-  if (!credentials) throw WrongCredentialsError;
+export class UserService {
+  private prisma: PrismaClient | TransactionSession;
 
-  try {
-    const user = await prisma.user.findFirst({
+  constructor(transactionSession?: TransactionSession) {
+    this.prisma = transactionSession ?? prisma;
+  }
+
+  static withSession(session: TransactionSession) {
+    return new this(session);
+  }
+
+  assertExist = async (id: string): Promise<void> => {
+    const count = await this.prisma.user.count({ where: { id } });
+
+    if (!count || count === 0) {
+      throw new ApiError(`User with id (${id}) not found`, 404);
+    }
+  };
+
+  async getUserById(id: string) {
+    const user = await this.prisma.user.findFirst({ where: { id } });
+
+    if (!user) {
+      throw new ApiError(`User with id (${id}) not found`, 404);
+    }
+
+    return user;
+  }
+
+  getUserBy = async (query: Partial<ClientUser>): Promise<ClientUser | null> => {
+    const user = await this.prisma.user.findFirst({
+      where: query
+    });
+
+    if (!user) throw UserNotFoundError;
+
+    return user;
+  };
+
+  async getUsers(usersGetData: UsersGetData = {}): Promise<PaginatedResponse<UserView>> {
+    const {
+      page = 1,
+      limit = defaultLimit,
+      searchTerm,
+      sortDirection = SortOrder.Descending
+    } = usersGetData;
+
+    const containsSearchTerm = { contains: searchTerm, mode: 'insensitive' };
+
+    const where = {
       where: {
-        username: credentials.username
+        ...(searchTerm && {
+          OR: [
+            { name: containsSearchTerm },
+            { username: containsSearchTerm },
+            { email: containsSearchTerm },
+            { tabelNumber: containsSearchTerm },
+            { phone: containsSearchTerm }
+          ]
+        })
+      }
+    };
+
+    // @ts-ignore
+    const totalCount = await prisma.user.count({ ...where });
+
+    // @ts-ignore
+    const users = await prisma.user.findMany({
+      ...where,
+      include: {
+        department: true,
+        organisation: true
+      },
+      skip: (page - 1) * limit,
+      take: limit,
+      orderBy: {
+        createdAt: sortDirection
       }
     });
 
-    if (!user) throw WrongCredentialsError;
-
-    const isPasswordCorrect = await bcrypt.compare(
-      credentials.password,
-      user.password
-    );
-
-    if (!isPasswordCorrect) throw WrongCredentialsError;
-
-    user.password = '';
-    return user;
-  } catch (err) {
-    console.debug(err);
-    throw FailedLoginError;
+    return {
+      items: users.map(excludeFromUser),
+      pagination: {
+        total: totalCount,
+        pagesCount: Math.ceil(totalCount / limit),
+        currentPage: page,
+        perPage: limit,
+        from: (page - 1) * limit + 1,
+        to: (page - 1) * limit + users.length,
+        hasMore: page < Math.ceil(totalCount / limit)
+      }
+    };
   }
-};
+
+  setNewStatus = async (id: string, status: UserStatus) => {
+    const user = await this.prisma.user.findFirst({ where: { id } });
+
+    if (!user) {
+      throw new ApiError(`User with id (${id}) not found`, 404);
+    }
+
+    await this.prisma.user.update({
+      where: { id },
+      data: { status }
+    });
+  };
+}
 
 export const getUserBy = async ({
   password,
@@ -91,7 +166,7 @@ export const getUserByUsername = async (username: string): Promise<User> => {
 
 export const getUsers = async (
   usersGetData: UsersGetData = {}
-): Promise<PaginatedResponse<ClientUser>> => {
+): Promise<PaginatedResponse<UserView>> => {
   const {
     page = 1,
     limit = defaultLimit,
@@ -107,7 +182,8 @@ export const getUsers = async (
         OR: [
           { name: { search } },
           { username: { search } },
-          { email: { search } }
+          { email: { search } },
+          { tabelNumber: { search } }
         ]
       })
     }
@@ -117,15 +193,19 @@ export const getUsers = async (
 
   const users = await prisma.user.findMany({
     ...where,
+    include: {
+      department: true,
+      organisation: true
+    },
     skip: (page - 1) * limit,
     take: limit,
     orderBy: {
-      createdAt: sortDirection as SortDirection
+      createdAt: sortDirection
     }
   });
 
   return {
-    items: users,
+    items: users.map(excludeFromUser),
     pagination: {
       total: totalCount,
       pagesCount: Math.ceil(totalCount / limit),
@@ -138,9 +218,7 @@ export const getUsers = async (
   };
 };
 
-export const createUser = async (
-  userCreateData: UserCreateData
-): Promise<ClientUser> => {
+export const createUser = async (userCreateData: UserCreateData): Promise<ClientUser> => {
   const {
     name,
     username,
@@ -148,8 +226,9 @@ export const createUser = async (
     phone,
     departmentId,
     organisationId,
-    roles,
-    status
+    role,
+    status,
+    tabelNumber
   } = userCreateData;
 
   const isExistWithEmail = await prisma.user.findFirst({
@@ -168,20 +247,24 @@ export const createUser = async (
     throw new ApiError(`Username: ${username} is already taken.`, 409);
   }
 
-  const isExistOrganisation = await prisma.organisation.findFirst({
-    where: { id: organisationId }
-  });
+  if (organisationId) {
+    const isExistOrganisation = await prisma.organisation.findFirst({
+      where: { id: organisationId }
+    });
 
-  if (!isExistOrganisation) {
-    throw new ApiError('Wrong organisation id', 409);
+    if (!isExistOrganisation) {
+      throw new ApiError('Wrong organisation id', 409);
+    }
   }
 
-  const isExistDepartment = await prisma.department.findFirst({
-    where: { id: departmentId }
-  });
+  if (departmentId) {
+    const isExistDepartment = await prisma.department.findFirst({
+      where: { id: departmentId }
+    });
 
-  if (!isExistDepartment) {
-    throw new ApiError('Wrong department id', 409);
+    if (!isExistDepartment) {
+      throw new ApiError('Wrong department id', 409);
+    }
   }
 
   const password = await generatePasswordAsync();
@@ -197,7 +280,8 @@ export const createUser = async (
       status,
       departmentId,
       organisationId,
-      roles: roles.join(','),
+      role,
+      tabelNumber,
       password: passwordHash,
       passwordHashes: passwordHash
     }
@@ -240,20 +324,25 @@ export const updateUser = async (
     }
     hashes.push(passwordHash);
     updateData.passwordHashes = hashes.join(',');
+
+    updateData.lastUpdatePasswordDate = new Date();
   }
   if (data.passwordHashes) {
   }
   if (data.phone) {
     updateData.phone = data.phone;
   }
-  if (data.roles) {
-    updateData.roles = data.roles.join(',');
+  if (data.role) {
+    updateData.role = data.role;
   }
   if (data.status) {
     updateData.status = data.status;
   }
   if (data.username) {
     updateData.username = data.username;
+  }
+  if (data.tabelNumber) {
+    updateData.tabelNumber = data.tabelNumber;
   }
   if (data.name) {
     updateData.name = data.name;
@@ -274,3 +363,18 @@ export const updateUser = async (
 
   return user;
 };
+
+export const deleteUser = async (id: string) => {
+  const user = await prisma.user.findFirst({
+    where: { id }
+  });
+
+  if (!user) {
+    throw new ApiError(`User with id (${id}) not found`, 404);
+  }
+
+  await prisma.user.delete({ where: { id } });
+};
+
+export const excludeFromUser = (user: User) =>
+  exclude(user, 'password', 'passwordHashes');

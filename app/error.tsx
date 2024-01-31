@@ -25,9 +25,7 @@ export default function Error({ error }: ClientError) {
             size={60}
             className='drop-shadow-glow animate-flicker text-red-500'
           />
-          <h1 className='mt-8 text-4xl md:text-6xl'>
-            Oops, something went wrong!
-          </h1>
+          <h1 className='mt-8 text-4xl md:text-6xl'>Oops, something went wrong!</h1>
         </div>
       </section>
     </main>

@@ -151,6 +151,22 @@ enum UserRole {
   ADMIN
   /// Пользователь
   USER
+  /// Председатель
+  CHAIRMAN
+  /// Участник комиссии
+  PARTICIPANT
+  /// Материально-ответственное лицо
+  FINANCIALLY_RESPONSIBLE_PERSON
+  /// Бухгалтер
+  ACCOUNTANT
+  /// Проверяющий
+  INSPECTOR
+  /// Руководитель
+  MANAGER
+  /// Акцепт-бухгалтер
+  ACCOUNTANT_ACCEPTOR
+  /// Оператор-технолог
+  ENGINEER
 }
 
 enum EventType {

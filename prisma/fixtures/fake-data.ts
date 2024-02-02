@@ -47,7 +47,18 @@ export function fakeUser() {
     phone: `+7${faker.phone.number()}`,
     password: faker.lorem.words(5),
     passwordHashes: faker.lorem.words(5),
-    role: faker.helpers.arrayElement([UserRole.ADMIN, UserRole.USER] as const),
+    role: faker.helpers.arrayElement([
+      UserRole.ADMIN,
+      UserRole.USER,
+      UserRole.CHAIRMAN,
+      UserRole.PARTICIPANT,
+      UserRole.FINANCIALLY_RESPONSIBLE_PERSON,
+      UserRole.ACCOUNTANT,
+      UserRole.INSPECTOR,
+      UserRole.MANAGER,
+      UserRole.ACCOUNTANT_ACCEPTOR,
+      UserRole.ENGINEER
+    ] as const),
     status: faker.helpers.arrayElement([
       UserStatus.ACTIVE,
       UserStatus.BLOCKED,

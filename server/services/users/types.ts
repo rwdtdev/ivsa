@@ -39,6 +39,7 @@ export type UsersGetData = Partial<{
   limit: number;
   searchTerm: string;
   sortDirection: SortOrder;
+  query: Record<string, string>;
 }>;
 
 export type UserGetData = Partial<{

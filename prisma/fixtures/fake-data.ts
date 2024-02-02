@@ -1,5 +1,6 @@
+import * as moment from 'moment';
 import { UserStatus, UserRole, EventType } from '@prisma/client';
-import { fakerRU as faker, fi } from '@faker-js/faker';
+import { fakerRU as faker } from '@faker-js/faker';
 import { random } from 'underscore';
 import { transliterate as tr } from 'transliteration';
 
@@ -54,24 +55,26 @@ export function fakeUser() {
     ] as const),
     updatedAt: faker.date.anytime(),
     tabelNumber: faker.string.numeric(8),
-    ivaProfileId: undefined,
-    refreshToken: undefined
+    ivaProfileId: faker.string.uuid(),
+    refreshToken: null
   };
 }
 
 export function fakeEvent() {
+  const date = moment(faker.date.anytime());
+
   return {
     type: faker.helpers.arrayElement([EventType.AUDIT, EventType.BRIEFING] as const),
-    commandId: faker.lorem.words(5),
-    commandNumber: faker.lorem.words(5),
-    commandDate: faker.lorem.words(5),
-    orderId: faker.lorem.words(5),
-    orderNumber: faker.lorem.words(5),
-    orderDate: faker.lorem.words(5),
-    startAt: faker.date.anytime(),
-    endAt: faker.date.anytime(),
-    balanceUnit: faker.lorem.words(5),
-    balanceUnitRegionCode: faker.lorem.words(5),
+    commandId: faker.string.uuid(),
+    commandNumber: faker.string.numeric(3),
+    commandDate: moment(faker.date.anytime()).format('DD-MM-YYYY'),
+    orderId: faker.string.uuid(),
+    orderNumber: faker.string.numeric(2),
+    orderDate: moment(faker.date.anytime()).format('DD-MM-YYYY'),
+    startAt: date.toISOString(),
+    endAt: date.add({ year: 1 }).toISOString(),
+    balanceUnit: faker.string.nanoid(5),
+    balanceUnitRegionCode: faker.string.numeric(2),
     updatedAt: faker.date.anytime()
   };
 }

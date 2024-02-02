@@ -1,7 +1,14 @@
 const { PrismaClient, UserRole, UserStatus } = require('@prisma/client');
 const { hashSync } = require('bcryptjs');
 const { loadEnvConfig } = require('@next/env');
-const { fakeUser, fakeOrganisation, fakeDepartment } = require('./fixtures/fake-data');
+const {
+  fakeUser,
+  fakeOrganisation,
+  fakeDepartment,
+  fakeEvent
+} = require('./fixtures/fake-data');
+const { random } = require('underscore');
+const { log } = require('console');
 
 // load process.env.DATABASE_URL from .env.local
 loadEnvConfig(process.cwd());
@@ -11,6 +18,7 @@ const password = hashSync('123456', 10);
 const numberOfOrganisations = 2;
 const numberOfDepartments = 2;
 const numberOfUsers = 5;
+const numberOfEvents = 10;
 
 const createOrganisations = (n) =>
   Array.from(Array(n).keys())
@@ -32,6 +40,29 @@ const createUsers = (n, departmentId, organisationId) =>
       password,
       passwordHashes: password
     }));
+
+const createEvents = (users) => {
+  let counter = 0;
+  const events = [];
+
+  while (counter <= users.length / 2) {
+    const firstUser = users[random(users.length - 1)];
+    const anotherUser = users[random(users.length - 1)];
+
+    if (firstUser.id !== anotherUser.id) {
+      const userIds = [firstUser, anotherUser].map(({ id }) => ({ id }));
+      events.push({ ...fakeEvent(), participants: { connect: userIds } });
+    }
+
+    counter++;
+  }
+
+  events.push({ ...fakeEvent() });
+  events.push({ ...fakeEvent() });
+  events.push({ ...fakeEvent() });
+
+  return events;
+};
 
 class SeedSingleton {
   constructor(prisma, isInternalClient) {
@@ -81,7 +112,7 @@ class SeedSingleton {
   }
 
   async truncateAllTables() {
-    const tables = ['users', 'departments', 'organisations'];
+    const tables = ['users', 'departments', 'organisations', 'events'];
 
     console.log('Truncating tables ...');
 
@@ -98,6 +129,8 @@ class SeedSingleton {
   async seed() {
     console.log('Start seeding ...');
     console.log('DATABASE_URL:', process.env.DATABASE_URL, '\n');
+
+    const createdUsers = [];
 
     // await this.deleteAllTables();
     await this.truncateAllTables();
@@ -126,6 +159,7 @@ class SeedSingleton {
 
         for (const user of users) {
           const createdUser = await this.prisma.user.create({ data: user });
+          createdUsers.push(createdUser);
           console.log(`Created department user: ${createdUser.name}`);
         }
       }
@@ -147,6 +181,22 @@ class SeedSingleton {
         organisationId: null
       }
     });
+    console.log('Created Admin');
+
+    // Create events
+    const events = createEvents(createdUsers);
+
+    for (const event of events) {
+      const createdEvent = await this.prisma.event.create({
+        data: event,
+        include: {
+          participants: true
+        }
+      });
+      console.log(
+        `Created event: ${createdEvent.id}, withParticipants: ${!!createdEvent.participants.length}`
+      );
+    }
 
     console.log('Seeding finished.');
   }

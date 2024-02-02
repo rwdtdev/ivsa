@@ -131,6 +131,8 @@ model Event {
   createdAt             DateTime  @default(now())
   /// Дата и время модификации записи
   updatedAt             DateTime  @updatedAt
+  /// URL видео файла инвентаризации
+  videoFileUrl          String?
 
   @@map("events")
 }

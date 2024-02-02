@@ -42,6 +42,11 @@ interface DataTableProps<TData, TValue> {
    */
   searchableColumns?: DataTableSearchableColumn<TData>[];
 
+  // Add global search input, fields controlled by backend
+  withSearch?: boolean;
+
+  datePickers?: Array<Record<string, string>>;
+
   /**
    * The filterable columns of the table. When provided, renders dynamic faceted filters, and the advancedFilter prop is ignored.
    * @default []
@@ -80,6 +85,8 @@ export function DataTable<TData, TValue>({
   columns,
   searchableColumns = [],
   filterableColumns = [],
+  datePickers = [],
+  withSearch = false,
   advancedFilter = false,
   floatingBarContent,
   deleteRowsAction
@@ -95,6 +102,8 @@ export function DataTable<TData, TValue>({
       ) : (
         <DataTableToolbar
           table={dataTable}
+          withSearch={withSearch}
+          datePickers={datePickers}
           filterableColumns={filterableColumns}
           searchableColumns={searchableColumns}
           deleteRowsAction={deleteRowsAction}
@@ -122,7 +131,15 @@ export function DataTable<TData, TValue>({
               dataTable.getRowModel().rows.map((row) => (
                 <TableRow key={row.id} data-state={row.getIsSelected() && 'selected'}>
                   {row.getVisibleCells().map((cell) => (
-                    <TableCell key={cell.id}>
+                    <TableCell
+                      key={cell.id}
+                      style={{
+                        width:
+                          cell.column.getSize() === Number.MAX_SAFE_INTEGER
+                            ? 'auto'
+                            : cell.column.getSize()
+                      }}
+                    >
                       {flexRender(cell.column.columnDef.cell, cell.getContext())}
                     </TableCell>
                   ))}

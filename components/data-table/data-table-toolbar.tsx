@@ -13,11 +13,15 @@ import { DataTableFacetedFilter } from '@/components/data-table/data-table-facet
 import { DataTableViewOptions } from '@/components/data-table/data-table-view-options';
 import { useSearchParams, usePathname, useRouter } from 'next/navigation';
 import { useDebounce } from '@/hooks/use-debounce';
+import { DatePickerWithRange } from '../date-picker-range';
+import { TypographyP } from '../ui/typography/p';
 
 interface DataTableToolbarProps<TData> {
   table: Table<TData>;
   filterableColumns?: DataTableFilterableColumn<TData>[];
   searchableColumns?: DataTableSearchableColumn<TData>[];
+  datePickers?: any;
+  withSearch?: boolean;
   newRowLink?: string;
   deleteRowsAction?: React.MouseEventHandler<HTMLButtonElement>;
 }
@@ -25,6 +29,8 @@ interface DataTableToolbarProps<TData> {
 export function DataTableToolbar<TData>({
   table,
   filterableColumns = [],
+  datePickers = [],
+  withSearch = false,
   newRowLink,
   deleteRowsAction
 }: DataTableToolbarProps<TData>) {
@@ -87,22 +93,24 @@ export function DataTableToolbar<TData>({
   return (
     <div className='flex w-full items-center justify-between space-x-2 overflow-auto'>
       <div className='flex flex-1 items-center space-x-2'>
-        <Input
-          placeholder={`Поиск...`}
-          value={query}
-          onChange={(event) => {
-            const value = event?.target.value;
+        {withSearch && (
+          <Input
+            placeholder={`Поиск...`}
+            value={query}
+            onChange={(event) => {
+              const value = event?.target.value;
 
-            if (value === '') {
-              setQuery('');
-              setFiltered(false);
-            } else {
-              setQuery(value);
-              setFiltered(true);
-            }
-          }}
-          className='h-8 w-[150px] focus:border-2 focus:border-black lg:w-[250px]'
-        />
+              if (value === '') {
+                setQuery('');
+                setFiltered(false);
+              } else {
+                setQuery(value);
+                setFiltered(true);
+              }
+            }}
+            className='h-8 w-[150px] focus:border-2 focus:border-black lg:w-[250px]'
+          />
+        )}
         {filterableColumns.length > 0 &&
           filterableColumns.map(
             (column) =>
@@ -114,6 +122,17 @@ export function DataTableToolbar<TData>({
                   options={column.options}
                 />
               )
+          )}
+        {datePickers.length > 0 &&
+          datePickers.map((datepicker, idx) =>
+            datepicker.type === 'range' ? (
+              <div key={idx} className='flex flex-row items-center'>
+                <TypographyP className='pr-2'>{datepicker.title}:</TypographyP>
+                <DatePickerWithRange />
+              </div>
+            ) : (
+              <div></div>
+            )
           )}
         {isFiltered && (
           <Button

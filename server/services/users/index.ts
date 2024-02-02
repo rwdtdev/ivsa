@@ -1,3 +1,4 @@
+import _ from 'underscore';
 import bcrypt from 'bcryptjs';
 import prisma from '@/server/services/prisma';
 import ApiError from '@/server/utils/error';
@@ -65,10 +66,28 @@ export class UserService {
       page = 1,
       limit = defaultLimit,
       searchTerm,
-      sortDirection = SortOrder.Descending
+      sortDirection = SortOrder.Descending,
+      query
     } = usersGetData;
 
     const containsSearchTerm = { contains: searchTerm, mode: 'insensitive' };
+
+    const conditions = [];
+
+    if (query) {
+      if (query.roles) {
+        conditions.push({ role: { in: query.roles } });
+      }
+      if (query.statuses) {
+        conditions.push({ status: { in: query.statuses } });
+      }
+      if (query.organisationsIds) {
+        conditions.push({ organisationId: { in: query.organisationsIds } });
+      }
+      if (query.departmentsIds) {
+        conditions.push({ departmentId: { in: query.departmentsIds } });
+      }
+    }
 
     const where = {
       where: {
@@ -80,7 +99,8 @@ export class UserService {
             { tabelNumber: containsSearchTerm },
             { phone: containsSearchTerm }
           ]
-        })
+        }),
+        ...(conditions.length > 0 && { AND: conditions })
       }
     };
 

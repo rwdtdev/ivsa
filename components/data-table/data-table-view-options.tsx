@@ -11,13 +11,20 @@ import {
   DropdownMenuLabel,
   DropdownMenuSeparator
 } from '@/components/ui/dropdown-menu';
-import { UsersTableColumnNames } from '@/constants/mappings/tables-column-names';
+import {
+  EventsTableColumnNames,
+  UsersTableColumnNames
+} from '@/constants/mappings/tables-column-names';
 
 interface DataTableViewOptionsProps<TData> {
   table: Table<TData>;
+  columnNames: typeof UsersTableColumnNames | typeof EventsTableColumnNames;
 }
 
-export function DataTableViewOptions<TData>({ table }: DataTableViewOptionsProps<TData>) {
+export function DataTableViewOptions<TData>({
+  table,
+  columnNames
+}: DataTableViewOptionsProps<TData>) {
   return (
     <DropdownMenu>
       <DropdownMenuTrigger asChild>
@@ -31,7 +38,7 @@ export function DataTableViewOptions<TData>({ table }: DataTableViewOptionsProps
           Столбцы
         </Button>
       </DropdownMenuTrigger>
-      <DropdownMenuContent align='end' className='w-[200px]'>
+      <DropdownMenuContent align='end' className='w-[240px]'>
         <DropdownMenuLabel>Видимость столбцов</DropdownMenuLabel>
         <DropdownMenuSeparator />
         {table
@@ -47,7 +54,7 @@ export function DataTableViewOptions<TData>({ table }: DataTableViewOptionsProps
                 checked={column.getIsVisible()}
                 onCheckedChange={(value) => column.toggleVisibility(!!value)}
               >
-                {UsersTableColumnNames[column.id as keyof typeof UsersTableColumnNames]}
+                {columnNames[column.id as keyof typeof columnNames]}
               </DropdownMenuCheckboxItem>
             );
           })}

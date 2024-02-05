@@ -6,6 +6,7 @@ import { EventView, EventsGetData } from './types';
 import { PaginatedResponse } from '@/server/types';
 import { exclude } from '@/server/utils/exclude';
 import moment from 'moment';
+import { DATETIME_FORMAT, DATE_FORMAT } from '@/constants/date';
 
 const defaultLimit = 100;
 
@@ -49,14 +50,7 @@ export class EventService {
       query
     } = eventsGetData;
 
-    console.log(query);
-    console.log({
-      where: {
-        ...(query && query.from && { startAt: { gte: new Date(query.from) } }),
-        ...(query && query.to && { endAt: { lte: new Date(query?.to) } }),
-        type: query?.type
-      }
-    });
+    console.log('QUERY: ', query);
 
     const where = {
       where: {
@@ -69,9 +63,11 @@ export class EventService {
     // @ts-ignore
     const totalCount = await prisma.event.count({ ...where });
 
+    console.log('COUNT: ', totalCount);
+
     // @ts-ignore
     const events = await prisma.event.findMany({
-      // ...where,
+      ...where,
       include: {
         participants: {
           include: {
@@ -90,8 +86,10 @@ export class EventService {
     return {
       items: events.map((event) => ({
         ...event,
-        startAt: moment(event.startAt).toISOString(),
-        endAt: moment(event.endAt).toISOString()
+        startAt: moment(event.startAt).format(DATETIME_FORMAT),
+        endAt: moment(event.endAt).format(DATETIME_FORMAT),
+        commandDate: moment(event.commandDate).format(DATE_FORMAT),
+        orderDate: moment(event.orderDate).format(DATE_FORMAT)
       })),
       pagination: {
         total: totalCount,

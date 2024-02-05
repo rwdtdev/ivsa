@@ -45,6 +45,9 @@ interface DataTableProps<TData, TValue> {
   // Add global search input, fields controlled by backend
   withSearch?: boolean;
 
+  // Object-mapper column.id - hide column name
+  columnNames: Record<string, string>;
+
   datePickers?: Array<Record<string, string>>;
 
   /**
@@ -85,6 +88,7 @@ export function DataTable<TData, TValue>({
   columns,
   searchableColumns = [],
   filterableColumns = [],
+  columnNames = {},
   datePickers = [],
   withSearch = false,
   advancedFilter = false,
@@ -104,6 +108,7 @@ export function DataTable<TData, TValue>({
           table={dataTable}
           withSearch={withSearch}
           datePickers={datePickers}
+          columnNames={columnNames}
           filterableColumns={filterableColumns}
           searchableColumns={searchableColumns}
           deleteRowsAction={deleteRowsAction}

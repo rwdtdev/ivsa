@@ -3,6 +3,7 @@ import { UserStatus, UserRole, EventType } from '@prisma/client';
 import { fakerRU as faker } from '@faker-js/faker';
 import { random } from 'underscore';
 import { transliterate as tr } from 'transliteration';
+import { DATE_FORMAT } from '../../constants/date';
 
 export function fakeOrganisation() {
   return {
@@ -78,10 +79,10 @@ export function fakeEvent() {
     type: faker.helpers.arrayElement([EventType.AUDIT, EventType.BRIEFING] as const),
     commandId: faker.string.uuid(),
     commandNumber: faker.string.numeric(3),
-    commandDate: moment(faker.date.anytime()).format('DD-MM-YYYY'),
+    commandDate: moment(faker.date.anytime()).toISOString(),
     orderId: faker.string.uuid(),
     orderNumber: faker.string.numeric(2),
-    orderDate: moment(faker.date.anytime()).format('DD-MM-YYYY'),
+    orderDate: moment(faker.date.anytime()).toISOString(),
     startAt: date.toISOString(),
     endAt: date.add({ year: 1 }).toISOString(),
     balanceUnit: faker.string.nanoid(5),

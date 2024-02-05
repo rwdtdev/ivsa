@@ -1,6 +1,7 @@
 'use client';
 
 import * as React from 'react';
+import moment from 'moment';
 import _ from 'underscore';
 import { addDays, format } from 'date-fns';
 import { ru } from 'date-fns/locale';
@@ -37,19 +38,36 @@ export function DatePickerWithRange({ className }: React.HTMLAttributes<HTMLDivE
     [searchParams]
   );
 
-  React.useEffect(() => {
-    router.push(
-      `${pathname}?${createQueryString({
-        ...(date && date.from && { from: date.from.toISOString() }),
-        ...(date && date.to && { to: date.to.toISOString() })
-      })}`,
-      {
-        scroll: false
-      }
-    );
+  let qs = '';
+  if (date && !_.isEmpty(date)) {
+    let dates = {};
+    if (date.from) {
+      dates.from = moment(date.from).toISOString();
+    }
+    if (date.to) {
+      dates.to = moment(date.to).toISOString();
+    }
+    qs = createQueryString(dates);
+  }
 
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, []);
+  if (qs.length > 0) {
+    router.push(`${pathname}?${qs}`, { scroll: false });
+  }
+
+  // React.useEffect(() => {
+  //   const dateObj = {};
+
+  //   if (date) {
+  //     if (date.from) dateObj.from = moment(date.from).toISOString();
+  //     if (date.to) dateObj.to = moment(date.to).toISOString();
+  //   }
+
+  //   const qs = !_.isEmpty(dateObj) ? createQueryString(dateObj) : '';
+
+  //   router.push(`${pathname}?${qs}`, { scroll: false });
+
+  //   // eslint-disable-next-line react-hooks/exhaustive-deps
+  // }, []);
 
   return (
     <div className={cn('grid gap-2', className)}>
@@ -68,11 +86,11 @@ export function DatePickerWithRange({ className }: React.HTMLAttributes<HTMLDivE
             {date?.from ? (
               date.to ? (
                 <>
-                  {format(date.from, 'dd.mm.yyyy', { locale: ru })} -{' '}
-                  {format(date.to, 'dd.mm.yyyy', { locale: ru })}
+                  {moment(date.from).locale('ru').format('DD.MM.YYYY')} -{' '}
+                  {moment(date.to).locale('ru').format('DD.MM.YYYY')}
                 </>
               ) : (
-                format(date.from, 'dd.mm.yyyy', { locale: ru })
+                moment(date.from).locale('ru').format('DD.MM.YYYY')
               )
             ) : (
               <span>Выбрать</span>

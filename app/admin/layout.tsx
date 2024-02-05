@@ -4,7 +4,7 @@ import Header from '@/components/layout/header';
 import Sidebar from '@/components/layout/sidebar';
 
 export const metadata: Metadata = {
-  title: 'ASVI Администрирование',
+  title: 'Администрирование',
   description: 'Панель управления'
 };
 

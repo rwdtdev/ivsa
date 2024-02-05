@@ -15,10 +15,16 @@ export const navItems: NavItem[] = [
     label: 'user'
   },
   {
-    title: 'Архив видеоинвентаризаций',
-    href: '/admin/events/audit',
+    title: 'Архив инвентаризаций',
+    href: '/admin/events?type=audit',
     icon: 'archive',
     label: 'audit-events'
+  },
+  {
+    title: 'Архив инструктажей',
+    href: '/admin/events?type=briefing',
+    icon: 'archive',
+    label: 'briefing-events'
   }
 ];
 

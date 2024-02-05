@@ -53,7 +53,7 @@ export const UserForm: React.FC<UserFormProps> = ({
   const title = initialData ? 'Редактирование пользователя' : 'Добавление пользователя';
   const description = initialData
     ? 'Изменить данные пользователя.'
-    : 'Добавить нового пользователя в систему ASVI';
+    : 'Добавить нового пользователя в систему';
   const toastMessage = initialData
     ? 'Данные пользователя обновлены.'
     : 'Пользователь добавлен.';
@@ -93,18 +93,6 @@ export const UserForm: React.FC<UserFormProps> = ({
     }
   }, [initialData]);
 
-  const serializeDataForDB = (data: UserFormData) => {
-    const enumFields = ['roles', 'status'];
-
-    for (let key in data) {
-      if (typeof key === 'string' && !enumFields.includes(key)) {
-        data[key] = data[key].trim();
-      }
-    }
-
-    return data;
-  };
-
   const onSubmit = async (data: UserFormData) => {
     try {
       const pathnameChunks = pathname.split('/');
@@ -138,39 +126,10 @@ export const UserForm: React.FC<UserFormProps> = ({
     }
   };
 
-  const onDelete = async () => {
-    try {
-      setLoading(true);
-      //   await axios.delete(`/api/${params.storeId}/products/${params.productId}`);
-      router.refresh();
-      router.push(`/${params.storeId}/products`);
-    } catch (error: any) {
-    } finally {
-      setLoading(false);
-      setOpen(false);
-    }
-  };
-
   return (
     <>
-      {/* <AlertModal
-        isOpen={open}
-        onClose={() => setOpen(false)}
-        onConfirm={onDelete}
-        loading={loading}
-      /> */}
       <div className='flex items-center justify-between'>
         <Heading title={title} description={description} />
-        {/* {initialData && (
-          <Button
-            disabled={loading}
-            variant='destructive'
-            size='sm'
-            onClick={() => setOpen(true)}
-          >
-            <Trash className='h-4 w-4' />
-          </Button>
-        )} */}
       </div>
       <Separator />
       <Form {...form}>
@@ -286,9 +245,9 @@ export const UserForm: React.FC<UserFormProps> = ({
                       </SelectTrigger>
                     </FormControl>
                     <SelectContent>
-                      {[UserRole.ADMIN, UserRole.USER].map((role, idx) => (
+                      {Object.keys(UserRole).map((role, idx) => (
                         <SelectItem key={idx} value={role}>
-                          {UserRoles[role]}
+                          {UserRoles[role as keyof typeof UserRole]}
                         </SelectItem>
                       ))}
                     </SelectContent>

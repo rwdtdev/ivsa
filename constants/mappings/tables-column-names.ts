@@ -6,6 +6,20 @@ export const UsersTableColumnNames = {
   role: 'Роли',
   status: 'Статус',
   tabelNumber: 'Табельный номер',
-  organisationName: 'Организация',
-  departmentName: 'Отдел'
+  organisation: 'Организация',
+  department: 'Отдел'
+};
+
+export const EventsTableColumnNames = {
+  commandId: 'Распоряжение',
+  commandNumber: 'Номер распоряжения',
+  commandDate: 'Дата распоряжения',
+  orderId: 'Приказ',
+  orderNumber: 'Номер приказа',
+  orderDate: 'Дата составления приказа',
+  startAt: 'Дата начала инвентаризации',
+  endAt: 'Дата окончания инвентаризации',
+  balanceUnit: 'Балансовая единица',
+  balanceUnitRegionCode: 'Код региона',
+  participants: 'Участники'
 };

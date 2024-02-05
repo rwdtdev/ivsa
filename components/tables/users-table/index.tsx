@@ -8,6 +8,7 @@ import { UserView } from '@/types/user';
 import { DataTable } from '@/components/data-table/data-table';
 import { ColumnDef } from '@tanstack/react-table';
 import { Department, Organisation } from '@prisma/client';
+import { UsersTableColumnNames } from '@/constants/mappings/tables-column-names';
 
 interface UsersTableProps {
   users: PaginatedResponse<UserView> | { items: []; pagination: { pagesCount: number } };
@@ -38,6 +39,7 @@ export function UsersTable({ users, departments, organisations }: UsersTableProp
       dataTable={dataTable}
       columns={columns}
       withSearch
+      columnNames={UsersTableColumnNames}
       filterableColumns={filterableColumns(departments, organisations)}
       // floatingBarContent={TasksTableFloatingBarContent(dataTable)}
       // deleteRowsAction={(event) => deleteSelectedRows(dataTable, event)}

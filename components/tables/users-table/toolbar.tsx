@@ -11,6 +11,7 @@ import { Button, buttonVariants } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { DataTableFacetedFilter } from '@/components/data-table/data-table-faceted-filter';
 import { DataTableViewOptions } from '@/components/data-table/data-table-view-options';
+import { UsersTableColumnNames } from '@/constants/mappings/tables-column-names';
 
 interface DataTableToolbarProps<TData> {
   table: Table<TData>;
@@ -108,7 +109,7 @@ export function DataTableToolbar<TData>({
             </div>
           </Link>
         ) : null}
-        <DataTableViewOptions table={table} />
+        <DataTableViewOptions table={table} columnNames={UsersTableColumnNames} />
       </div>
     </div>
   );

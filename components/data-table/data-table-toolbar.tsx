@@ -21,6 +21,7 @@ interface DataTableToolbarProps<TData> {
   filterableColumns?: DataTableFilterableColumn<TData>[];
   searchableColumns?: DataTableSearchableColumn<TData>[];
   datePickers?: any;
+  columnNames: Record<string, string>;
   withSearch?: boolean;
   newRowLink?: string;
   deleteRowsAction?: React.MouseEventHandler<HTMLButtonElement>;
@@ -29,6 +30,7 @@ interface DataTableToolbarProps<TData> {
 export function DataTableToolbar<TData>({
   table,
   filterableColumns = [],
+  columnNames = {},
   datePickers = [],
   withSearch = false,
   newRowLink,
@@ -183,7 +185,7 @@ export function DataTableToolbar<TData>({
             </div>
           </Link>
         ) : null}
-        <DataTableViewOptions table={table} />
+        <DataTableViewOptions table={table} columnNames={columnNames} />
       </div>
     </div>
   );

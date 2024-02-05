@@ -9,8 +9,8 @@ export const UserFormSchema = z.object({
     .max(32, { message: 'Не более 32 символов' })
     .optional(),
   name: z.string().min(10, { message: 'Не менее 10 символов' }),
-  organisationId: z.string().optional(),
-  departmentId: z.string().optional(),
+  organisationId: z.string().optional().nullable(),
+  departmentId: z.string().optional().nullable(),
   email: z.string().email('Неверный формат'),
   tabelNumber: z.string().length(8, { message: 'Должен содержать 8 символов' }),
   phone: z.string().min(10, { message: 'Не менее 10 символов' }),

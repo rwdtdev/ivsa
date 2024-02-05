@@ -6,9 +6,8 @@ import { useDataTable } from '@/hooks/use-data-table';
 import { PaginatedResponse } from '@/server/types';
 import { DataTable } from '@/components/data-table/data-table';
 import { ColumnDef } from '@tanstack/react-table';
-import { Event } from '@prisma/client';
 import { EventView } from '@/server/services/events/types';
-import { DataTableFloatingBar } from '@/components/data-table/data-table-floating-bar';
+import { EventsTableColumnNames } from '@/constants/mappings/tables-column-names';
 
 interface EventsTableProps {
   events:
@@ -30,8 +29,6 @@ export function EventsTable({ events }: EventsTableProps) {
     data: items,
     columns,
     pageCount: pagination.pagesCount
-    // searchableColumns: searchableColumns
-    // filterableColumns: []
   });
 
   return (
@@ -39,11 +36,7 @@ export function EventsTable({ events }: EventsTableProps) {
       dataTable={dataTable}
       columns={columns}
       datePickers={eventsDatePickers}
-      // filterableColumns={[]}
-      // floatingBarContent={DataTableFloatingBar({
-      //   table: dataTable
-      // })}
-      // deleteRowsAction={(event) => deleteSelectedRows(dataTable, event)}
+      columnNames={EventsTableColumnNames}
     />
   );
 }

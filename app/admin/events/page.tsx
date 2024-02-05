@@ -19,7 +19,24 @@ const MemoizedBreadCrumb = React.memo(BreadCrumb);
 const MemoizedHeading = React.memo(Heading);
 
 export default async function AuditEventsPage({ searchParams }: IndexPageProps) {
-  const auditEvents = await getEventsAction(searchParams, EventType.AUDIT);
+  const eventType =
+    EventType[`${searchParams.type}`.toUpperCase() as keyof typeof EventType] ??
+    EventType.AUDIT;
+
+  let title = '';
+  let description = '';
+
+  if (eventType === EventType.AUDIT) {
+    title = 'Архив инвентаризаций';
+    description = 'Управление списком инвентаризаций';
+  }
+
+  if (eventType === EventType.BRIEFING) {
+    title = 'Архив инструктажей';
+    description = 'Управление списком иструктажей';
+  }
+
+  const events = await getEventsAction(searchParams, eventType);
 
   return (
     <div className='flex h-screen overflow-hidden'>
@@ -27,16 +44,13 @@ export default async function AuditEventsPage({ searchParams }: IndexPageProps) 
         <div className='flex-1 space-y-4 p-4 pt-6 md:p-8'>
           <MemoizedBreadCrumb items={breadcrumbItems} />
           <div className='flex items-start justify-between'>
-            <MemoizedHeading
-              title='Архив ивентаризаций'
-              description='Управление списком инвентаризаций'
-            />
+            <MemoizedHeading title={title} description={description} />
           </div>
           <Separator />
           <React.Suspense
             fallback={<DataTableSkeleton columnCount={4} filterableColumnCount={2} />}
           >
-            <EventsTable events={auditEvents} />
+            <EventsTable events={events} />
           </React.Suspense>
         </div>
       </main>

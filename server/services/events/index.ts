@@ -10,6 +10,14 @@ import { DATETIME_FORMAT, DATE_FORMAT } from '@/constants/date';
 
 const defaultLimit = 100;
 
+const serializeToView = (event: Event): EventView => {
+  return {
+    ...event,
+    startAt: moment(event.startAt).toISOString(),
+    endAt: moment(event.endAt).toISOString()
+  } as EventView;
+};
+
 export class EventService {
   private prisma: PrismaClient | TransactionSession;
 
@@ -29,14 +37,24 @@ export class EventService {
     }
   };
 
-  async getEventById(id: string) {
-    const event = await this.prisma.event.findFirst({ where: { id } });
+  async getEventById(id: string): Promise<EventView> {
+    const event = await this.prisma.event.findFirst({
+      where: { id },
+      include: {
+        participants: {
+          include: {
+            organisation: true,
+            department: true
+          }
+        }
+      }
+    });
 
     if (!event) {
       throw new ApiError(`Event with id (${id}) not found`, 404);
     }
 
-    return event;
+    return serializeToView(event);
   }
 
   async getEvents(
@@ -45,27 +63,29 @@ export class EventService {
     const {
       page = 1,
       limit = defaultLimit,
-      searchTerm,
       sortDirection = SortOrder.Descending,
       query
     } = eventsGetData;
 
-    console.log('QUERY: ', query);
+    const conditions = [];
+
+    if (query) {
+      if (query.statuses) {
+        conditions.push({ status: { in: query.statuses } });
+      }
+    }
 
     const where = {
       where: {
+        type: query?.type,
         ...(query && query.from && { startAt: { gte: query.from } }),
         ...(query && query.to && { endAt: { lte: query?.to } }),
-        type: query?.type
+        ...(conditions.length > 0 && { AND: conditions })
       }
     };
 
-    // @ts-ignore
     const totalCount = await prisma.event.count({ ...where });
 
-    console.log('COUNT: ', totalCount);
-
-    // @ts-ignore
     const events = await prisma.event.findMany({
       ...where,
       include: {

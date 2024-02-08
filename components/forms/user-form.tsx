@@ -3,7 +3,7 @@
 import { useEffect, useState } from 'react';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { useForm } from 'react-hook-form';
-import { useParams, usePathname, useRouter } from 'next/navigation';
+import { usePathname } from 'next/navigation';
 import { Input } from '@/components/ui/input';
 import { Button } from '@/components/ui/button';
 import {
@@ -24,7 +24,7 @@ import {
   SelectValue
 } from '@/components/ui/select';
 import { useToast } from '../ui/use-toast';
-import { UserRoles, UserStatuses } from '@/constants';
+import { UserRoles, UserStatuses } from '@/constants/mappings/prisma-enums';
 import {
   UserFormData,
   UserFormSchema
@@ -44,11 +44,8 @@ export const UserForm: React.FC<UserFormProps> = ({
   organisations,
   departments
 }) => {
-  const params = useParams();
-  const router = useRouter();
   const { toast } = useToast();
   const pathname = usePathname();
-  const [open, setOpen] = useState(false);
   const [loading, setLoading] = useState(false);
   const title = initialData ? 'Редактирование пользователя' : 'Добавление пользователя';
   const description = initialData
@@ -97,7 +94,6 @@ export const UserForm: React.FC<UserFormProps> = ({
     try {
       const pathnameChunks = pathname.split('/');
       const userId = pathnameChunks[pathnameChunks.length - 1];
-      // const userData = serializeDataForDB(data);
 
       setLoading(true);
       if (initialData) {

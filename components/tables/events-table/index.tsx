@@ -1,21 +1,27 @@
 'use client';
 
-import { eventsDatePickers, fetchEventsTableColumnDefs } from './columns';
+import {
+  eventsDatePickers,
+  fetchEventsTableColumnDefs,
+  filterableColumns
+} from './columns';
 import React from 'react';
 import { useDataTable } from '@/hooks/use-data-table';
 import { PaginatedResponse } from '@/server/types';
-import { DataTable } from '@/components/data-table/data-table';
+import { DataTable } from '@/components/ui/data-table/data-table';
 import { ColumnDef } from '@tanstack/react-table';
 import { EventView } from '@/server/services/events/types';
 import { EventsTableColumnNames } from '@/constants/mappings/tables-column-names';
+import { EventType } from '@prisma/client';
 
 interface EventsTableProps {
   events:
     | PaginatedResponse<EventView>
     | { items: []; pagination: { pagesCount: number } };
+  eventType: EventType;
 }
 
-export function EventsTable({ events }: EventsTableProps) {
+export function EventsTable({ events, eventType }: EventsTableProps) {
   const { items, pagination } = events;
 
   const [isPending, startTransition] = React.useTransition();
@@ -28,7 +34,8 @@ export function EventsTable({ events }: EventsTableProps) {
   const { dataTable } = useDataTable({
     data: items,
     columns,
-    pageCount: pagination.pagesCount
+    pageCount: pagination.pagesCount,
+    filterableColumns: filterableColumns(eventType)
   });
 
   return (
@@ -37,6 +44,7 @@ export function EventsTable({ events }: EventsTableProps) {
       columns={columns}
       datePickers={eventsDatePickers}
       columnNames={EventsTableColumnNames}
+      filterableColumns={filterableColumns(eventType)}
     />
   );
 }

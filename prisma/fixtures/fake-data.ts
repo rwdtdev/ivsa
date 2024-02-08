@@ -1,5 +1,5 @@
 import * as moment from 'moment';
-import { UserStatus, UserRole, EventType } from '@prisma/client';
+import { UserStatus, UserRole, EventType, EventStatus } from '@prisma/client';
 import { fakerRU as faker } from '@faker-js/faker';
 import { random } from 'underscore';
 import { transliterate as tr } from 'transliteration';
@@ -74,9 +74,10 @@ export function fakeUser() {
 
 export function fakeEvent() {
   const date = moment(faker.date.anytime());
+  const type = faker.helpers.arrayElement([EventType.AUDIT, EventType.BRIEFING] as const);
 
   return {
-    type: faker.helpers.arrayElement([EventType.AUDIT, EventType.BRIEFING] as const),
+    type,
     commandId: faker.string.uuid(),
     commandNumber: faker.string.numeric(3),
     commandDate: moment(faker.date.anytime()).toISOString(),
@@ -87,6 +88,18 @@ export function fakeEvent() {
     endAt: date.add({ year: 1 }).toISOString(),
     balanceUnit: faker.string.nanoid(5),
     balanceUnitRegionCode: faker.string.numeric(2),
-    updatedAt: faker.date.anytime()
+    updatedAt: faker.date.anytime(),
+    status:
+      type === EventType.AUDIT
+        ? faker.helpers.arrayElement([
+            EventStatus.OPEN,
+            EventStatus.CLOSED,
+            EventStatus.REMOVED
+          ])
+        : faker.helpers.arrayElement([
+            EventStatus.IN_PROGRESS,
+            EventStatus.NOT_STARTED,
+            EventStatus.PASSED
+          ])
   };
 }

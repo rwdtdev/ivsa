@@ -6,7 +6,7 @@ import { ColumnDef } from '@tanstack/react-table';
 import { CellAction } from './row-actions';
 import { Badge } from '@/components/ui/badge';
 import { Checkbox } from '@/components/ui/checkbox';
-import { UserRoles, UserStatuses } from '@/constants';
+import { UserRoles, UserStatuses } from '@/constants/mappings/prisma-enums';
 import { Department, Organisation, UserRole, UserStatus } from '@prisma/client';
 import { AlertTriangleIcon } from 'lucide-react';
 import {
@@ -15,10 +15,9 @@ import {
   TooltipProvider,
   TooltipTrigger
 } from '@/components/ui/tooltip';
-import { DataTableColumnHeader } from '@/components/data-table/data-table-column-header';
+import { DataTableColumnHeader } from '@/components/ui/data-table/data-table-column-header';
 import { UserView } from '@/types/user';
 import { DataTableFilterableColumn } from '@/types';
-import { DepartmentView } from '@/types/department';
 
 const emptyCell = '';
 
@@ -39,6 +38,7 @@ export function fetchUsersTableColumnDefs(
       ),
       cell: ({ row }) => (
         <Checkbox
+          style={{ marginLeft: 8 }}
           checked={row.getIsSelected()}
           onCheckedChange={(value) => row.toggleSelected(!!value)}
           aria-label='Select row'
@@ -50,7 +50,10 @@ export function fetchUsersTableColumnDefs(
     {
       id: 'name',
       accessorKey: 'name',
-      header: ({ column }) => <DataTableColumnHeader column={column} title='ФИО' />
+      header: ({ column }) => <DataTableColumnHeader column={column} title='ФИО' />,
+      cell: ({ row }) => {
+        return <div style={{ padding: 10 }}>{row.original.name}</div>;
+      }
     },
     {
       id: 'username',
@@ -113,7 +116,7 @@ export function fetchUsersTableColumnDefs(
             <div className='relative inline-block align-middle'>
               <Badge
                 variant='secondary'
-                className='pointer-events-none bg-green-300 py-1 hover:bg-green-300'
+                className='pointer-events-none bg-green-200 py-1 hover:bg-green-200'
               >
                 {UserStatuses[status]}
               </Badge>
@@ -127,7 +130,7 @@ export function fetchUsersTableColumnDefs(
             <div className='relative inline-block align-middle'>
               <Badge
                 variant='secondary'
-                className='pointer-events-none bg-red-300 py-1 hover:bg-red-300'
+                className='pointer-events-none bg-red-200 py-1 hover:bg-red-200'
               >
                 {UserStatuses[status]}
               </Badge>
@@ -142,7 +145,7 @@ export function fetchUsersTableColumnDefs(
               <WarnComponent />
               <Badge
                 variant='secondary'
-                className='pointer-events-none bg-yellow-300 py-1 hover:bg-yellow-300'
+                className='pointer-events-none bg-gray-200 py-1 hover:bg-gray-200'
               >
                 {UserStatuses[status]}
               </Badge>

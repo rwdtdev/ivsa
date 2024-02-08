@@ -9,12 +9,12 @@ import type { Table } from '@tanstack/react-table';
 import { cn } from '@/lib/utils';
 import { Button, buttonVariants } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
-import { DataTableFacetedFilter } from '@/components/data-table/data-table-faceted-filter';
-import { DataTableViewOptions } from '@/components/data-table/data-table-view-options';
+import { DataTableFacetedFilter } from '@/components/ui/data-table/data-table-faceted-filter';
+import { DataTableViewOptions } from '@/components/ui/data-table/data-table-view-options';
 import { useSearchParams, usePathname, useRouter } from 'next/navigation';
 import { useDebounce } from '@/hooks/use-debounce';
-import { DatePickerWithRange } from '../date-picker-range';
-import { TypographyP } from '../ui/typography/p';
+import { DatePickerWithRange } from '../../date-picker-range';
+import { P } from '../typography/p';
 
 interface DataTableToolbarProps<TData> {
   table: Table<TData>;
@@ -113,6 +113,17 @@ export function DataTableToolbar<TData>({
             className='h-8 w-[150px] focus:border-2 focus:border-black lg:w-[250px]'
           />
         )}
+        {datePickers.length > 0 &&
+          datePickers.map((datepicker, idx) =>
+            datepicker.type === 'range' ? (
+              <div key={idx} className='flex flex-row items-center'>
+                <P className='pr-2 text-sm font-normal'>{datepicker.title}:</P>
+                <DatePickerWithRange />
+              </div>
+            ) : (
+              <div></div>
+            )
+          )}
         {filterableColumns.length > 0 &&
           filterableColumns.map(
             (column) =>
@@ -125,17 +136,7 @@ export function DataTableToolbar<TData>({
                 />
               )
           )}
-        {datePickers.length > 0 &&
-          datePickers.map((datepicker, idx) =>
-            datepicker.type === 'range' ? (
-              <div key={idx} className='flex flex-row items-center'>
-                <TypographyP className='pr-2'>{datepicker.title}:</TypographyP>
-                <DatePickerWithRange />
-              </div>
-            ) : (
-              <div></div>
-            )
-          )}
+
         {isFiltered && (
           <Button
             aria-label='Reset filters'

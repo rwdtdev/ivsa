@@ -142,7 +142,8 @@ export function DataTable<TData, TValue>({
                         width:
                           cell.column.getSize() === Number.MAX_SAFE_INTEGER
                             ? 'auto'
-                            : cell.column.getSize()
+                            : cell.column.getSize(),
+                        padding: 0
                       }}
                     >
                       {flexRender(cell.column.columnDef.cell, cell.getContext())}

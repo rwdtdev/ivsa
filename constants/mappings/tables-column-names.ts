@@ -17,8 +17,8 @@ export const EventsTableColumnNames = {
   orderId: 'Приказ',
   orderNumber: 'Номер приказа',
   orderDate: 'Дата составления приказа',
-  startAt: 'Дата начала инвентаризации',
-  endAt: 'Дата окончания инвентаризации',
+  startAt: 'Дата начала Реестр инвентаризаций',
+  endAt: 'Дата окончания Реестр инвентаризаций',
   balanceUnit: 'Балансовая единица',
   balanceUnitRegionCode: 'Код региона',
   participants: 'Участники'

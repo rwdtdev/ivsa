@@ -1,3 +1,5 @@
+'use server';
+
 import { SortOrder } from '@/constants/data';
 import { searchParamsSchema } from '@/lib/query-params-validation';
 import { EventService } from '@/server/services/events';
@@ -15,7 +17,7 @@ export async function getEventsAction(
 > {
   noStore();
   try {
-    const { page, per_page, sort, search, from, to } =
+    const { page, per_page, sort, search, from, to, status } =
       searchParamsSchema.parse(searchParams);
 
     // Fallback page for invalid page numbers
@@ -34,6 +36,8 @@ export async function getEventsAction(
       SortOrder
     ]) ?? ['startAt', 'asc'];
 
+    const statuses = (status?.split('.') as Event['status'][]) ?? [];
+
     const eventService = new EventService();
 
     return await eventService.getEvents({
@@ -43,7 +47,8 @@ export async function getEventsAction(
       query: {
         type,
         from,
-        to
+        to,
+        ...(statuses.length > 0 && { statuses })
       }
     });
   } catch (err) {
@@ -56,3 +61,14 @@ export async function getEventsAction(
     };
   }
 }
+
+export const getEventByIdAction = async (id: string): Promise<EventView | null> => {
+  try {
+    const eventService = new EventService();
+
+    return await eventService.getEventById(id);
+  } catch (err) {
+    console.error(err);
+    return null;
+  }
+};

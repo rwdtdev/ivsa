@@ -3,7 +3,6 @@
 import * as React from 'react';
 import moment from 'moment';
 import _ from 'underscore';
-import { addDays, format } from 'date-fns';
 import { ru } from 'date-fns/locale';
 import { Calendar as CalendarIcon } from 'lucide-react';
 import { DateRange } from 'react-day-picker';
@@ -77,7 +76,7 @@ export function DatePickerWithRange({ className }: React.HTMLAttributes<HTMLDivE
             id='date'
             variant={'outline'}
             className={cn(
-              'w-[240px] justify-start text-left font-normal',
+              'h-8 w-[240px] justify-start text-left font-normal',
               !date && 'text-muted-foreground',
               className
             )}

@@ -8,7 +8,7 @@ import BreadCrumb from '@/components/breadcrumb';
 import { Button } from '@/components/ui/button';
 import { Heading } from '@/components/ui/heading';
 import { Separator } from '@/components/ui/separator';
-import { DataTableSkeleton } from '@/components/data-table/data-table-skeleton';
+import { DataTableSkeleton } from '@/components/ui/data-table/data-table-skeleton';
 import { UsersTable } from '@/components/tables/users-table';
 import { getDepartmentsAction } from '@/app/actions/server/departments';
 import { getOrganisationsAction } from '@/app/actions/server/organisations';

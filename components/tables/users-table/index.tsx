@@ -5,7 +5,7 @@ import React from 'react';
 import { useDataTable } from '@/hooks/use-data-table';
 import { PaginatedResponse } from '@/server/types';
 import { UserView } from '@/types/user';
-import { DataTable } from '@/components/data-table/data-table';
+import { DataTable } from '@/components/ui/data-table/data-table';
 import { ColumnDef } from '@tanstack/react-table';
 import { Department, Organisation } from '@prisma/client';
 import { UsersTableColumnNames } from '@/constants/mappings/tables-column-names';

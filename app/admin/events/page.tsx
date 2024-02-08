@@ -4,7 +4,7 @@ import { SearchParams } from '@/types';
 import BreadCrumb from '@/components/breadcrumb';
 import { Heading } from '@/components/ui/heading';
 import { Separator } from '@/components/ui/separator';
-import { DataTableSkeleton } from '@/components/data-table/data-table-skeleton';
+import { DataTableSkeleton } from '@/components/ui/data-table/data-table-skeleton';
 import { EventType } from '@prisma/client';
 import { getEventsAction } from '@/app/actions/server/events';
 import { EventsTable } from '@/components/tables/events-table';
@@ -12,8 +12,6 @@ import { EventsTable } from '@/components/tables/events-table';
 export interface IndexPageProps {
   searchParams: SearchParams;
 }
-
-const breadcrumbItems = [{ title: 'Пользователи', link: '/admin/users' }];
 
 const MemoizedBreadCrumb = React.memo(BreadCrumb);
 const MemoizedHeading = React.memo(Heading);
@@ -23,17 +21,27 @@ export default async function AuditEventsPage({ searchParams }: IndexPageProps) 
     EventType[`${searchParams.type}`.toUpperCase() as keyof typeof EventType] ??
     EventType.AUDIT;
 
+  const breadcrumbItems = [
+    {
+      title:
+        eventType === EventType.BRIEFING
+          ? 'Реестр инструктажей'
+          : 'Реестр инвентаризаций',
+      link: `/admin/events?${eventType === EventType.BRIEFING ? 'briefing' : 'audit'}`
+    }
+  ];
+
   let title = '';
   let description = '';
 
   if (eventType === EventType.AUDIT) {
-    title = 'Архив инвентаризаций';
-    description = 'Управление списком инвентаризаций';
+    title = 'Реестр инвентаризаций';
+    description = 'Управление реестром инвентаризаций';
   }
 
   if (eventType === EventType.BRIEFING) {
-    title = 'Архив инструктажей';
-    description = 'Управление списком иструктажей';
+    title = 'Реестр инструктажей';
+    description = 'Управление реестром инструктажей';
   }
 
   const events = await getEventsAction(searchParams, eventType);
@@ -50,7 +58,7 @@ export default async function AuditEventsPage({ searchParams }: IndexPageProps) 
           <React.Suspense
             fallback={<DataTableSkeleton columnCount={4} filterableColumnCount={2} />}
           >
-            <EventsTable events={events} />
+            <EventsTable events={events} eventType={eventType} />
           </React.Suspense>
         </div>
       </main>

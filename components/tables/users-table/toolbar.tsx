@@ -9,8 +9,8 @@ import type { Table } from '@tanstack/react-table';
 import { cn } from '@/lib/utils';
 import { Button, buttonVariants } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
-import { DataTableFacetedFilter } from '@/components/data-table/data-table-faceted-filter';
-import { DataTableViewOptions } from '@/components/data-table/data-table-view-options';
+import { DataTableFacetedFilter } from '@/components/ui/data-table/data-table-faceted-filter';
+import { DataTableViewOptions } from '@/components/ui/data-table/data-table-view-options';
 import { UsersTableColumnNames } from '@/constants/mappings/tables-column-names';
 
 interface DataTableToolbarProps<TData> {

@@ -1,7 +1,6 @@
-import { SortDirection } from '@/server/types';
 import { NavItem } from '@/types';
 
-export const navItems: NavItem[] = [
+export const dictionaryItems: NavItem[] = [
   //   {
   //     title: 'Дэшборд',
   //     href: '/admin',
@@ -13,17 +12,20 @@ export const navItems: NavItem[] = [
     href: '/admin/users',
     icon: 'user',
     label: 'user'
-  },
+  }
+];
+
+export const registryItems: NavItem[] = [
   {
-    title: 'Архив инвентаризаций',
+    title: 'Реестр инвентаризаций',
     href: '/admin/events?type=audit',
-    icon: 'archive',
+    icon: 'table',
     label: 'audit-events'
   },
   {
-    title: 'Архив инструктажей',
+    title: 'Реестр инструктажей',
     href: '/admin/events?type=briefing',
-    icon: 'archive',
+    icon: 'table',
     label: 'briefing-events'
   }
 ];

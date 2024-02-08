@@ -102,7 +102,7 @@ model User {
 
 model Event {
   /// Идентификатор события в формате cUID
-  id                    String    @id @default(cuid())
+  id                    String      @id @default(cuid())
   /// Тип события
   type                  EventType
   /// Идентификатор распоряжения
@@ -128,11 +128,13 @@ model Event {
   /// Список участников события
   participants          User[]
   /// Дата и время создания записи
-  createdAt             DateTime  @default(now())
+  createdAt             DateTime    @default(now())
   /// Дата и время модификации записи
-  updatedAt             DateTime  @updatedAt
+  updatedAt             DateTime    @updatedAt
   /// URL видео файла инвентаризации
   videoFileUrl          String?
+  /// Статус событие инвентаризации или инструктажа
+  status                EventStatus
 
   @@map("events")
 }
@@ -174,4 +176,19 @@ enum EventType {
   AUDIT
   /// Событие типа "Инструктаж"
   BRIEFING
+}
+
+enum EventStatus {
+  /// Инструктаж не начат
+  NOT_STARTED
+  /// Инструктаж в процессе
+  IN_PROGRESS
+  /// Инструктаж пройден
+  PASSED
+  /// Событие открыто
+  OPEN
+  /// Событие закрыто
+  CLOSED
+  /// Событие удалено
+  REMOVED
 }

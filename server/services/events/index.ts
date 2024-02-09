@@ -41,6 +41,7 @@ export class EventService {
     const event = await this.prisma.event.findFirst({
       where: { id },
       include: {
+        inventories: true,
         participants: {
           include: {
             organisation: true,

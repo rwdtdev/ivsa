@@ -42,6 +42,7 @@ export function EventsTable({ events, eventType }: EventsTableProps) {
     <DataTable
       dataTable={dataTable}
       columns={columns}
+      // @ts-ignore
       datePickers={eventsDatePickers}
       columnNames={EventsTableColumnNames}
       filterableColumns={filterableColumns(eventType)}

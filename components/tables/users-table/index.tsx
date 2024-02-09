@@ -39,6 +39,7 @@ export function UsersTable({ users, departments, organisations }: UsersTableProp
       dataTable={dataTable}
       columns={columns}
       withSearch
+      withSelectedRows
       columnNames={UsersTableColumnNames}
       filterableColumns={filterableColumns(departments, organisations)}
       // floatingBarContent={TasksTableFloatingBarContent(dataTable)}

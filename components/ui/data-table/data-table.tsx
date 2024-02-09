@@ -45,6 +45,8 @@ interface DataTableProps<TData, TValue> {
   // Add global search input, fields controlled by backend
   withSearch?: boolean;
 
+  withSelectedRows?: boolean;
+
   // Object-mapper column.id - hide column name
   columnNames: Record<string, string>;
 
@@ -93,6 +95,7 @@ export function DataTable<TData, TValue>({
   withSearch = false,
   advancedFilter = false,
   floatingBarContent,
+  withSelectedRows = false,
   deleteRowsAction
 }: DataTableProps<TData, TValue>) {
   return (
@@ -162,7 +165,7 @@ export function DataTable<TData, TValue>({
         </Table>
       </div>
       <div className='space-y-2.5'>
-        <DataTablePagination table={dataTable} />
+        <DataTablePagination withSelectedRows={withSelectedRows} table={dataTable} />
         {floatingBarContent ? (
           <DataTableFloatingBar table={dataTable}>
             {floatingBarContent}

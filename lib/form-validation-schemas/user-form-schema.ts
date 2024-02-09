@@ -21,7 +21,7 @@ export const UserFormSchema = z.object({
   }),
   role: z.nativeEnum(UserRole, {
     errorMap: () => {
-      return { message: 'Выберите пользовательскую' };
+      return { message: 'Выберите роль' };
     }
   })
 });

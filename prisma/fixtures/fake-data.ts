@@ -103,3 +103,11 @@ export function fakeEvent() {
           ])
   };
 }
+
+export function fakeInventory() {
+  // @TODO добавить сведения по мере понимания их состава
+  return {
+    number: faker.string.numeric(1),
+    date: moment(faker.date.anytime()).format(DATE_FORMAT)
+  };
+}

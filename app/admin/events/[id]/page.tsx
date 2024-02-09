@@ -4,41 +4,26 @@ import moment from 'moment';
 import { getEventByIdAction } from '@/app/actions/server/events';
 import BreadCrumb from '@/components/breadcrumb';
 import { Heading } from '@/components/ui/heading';
-import { Separator } from '@/components/ui/separator';
 import { getEntityId } from '@/lib/get-entity-id';
 import { EventView } from '@/server/services/events/types';
 import { EventType } from '@prisma/client';
-import { usePathname, useSearchParams } from 'next/navigation';
+import { usePathname } from 'next/navigation';
 import { useEffect, useState } from 'react';
-import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
+import { Avatar, AvatarFallback } from '@/components/ui/avatar';
 import { P } from '@/components/ui/typography/p';
 
-import {
-  Card,
-  CardContent,
-  CardDescription,
-  CardHeader,
-  CardTitle
-} from '@/components/ui/card';
-import { Input } from '@/components/ui/input';
-import {
-  Select,
-  SelectContent,
-  SelectItem,
-  SelectTrigger,
-  SelectValue
-} from '@/components/ui/select';
-import { EventStatuses, UserRoles } from '@/constants/mappings/prisma-enums';
+import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
+import { UserRoles } from '@/constants/mappings/prisma-enums';
 import { DATETIME_FORMAT, DATE_FORMAT } from '@/constants/date';
-import { Badge } from '@/components/ui/badge';
 import { EventStatusBadge } from '@/components/event-status-badge';
+import { Separator } from '@/components/ui/separator';
+
+import { CarouselSize } from '@/components/carousel';
+import { ScrollArea } from '@/components/ui/scroll-area';
 
 export default function EventPage() {
   const [event, setEvent] = useState<EventView>();
   const pathname = usePathname();
-  const params = useSearchParams();
-
-  const eventsType = params.get('type');
 
   const id = getEntityId(pathname);
 
@@ -79,16 +64,8 @@ export default function EventPage() {
         </div>
         <div className='grid h-full grid-cols-2 gap-4 pt-5'>
           <Card>
-            {/* <CardHeader>
-              <CardTitle>Share this document</CardTitle>
-              <CardDescription>
-                Anyone with the link can view this document.
-              </CardDescription>
-            </CardHeader> */}
             <CardContent>
-              {/* <Separator className='my-4' /> */}
               <div className='my-4 space-y-4'>
-                {/* <h4 className='text-sm font-medium'>People with access</h4> */}
                 <div className='grid'>
                   <P className='text-sm'>
                     <span className='font-semibold'>Статус:</span>{' '}
@@ -123,45 +100,81 @@ export default function EventPage() {
               </div>
             </CardContent>
           </Card>
-
           <Card>
             <CardHeader>
               <CardTitle>Список участников</CardTitle>
             </CardHeader>
             <CardContent>
-              <div className='space-y-4'>
-                <div className='grid gap-6'>
-                  {event?.participants.map((participant) => {
-                    const splited = participant.name.split(' ');
-                    const initials = [splited[0][0], splited[1][0]].join('');
+              <ScrollArea>
+                <div className='space-y-4'>
+                  <div className='grid gap-6'>
+                    {event?.participants.map((participant) => {
+                      const splited = participant.name.split(' ');
+                      const initials = [splited[0][0], splited[1][0]].join('');
 
-                    return (
-                      <div
-                        key={participant.id}
-                        className='flex items-center justify-between space-x-4'
-                      >
-                        <div className='flex items-center space-x-4'>
-                          <Avatar>
-                            {/* <AvatarImage src='/avatars/01.png' /> */}
-                            <AvatarFallback>{initials}</AvatarFallback>
-                          </Avatar>
-                          <div>
-                            <p className='text-sm font-medium leading-none'>
-                              {participant.name}
-                            </p>
-                            <p className='text-sm text-muted-foreground'>
-                              {UserRoles[participant.role]}
-                            </p>
-                            <p className='text-sm text-muted-foreground'>
-                              Таб. номер: {participant.tabelNumber}
-                            </p>
+                      return (
+                        <div
+                          key={participant.id}
+                          className='flex items-center justify-between space-x-4'
+                        >
+                          <div className='flex items-center space-x-4'>
+                            <Avatar>
+                              <AvatarFallback>{initials}</AvatarFallback>
+                            </Avatar>
+                            <div>
+                              <p className='text-sm font-medium leading-none'>
+                                {participant.name}
+                              </p>
+                              <p className='text-sm text-muted-foreground'>
+                                {UserRoles[participant.role]}
+                              </p>
+                              <p className='text-sm text-muted-foreground'>
+                                Таб. номер: {participant.tabelNumber}
+                              </p>
+                            </div>
                           </div>
                         </div>
-                      </div>
-                    );
-                  })}
+                      );
+                    })}
+                  </div>
                 </div>
-              </div>
+              </ScrollArea>
+            </CardContent>
+          </Card>
+          <Card>
+            <CardHeader>
+              <CardTitle>Описи</CardTitle>
+            </CardHeader>
+            <CardContent className='h-full'>
+              <ScrollArea className='h-4/5'>
+                <div className='space-y-4'>
+                  <div className='grid gap-6'>
+                    {event?.inventories.map((inventory, index) => {
+                      return (
+                        <>
+                          <div
+                            key={inventory.id}
+                            className='grid grid-cols-5 gap-1 space-x-5'
+                          >
+                            <div className='mr-10 flex items-center space-x-4'>
+                              <div>
+                                <p className='text-sm font-medium leading-none'>
+                                  Опись № {inventory.number} от {inventory.date}
+                                </p>
+                                <p className='text-sm text-muted-foreground'>
+                                  ID: {inventory.id}
+                                </p>
+                              </div>
+                            </div>
+                            <CarouselSize />
+                          </div>
+                          {index === event.inventories.length - 1 ? null : <Separator />}
+                        </>
+                      );
+                    })}
+                  </div>
+                </div>
+              </ScrollArea>
             </CardContent>
           </Card>
         </div>

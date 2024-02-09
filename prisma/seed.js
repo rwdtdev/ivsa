@@ -5,7 +5,8 @@ const {
   fakeUser,
   fakeOrganisation,
   fakeDepartment,
-  fakeEvent
+  fakeEvent,
+  fakeInventory
 } = require('./fixtures/fake-data');
 const { random } = require('underscore');
 const { log } = require('console');
@@ -40,6 +41,11 @@ const createUsers = (n, departmentId, organisationId) =>
       password,
       passwordHashes: password
     }));
+
+const createInventories = (n, eventId) =>
+  Array.from(Array(n).keys())
+    .reverse()
+    .map(() => ({ ...fakeInventory(), eventId }));
 
 const createEvents = (users) => {
   let counter = 0;
@@ -196,6 +202,20 @@ class SeedSingleton {
       console.log(
         `Created event: ${createdEvent.id}, withParticipants: ${!!createdEvent.participants.length}`
       );
+
+      const inventories = createInventories(random(13), createdEvent.id);
+
+      for (const inventory of inventories) {
+        const createdInventory = await this.prisma.inventory.create({
+          data: inventory,
+          include: {
+            participants: true
+          }
+        });
+        console.log(
+          `Created inventory: ${createdInventory.id} for event: ${createdEvent.id}, withParticipants: ${!!createdInventory.participants.length} `
+        );
+      }
     }
 
     console.log('Seeding finished.');

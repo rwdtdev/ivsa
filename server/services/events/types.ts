@@ -1,5 +1,5 @@
 import { SortOrder } from '@/constants/data';
-import { Event, EventStatus, EventType, User } from '@prisma/client';
+import { Event, EventStatus, EventType, Inventory, User } from '@prisma/client';
 
 export type EventsGetData = Partial<{
   page: number;
@@ -18,4 +18,5 @@ export type EventView = Omit<Event, 'startAt' | 'endAt'> & {
   startAt: string;
   endAt: string;
   participants: User[];
+  inventories: Inventory[];
 };

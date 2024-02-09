@@ -12,7 +12,8 @@ import Cache from 'node-cache';
 import { UserView } from '@/types/user';
 import { PaginatedResponse } from '@/server/types';
 import { SortOrder } from '@/constants/data';
-import { User } from '@prisma/client';
+import { User, UserRole, UserStatus } from '@prisma/client';
+import { UserCreateData } from '@/server/services/users/types';
 
 const cache = new Cache({
   checkperiod: 120
@@ -20,7 +21,7 @@ const cache = new Cache({
 
 export async function createUserAction(formData: UserFormData) {
   try {
-    await createUser(formData);
+    await createUser(formData as UserCreateData);
   } catch (err) {
     throw err;
   }
@@ -86,8 +87,8 @@ export async function getUsersAction(
       SortOrder
     ]) ?? ['title', 'asc'];
 
-    const statuses = (status?.split('.') as User['status'][]) ?? [];
-    const roles = (role?.split('.') as User['role'][]) ?? [];
+    const statuses = (status?.split('.') as UserStatus[]) ?? [];
+    const roles = (role?.split('.') as UserRole[]) ?? [];
     const organisationsIds = (organisation?.split('.') as string[]) ?? [];
     const departmentsIds = (department?.split('.') as string[]) ?? [];
 

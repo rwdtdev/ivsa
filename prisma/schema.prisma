@@ -96,6 +96,10 @@ model User {
   event                  Event?        @relation(fields: [eventId], references: [id])
   /// Сссылка на событие. в котором пользователь является участником
   eventId                String?
+  /// Объект с данными описи, в которой участвует пользователь
+  inventory              Inventory?    @relation(fields: [inventoryId], references: [id])
+  /// Ссылка на опись, в которой участвует пользователь
+  inventoryId            String?
 
   @@map("users")
 }
@@ -127,6 +131,8 @@ model Event {
   balanceUnitRegionCode String
   /// Список участников события
   participants          User[]
+  /// Список описей
+  inventories           Inventory[]
   /// Дата и время создания записи
   createdAt             DateTime    @default(now())
   /// Дата и время модификации записи
@@ -137,6 +143,27 @@ model Event {
   status                EventStatus
 
   @@map("events")
+}
+
+model Inventory {
+  /// Идентификатор описи в формате cUID
+  id           String   @id @default(cuid())
+  /// Идентификатор события к которому привязана опись
+  eventId      String
+  /// Объект с данными о событии, с которым связана опись
+  event        Event    @relation(fields: [eventId], references: [id])
+  /// Участники описи
+  participants User[]
+  /// Номер описи
+  number       String
+  /// Дата описи
+  date         String
+  /// Дата и время создания записи
+  createdAt    DateTime @default(now())
+  /// Дата и время модификации записи
+  updatedAt    DateTime @updatedAt
+
+  @@map("inventories")
 }
 
 enum UserStatus {

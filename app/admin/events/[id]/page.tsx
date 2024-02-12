@@ -20,16 +20,22 @@ import { Separator } from '@/components/ui/separator';
 
 import { CarouselSize } from '@/components/carousel';
 import { ScrollArea } from '@/components/ui/scroll-area';
+import Loading from '@/app/loading';
+import { REGION_CODES } from '@/constants/mappings/region-codes';
 
 export default function EventPage() {
   const [event, setEvent] = useState<EventView>();
   const pathname = usePathname();
+  const [isLoadingEvent, setIsLoadingEvent] = useState(true);
 
   const id = getEntityId(pathname);
 
   const fetchEventById = async (id: string) => {
     const result = await getEventByIdAction(id);
-    if (result) setEvent(result);
+    if (result) {
+      setEvent(result);
+      setIsLoadingEvent(false);
+    }
   };
 
   useEffect(() => {
@@ -37,6 +43,10 @@ export default function EventPage() {
       fetchEventById(id);
     }
   }, []);
+
+  if (isLoadingEvent) {
+    return <Loading />;
+  }
 
   const breadcrumbItems = [
     {
@@ -62,14 +72,18 @@ export default function EventPage() {
             description={`ID: ${id}`}
           />
         </div>
-        <div className='grid h-full grid-cols-2 gap-4 pt-5'>
-          <Card>
+        <div className='grid h-full grid-cols-5 gap-4 pt-5'>
+          <Card className='col-span-1'>
             <CardContent>
               <div className='my-4 space-y-4'>
-                <div className='grid'>
-                  <P className='text-sm'>
-                    <span className='font-semibold'>Статус:</span>{' '}
+                <div className='grid text-sm'>
+                  <div className='flex'>
+                    <P className='mr-2 font-semibold'>Статус:</P>
                     <EventStatusBadge status={event?.status} />
+                  </div>
+                  <P className='text-sm'>
+                    <span className='font-semibold'>Дата начала:</span>{' '}
+                    {moment(event?.startAt).format(DATETIME_FORMAT)}
                   </P>
                   <P className='text-sm'>
                     <span className='font-semibold'>Дата начала:</span>{' '}
@@ -85,7 +99,12 @@ export default function EventPage() {
                   </P>
                   <P className='text-sm'>
                     <span className='font-semibold'>Код региона:</span>{' '}
-                    {event?.balanceUnitRegionCode}
+                    {event?.balanceUnitRegionCode},{' '}
+                    {
+                      REGION_CODES[
+                        event?.balanceUnitRegionCode as keyof typeof REGION_CODES
+                      ]
+                    }
                   </P>
                   <P className='text-sm'>
                     <span className='font-semibold'>Приказ:</span> №{event?.orderNumber}{' '}
@@ -100,9 +119,9 @@ export default function EventPage() {
               </div>
             </CardContent>
           </Card>
-          <Card>
+          <Card className='col-span-1'>
             <CardHeader>
-              <CardTitle>Список участников</CardTitle>
+              <CardTitle>Участники</CardTitle>
             </CardHeader>
             <CardContent>
               <ScrollArea>
@@ -141,38 +160,33 @@ export default function EventPage() {
               </ScrollArea>
             </CardContent>
           </Card>
-          <Card>
+          <Card className='col-span-3'>
             <CardHeader>
               <CardTitle>Описи</CardTitle>
             </CardHeader>
             <CardContent className='h-full'>
               <ScrollArea className='h-4/5'>
                 <div className='space-y-4'>
-                  <div className='grid gap-6'>
-                    {event?.inventories.map((inventory, index) => {
-                      return (
-                        <>
-                          <div
-                            key={inventory.id}
-                            className='grid grid-cols-5 gap-1 space-x-5'
-                          >
-                            <div className='mr-10 flex items-center space-x-4'>
-                              <div>
-                                <p className='text-sm font-medium leading-none'>
-                                  Опись № {inventory.number} от {inventory.date}
-                                </p>
-                                <p className='text-sm text-muted-foreground'>
-                                  ID: {inventory.id}
-                                </p>
-                              </div>
+                  {event?.inventories.map((inventory, index) => {
+                    return (
+                      <div key={inventory.id}>
+                        <div className='grid grid-cols-4 gap-1 space-x-5'>
+                          <div className='mr-10 flex cursor-pointer items-center space-x-4'>
+                            <div>
+                              <p className='text-md font-medium leading-none'>
+                                Опись № {inventory.number} от {inventory.date}
+                              </p>
+                              <p className='text-sm text-muted-foreground'>
+                                ID: {inventory.id}
+                              </p>
                             </div>
-                            <CarouselSize />
                           </div>
-                          {index === event.inventories.length - 1 ? null : <Separator />}
-                        </>
-                      );
-                    })}
-                  </div>
+                          <CarouselSize />
+                        </div>
+                        {index === event.inventories.length - 1 ? null : <Separator />}
+                      </div>
+                    );
+                  })}
                 </div>
               </ScrollArea>
             </CardContent>

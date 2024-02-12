@@ -1,6 +1,5 @@
 import * as React from 'react';
-
-import { Card, CardContent } from '@/components/ui/card';
+import moment from 'moment';
 import {
   Carousel,
   CarouselContent,
@@ -8,15 +7,58 @@ import {
   CarouselNext,
   CarouselPrevious
 } from '@/components/ui/carousel';
-import { random } from 'underscore';
-import { DownloadCloudIcon, PlayCircleIcon } from 'lucide-react';
-import { useToast } from './ui/use-toast';
+import { PlayCircle } from 'lucide-react';
 
-const items = Array.from({ length: 10 });
+import {
+  Dialog,
+  DialogContent,
+  DialogDescription,
+  DialogHeader,
+  DialogTitle,
+  DialogTrigger
+} from '@/components/ui/dialog';
+import { DATE_FORMAT } from '@/constants/date';
+
+// @TODO: Заглушка
+const items = [
+  {
+    title: 'Опись №1',
+    url: '/test.mp4',
+    date: new Date()
+  },
+  {
+    title: 'Опись №2',
+    url: '/test.mp4',
+    date: new Date()
+  },
+  {
+    title: 'Опись №3',
+    url: '/test.mp4',
+    date: new Date()
+  },
+  {
+    title: 'Опись №4',
+    url: '/test.mp4',
+    date: new Date()
+  },
+  {
+    title: 'Опись №5',
+    url: '/test.mp4',
+    date: new Date()
+  },
+  {
+    title: 'Опись №6',
+    url: '/test.mp4',
+    date: new Date()
+  },
+  {
+    title: 'Опись №7',
+    url: '/test.mp4',
+    date: new Date()
+  }
+];
 
 export function CarouselSize() {
-  const { toast } = useToast();
-
   return (
     <Carousel
       opts={{
@@ -26,42 +68,36 @@ export function CarouselSize() {
       className='col-span-4 col-start-2 w-full max-w-lg'
     >
       <CarouselContent>
-        {items.map((_, index) => (
+        {items.map((item, index) => (
           <CarouselItem
             key={index}
             className={items.length < 4 ? 'basis-auto' : 'basis-1/8'}
           >
-            <div className='p-1'>
-              <div className='flex h-20 w-20 items-center justify-center'>
-                <div className='grid h-full w-full grid-cols-2 items-center justify-center border border-black'>
-                  {/* <img src='/stub.jpg' className='z-0  rounded-md'></img> */}
-                  <div className='group/item flex h-full cursor-pointer items-center justify-center transition duration-150 ease-in-out hover:bg-black'>
-                    <DownloadCloudIcon
-                      width={24}
-                      height={24}
-                      color='white'
-                      onClick={() => {
-                        console.log('Download video!');
-                        alert('Download video!');
-                      }}
-                      className='group/edit invisible h-full transition delay-100 duration-300 ease-in-out group-hover/item:visible group-hover/item:-translate-y-1 group-hover/item:text-white'
-                    />
-                  </div>
-                  <div className='group/item flex h-full cursor-pointer items-center justify-center transition duration-150 ease-in-out hover:bg-black'>
-                    <PlayCircleIcon
-                      width={24}
-                      height={24}
-                      color='white'
-                      onClick={() => {
-                        console.log('Play video!');
-                        alert('Play video!');
-                      }}
-                      className='group/edit invisible h-full items-center justify-center transition delay-100 duration-300 ease-in-out group-hover/item:visible group-hover/item:-translate-y-1 group-hover/item:text-white'
+            <Dialog>
+              <DialogTrigger>
+                <div className='p-1'>
+                  <div className='group relative flex h-20 w-20 items-center justify-center'>
+                    <img
+                      src='/stub.jpg'
+                      className='absolute rounded-md opacity-70 group-hover:opacity-100'
+                    ></img>
+                    <PlayCircle
+                      className='invisible absolute text-white opacity-80 group-hover:visible'
+                      size={32}
                     />
                   </div>
                 </div>
-              </div>
-            </div>
+              </DialogTrigger>
+              <DialogContent className='max-w-[70%]'>
+                <DialogHeader>
+                  <DialogTitle>{item.title}</DialogTitle>
+                  <DialogDescription>
+                    {moment(item.date).format(DATE_FORMAT)}
+                  </DialogDescription>
+                  <video src={item.url} width='100%' autoPlay controls></video>
+                </DialogHeader>
+              </DialogContent>
+            </Dialog>
           </CarouselItem>
         ))}
       </CarouselContent>

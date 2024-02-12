@@ -9,6 +9,7 @@ import { EventStatus, EventType, UserRole } from '@prisma/client';
 import { EventStatuses, UserRoles } from '@/constants/mappings/prisma-enums';
 import { EventStatusBadge } from '@/components/event-status-badge';
 import { DataTableFilterableColumn } from '@/types';
+import { REGION_CODES } from '@/constants/mappings/region-codes';
 
 const padding = 9;
 
@@ -80,7 +81,13 @@ export function fetchEventsTableColumnDefs(
       cell: ({ row }) => {
         return (
           <Link href={`/admin/events/${row.original.id}`}>
-            <div style={{ padding }}>{row.original.balanceUnitRegionCode}</div>
+            <div style={{ padding }}>
+              {
+                REGION_CODES[
+                  row.original.balanceUnitRegionCode as keyof typeof REGION_CODES
+                ]
+              }
+            </div>
           </Link>
         );
       }

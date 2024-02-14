@@ -178,6 +178,7 @@ enum UserStatus {
 enum UserRole {
   /// Администратор
   ADMIN
+  /// Пользователь
   USER
   /// Председатель
   CHAIRMAN

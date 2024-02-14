@@ -6,16 +6,16 @@ import { Button } from '@/components/ui/button';
 import {
   DropdownMenu,
   DropdownMenuContent,
-  DropdownMenuGroup,
   DropdownMenuItem,
   DropdownMenuLabel,
   DropdownMenuSeparator,
-  DropdownMenuShortcut,
   DropdownMenuTrigger
 } from '@/components/ui/dropdown-menu';
 
 export function UserNav() {
   const { data: session } = useSession();
+
+  console.log(session);
   if (session) {
     return (
       <DropdownMenu>
@@ -39,11 +39,6 @@ export function UserNav() {
               </p>
             </div>
           </DropdownMenuLabel>
-          <DropdownMenuSeparator />
-          <DropdownMenuGroup>
-            <DropdownMenuItem>Профиль</DropdownMenuItem>
-            <DropdownMenuItem>Настройки</DropdownMenuItem>
-          </DropdownMenuGroup>
           <DropdownMenuSeparator />
           <DropdownMenuItem onClick={() => signOut()}>Выйти</DropdownMenuItem>
         </DropdownMenuContent>

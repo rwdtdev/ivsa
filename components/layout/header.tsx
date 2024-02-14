@@ -1,4 +1,3 @@
-import ThemeToggle from '@/components/layout/ThemeToggle/theme-toggle';
 import { UserNav } from './user-nav';
 import Link from 'next/link';
 
@@ -14,7 +13,6 @@ export default function Header() {
         </div>
         <div className='flex items-center gap-2'>
           <UserNav />
-          <ThemeToggle />
         </div>
       </nav>
     </div>

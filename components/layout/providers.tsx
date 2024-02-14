@@ -1,7 +1,6 @@
 'use client';
 
 import React from 'react';
-import ThemeProvider from './ThemeToggle/theme-provider';
 import { SessionProvider, SessionProviderProps } from 'next-auth/react';
 
 export default function Providers({
@@ -13,11 +12,7 @@ export default function Providers({
 }) {
   return (
     <>
-      <SessionProvider session={session}>
-        <ThemeProvider attribute='class' defaultTheme='system' enableSystem>
-          {children}
-        </ThemeProvider>
-      </SessionProvider>
+      <SessionProvider session={session}>{children}</SessionProvider>
     </>
   );
 }

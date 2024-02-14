@@ -1,3 +1,4 @@
+import _ from 'underscore';
 import bcrypt from 'bcryptjs';
 import prisma from '@/server/services/prisma';
 import ApiError from '@/server/utils/error';
@@ -10,6 +11,7 @@ import { exclude } from '@/server/utils/exclude';
 import { UserView } from '@/types/user';
 import { TransactionSession } from '@/types/prisma';
 import { SortOrder } from '@/constants/data';
+import IvaAPI from '../iva/api';
 
 const defaultLimit = 100;
 
@@ -64,10 +66,28 @@ export class UserService {
       page = 1,
       limit = defaultLimit,
       searchTerm,
-      sortDirection = SortOrder.Descending
+      sortDirection = SortOrder.Descending,
+      query
     } = usersGetData;
 
     const containsSearchTerm = { contains: searchTerm, mode: 'insensitive' };
+
+    const conditions = [];
+
+    if (query) {
+      if (query.roles) {
+        conditions.push({ role: { in: query.roles } });
+      }
+      if (query.statuses) {
+        conditions.push({ status: { in: query.statuses } });
+      }
+      if (query.organisationsIds) {
+        conditions.push({ organisationId: { in: query.organisationsIds } });
+      }
+      if (query.departmentsIds) {
+        conditions.push({ departmentId: { in: query.departmentsIds } });
+      }
+    }
 
     const where = {
       where: {
@@ -79,7 +99,8 @@ export class UserService {
             { tabelNumber: containsSearchTerm },
             { phone: containsSearchTerm }
           ]
-        })
+        }),
+        ...(conditions.length > 0 && { AND: conditions })
       }
     };
 
@@ -271,6 +292,16 @@ export const createUser = async (userCreateData: UserCreateData): Promise<Client
   const salt = await bcrypt.genSalt(10);
   const passwordHash = await bcrypt.hash(password, salt);
 
+  const ivaUser = await IvaAPI.users.create({
+    login: username,
+    userType: role,
+    securityLevel: 'UNCLASSIFIED',
+    name,
+    email: { value: email, privacy: 'AUTHORIZED' },
+    phone: { value: phone, privacy: 'AUTHORIZED' },
+    password
+  });
+
   const user = await prisma.user.create({
     data: {
       name,
@@ -282,6 +313,7 @@ export const createUser = async (userCreateData: UserCreateData): Promise<Client
       organisationId,
       role,
       tabelNumber,
+      ivaProfileId: ivaUser.profileId,
       password: passwordHash,
       passwordHashes: passwordHash
     }
@@ -326,8 +358,6 @@ export const updateUser = async (
     updateData.passwordHashes = hashes.join(',');
 
     updateData.lastUpdatePasswordDate = new Date();
-  }
-  if (data.passwordHashes) {
   }
   if (data.phone) {
     updateData.phone = data.phone;

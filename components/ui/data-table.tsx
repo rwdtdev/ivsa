@@ -45,15 +45,6 @@ export function DataTable<TData, TValue>({
     getFilteredRowModel: getFilteredRowModel()
   });
 
-  // console.log(table.getIsSomeRowsSelected());
-
-  // if (table.getFilteredSelectedRowModel()) {
-  //   setSelectedRows(true);
-  // }
-
-  // this can be used to get the selectedrows
-  // console.log('value', table.getFilteredSelectedRowModel());
-
   return (
     <>
       <div className='w-full'>

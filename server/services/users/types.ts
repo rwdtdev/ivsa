@@ -1,6 +1,6 @@
-import { SortOrder } from '@/constants/data';
 import { RequiredNotNull } from '@/server/types';
-import { User, UserRole } from '@prisma/client';
+import { User, UserRole, UserStatus } from '@prisma/client';
+import { SortOrder } from '@/constants/data';
 
 export type ClientUser = Omit<User, 'password'>;
 
@@ -34,6 +34,12 @@ export type UsersGetData = Partial<{
   limit: number;
   searchTerm: string;
   sortDirection: SortOrder;
+  query: {
+    statuses?: UserStatus[];
+    roles?: UserRole[];
+    organisationsIds?: string[];
+    departmentsIds?: string[];
+  };
 }>;
 
 export type UserGetData = Partial<{

@@ -1,12 +1,13 @@
 'use client';
 
+import _ from 'underscore';
 import moment from 'moment';
 import { ColumnDef } from '@tanstack/react-table';
 import { CellAction } from './row-actions';
 import { Badge } from '@/components/ui/badge';
 import { Checkbox } from '@/components/ui/checkbox';
-import { UserRoles, UserStatuses } from '@/constants';
-import { UserRole, UserStatus } from '@prisma/client';
+import { UserRoles, UserStatuses } from '@/constants/mappings/prisma-enums';
+import { Department, Organisation, UserRole, UserStatus } from '@prisma/client';
 import { AlertTriangleIcon } from 'lucide-react';
 import {
   Tooltip,
@@ -14,8 +15,9 @@ import {
   TooltipProvider,
   TooltipTrigger
 } from '@/components/ui/tooltip';
-import { DataTableColumnHeader } from '@/components/data-table/data-table-column-header';
+import { DataTableColumnHeader } from '@/components/ui/data-table/data-table-column-header';
 import { UserView } from '@/types/user';
+import { DataTableFilterableColumn } from '@/types';
 
 const emptyCell = '';
 
@@ -36,6 +38,7 @@ export function fetchUsersTableColumnDefs(
       ),
       cell: ({ row }) => (
         <Checkbox
+          style={{ marginLeft: 8 }}
           checked={row.getIsSelected()}
           onCheckedChange={(value) => row.toggleSelected(!!value)}
           aria-label='Select row'
@@ -47,7 +50,10 @@ export function fetchUsersTableColumnDefs(
     {
       id: 'name',
       accessorKey: 'name',
-      header: ({ column }) => <DataTableColumnHeader column={column} title='ФИО' />
+      header: ({ column }) => <DataTableColumnHeader column={column} title='ФИО' />,
+      cell: ({ row }) => {
+        return <div style={{ padding: 10 }}>{row.original.name}</div>;
+      }
     },
     {
       id: 'username',
@@ -110,7 +116,7 @@ export function fetchUsersTableColumnDefs(
             <div className='relative inline-block align-middle'>
               <Badge
                 variant='secondary'
-                className='pointer-events-none bg-green-300 py-1 hover:bg-green-300'
+                className='pointer-events-none bg-green-200 py-1 hover:bg-green-200'
               >
                 {UserStatuses[status]}
               </Badge>
@@ -124,7 +130,7 @@ export function fetchUsersTableColumnDefs(
             <div className='relative inline-block align-middle'>
               <Badge
                 variant='secondary'
-                className='pointer-events-none bg-red-300 py-1 hover:bg-red-300'
+                className='pointer-events-none bg-red-200 py-1 hover:bg-red-200'
               >
                 {UserStatuses[status]}
               </Badge>
@@ -139,7 +145,7 @@ export function fetchUsersTableColumnDefs(
               <WarnComponent />
               <Badge
                 variant='secondary'
-                className='pointer-events-none bg-yellow-300 py-1 hover:bg-yellow-300'
+                className='pointer-events-none bg-gray-200 py-1 hover:bg-gray-200'
               >
                 {UserStatuses[status]}
               </Badge>
@@ -185,3 +191,49 @@ export function fetchUsersTableColumnDefs(
     }
   ];
 }
+
+export const filterableColumns = (
+  departments: Department[],
+  organisations: Organisation[]
+): DataTableFilterableColumn<UserView>[] => [
+  {
+    id: 'status',
+    title: 'Статус',
+    options: _.keys(UserStatuses).map((key) => {
+      const value = UserStatuses[key as keyof typeof UserStatuses];
+
+      return {
+        label: value[0]?.toUpperCase() + value.slice(1),
+        value: key
+      };
+    })
+  },
+  {
+    id: 'role',
+    title: 'Роль',
+    options: _.keys(UserRoles).map((key) => {
+      const value = UserRoles[key as keyof typeof UserRoles];
+
+      return {
+        label: value[0]?.toUpperCase() + value.slice(1),
+        value: key
+      };
+    })
+  },
+  {
+    id: 'department',
+    title: 'Отдел',
+    options: departments.map((department) => ({
+      label: department.name[0]?.toUpperCase() + department.name.slice(1),
+      value: department.id
+    }))
+  },
+  {
+    id: 'organisation',
+    title: 'Организация',
+    options: organisations.map((organisation) => ({
+      label: organisation.name[0]?.toUpperCase() + organisation.name.slice(1),
+      value: organisation.id
+    }))
+  }
+];

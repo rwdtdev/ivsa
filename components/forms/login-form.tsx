@@ -73,7 +73,7 @@ const LoginForm = () => {
     <Card className='w-[350px]'>
       <CardHeader>
         <CardTitle>Вход</CardTitle>
-        <CardDescription>Аутентификация в системе ASVI</CardDescription>
+        <CardDescription>Аутентификация в системе</CardDescription>
       </CardHeader>
       <CardContent>
         <Form {...form}>

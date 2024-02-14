@@ -11,18 +11,15 @@ import {
   DropdownMenuLabel,
   DropdownMenuTrigger
 } from '@/components/ui/dropdown-menu';
-import { Select, SelectTrigger } from '@/components/ui/select';
 import { UserFormData } from '@/lib/form-validation-schemas/user-form-schema';
-import { UserTableView } from '@/types/composition';
+import { UserView } from '@/types/user';
 import { UserStatus } from '@prisma/client';
-import { CheckCircledIcon } from '@radix-ui/react-icons';
-import { Table } from '@tanstack/react-table';
 import { Edit, MoreHorizontal, Bell, UserRoundX } from 'lucide-react';
 import { useRouter } from 'next/navigation';
 import { useState } from 'react';
 
 interface CellActionProps {
-  data: UserTableView;
+  data: UserView;
 }
 
 export const CellAction: React.FC<CellActionProps> = ({ data }) => {
@@ -83,23 +80,3 @@ export const CellAction: React.FC<CellActionProps> = ({ data }) => {
     </>
   );
 };
-
-export function UsersTableFloatingBarContent(table: Table<UserTableView>) {
-  return (
-    <div className='justify-between gap-2 align-middle'>
-      <Select onValueChange={(value) => {}}>
-        <SelectTrigger asChild>
-          <Button
-            aria-label='Delete selected rows'
-            title='Status'
-            variant='ghost'
-            size='icon'
-            className='size-7 data-[state=open]:bg-accent data-[state=open]:text-accent-foreground'
-          >
-            <CheckCircledIcon className='size-4' aria-hidden='true' />
-          </Button>
-        </SelectTrigger>
-      </Select>
-    </div>
-  );
-}

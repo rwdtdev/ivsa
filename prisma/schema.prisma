@@ -3,83 +3,236 @@ generator client {
   previewFeatures = ["fullTextSearch"]
 }
 
+generator docs {
+  provider = "node node_modules/prisma-docs-generator"
+  output   = "../docs/models"
+}
+
 datasource db {
   provider = "postgresql"
   url      = env("DATABASE_URL")
 }
 
 model Organisation {
+  /// Идентификатор отдела в формате cUID
   id          String       @id @default(cuid())
+  /// Название организации
   name        String       @unique
+  /// Описание организации
   description String
+  /// Список отделов модели {Department}, входящих в организацию
   Department  Department[]
+  /// Список пользователей модели {User}, входящих в организацию
   User        User[]
+  /// Дата и время создания записи
   createdAt   DateTime     @default(now())
+  /// Дата и время модификации записи
   updatedAt   DateTime     @updatedAt
 
   @@map("organisations")
 }
 
 model Department {
+  /// Идентификатор отдела в формате cUID
   id             String        @id @default(cuid())
+  /// Название отдела
   name           String        @unique
-  description    String
+  /// Описание отдела
+  description    String?
+  /// Ссылка на организацию, в которую входит отдел в формате cUID
   organisationId String?
+  /// Объект с данными об организации, в которую входит отдел
   organisation   Organisation? @relation(fields: [organisationId], references: [id])
-  User           User[]
+  /// Дата и время создания записи
   createdAt      DateTime      @default(now())
+  /// Дата и время модификации записи
   updatedAt      DateTime      @updatedAt
+  /// Список пользователей, входящих в отдел
+  users          User[]
 
   @@map("departments")
 }
 
 model User {
+  /// Идентификатор пользователя в формате cUID
   id                     String        @id @default(cuid())
+  /// ФИО
   name                   String
+  /// Логин для входа в систему
   username               String        @unique
+  /// Адрес электронной почты
   email                  String        @unique
+  /// Номер телефона
   phone                  String
+  /// Хэш пароля
   password               String
+  /// Список последних 5ти захешированных паролей пользователя, разделенных ","
   passwordHashes         String
-  roles                  String
+  /// Роль
+  role                   UserRole
+  /// Статус
   status                 UserStatus
+  /// Дата и время создания записи
   createdAt              DateTime      @default(now())
+  /// Дата и время модификации записи
   updatedAt              DateTime      @updatedAt
+  /// Табельный номер
+  tabelNumber            String        @unique
+  /// Внешний идентификатор в системе IVA R
+  ivaProfileId           String?       @unique
+  /// Ссылка на организацию, в которой состоит пользователь
   organisationId         String?
+  /// Токен для обновления accessToken-а в сессии пользователя
   refreshToken           String?
+  /// Дата и время последней смены пароля
   lastUpdatePasswordDate DateTime      @default(now())
+  /// Объект с данными об организации, в которой состоит пользователь
   organisation           Organisation? @relation(fields: [organisationId], references: [id])
+  /// Ссылка на отдел, в котором состоит пользователь
   departmentId           String?
+  /// Объект с данными об отделе, в котором состоит пользователь
   department             Department?   @relation(fields: [departmentId], references: [id])
+  /// Объект с данными о событии, в котором пользователь является участником
+  event                  Event?        @relation(fields: [eventId], references: [id])
+  /// Сссылка на событие. в котором пользователь является участником
+  eventId                String?
+  /// Объект с данными описи, в которой участвует пользователь
+  inventory              Inventory?    @relation(fields: [inventoryId], references: [id])
+  /// Ссылка на опись, в которой участвует пользователь
+  inventoryId            String?
 
   @@map("users")
 }
 
+model Event {
+  /// Идентификатор события в формате cUID
+  id                    String      @id @default(cuid())
+  /// Тип события
+  type                  EventType
+  /// Идентификатор распоряжения
+  commandId             String
+  /// Номер распоряжения 
+  commandNumber         String
+  /// Дата распоряжения
+  commandDate           String
+  /// Идентификатор приказа формы № ИНВ-22
+  orderId               String
+  /// Номер приказа формы № ИНВ-22
+  orderNumber           String
+  /// Дата составления приказа формы № ИНВ-22
+  orderDate             String
+  /// Дата начала события
+  startAt               DateTime
+  /// Дата окончания события
+  endAt                 DateTime
+  /// Балансовая единица
+  balanceUnit           String
+  /// Код региона, в котором находится балансовая единица
+  balanceUnitRegionCode String
+  /// Список участников события
+  participants          User[]
+  /// Список описей
+  inventories           Inventory[]
+  /// Дата и время создания записи
+  createdAt             DateTime    @default(now())
+  /// Дата и время модификации записи
+  updatedAt             DateTime    @updatedAt
+  /// URL видео файла инвентаризации
+  videoFileUrl          String?
+  /// Статус событие инвентаризации или инструктажа
+  status                EventStatus
+
+  @@map("events")
+}
+
+model Inventory {
+  /// Идентификатор описи в формате cUID
+  id           String   @id @default(cuid())
+  /// Идентификатор события к которому привязана опись
+  eventId      String
+  /// Объект с данными о событии, с которым связана опись
+  event        Event    @relation(fields: [eventId], references: [id])
+  /// Участники описи
+  participants User[]
+  /// Номер описи
+  number       String
+  /// Дата описи
+  date         String
+  /// Дата и время создания записи
+  createdAt    DateTime @default(now())
+  /// Дата и время модификации записи
+  updatedAt    DateTime @updatedAt
+
+  @@map("inventories")
+}
+
 enum UserStatus {
+  /// Активен
   ACTIVE
+  /// Заблокирован
   BLOCKED
+  /// Освобожден от должности
   RECUSED
 }
 
 enum UserRole {
+  /// Администратор
   ADMIN
   USER
+  /// Председатель
+  CHAIRMAN
+  /// Участник комиссии
+  PARTICIPANT
+  /// Материально-ответственное лицо
+  FINANCIALLY_RESPONSIBLE_PERSON
+  /// Бухгалтер
+  ACCOUNTANT
+  /// Проверяющий
+  INSPECTOR
+  /// Руководитель
+  MANAGER
+  /// Акцепт-бухгалтер
+  ACCOUNTANT_ACCEPTOR
+  /// Оператор-технолог
+  ENGINEER
+}
+
+enum EventType {
+  /// Событие тип "Инвентаризация"
+  AUDIT
+  /// Событие типа "Инструктаж"
+  BRIEFING
+}
+
+enum EventStatus {
+  /// Инструктаж не начат
+  NOT_STARTED
+  /// Инструктаж в процессе
+  IN_PROGRESS
+  /// Инструктаж пройден
+  PASSED
+  /// Событие открыто
+  OPEN
+  /// Событие закрыто
+  CLOSED
+  /// Событие удалено
+  REMOVED
 }
 
 model SubSystems {
-  id             String        @id @default(cuid())
-  name           String        @unique
-  description    String
+  id          String @id @default(cuid())
+  name        String @unique
+  description String
 
   @@map("subsystems")
 }
 
 model OperationRecord {
-  id             String        @id @default(cuid())
-  createdAt      DateTime      @map("created_at") @default(now())
-  userId         String        @map("user_id")
-  subsystemId    String        @map("subsystem_id")
-  payload        Json
+  id          String   @id @default(cuid())
+  createdAt   DateTime @default(now()) @map("created_at")
+  userId      String   @map("user_id")
+  subsystemId String   @map("subsystem_id")
+  payload     Json
 
   @@map("operations_records")
 }

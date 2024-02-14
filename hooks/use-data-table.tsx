@@ -151,7 +151,6 @@ export function useDataTable<TData, TValue>({
   }, [fallbackPage, fallbackPerPage]);
 
   React.useEffect(() => {
-    console.log('after', pageIndex);
     router.push(
       `${pathname}?${createQueryString({
         page: pageIndex + 1,
@@ -271,6 +270,11 @@ export function useDataTable<TData, TValue>({
     getSortedRowModel: getSortedRowModel(),
     getFacetedRowModel: getFacetedRowModel(),
     getFacetedUniqueValues: getFacetedUniqueValues(),
+    defaultColumn: {
+      minSize: 0,
+      size: Number.MAX_SAFE_INTEGER,
+      maxSize: Number.MAX_SAFE_INTEGER
+    },
     manualPagination: true,
     manualSorting: false,
     manualFiltering: true

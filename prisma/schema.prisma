@@ -178,7 +178,6 @@ enum UserStatus {
 enum UserRole {
   /// Администратор
   ADMIN
-  /// Пользователь
   USER
   /// Председатель
   CHAIRMAN
@@ -218,4 +217,22 @@ enum EventStatus {
   CLOSED
   /// Событие удалено
   REMOVED
+}
+
+model SubSystems {
+  id          String @id @default(cuid())
+  name        String @unique
+  description String
+
+  @@map("subsystems")
+}
+
+model OperationRecord {
+  id          String   @id @default(cuid())
+  createdAt   DateTime @default(now()) @map("created_at")
+  userId      String   @map("user_id")
+  subsystemId String   @map("subsystem_id")
+  payload     Json
+
+  @@map("operations_records")
 }

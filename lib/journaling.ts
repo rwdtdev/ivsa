@@ -1,3 +1,6 @@
+import { JsonValue } from '@prisma/client/runtime/library';
+import prisma from '../server/services/prisma';
+
 const DEFAULT_MAX_RECORDS_TO_RETURN = 1000;
 
 export enum payloadValidationErrors {
@@ -8,6 +11,7 @@ export enum payloadValidationErrors {
 export enum storeRecordErrors {
   NO_USERID = 'Missing user id',
   NO_SUBSYSTEMID = 'Missing subsystem id',
+  PRISMA = 'Prisma or lower level error',
 }
 
 export interface storeRecordReturnValue {
@@ -17,16 +21,17 @@ export interface storeRecordReturnValue {
 
 export interface getRecordsParameters {
   userIds?: string[];
-  subSystemIds?: string[];
-  timestampRange?: any; // TODO Proper range value
+  subsystemIds?: string[];
+  timestampFrom?: number;
+  timestampTo?: number;
   maxRecordsToReturn?: number;
 }
 
 export interface storedRecord {
   userId: string;
-  subSystemId: string;
-  timestamp: number;
-  payload: object;  
+  subsystemId: string;
+  createdAt: Date;
+  payload: JsonValue;
 }
 
 export interface getRecordsReturnValue {
@@ -57,11 +62,11 @@ function validatePayload(payload: Object): payloadValidationReturnValue {
   };
 }
 
-export function storeRecord(
+export async function storeRecord(
   userId: string,
-  subSystemId: string,
+  subsystemId: string,
   payload: object
-): storeRecordReturnValue {
+): Promise<storeRecordReturnValue> {
   if (userId.length === 0) {
     return {
       success: false,
@@ -69,7 +74,7 @@ export function storeRecord(
     };
   }
 
-  if (subSystemId.length === 0) {
+  if (subsystemId.length === 0) {
     return {
       success: false,
       errorMessage: storeRecordErrors.NO_SUBSYSTEMID
@@ -84,19 +89,60 @@ export function storeRecord(
     };
   }
 
-  return { success: true };
+  try {
+    await prisma.operationRecord.create({ data: { userId, subsystemId, payload: JSON.stringify(payload) } });
+    return {
+      success: true,
+    };
+  } catch (error) {
+    return {
+      success: false,
+      errorMessage: storeRecordErrors.PRISMA
+    };
+  }
 }
 
-export function getRecords(params: getRecordsParameters): getRecordsReturnValue {
+export async function getRecords(params: getRecordsParameters): Promise<getRecordsReturnValue> {
   const maxRecords = params.maxRecordsToReturn ?? DEFAULT_MAX_RECORDS_TO_RETURN;
+  const tstampFrom = params.timestampFrom ?? 0;
+  const tstampTo = params.timestampTo ?? Date.now();
+  const queryParams = [];
+
+  if (!!params.userIds) {
+    queryParams.push({ userId: { in: params.userIds } });
+  }
+
+  if (!!params.subsystemIds) {
+    queryParams.push({ subsystemId: { in: params.subsystemIds } });
+  }
   
+  const records = await prisma.operationRecord.findMany({
+    take: maxRecords,
+    where: {
+      AND: [
+        ...queryParams,
+        { createdAt: {
+            gte: new Date(tstampFrom).toISOString(),
+            lte: new Date(tstampTo).toISOString(),
+          }
+        },
+      ],
+    },
+    select: {
+      id: true,
+      userId: true,
+      subsystemId: true,
+      createdAt: true,
+      payload: true,
+    },
+    orderBy: [
+      { createdAt: 'desc' },
+      { id: 'desc' },
+    ],
+  });
+
   return {
     success: true,
-    records: [ {
-      userId: 'uid001',
-      subSystemId: 'subsysid001',
-      timestamp: Date.now(),
-      payload: {}
-    } ]
+    records,
   };
 }

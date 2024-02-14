@@ -44,12 +44,14 @@ export default function UpdateUserPage() {
 
   return (
     <div className='flex-1 space-y-4 p-8'>
-      <BreadCrumb items={breadcrumbItems} />
-      <UserForm
-        organisations={organisations}
-        departments={departments}
-        initialData={userInitialData}
-      />
+      <main className='w-full pt-16'>
+        <BreadCrumb items={breadcrumbItems} />
+        <UserForm
+          organisations={organisations}
+          departments={departments}
+          initialData={userInitialData}
+        />
+      </main>
     </div>
   );
 }

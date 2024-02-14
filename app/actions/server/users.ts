@@ -12,7 +12,8 @@ import Cache from 'node-cache';
 import { UserView } from '@/types/user';
 import { PaginatedResponse } from '@/server/types';
 import { SortOrder } from '@/constants/data';
-import { User } from '@prisma/client';
+import { User, UserRole, UserStatus } from '@prisma/client';
+import { UserCreateData } from '@/server/services/users/types';
 
 const cache = new Cache({
   checkperiod: 120
@@ -20,7 +21,7 @@ const cache = new Cache({
 
 export async function createUserAction(formData: UserFormData) {
   try {
-    await createUser(formData);
+    await createUser(formData as UserCreateData);
   } catch (err) {
     throw err;
   }
@@ -67,7 +68,7 @@ export async function getUsersAction(
 > {
   noStore();
   try {
-    const { page, per_page, sort, title, status, role, operator, search } =
+    const { page, per_page, sort, status, role, search, organisation, department } =
       searchParamsSchema.parse(searchParams);
 
     // Fallback page for invalid page numbers
@@ -86,16 +87,23 @@ export async function getUsersAction(
       SortOrder
     ]) ?? ['title', 'asc'];
 
-    // @TODO Доделать сортировку столбцов
-    const statuses = (status?.split('.') as User['status'][]) ?? [];
-    const roles = (role?.split('.') as User['role'][]) ?? [];
+    const statuses = (status?.split('.') as UserStatus[]) ?? [];
+    const roles = (role?.split('.') as UserRole[]) ?? [];
+    const organisationsIds = (organisation?.split('.') as string[]) ?? [];
+    const departmentsIds = (department?.split('.') as string[]) ?? [];
 
     const userService = new UserService();
 
     return await userService.getUsers({
       searchTerm: search,
       limit,
-      page: fallbackPage
+      page: fallbackPage,
+      query: {
+        ...(statuses.length > 0 && { statuses }),
+        ...(roles.length > 0 && { roles }),
+        ...(organisationsIds.length > 0 && { organisationsIds }),
+        ...(departmentsIds.length > 0 && { departmentsIds })
+      }
     });
   } catch (err) {
     console.log(err);

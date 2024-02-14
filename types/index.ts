@@ -56,5 +56,6 @@ export interface DataTableSearchableColumn<TData> {
 
 export interface DataTableFilterableColumn<TData>
   extends DataTableSearchableColumn<TData> {
+  type?: 'date-picker' | 'range-date-picker';
   options: Option[];
 }

@@ -8,8 +8,10 @@ import BreadCrumb from '@/components/breadcrumb';
 import { Button } from '@/components/ui/button';
 import { Heading } from '@/components/ui/heading';
 import { Separator } from '@/components/ui/separator';
-import { DataTableSkeleton } from '@/components/data-table/data-table-skeleton';
+import { DataTableSkeleton } from '@/components/ui/data-table/data-table-skeleton';
 import { UsersTable } from '@/components/tables/users-table';
+import { getDepartmentsAction } from '@/app/actions/server/departments';
+import { getOrganisationsAction } from '@/app/actions/server/organisations';
 
 export interface IndexPageProps {
   searchParams: SearchParams;
@@ -22,6 +24,8 @@ const MemoizedHeading = React.memo(Heading);
 
 export default async function UsersPage({ searchParams }: IndexPageProps) {
   const users = await getUsersAction(searchParams);
+  const departments = await getDepartmentsAction();
+  const organisations = await getOrganisationsAction();
 
   return (
     <div className='flex h-screen overflow-hidden'>
@@ -43,7 +47,11 @@ export default async function UsersPage({ searchParams }: IndexPageProps) {
           <React.Suspense
             fallback={<DataTableSkeleton columnCount={4} filterableColumnCount={2} />}
           >
-            <UsersTable users={users} />
+            <UsersTable
+              users={users}
+              departments={departments}
+              organisations={organisations}
+            />
           </React.Suspense>
         </div>
       </main>

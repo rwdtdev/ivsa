@@ -11,7 +11,7 @@ import { exclude } from '@/server/utils/exclude';
 import { UserView } from '@/types/user';
 import { TransactionSession } from '@/types/prisma';
 import { SortOrder } from '@/constants/data';
-import { createIvaUser } from '../iva';
+import IvaAPI from '../iva/api';
 
 const defaultLimit = 100;
 
@@ -292,7 +292,7 @@ export const createUser = async (userCreateData: UserCreateData): Promise<Client
   const salt = await bcrypt.genSalt(10);
   const passwordHash = await bcrypt.hash(password, salt);
 
-  const ivaUser = await createIvaUser({
+  const ivaUser = await IvaAPI.users.create({
     login: username,
     userType: role,
     securityLevel: 'UNCLASSIFIED',

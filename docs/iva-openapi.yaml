@@ -1,0 +1,2420 @@
+openapi: 3.0.1
+info:
+  title: IVA MCU System Integration API
+  description: |
+    # Introduction
+    IVA MCU System Integration REST API is intended for 3-rd party server to server integration.
+
+    Clients API is described [here](/doc/api/rest.html).
+
+    # Authentication
+    Most requests to the system require authorization to perform a certain action. Such requests in the API description are marked with the - `AUTHORIZATIONS` marker.
+
+    <SecurityDefinitions />
+
+    Authentication is performed using [bearer HTTP authentication scheme](https://tools.ietf.org/html/rfc6750),
+    thereby all HTTP requests which are required authentication must include an access token which must be sent in the `Authorization` HTTP request header:
+
+        Authorization: Bearer <token>
+
+    `<token>` should be presented in form of [JWT](https://datatracker.ietf.org/doc/html/rfc7519) with following structure:
+
+    Header:
+
+        {
+            "alg": "HS256",
+            "typ": "JWT"
+        }
+
+    Payload:
+
+        {
+            "sub": <appId>,
+            "iat": <timestamp>
+        }
+    Where `<timestamp>` is the time of the `<token>` creation in seconds. That value should be in range:<br/>
+    `server time` - 30 sec ≤ `<timestamp>` ≤ `server time`
+
+    The server timestamp in milis is available with [system info](/doc/api/rest.html#operation/getSystemInfo).
+
+    Signature:
+
+        HMACSHA256(
+            base64UrlEncode(header) + "." +
+            base64UrlEncode(payload),
+            <appSecret>
+        )
+
+    Finally, JWT concatenates parts described above as:
+
+        base64UrlEncode(header).base64UrlEncode(payload).base64UrlEncode(signature)
+
+    # Get application ID and secret
+    To get integration application authentication access parameters (`<appId>` and `<appSecret>`) contact IVA MCU system administrator which
+    should create an account for the integration application and send back the access parameters.
+  version: 1.18.6
+servers:
+  - url: https://beta.hi-tech.org/api/rest/integration
+    description: The stage API server
+tags:
+  - name: Requests
+    description: |
+      ## Method usage
+      <table>
+        <tr><th>Method</th><th>Usage</th></tr>
+        <tr><td rowspan=4>POST</td><td>To create the resource</td></tr>
+        <tr><td>To complitely update the resource</td></tr>
+        <tr><td>To start the process</td></tr>
+        <tr><td>To remove from the collection all of elements with identifiers from the specified collection</td></tr>
+        <tr><td>GET</td><td>To get the resource</td></tr>
+        <tr><td>PATCH</td><td>To partialy update the resource</td></tr>
+        <tr><td>DELETE</td><td>To delete the resource by identifier</td></tr>
+      </table>
+
+      ## Parameter passing
+      For all requests, identifiers are passed in the path, except sending a collection of them. In this case, identifiers can be sent as comma-separated query parameter for GET-method, or in the request body for POST-method.
+
+      Query parameters are sent only with a GET-method. In this case special symbols such as _ ,+, \, #, &, %, " must be encoded:
+      <table>
+        <tr><th>Symbol</th><th>Encoding</th></tr>
+        <tr><td>Space</td><td>%20</td></tr>
+        <tr><td>!</td><td>%21</td></tr>
+        <tr><td>"</td><td>%22</td></tr>
+        <tr><td>#</td><td>%23</td></tr>
+        <tr><td>$</td><td>%24</td></tr>
+        <tr><td>%</td><td>%25</td></tr>
+        <tr><td>&</td><td>%26</td></tr>
+        <tr><td>'</td><td>%27</td></tr>
+        <tr><td>(</td><td>%28</td></tr>
+        <tr><td>)</td><td>%29</td></tr>
+        <tr><td>*</td><td>%2A</td></tr>
+        <tr><td>+</td><td>%2B</td></tr>
+        <tr><td>,</td><td>%2C</td></tr>
+        <tr><td>-</td><td>%2D</td></tr>
+        <tr><td>.</td><td>%2E</td></tr>
+        <tr><td>/</td><td>%2F</td></tr>
+      </table>
+  - name: Responses
+    description: |
+      ## HTTP status codes
+      Standard HTTP response codes are used to identify the success of the request.
+      <table>
+          <tr><th>HTTP response code</th><th>Description</th></tr>
+          <tr><td>200 - Ok</td><td>The request was successful and the data was returned in the response</td></tr>
+          <tr><td>204 - No content</td><td>The request was successful and there is no data in the response</td></tr>
+          <tr><td>400 - Bad Request</td><td>Some request parameters were passed incorrectly</td></tr>
+          <tr><td>401 - Unauthorized</td><td>Authentication data is missing or incorrect</td></tr>
+          <tr><td>403 - Forbidden</td><td>The request with the current authentication data is not allowed</td></tr>
+          <tr><td>404 - Not Found</td><td>The requested resource was not found</td></tr>
+          <tr><td>415 - Unsupported Media Type</td><td>The request was send with invalid Content-Type header</td></tr>
+          <tr><td>500 - Server Error</td><td>Unexpected server-side error</td></tr>
+      </table>
+
+      ## Handling exception
+      If the response code differs from `200 - Ok` and `204 - No Content`, additional error information is passed in the response body:
+      <SchemaDefinition schemaRef="#/components/schemas/ERROR" exampleRef="#/components/examples/ERROR"/>
+paths:
+  /conferences:
+    post:
+      tags:
+        - Conference
+      summary: Create conference
+      description:
+        Creates conference planned in specified time. <br/><br/>It is required to have
+        `Conference-Write` privilege.
+      operationId: createConference
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/ConferenceCreateRequestIntegrationDTO'
+        required: true
+      responses:
+        '200':
+          description: First conference session
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ConferenceCreateResultIntegrationDTO'
+        '400':
+          description:
+            reason = CONFERENCE_TEMPLATE_REMOVED, type = ConferenceCreateException - if
+            conference template was removed.<br/>reason = NO_SUBSCRIPTION_FOUND, type =
+            ConferenceCreateException - if subscription was not found.<br/>reason =
+            NO_AVAILABLE_CONFERENCE_NUMBERS, type = ConferenceCreateException - if
+            couldn't reserve conference number.<br/>reason = FS_LIMIT_RESTRICTION, type =
+            IvcsAccessControlException - if user doesn't have enough free space.
+      security:
+        - IntegrationAuthentication: []
+  /conferences/{conferenceId}:
+    delete:
+      tags:
+        - Conference
+      summary: Delete periodical conference
+      description:
+        Deletes periodical conference with all child sessions by ID.<br/><br/>It is
+        required to have `Conference-Write` privilege.
+      operationId: deletePeriodicalConference
+      parameters:
+        - name: conferenceId
+          in: path
+          required: true
+          schema:
+            type: string
+            format: uuid
+      responses:
+        '204':
+          description: Success
+        '400':
+          description:
+            reason = DELETED, type = ConferenceEditException - if conference has already
+            been deleted
+      security:
+        - IntegrationAuthentication: []
+    patch:
+      tags:
+        - Conference
+      summary: Update periodical conference
+      description:
+        Updates specified parameters of periodical conference.<br/><br/>It is required to
+        have `Conference-Write` privilege.
+      operationId: updatePeriodicalConference
+      parameters:
+        - name: conferenceId
+          in: path
+          description: Conference ID
+          required: true
+          schema:
+            type: string
+            format: uuid
+      requestBody:
+        description:
+          Set of parameters to be updated for specified conference session. Absence of
+          particular parameter means that this property is not updated.
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/ConferenceUpdateRequestIntegrationDTO'
+        required: true
+      responses:
+        '204':
+          description: Success
+        '400':
+          description:
+            reason = NO_AVAILABLE_CONFERENCE_NUMBERS, type = ConferenceEditException - if
+            couldn't reserve conference number.<br/>reason = MAX_EVENT_DURATION_EXCEEDED,
+            type = ConferenceEditException - if duration parameter is greater than event
+            duration limit.<br/>reason = DELETED, type = ConferenceEditException - if
+            conference session was deleted.<br/>reason = NAME_ALREADY_EXISTS, type =
+            FSNodeWithNameAlreadyExists - if file name already exists.<br/>reason =
+            DOCUMENT_IS_BEING_DEMONSTRATED, type = StorageException - if document is being
+            demonstrated.<br/>reason = FS_LIMIT_RESTRICTION, type =
+            IvcsAccessControlException - if user doesn't have enough free space.
+      security:
+        - IntegrationAuthentication: []
+  /conferences/{conferenceId}/participants/add:
+    post:
+      tags:
+        - Conference
+      summary: Add conference participants
+      description:
+        Adds participants to the periodical conference. <br/><br/>It is required to have
+        `Conference-Write` privilege.
+      operationId: addConferenceParticipants
+      parameters:
+        - name: conferenceId
+          in: path
+          description: Conference ID
+          required: true
+          schema:
+            type: string
+            format: uuid
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/ConferenceParticipantsAddRequestIntegrationDTO'
+        required: true
+      responses:
+        '204':
+          description: Success
+        '400':
+          $ref: '#/components/responses/400'
+        '500':
+          $ref: '#/components/responses/500'
+      security:
+        - IntegrationAuthentication: []
+  /conferences/{conferenceId}/participants:
+    get:
+      tags:
+        - Conference
+      summary: Find conference participants
+      description:
+        Find periodical conference participants by parameters. <br/><br/>It is required to
+        have `Conference-Read` privilege.
+      operationId: findConferenceParticipants
+      parameters:
+        - name: conferenceId
+          in: path
+          description: Conference ID
+          required: true
+          schema:
+            type: string
+            format: uuid
+        - name: searchCriteria
+          in: query
+          description: Search criteria (by profile name)
+          schema:
+            type: string
+            default: ''
+        - name: requestedData
+          in: query
+          description: Additional participant's requested data
+          schema:
+            type: array
+            items:
+              type: string
+              enum:
+                - JOIN_LINK
+        - name: sortField
+          in: query
+          description: Participant sort field
+          schema:
+            type: string
+            enum:
+              - ROLE
+              - NAME
+            default: NAME
+        - name: orderAsc
+          in: query
+          description: Result set sort order
+          schema:
+            type: boolean
+            default: true
+        - name: offset
+          in: query
+          schema:
+            minimum: 0
+            type: integer
+            description: The offset for slice request. Not negative integer value.
+            format: int32
+            default: 0
+        - name: limit
+          in: query
+          schema:
+            maximum: 200
+            minimum: 1
+            type: integer
+            description: The count of entries for slice request. Positive integer value
+            format: int32
+            default: 50
+      responses:
+        '200':
+          description: Success
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/SliceConferenceParticipantsIntegrationDTO'
+        '400':
+          $ref: '#/components/responses/400'
+        '500':
+          $ref: '#/components/responses/500'
+      security:
+        - IntegrationAuthentication: []
+  /conferences/{conferenceId}/participants/remove:
+    post:
+      tags:
+        - Conference
+      summary: Remove conference participants
+      description:
+        Removes participants from the periodical conference with such ids. <br/><br/>It is
+        required to have `Conference-Write` privilege.
+      operationId: removeConferenceParticipants
+      parameters:
+        - name: conferenceId
+          in: path
+          description: Conference ID
+          required: true
+          schema:
+            type: string
+            format: uuid
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/ConferenceParticipantsRemoveRequestIntegrationDTO'
+        required: true
+      responses:
+        '204':
+          description: Success
+        '400':
+          $ref: '#/components/responses/400'
+        '500':
+          $ref: '#/components/responses/500'
+      security:
+        - IntegrationAuthentication: []
+  /conference-sessions/create-room:
+    post:
+      tags:
+        - Conference session
+      summary: Create room
+      description:
+        Creates virtual conference room (room is a conference session without start and
+        end). <br/><br/>It is required to have `Conference-Write` privilege.
+      operationId: createRoom
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/RoomCreateRequestIntegrationDTO'
+        required: true
+      responses:
+        '200':
+          description: Created room
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/RoomCreateResultIntegrationDTO'
+        '400':
+          description:
+            reason = CONFERENCE_TEMPLATE_REMOVED, type = ConferenceCreateException - if
+            conference template was removed.<br/>reason = NO_SUBSCRIPTION_FOUND, type =
+            ConferenceCreateException - if subscription was not found.<br/>reason =
+            NO_AVAILABLE_CONFERENCE_NUMBERS, type = ConferenceCreateException - if
+            couldn't reserve conference number.<br/>reason = FS_LIMIT_RESTRICTION, type =
+            IvcsAccessControlException - if user doesn't have enough free space.
+      security:
+        - IntegrationAuthentication: []
+  /conference-sessions/{conferenceSessionId}:
+    delete:
+      tags:
+        - Conference session
+      summary: Delete conference session
+      description:
+        Removes conference session by Id. If its conference is periodical then rest
+        sessions of conference are not changed.<br<br/>It is required to have
+        `Conference-Write` privilege.
+      operationId: deleteSessionWithId
+      parameters:
+        - name: conferenceSessionId
+          in: path
+          required: true
+          schema:
+            type: string
+            format: uuid
+      responses:
+        '204':
+          description: Success
+        '400':
+          description:
+            reason = DELETED, type = ConferenceEditException - if conference has been
+            already deleted<br/>reason = CAN_NOT_DELETE_SESSION_WITH_RECORD, type =
+            ConferenceEditException - if conference has records which are not allowed to
+            be deleted
+      security:
+        - IntegrationAuthentication: []
+    patch:
+      tags:
+        - Conference session
+      summary: Update conference session
+      description:
+        Updates specified parameters of conference session.<br/><br/>It is required to
+        have `Conference-Write` privilege.
+      operationId: updateConferenceSession
+      parameters:
+        - name: conferenceSessionId
+          in: path
+          description: Conference session ID
+          required: true
+          schema:
+            type: string
+            format: uuid
+      requestBody:
+        description:
+          Set of parameters to be updated for specified conference session. Absence of
+          particular parameter means that this property is not updated.
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/ConferenceSessionUpdateRequestIntegrationDTO'
+        required: true
+      responses:
+        '204':
+          description: Success
+        '400':
+          description:
+            reason = NO_AVAILABLE_CONFERENCE_NUMBERS, type = ConferenceEditException - if
+            couldn't reserve conference number.<br/>reason = MAX_EVENT_DURATION_EXCEEDED,
+            type = ConferenceEditException - if duration parameter is greater than event
+            duration limit.<br/>reason = DELETED, type = ConferenceEditException - if
+            conference session was deleted.<br/>reason = NAME_ALREADY_EXISTS, type =
+            FSNodeWithNameAlreadyExists - if file name already exists.<br/>reason =
+            DOCUMENT_IS_BEING_DEMONSTRATED, type = StorageException - if document is being
+            demonstrated.<br/>reason = FS_LIMIT_RESTRICTION, type =
+            IvcsAccessControlException - if user doesn't have enough free space.
+      security:
+        - IntegrationAuthentication: []
+  /conference-sessions/start-now:
+    post:
+      tags:
+        - Conference session
+      summary: Quick start conference
+      description:
+        Starts new conference session. <br/><br/>It is required to have `Conference-Write`
+        privilege.
+      operationId: startConferenceNow
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/ConferenceStartNowRequestIntegrationDTO'
+        required: true
+      responses:
+        '200':
+          description: Created conference session
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/StartNowConferenceResultIntegrationDTO'
+        '400':
+          description:
+            reason = CONFERENCE_TEMPLATE_REMOVED, type = ConferenceCreateException - if
+            conference template was removed.<br/>reason = NO_SUBSCRIPTION_FOUND, type =
+            ConferenceCreateException - if subscription was not found.<br/>reason =
+            NO_AVAILABLE_CONFERENCE_NUMBERS, type = ConferenceCreateException - if
+            couldn't reserve conference number..<br/>reason = FS_LIMIT_RESTRICTION, type =
+            IvcsAccessControlException - if user doesn't have enough free space.
+      security:
+        - IntegrationAuthentication: []
+  /conference-sessions/{conferenceSessionId}/participants/add:
+    post:
+      tags:
+        - Conference session
+      summary: Add conference session participants
+      description:
+        Adds participants to the conference session. <br/><br/>It is required to have
+        `Conference-Write` privilege.
+      operationId: addConferenceSessionParticipants
+      parameters:
+        - name: conferenceSessionId
+          in: path
+          description: Conference session ID
+          required: true
+          schema:
+            type: string
+            format: uuid
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/ConferenceSessionParticipantsAddRequestIntegrationDTO'
+        required: true
+      responses:
+        '204':
+          description: Success
+        '400':
+          $ref: '#/components/responses/400'
+        '500':
+          $ref: '#/components/responses/500'
+      security:
+        - IntegrationAuthentication: []
+  /conference-sessions/{conferenceSessionId}/participants:
+    get:
+      tags:
+        - Conference session
+      summary: Find conference session participants
+      description:
+        Find conference session participants by parameters. <br/><br/>It is required to
+        have `Conference-Read` privilege.
+      operationId: findConferenceSessionParticipants
+      parameters:
+        - name: conferenceSessionId
+          in: path
+          description: Conference session ID
+          required: true
+          schema:
+            type: string
+            format: uuid
+        - name: searchCriteria
+          in: query
+          description: Search criteria (by profile name)
+          schema:
+            type: string
+            default: ''
+        - name: participantFilterType
+          in: query
+          description: Participant filter type
+          schema:
+            type: string
+            enum:
+              - INVITED
+              - SPEAKER_OR_MODERATOR
+              - NOT_CONNECTED
+              - CONNECTED
+            default: INVITED
+        - name: requestedData
+          in: query
+          description: Additional participant's requested data
+          schema:
+            type: array
+            items:
+              type: string
+              enum:
+                - CALL_REQUEST
+                - JOIN_LINK
+                - CONNECTION_STATUS
+        - name: sortField
+          in: query
+          description: Participant sort field
+          schema:
+            type: string
+            enum:
+              - ROLE
+              - NAME
+            default: NAME
+        - name: orderAsc
+          in: query
+          description: Result set sort order
+          schema:
+            type: boolean
+            default: true
+        - name: offset
+          in: query
+          schema:
+            minimum: 0
+            type: integer
+            description: The offset for slice request. Not negative integer value.
+            format: int32
+            default: 0
+        - name: limit
+          in: query
+          schema:
+            maximum: 200
+            minimum: 1
+            type: integer
+            description: The count of entries for slice request. Positive integer value
+            format: int32
+            default: 50
+      responses:
+        '200':
+          description: Success
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/SliceConferenceSessionParticipantsIntegrationDTO'
+        '400':
+          $ref: '#/components/responses/400'
+        '500':
+          $ref: '#/components/responses/500'
+      security:
+        - IntegrationAuthentication: []
+  /conference-sessions/{conferenceSessionId}/participants/remove:
+    post:
+      tags:
+        - Conference session
+      summary: Remove conference session participants
+      description:
+        Removes participants from the conference session with such ids. <br/><br/>It is
+        required to have `Conference-Write` privilege.
+      operationId: removeConferenceSessionParticipants
+      parameters:
+        - name: conferenceSessionId
+          in: path
+          description: Conference session ID
+          required: true
+          schema:
+            type: string
+            format: uuid
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/ConferenceSessionParticipantsRemoveRequestIntegrationDTO'
+        required: true
+      responses:
+        '204':
+          description: Success
+        '400':
+          $ref: '#/components/responses/400'
+        '500':
+          $ref: '#/components/responses/500'
+      security:
+        - IntegrationAuthentication: []
+  /conference-templates:
+    get:
+      tags:
+        - Conference
+      summary: List conference templates
+      description:
+        Lists conference templates which are available for the domain. <br/><br/>It is
+        required to have `Conference-Read` privilege.
+      operationId: getConferenceTemplates
+      parameters:
+        - name: domainId
+          in: query
+          description: Domain Id
+          required: true
+          schema:
+            type: string
+            format: uuid
+      responses:
+        '200':
+          description: Conference templates
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/SliceConferenceTemplatesIntegrationDTO'
+      security:
+        - IntegrationAuthentication: []
+  /users:
+    get:
+      tags:
+        - Users
+      summary: Find users
+      description: Finds users by parameters
+      operationId: getUsersByParameters
+      parameters:
+        - name: domainId
+          in: query
+          description: Domain Id
+          schema:
+            type: string
+            format: uuid
+        - name: searchString
+          in: query
+          description: Query string to search
+          schema:
+            type: string
+            default: ''
+        - name: limit
+          in: query
+          description: Limit of records
+          schema:
+            type: integer
+            format: int32
+            default: 200
+        - name: offset
+          in: query
+          description: Offset of records
+          schema:
+            type: integer
+            format: int32
+            default: 0
+      responses:
+        '200':
+          description: Found users
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/UserSearchResponseDTO'
+      security:
+        - IntegrationAuthentication: []
+    post:
+      tags:
+        - Users
+      summary: Create user
+      description: Creates user with given parameters.
+      operationId: createUser
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/CreateUserRequestDTO'
+        required: true
+      responses:
+        '200':
+          description: User info
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ProfileIntegrationDTO'
+      security:
+        - IntegrationAuthentication: []
+  /users/{profileId}:
+    get:
+      tags:
+        - Users
+      summary: Get profile info
+      description: Returns profile info
+      operationId: getProfileInfo
+      parameters:
+        - name: profileId
+          in: path
+          description: Profile Id
+          required: true
+          schema:
+            type: string
+            format: uuid
+      responses:
+        '200':
+          description: User profile info
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ProfileIntegrationDTO'
+        '404':
+          description: User profile is not found
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ERROR'
+      security:
+        - IntegrationAuthentication: []
+    delete:
+      tags:
+        - Users
+      summary: Delete profile
+      description:
+        Deletes profile with given profile Id. Privilege to modify information of users is
+        required.
+      operationId: deleteUser
+      parameters:
+        - name: profileId
+          in: path
+          description: Profile Id
+          required: true
+          schema:
+            type: string
+            format: uuid
+      responses:
+        '204':
+          description: Success
+        '403':
+          description:
+            reason = INSUFFICIENT_RIGHTS , type = IvcsAccessControlException - if trying
+            to update users with unsupported types.
+      security:
+        - IntegrationAuthentication: []
+    patch:
+      tags:
+        - Users
+      summary: Update user parameters
+      description: Updates user parameters with given parameters.
+      operationId: updateUser
+      parameters:
+        - name: profileId
+          in: path
+          description: Profile Id
+          required: true
+          schema:
+            type: string
+            format: uuid
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/UserProfileIntegrationPatchFullParameters'
+        required: true
+      responses:
+        '200':
+          description: User info
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ProfileIntegrationDTO'
+        '403':
+          description:
+            reason = INSUFFICIENT_RIGHTS , type = IvcsAccessControlException - if trying
+            to update users with unsupported types.
+      security:
+        - IntegrationAuthentication: []
+components:
+  schemas:
+    ERROR:
+      required:
+        - message
+        - type
+      type: object
+      properties:
+        message:
+          type: string
+          description: Raw message that describes cause of error
+        reason:
+          type: string
+          description:
+            Constant string that describes cause of error. Concrete list of values are
+            defined by specified business operation.
+        type:
+          type: string
+          description: Type of error
+    BaseConferenceSettingsIntegrationDTO:
+      title: ConferenceBaseSettingsIntegrationDTO
+      required:
+        - attendeeSubscribeLimit
+        - conferenceType
+      type: object
+      properties:
+        conferenceType:
+          type: string
+          enum:
+            - EQUITABLE_CONVERSATION
+            - WEBINAR
+        attendeeSubscribeLimit:
+          type: string
+          description: Subscribe limit for attendee participants
+          enum:
+            - NONE
+            - AUDIO
+            - VIDEO
+            - AUDIO_VIDEO
+        features:
+          uniqueItems: true
+          type: array
+          items:
+            type: string
+            enum:
+              - HIDE_HAND_UP
+              - HIDE_POLL
+              - RECORD_AUTO_START
+              - HIDE_DOCUMENTS
+              - HIDE_WHITEBOARD
+              - HIDE_DESKTOPSHARING
+              - HIDE_RECORDING
+              - REQUIRE_RTMP_FOR_WEBINAR_VIEWERS
+              - FORCE_STOP
+              - ALWAYS_SHOW_PARTICIPANT_IN_STAGE
+              - ACTIVE_SPEAKER_INDICATION
+              - NOTIFICATION_CONNECTING_DISCONNECTING_PARTICIPANT
+              - DIAL_AT_START
+              - TRANSCRIBE_AT_START
+              - LOBBY_ROOM
+              - MUTE_EXTERNAL_NOTIFICATIONS
+              - CLEAR_ROOM_RESOURCES_AFTER_PARTICIPANTS_EXIT
+              - SIMULTANEOUS_INTERPRETATION
+              - GROUPS
+              - REACTIONS
+              - SELF_REGISTRATION
+    ConferenceCreateResultIntegrationDTO:
+      required:
+        - conferenceSessionId
+        - createDate
+        - duration
+        - name
+        - ownerName
+        - ownerProfileId
+        - settings
+        - startDate
+      type: object
+      properties:
+        conferenceSessionId:
+          type: string
+          format: uuid
+        name:
+          type: string
+        description:
+          type: string
+        createDate:
+          minimum: 0
+          type: integer
+          description: Conference create date (UNIX time in ms)
+          format: int64
+        ownerProfileId:
+          type: string
+          description: Owner profile ID
+          format: uuid
+        ownerName:
+          type: string
+        ownerAvatarId:
+          type: string
+          format: uuid
+        conferenceNumber:
+          type: integer
+          description: Short ID of conference
+          format: int64
+        settings:
+          $ref: '#/components/schemas/BaseConferenceSettingsIntegrationDTO'
+        conferenceId:
+          type: string
+          description: Conference id (sends if created conference is periodical)
+          format: uuid
+        startDate:
+          minimum: 0
+          type: integer
+          description: Conference session start date (UNIX time in ms)
+          format: int64
+        duration:
+          type: integer
+          description: Conference session duration (in ms)
+          format: int64
+        schedule:
+          $ref: '#/components/schemas/ScheduleRestDTO'
+    ScheduleRestDTO:
+      required:
+        - periodicityType
+      type: object
+      properties:
+        periodicityType:
+          type: string
+          enum:
+            - DAILY
+            - WEEKLY
+            - MONTHLY
+        daysOfWeek:
+          uniqueItems: true
+          type: array
+          description:
+            'Required for following periodicity types: WEEKLY and MONTHLY (if it needs to
+            specify day of week in a month)'
+          items:
+            type: string
+            description:
+              'Required for following periodicity types: WEEKLY and MONTHLY (if it needs
+              to specify day of week in a month)'
+            enum:
+              - SUNDAY
+              - MONDAY
+              - TUESDAY
+              - WEDNESDAY
+              - THURSDAY
+              - FRIDAY
+              - SATURDAY
+        dayNumber:
+          maximum: 31
+          minimum: 1
+          type: integer
+          description:
+            Required for MONTHLY periodicity type (if it needs to specify day number in a
+            month)
+          format: int32
+        weekNumber:
+          minimum: 1
+          type: integer
+          description:
+            'Required for following periodicity types: WEEKLY and MONTHLY (if it needs to
+            specify day of week in a month). In case of MONTHLY maximum value is 4.'
+          format: int32
+        monthNumber:
+          minimum: 1
+          type: integer
+          description: Required for MONTHLY periodicity type
+          format: int32
+      description: Schedule for periodical conference
+    ArbitraryInterlocutorDTO:
+      type: object
+      properties:
+        email:
+          type: string
+        phone:
+          type: string
+        name:
+          type: string
+    ConferenceCreateRequestIntegrationDTO:
+      required:
+        - domainId
+        - name
+        - owner
+        - startDate
+      type: object
+      properties:
+        name:
+          maxLength: 1024
+          type: string
+        description:
+          maxLength: 2048
+          type: string
+        owner:
+          $ref: '#/components/schemas/InterlocutorDTO'
+        conferenceTemplateId:
+          type: string
+          description:
+            Conference template ID. If no ID is provided, the system default conference
+            template will be used.
+          format: uuid
+        settings:
+          $ref: '#/components/schemas/ConferenceCreateSettingsRestDTO'
+        participants:
+          type: array
+          description:
+            Participants of planned conference. Participant for owner is added by default
+            on server side.
+          items:
+            $ref: '#/components/schemas/ConferenceParticipantCreateIntegrationDTO'
+        guestPasscode:
+          maxLength: 8
+          minLength: 4
+          type: string
+          description: Passcode for guest entrance by link. Only digits are allowed.
+        speakerPasscode:
+          maxLength: 8
+          minLength: 4
+          type: string
+          description: Passcode for speaker entrance by link. Only digits are allowed.
+        domainId:
+          type: string
+          description: Domain where conference will be created
+          format: uuid
+        startDate:
+          minimum: 0
+          type: integer
+          description: Conference start date (UNIX time in ms)
+          format: int64
+        duration:
+          maximum: 86400000
+          minimum: 300000
+          type: integer
+          description: Conference duration (in ms)
+          format: int64
+          default: 3600000
+        schedule:
+          $ref: '#/components/schemas/ScheduleRestDTO'
+    ConferenceCreateSettingsRestDTO:
+      type: object
+      properties:
+        joinRestriction:
+          type: string
+          enum:
+            - ANYONE
+            - INVITED_OR_REGISTERED
+            - INVITED
+        attendeePermissions:
+          uniqueItems: true
+          type: array
+          description: Attendee permissions
+          items:
+            type: string
+            description: Attendee permissions
+            enum:
+              - SPEAKER_OTHER
+              - RECORD_ACCESS
+              - DOWNLOAD_DOCUMENTS
+              - UPLOAD_DOCUMENT
+              - BOARD_DRAWING
+              - CHAT_SEND_WITHOUT_PREMODERATION
+              - POLLING_CREATION
+              - INVITING_PARTICIPANTS
+              - MODERATOR_OTHER
+              - SEND_REQUEST_REMOTE_ACCESS
+              - DEMONSTRATE_DOCUMENTS
+              - PUBLISH_HTTP_REFERENCE_IN_CHAT
+              - PUBLISH_MESSAGES_IN_CHAT
+              - DOWNLOAD_RECORD
+              - RECEIVE_MEDIA
+        attendeeMediaState:
+          type: string
+          description: Attendee publish media permissions
+          enum:
+            - NONE
+            - AUDIO
+            - VIDEO
+            - AUDIO_VIDEO
+        features:
+          uniqueItems: true
+          type: array
+          description:
+            'List of conference features to enable/disable (supported features for edit:
+            LOBBY_ROOM, MUTE_EXTERNAL_NOTIFICATIONS, SIMULTANEOUS_INTERPRETATION,
+            DIAL_AT_START, ALWAYS_SHOW_PARTICIPANT_IN_STAGE, ACTIVE_SPEAKER_INDICATION,
+            GROUPS, REACTIONS, SELF_REGISTRATION)'
+          items:
+            $ref: '#/components/schemas/MapEntryRestDTOConferenceFeatureTypeBoolean'
+        runType:
+          type: string
+          enum:
+            - AUTO
+            - MANUALLY
+        joinPeriodBeforeStart:
+          maximum: 1800000
+          minimum: 0
+          type: integer
+          description:
+            Period when participants can join conference before start (in milliseconds).
+          format: int64
+      description:
+        Conference settings. These settings overrides corresponding settings from
+        specified conference template.
+    ConferenceParticipantCreateIntegrationDTO:
+      required:
+        - interlocutor
+      type: object
+      properties:
+        interlocutor:
+          $ref: '#/components/schemas/InterlocutorDTO'
+        roles:
+          uniqueItems: true
+          type: array
+          items:
+            type: string
+            enum:
+              - ATTENDEE
+              - INTERPRETER
+              - SPEAKER
+              - MODERATOR
+        interpreterLanguagesPair:
+          uniqueItems: true
+          type: array
+          description:
+            "Interpreter's translation language pair. Acceptable values: empty set or set
+            with two values."
+          items:
+            type: string
+            description:
+              "Interpreter's translation language pair. Acceptable values: empty set or
+              set with two values."
+            enum:
+              - RUSSIAN
+              - ENGLISH
+              - FRENCH
+              - DEUTSCH
+              - SPANISH
+              - PORTUGUESE
+              - ITALIAN
+              - TURKISH
+              - ARABIC
+              - HEBREW
+              - HINDI
+              - CHINESE
+              - JAPANESE
+              - KOREAN
+      description:
+        Participants of planned conference. Participant for owner is added by default on
+        server side.
+    InterlocutorDTO:
+      type: object
+      anyOf:
+        - $ref: '#/components/schemas/ProfileInterlocutorDTO'
+        - $ref: '#/components/schemas/ArbitraryInterlocutorDTO'
+    MapEntryRestDTOConferenceFeatureTypeBoolean:
+      type: object
+      properties:
+        key:
+          type: string
+          enum:
+            - HIDE_HAND_UP
+            - HIDE_POLL
+            - RECORD_AUTO_START
+            - HIDE_DOCUMENTS
+            - HIDE_WHITEBOARD
+            - HIDE_DESKTOPSHARING
+            - HIDE_RECORDING
+            - REQUIRE_RTMP_FOR_WEBINAR_VIEWERS
+            - FORCE_STOP
+            - ALWAYS_SHOW_PARTICIPANT_IN_STAGE
+            - ACTIVE_SPEAKER_INDICATION
+            - NOTIFICATION_CONNECTING_DISCONNECTING_PARTICIPANT
+            - DIAL_AT_START
+            - TRANSCRIBE_AT_START
+            - LOBBY_ROOM
+            - MUTE_EXTERNAL_NOTIFICATIONS
+            - CLEAR_ROOM_RESOURCES_AFTER_PARTICIPANTS_EXIT
+            - SIMULTANEOUS_INTERPRETATION
+            - GROUPS
+            - REACTIONS
+            - SELF_REGISTRATION
+        value:
+          type: boolean
+      description:
+        'List of conference features to enable/disable (Supported features for groups
+        edit: REACTIONS, supported features for conference edit: LOBBY_ROOM,
+        MUTE_EXTERNAL_NOTIFICATIONS, CLEAR_ROOM_RESOURCES_AFTER_PARTICIPANTS_EXIT (for
+        rooms only), ALWAYS_SHOW_PARTICIPANT_IN_STAGE, ACTIVE_SPEAKER_INDICATION,
+        REACTIONS, SELF_REGISTRATION)'
+    ProfileInterlocutorDTO:
+      required:
+        - profileId
+      type: object
+      properties:
+        profileId:
+          type: string
+          format: uuid
+    ConferenceUpdateRequestIntegrationDTO:
+      required:
+        - name
+      type: object
+      properties:
+        name:
+          maxLength: 1024
+          type: string
+        description:
+          $ref: '#/components/schemas/DescriptionParameterValue'
+        startDate:
+          minimum: 0
+          type: integer
+          description: Conference start date (UNIX time in ms)
+          format: int64
+        duration:
+          maximum: 86400000
+          minimum: 300000
+          type: integer
+          description: Conference duration (in ms)
+          format: int64
+          default: 3600000
+        schedule:
+          $ref: '#/components/schemas/ScheduleRestDTO'
+        passcodes:
+          $ref: '#/components/schemas/SystemTicketPasscodesRestDTO'
+        features:
+          uniqueItems: true
+          type: array
+          description:
+            'List of conference features to enable/disable (Supported features for groups
+            edit: REACTIONS, supported features for conference edit: LOBBY_ROOM,
+            MUTE_EXTERNAL_NOTIFICATIONS, CLEAR_ROOM_RESOURCES_AFTER_PARTICIPANTS_EXIT (for
+            rooms only), ALWAYS_SHOW_PARTICIPANT_IN_STAGE, ACTIVE_SPEAKER_INDICATION,
+            REACTIONS, SELF_REGISTRATION)'
+          items:
+            $ref: '#/components/schemas/MapEntryRestDTOConferenceFeatureTypeBoolean'
+        joinPeriodBeforeStart:
+          maximum: 1800000
+          minimum: 0
+          type: integer
+          description:
+            Period when participants can join conference before start (in milliseconds).
+          format: int64
+        joinRestriction:
+          type: string
+          enum:
+            - ANYONE
+            - INVITED_OR_REGISTERED
+            - INVITED
+        attendeePermissions:
+          uniqueItems: true
+          type: array
+          description: Attendee permissions
+          items:
+            type: string
+            description: Attendee permissions
+            enum:
+              - SPEAKER_OTHER
+              - RECORD_ACCESS
+              - DOWNLOAD_DOCUMENTS
+              - UPLOAD_DOCUMENT
+              - BOARD_DRAWING
+              - CHAT_SEND_WITHOUT_PREMODERATION
+              - POLLING_CREATION
+              - INVITING_PARTICIPANTS
+              - MODERATOR_OTHER
+              - SEND_REQUEST_REMOTE_ACCESS
+              - DEMONSTRATE_DOCUMENTS
+              - PUBLISH_HTTP_REFERENCE_IN_CHAT
+              - PUBLISH_MESSAGES_IN_CHAT
+              - DOWNLOAD_RECORD
+              - RECEIVE_MEDIA
+        attendeeMediaState:
+          type: string
+          description: Attendee publish media permissions
+          enum:
+            - NONE
+            - AUDIO
+            - VIDEO
+            - AUDIO_VIDEO
+    DescriptionParameterValue:
+      title: NullableParameterDescription
+      maxLength: 2048
+      type: object
+      properties:
+        value:
+          type: string
+          description:
+            If Value is received but is null then the parameter should be reset to null,
+            otherwise parameter should be set to the value.
+      description: New description for conference session
+    SystemTicketPasscodesRestDTO:
+      type: object
+      properties:
+        guestPasscode:
+          maxLength: 8
+          minLength: 4
+          type: string
+          description: New passcode for guest entrance by link. Only digits are allowed.
+        speakerPasscode:
+          maxLength: 8
+          minLength: 4
+          type: string
+          description: New passcode for speaker entrance by link. Only digits are allowed.
+      description:
+        Passcodes for guest and speaker links are updated at the same time, i.e. absence
+        one of the passcodes means that the passcode for given link will be cleared.
+    ConferenceParticipantsAddRequestIntegrationDTO:
+      type: object
+      properties:
+        data:
+          minItems: 1
+          type: array
+          items:
+            $ref: '#/components/schemas/ConferenceParticipantCreateIntegrationDTO'
+    ConferenceParticipantIntegrationDTO:
+      required:
+        - conferenceParticipantId
+        - inviteResponseType
+        - isRegisteredUser
+        - name
+        - profileId
+        - role
+      type: object
+      properties:
+        conferenceParticipantId:
+          type: string
+          format: uuid
+        profileId:
+          type: string
+          format: uuid
+        name:
+          type: string
+        avatarResourceId:
+          type: string
+          format: uuid
+        role:
+          type: string
+          enum:
+            - ATTENDEE
+            - INTERPRETER
+            - SPEAKER
+            - MODERATOR
+        inviteResponseType:
+          type: string
+          enum:
+            - NONE
+            - APPROVE
+            - REJECT
+            - MAYBE
+        inviteResponseDate:
+          minimum: 0
+          type: integer
+          description: Date (UNIX time in ms)
+          format: int64
+        isRegisteredUser:
+          type: boolean
+          description: Whether user is registered in the system
+        joinLink:
+          type: string
+          description:
+            Link to join the event for the participant. If user is not registered in the
+            system that the link contains personal login token. It should be requested as
+            additional data.
+      description: List of result data
+    SliceConferenceParticipantsIntegrationDTO:
+      required:
+        - data
+        - hasNext
+        - totalCount
+      type: object
+      properties:
+        data:
+          type: array
+          description: List of result data
+          items:
+            $ref: '#/components/schemas/ConferenceParticipantIntegrationDTO'
+        hasNext:
+          type: boolean
+          description: If next slice of data in result set available.
+        totalCount:
+          type: integer
+          description: Total number of items in a whole result set.
+          format: int64
+    ConferenceParticipantsRemoveRequestIntegrationDTO:
+      type: object
+      properties:
+        data:
+          minItems: 1
+          type: array
+          items:
+            type: string
+            format: uuid
+    RoomCreateResultIntegrationDTO:
+      required:
+        - conferenceSessionId
+        - createDate
+        - name
+        - ownerName
+        - ownerProfileId
+        - settings
+      type: object
+      properties:
+        conferenceSessionId:
+          type: string
+          format: uuid
+        name:
+          type: string
+        description:
+          type: string
+        createDate:
+          minimum: 0
+          type: integer
+          description: Conference create date (UNIX time in ms)
+          format: int64
+        ownerProfileId:
+          type: string
+          description: Owner profile ID
+          format: uuid
+        ownerName:
+          type: string
+        ownerAvatarId:
+          type: string
+          format: uuid
+        conferenceNumber:
+          type: integer
+          description: Short ID of conference
+          format: int64
+        settings:
+          $ref: '#/components/schemas/BaseConferenceSettingsIntegrationDTO'
+    RoomCreateRequestIntegrationDTO:
+      required:
+        - domainId
+        - name
+        - owner
+      type: object
+      properties:
+        name:
+          maxLength: 1024
+          type: string
+        description:
+          maxLength: 2048
+          type: string
+        owner:
+          $ref: '#/components/schemas/InterlocutorDTO'
+        conferenceTemplateId:
+          type: string
+          description:
+            Conference template ID. If no ID is provided, the system default conference
+            template will be used.
+          format: uuid
+        settings:
+          $ref: '#/components/schemas/RoomCreateSettingsRestDTO'
+        participants:
+          type: array
+          description:
+            Participants of planned conference. Participant for owner is added by default
+            on server side.
+          items:
+            $ref: '#/components/schemas/ConferenceParticipantCreateIntegrationDTO'
+        guestPasscode:
+          maxLength: 8
+          minLength: 4
+          type: string
+          description: Passcode for guest entrance by link. Only digits are allowed.
+        speakerPasscode:
+          maxLength: 8
+          minLength: 4
+          type: string
+          description: Passcode for speaker entrance by link. Only digits are allowed.
+        domainId:
+          type: string
+          description: Domain where conference will be created
+          format: uuid
+    RoomCreateSettingsRestDTO:
+      type: object
+      properties:
+        joinRestriction:
+          type: string
+          enum:
+            - ANYONE
+            - INVITED_OR_REGISTERED
+            - INVITED
+        attendeePermissions:
+          uniqueItems: true
+          type: array
+          description: Attendee permissions
+          items:
+            type: string
+            description: Attendee permissions
+            enum:
+              - SPEAKER_OTHER
+              - RECORD_ACCESS
+              - DOWNLOAD_DOCUMENTS
+              - UPLOAD_DOCUMENT
+              - BOARD_DRAWING
+              - CHAT_SEND_WITHOUT_PREMODERATION
+              - POLLING_CREATION
+              - INVITING_PARTICIPANTS
+              - MODERATOR_OTHER
+              - SEND_REQUEST_REMOTE_ACCESS
+              - DEMONSTRATE_DOCUMENTS
+              - PUBLISH_HTTP_REFERENCE_IN_CHAT
+              - PUBLISH_MESSAGES_IN_CHAT
+              - DOWNLOAD_RECORD
+              - RECEIVE_MEDIA
+        attendeeMediaState:
+          type: string
+          description: Attendee publish media permissions
+          enum:
+            - NONE
+            - AUDIO
+            - VIDEO
+            - AUDIO_VIDEO
+        features:
+          uniqueItems: true
+          type: array
+          description:
+            'List of conference features to enable/disable (supported features for edit:
+            LOBBY_ROOM, MUTE_EXTERNAL_NOTIFICATIONS,
+            CLEAR_ROOM_RESOURCES_AFTER_PARTICIPANTS_EXIT, SIMULTANEOUS_INTERPRETATION,
+            DIAL_AT_START, ALWAYS_SHOW_PARTICIPANT_IN_STAGE, ACTIVE_SPEAKER_INDICATION,
+            GROUPS, REACTIONS, SELF_REGISTRATION)'
+          items:
+            $ref: '#/components/schemas/MapEntryRestDTOConferenceFeatureTypeBoolean'
+      description:
+        Conference settings. These settings overrides corresponding settings from
+        specified conference template.
+    StartNowConferenceResultIntegrationDTO:
+      required:
+        - conferenceSessionId
+        - createDate
+        - duration
+        - name
+        - ownerName
+        - ownerProfileId
+        - settings
+        - startDate
+      type: object
+      properties:
+        conferenceSessionId:
+          type: string
+          format: uuid
+        name:
+          type: string
+        description:
+          type: string
+        createDate:
+          minimum: 0
+          type: integer
+          description: Conference create date (UNIX time in ms)
+          format: int64
+        ownerProfileId:
+          type: string
+          description: Owner profile ID
+          format: uuid
+        ownerName:
+          type: string
+        ownerAvatarId:
+          type: string
+          format: uuid
+        conferenceNumber:
+          type: integer
+          description: Short ID of conference
+          format: int64
+        settings:
+          $ref: '#/components/schemas/BaseConferenceSettingsIntegrationDTO'
+        startDate:
+          minimum: 0
+          type: integer
+          description: Conference session start date (UNIX time in ms)
+          format: int64
+        duration:
+          type: integer
+          description: Conference session duration (in ms)
+          format: int64
+    ConferenceStartNowRequestIntegrationDTO:
+      required:
+        - domainId
+        - name
+        - owner
+      type: object
+      properties:
+        name:
+          maxLength: 1024
+          type: string
+        description:
+          maxLength: 2048
+          type: string
+        owner:
+          $ref: '#/components/schemas/InterlocutorDTO'
+        conferenceTemplateId:
+          type: string
+          description:
+            Conference template ID. If no ID is provided, the system default conference
+            template will be used.
+          format: uuid
+        settings:
+          $ref: '#/components/schemas/StartNowConferenceSettingsRestDTO'
+        participants:
+          type: array
+          description:
+            Participants of planned conference. Participant for owner is added by default
+            on server side.
+          items:
+            $ref: '#/components/schemas/ConferenceParticipantCreateIntegrationDTO'
+        guestPasscode:
+          maxLength: 8
+          minLength: 4
+          type: string
+          description: Passcode for guest entrance by link. Only digits are allowed.
+        speakerPasscode:
+          maxLength: 8
+          minLength: 4
+          type: string
+          description: Passcode for speaker entrance by link. Only digits are allowed.
+        domainId:
+          type: string
+          description: Domain where conference will be created
+          format: uuid
+        duration:
+          maximum: 86400000
+          minimum: 300000
+          type: integer
+          description: Conference duration (in ms)
+          format: int64
+          default: 3600000
+    StartNowConferenceSettingsRestDTO:
+      type: object
+      properties:
+        joinRestriction:
+          type: string
+          enum:
+            - ANYONE
+            - INVITED_OR_REGISTERED
+            - INVITED
+        attendeePermissions:
+          uniqueItems: true
+          type: array
+          description: Attendee permissions
+          items:
+            type: string
+            description: Attendee permissions
+            enum:
+              - SPEAKER_OTHER
+              - RECORD_ACCESS
+              - DOWNLOAD_DOCUMENTS
+              - UPLOAD_DOCUMENT
+              - BOARD_DRAWING
+              - CHAT_SEND_WITHOUT_PREMODERATION
+              - POLLING_CREATION
+              - INVITING_PARTICIPANTS
+              - MODERATOR_OTHER
+              - SEND_REQUEST_REMOTE_ACCESS
+              - DEMONSTRATE_DOCUMENTS
+              - PUBLISH_HTTP_REFERENCE_IN_CHAT
+              - PUBLISH_MESSAGES_IN_CHAT
+              - DOWNLOAD_RECORD
+              - RECEIVE_MEDIA
+        attendeeMediaState:
+          type: string
+          description: Attendee publish media permissions
+          enum:
+            - NONE
+            - AUDIO
+            - VIDEO
+            - AUDIO_VIDEO
+        features:
+          uniqueItems: true
+          type: array
+          description:
+            'List of conference features to enable/disable (supported features for edit:
+            LOBBY_ROOM, MUTE_EXTERNAL_NOTIFICATIONS, SIMULTANEOUS_INTERPRETATION,
+            DIAL_AT_START, ALWAYS_SHOW_PARTICIPANT_IN_STAGE, ACTIVE_SPEAKER_INDICATION,
+            GROUPS, REACTIONS, SELF_REGISTRATION)'
+          items:
+            $ref: '#/components/schemas/MapEntryRestDTOConferenceFeatureTypeBoolean'
+      description:
+        Conference settings. These settings overrides corresponding settings from
+        specified conference template.
+    ConferenceSessionUpdateRequestIntegrationDTO:
+      required:
+        - name
+      type: object
+      properties:
+        name:
+          maxLength: 1024
+          type: string
+        description:
+          $ref: '#/components/schemas/DescriptionParameterValue'
+        passcodes:
+          $ref: '#/components/schemas/SystemTicketPasscodesRestDTO'
+        joinRestriction:
+          type: string
+          enum:
+            - ANYONE
+            - INVITED_OR_REGISTERED
+            - INVITED
+        attendeePermissions:
+          uniqueItems: true
+          type: array
+          description: Attendee permissions
+          items:
+            type: string
+            description: Attendee permissions
+            enum:
+              - SPEAKER_OTHER
+              - RECORD_ACCESS
+              - DOWNLOAD_DOCUMENTS
+              - UPLOAD_DOCUMENT
+              - BOARD_DRAWING
+              - CHAT_SEND_WITHOUT_PREMODERATION
+              - POLLING_CREATION
+              - INVITING_PARTICIPANTS
+              - MODERATOR_OTHER
+              - SEND_REQUEST_REMOTE_ACCESS
+              - DEMONSTRATE_DOCUMENTS
+              - PUBLISH_HTTP_REFERENCE_IN_CHAT
+              - PUBLISH_MESSAGES_IN_CHAT
+              - DOWNLOAD_RECORD
+              - RECEIVE_MEDIA
+        attendeeMediaState:
+          type: string
+          description: Attendee publish media permissions
+          enum:
+            - NONE
+            - AUDIO
+            - VIDEO
+            - AUDIO_VIDEO
+        startDate:
+          minimum: 0
+          type: integer
+          description: Conference start date (UNIX time in ms) (Not supported for rooms)
+          format: int64
+        duration:
+          maximum: 86400000
+          minimum: 300000
+          type: integer
+          description: Conference duration (in ms) (Not supported for rooms)
+          format: int64
+          default: 3600000
+        features:
+          uniqueItems: true
+          type: array
+          description:
+            'List of conference features to enable/disable (Supported features for groups
+            edit: REACTIONS, supported features for conference edit: LOBBY_ROOM,
+            MUTE_EXTERNAL_NOTIFICATIONS, CLEAR_ROOM_RESOURCES_AFTER_PARTICIPANTS_EXIT (for
+            rooms only), ALWAYS_SHOW_PARTICIPANT_IN_STAGE, ACTIVE_SPEAKER_INDICATION,
+            REACTIONS, SELF_REGISTRATION)'
+          items:
+            $ref: '#/components/schemas/MapEntryRestDTOConferenceFeatureTypeBoolean'
+        joinPeriodBeforeStart:
+          maximum: 1800000
+          minimum: 0
+          type: integer
+          description:
+            Period when participants can join conference before start (in milliseconds).
+            (Not supported for rooms)
+          format: int64
+    ConferenceSessionParticipantCreateIntegrationDTO:
+      required:
+        - interlocutor
+      type: object
+      properties:
+        interlocutor:
+          $ref: '#/components/schemas/InterlocutorDTO'
+        roles:
+          uniqueItems: true
+          type: array
+          items:
+            type: string
+            enum:
+              - ATTENDEE
+              - INTERPRETER
+              - SPEAKER
+              - MODERATOR
+        interpreterLanguagesPair:
+          uniqueItems: true
+          type: array
+          description:
+            "Interpreter's translation language pair. Acceptable values: empty set or set
+            with two values."
+          items:
+            type: string
+            description:
+              "Interpreter's translation language pair. Acceptable values: empty set or
+              set with two values."
+            enum:
+              - RUSSIAN
+              - ENGLISH
+              - FRENCH
+              - DEUTSCH
+              - SPANISH
+              - PORTUGUESE
+              - ITALIAN
+              - TURKISH
+              - ARABIC
+              - HEBREW
+              - HINDI
+              - CHINESE
+              - JAPANESE
+              - KOREAN
+    ConferenceSessionParticipantsAddRequestIntegrationDTO:
+      type: object
+      properties:
+        data:
+          minItems: 1
+          type: array
+          items:
+            $ref: '#/components/schemas/ConferenceSessionParticipantCreateIntegrationDTO'
+    CallRequestRestDTO:
+      required:
+        - started
+        - status
+      type: object
+      properties:
+        status:
+          type: string
+          description: Outgoing call's status
+          enum:
+            - STARTED
+            - SUCCESS
+            - FAILED
+            - CANCELED
+            - REDIAL
+        started:
+          minimum: 0
+          type: integer
+          description: Outgoing call's start date
+          format: int64
+      description:
+        Participant's call request info. It should be requested as additional data.
+    ConferenceSessionParticipantIntegrationDTO:
+      required:
+        - inviteResponseType
+        - isInvited
+        - isRegisteredUser
+        - name
+        - participantId
+        - profileId
+        - role
+      type: object
+      properties:
+        participantId:
+          type: string
+          format: uuid
+        profileId:
+          type: string
+          format: uuid
+        name:
+          type: string
+        avatarResourceId:
+          type: string
+          format: uuid
+        role:
+          type: string
+          enum:
+            - ATTENDEE
+            - INTERPRETER
+            - SPEAKER
+            - MODERATOR
+        isInvited:
+          type: boolean
+          description: Whether participant is invited in conference
+        inviteResponseType:
+          type: string
+          enum:
+            - NONE
+            - APPROVE
+            - REJECT
+            - MAYBE
+        inviteResponseDate:
+          minimum: 0
+          type: integer
+          description: Date (UNIX time in ms)
+          format: int64
+        isRegisteredUser:
+          type: boolean
+          description: Whether user is registered in the system
+        callRequest:
+          $ref: '#/components/schemas/CallRequestRestDTO'
+        joinLink:
+          type: string
+          description:
+            Link to join the event for the participant. If user is not registered in the
+            system that the link contains personal login token. It should be requested as
+            additional data.
+        isConnected:
+          type: boolean
+          description: Whether participant is connected to event
+      description: List of result data
+    SliceConferenceSessionParticipantsIntegrationDTO:
+      required:
+        - data
+        - hasNext
+        - totalCount
+      type: object
+      properties:
+        data:
+          type: array
+          description: List of result data
+          items:
+            $ref: '#/components/schemas/ConferenceSessionParticipantIntegrationDTO'
+        hasNext:
+          type: boolean
+          description: If next slice of data in result set available.
+        totalCount:
+          type: integer
+          description: Total number of items in a whole result set.
+          format: int64
+    ConferenceSessionParticipantsRemoveRequestIntegrationDTO:
+      type: object
+      properties:
+        data:
+          minItems: 1
+          type: array
+          items:
+            type: string
+            format: uuid
+    ConferenceTemplateIntegrationDTO:
+      required:
+        - attendeeSubscribeLimit
+        - conferenceTemplateId
+        - conferenceType
+        - features
+        - hasVVoIPSupport
+        - name
+      type: object
+      properties:
+        conferenceTemplateId:
+          type: string
+          format: uuid
+        name:
+          type: string
+        description:
+          type: string
+        conferenceType:
+          type: string
+          enum:
+            - EQUITABLE_CONVERSATION
+            - WEBINAR
+        attendeeSubscribeLimit:
+          type: string
+          description: Subscribe limit for attendee participants
+          enum:
+            - NONE
+            - AUDIO
+            - VIDEO
+            - AUDIO_VIDEO
+        features:
+          uniqueItems: true
+          type: array
+          items:
+            type: string
+            enum:
+              - HIDE_HAND_UP
+              - HIDE_POLL
+              - RECORD_AUTO_START
+              - HIDE_DOCUMENTS
+              - HIDE_WHITEBOARD
+              - HIDE_DESKTOPSHARING
+              - HIDE_RECORDING
+              - REQUIRE_RTMP_FOR_WEBINAR_VIEWERS
+              - FORCE_STOP
+              - ALWAYS_SHOW_PARTICIPANT_IN_STAGE
+              - ACTIVE_SPEAKER_INDICATION
+              - NOTIFICATION_CONNECTING_DISCONNECTING_PARTICIPANT
+              - DIAL_AT_START
+              - TRANSCRIBE_AT_START
+              - LOBBY_ROOM
+              - MUTE_EXTERNAL_NOTIFICATIONS
+              - CLEAR_ROOM_RESOURCES_AFTER_PARTICIPANTS_EXIT
+              - SIMULTANEOUS_INTERPRETATION
+              - GROUPS
+              - REACTIONS
+              - SELF_REGISTRATION
+        hasVVoIPSupport:
+          type: boolean
+      description: List of result data
+    SliceConferenceTemplatesIntegrationDTO:
+      required:
+        - data
+      type: object
+      properties:
+        data:
+          type: array
+          description: List of result data
+          items:
+            $ref: '#/components/schemas/ConferenceTemplateIntegrationDTO'
+    ContactInfoRestDTO:
+      required:
+        - privacy
+        - value
+      type: object
+      properties:
+        value:
+          type: string
+        privacy:
+          type: string
+          description: Privacy of this contact info
+          enum:
+            - PUBLIC
+            - AUTHORIZED
+            - NOBODY
+    LdapUserBaseDataRestDTO:
+      title: LdapInfo
+      required:
+        - ldapUserId
+      type: object
+      properties:
+        ldapUserId:
+          type: string
+      description: Ldap user information if the user is from ldap
+    ProfileIntegrationDTO:
+      required:
+        - defaultEventLevel
+        - domainId
+        - isBlocked
+        - isConferenceCreationEnabled
+        - login
+        - name
+        - profileId
+        - securityLevel
+        - userType
+      type: object
+      properties:
+        profileId:
+          type: string
+          format: uuid
+        login:
+          type: string
+        userType:
+          type: string
+          description: Type of registered user
+          enum:
+            - USER
+            - ADMIN
+            - SUPER_ADMIN
+            - OPERATOR
+            - SECURITY_SERVICE
+            - CHIEF_OPERATOR
+            - DOMAIN_ADMIN
+            - ADMIN_IVCS
+            - CHIEF_SYSTEM_ADMINISTRATOR
+        securityLevel:
+          type: string
+          enum:
+            - UNCLASSIFIED
+            - CONFIDENTIAL
+            - SECRET
+            - TOP_SECRET
+        name:
+          type: string
+        domainId:
+          type: string
+          format: uuid
+        companyId:
+          type: string
+          format: uuid
+        companyName:
+          type: string
+        email:
+          $ref: '#/components/schemas/ContactInfoRestDTO'
+        phone:
+          $ref: '#/components/schemas/ContactInfoRestDTO'
+        additionalContact:
+          $ref: '#/components/schemas/ContactInfoRestDTO'
+        additionalContactPrivacy:
+          type: string
+          enum:
+            - PUBLIC
+            - AUTHORIZED
+            - NOBODY
+        aboutSelf:
+          type: string
+        defaultMediaGroupId:
+          type: integer
+          format: int32
+        vvoipLogin:
+          type: string
+        vvoipExtension:
+          type: string
+        vvoipSubnet:
+          type: string
+        ldapInfo:
+          $ref: '#/components/schemas/LdapUserBaseDataRestDTO'
+        isBlocked:
+          type: boolean
+        isConferenceCreationEnabled:
+          type: boolean
+        defaultEventLevel:
+          type: integer
+          format: int32
+        expirationDate:
+          minimum: 0
+          type: integer
+          description: Date (UNIX time in ms)
+          format: int64
+    CreateUserRequestDTO:
+      required:
+        - domainId
+        - login
+        - name
+        - securityLevel
+        - userType
+      type: object
+      properties:
+        login:
+          maxLength: 255
+          type: string
+        userType:
+          type: string
+          description: Type of registered user
+          enum:
+            - USER
+            - ADMIN
+        securityLevel:
+          type: string
+          enum:
+            - UNCLASSIFIED
+            - CONFIDENTIAL
+            - SECRET
+            - TOP_SECRET
+        name:
+          maxLength: 255
+          type: string
+        domainId:
+          type: string
+          format: uuid
+        companyId:
+          type: string
+          format: uuid
+        email:
+          $ref: '#/components/schemas/ContactInfoRestDTO'
+        phone:
+          $ref: '#/components/schemas/ContactInfoRestDTO'
+        additionalContact:
+          $ref: '#/components/schemas/ContactInfoRestDTO'
+        aboutSelf:
+          maxLength: 2000
+          type: string
+        defaultMediaGroupId:
+          type: integer
+          format: int32
+        password:
+          maxLength: 32
+          type: string
+        vvoipLogin:
+          maxLength: 64
+          type: string
+        vvoipExtension:
+          maxLength: 64
+          type: string
+        vvoipSubnet:
+          maxLength: 32
+          type: string
+        vvoipPassword:
+          maxLength: 64
+          type: string
+        isConferenceCreationEnabled:
+          type: boolean
+    UserSearchResponseDTO:
+      required:
+        - data
+        - hasNext
+        - totalCount
+      type: object
+      properties:
+        data:
+          type: array
+          description: List of result data
+          items:
+            $ref: '#/components/schemas/ProfileIntegrationDTO'
+        hasNext:
+          type: boolean
+          description: If next slice of data in result set available.
+        totalCount:
+          type: integer
+          description: Total number of items in a whole result set.
+          format: int64
+    AdditionalContactParameterValue:
+      title: NullableParameterContact
+      maxLength: 255
+      type: object
+      properties:
+        value:
+          type: string
+          description:
+            If Value is received but is null then the parameter should be reset to null,
+            otherwise parameter should be set to the value.
+      description: Any contact data in free form
+    EmailParameterValue:
+      title: NullableParameterEmail
+      maxLength: 255
+      type: object
+      properties:
+        value:
+          type: string
+          description:
+            If Value is received but is null then the parameter should be reset to null,
+            otherwise parameter should be set to the value.
+      description: Email
+    NullableParameterValueRestDTOCompanyId:
+      type: object
+      properties:
+        value:
+          type: string
+          description:
+            If Value is received but is null then the parameter should be reset to null,
+            otherwise parameter should be set to the value.
+          format: uuid
+    NullableParameterValueRestDTODate:
+      type: object
+      properties:
+        value:
+          minimum: 0
+          type: integer
+          description:
+            If Value is received but is null then the parameter should be reset to null,
+            otherwise parameter should be set to the value.
+          format: int64
+    NullableParameterValueRestDTOInteger:
+      type: object
+      properties:
+        value:
+          type: integer
+          description:
+            If Value is received but is null then the parameter should be reset to null,
+            otherwise parameter should be set to the value.
+          format: int32
+    NullableParameterValueRestDTOString:
+      maxLength: 2000
+      type: object
+      properties:
+        value:
+          type: string
+          description:
+            If Value is received but is null then the parameter should be reset to null,
+            otherwise parameter should be set to the value.
+    PhoneParameterValue:
+      title: NullableParameterPhone
+      maxLength: 512
+      type: object
+      properties:
+        value:
+          type: string
+          description:
+            If Value is received but is null then the parameter should be reset to null,
+            otherwise parameter should be set to the value.
+      description:
+        Phone in form of E164 phone format or valid SIP, H323, RTSP, S4B, RTMP, VNC
+        address
+    UserProfileIntegrationPatchFullParameters:
+      type: object
+      properties:
+        login:
+          maxLength: 255
+          type: string
+        name:
+          maxLength: 255
+          type: string
+        userType:
+          type: string
+          enum:
+            - USER
+            - ADMIN
+        email:
+          $ref: '#/components/schemas/EmailParameterValue'
+        emailPrivacy:
+          type: string
+          enum:
+            - PUBLIC
+            - AUTHORIZED
+            - NOBODY
+        phone:
+          $ref: '#/components/schemas/PhoneParameterValue'
+        phonePrivacy:
+          type: string
+          enum:
+            - PUBLIC
+            - AUTHORIZED
+            - NOBODY
+        additionalContact:
+          $ref: '#/components/schemas/AdditionalContactParameterValue'
+        additionalContactPrivacy:
+          type: string
+          enum:
+            - PUBLIC
+            - AUTHORIZED
+            - NOBODY
+        securityLevel:
+          type: string
+          enum:
+            - UNCLASSIFIED
+            - CONFIDENTIAL
+            - SECRET
+            - TOP_SECRET
+        companyId:
+          $ref: '#/components/schemas/NullableParameterValueRestDTOCompanyId'
+        aboutSelf:
+          $ref: '#/components/schemas/NullableParameterValueRestDTOString'
+        isConferenceCreationEnabled:
+          type: boolean
+        defaultMediaGroupId:
+          $ref: '#/components/schemas/NullableParameterValueRestDTOInteger'
+        defaultEventLevel:
+          type: integer
+          format: int32
+        expirationDate:
+          $ref: '#/components/schemas/NullableParameterValueRestDTODate'
+        password:
+          type: string
+        vvoipLogin:
+          $ref: '#/components/schemas/VVoIPLoginParameterValue'
+        vvoipExtension:
+          $ref: '#/components/schemas/VVoIPExtensionParameterValue'
+        vvoipSubnet:
+          $ref: '#/components/schemas/VVoIPSubnetParameterValue'
+        vvoipPassword:
+          $ref: '#/components/schemas/VVoIPPasswordParameterValue'
+    VVoIPExtensionParameterValue:
+      maxLength: 64
+      type: object
+      properties:
+        value:
+          type: string
+          description:
+            If Value is received but is null then the parameter should be reset to null,
+            otherwise parameter should be set to the value.
+    VVoIPLoginParameterValue:
+      maxLength: 64
+      type: object
+      properties:
+        value:
+          type: string
+          description:
+            If Value is received but is null then the parameter should be reset to null,
+            otherwise parameter should be set to the value.
+    VVoIPPasswordParameterValue:
+      maxLength: 64
+      type: object
+      properties:
+        value:
+          type: string
+          description:
+            If Value is received but is null then the parameter should be reset to null,
+            otherwise parameter should be set to the value.
+    VVoIPSubnetParameterValue:
+      maxLength: 32
+      type: object
+      properties:
+        value:
+          type: string
+          description:
+            If Value is received but is null then the parameter should be reset to null,
+            otherwise parameter should be set to the value.
+  responses:
+    '400':
+      description: Bad request
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/ERROR'
+    '500':
+      description: Internal server error
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/ERROR'
+    default:
+      description: Something goes wrong
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/ERROR'
+    EventOk:
+      description: OK
+  examples:
+    ERROR:
+      value:
+        message: Requested resource is not found.
+        reason: RESOURCE_NOT_FOUND
+        type: RestApiException
+  securitySchemes:
+    IntegrationAuthentication:
+      type: http
+      scheme: bearer
+      bearerFormat: JWT
+x-tagGroups:
+  - name: Common
+    tags:
+      - Requests
+      - Responses
+  - name: Users
+    tags:
+      - Users
+  - name: Conferences
+    tags:
+      - Conference
+      - Conference session

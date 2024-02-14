@@ -12,7 +12,7 @@ export default function AdminLayout({ children }: ReactChildren) {
   return (
     <>
       <Header />
-      <div className='flex h-screen overflow-hidden'>
+      <div className='flex h-full overflow-hidden'>
         <Sidebar />
         <main className='w-full'>{children}</main>
       </div>

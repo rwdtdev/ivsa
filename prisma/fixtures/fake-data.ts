@@ -195,6 +195,7 @@ export function fakeInventory() {
   // @TODO добавить сведения по мере понимания их состава
   return {
     number: faker.string.numeric(1),
-    date: moment(faker.date.anytime()).format('DD.MM.YYYY')
+    date: moment(faker.date.anytime()).toISOString(),
+    id: faker.string.uuid()
   };
 }

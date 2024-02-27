@@ -1,3 +1,5 @@
+import _ from 'underscore';
+
 export const uniqueString = (length: number) => {
   let result = '';
   const characters = 'abcdefghijklmnopqrstuvwxyz0123456789';
@@ -52,3 +54,13 @@ export const filterSearchTerm = (
       .join(joinBy)
   );
 };
+
+export function getDateFromString(str: string): Date | null {
+  const date = Date.parse(str);
+
+  if (_.isNaN(date)) {
+    return null;
+  }
+
+  return new Date(date);
+}

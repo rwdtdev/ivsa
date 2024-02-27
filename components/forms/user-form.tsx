@@ -32,6 +32,7 @@ import {
 import { Department, Organisation, UserRole, UserStatus } from '@prisma/client';
 import { PasswordInput } from '../password-input';
 import { createUserAction, updateUserAction } from '@/app/actions/server/users';
+import ProblemJson from '@/lib/problem-json/ProblemJson';
 
 interface UserFormProps {
   initialData: any | null;
@@ -114,8 +115,11 @@ export const UserForm: React.FC<UserFormProps> = ({
     } catch (err) {
       toast({
         variant: 'destructive',
-        title: 'Что-то пошло не так.',
-        description: 'Возникла проблема при выполнении запроса.'
+        title: err instanceof ProblemJson ? err.message : 'Что-то пошло не так.',
+        description:
+          err instanceof ProblemJson
+            ? (err.detail as string)
+            : 'Возникла проблема при выполнении запроса.'
       });
     } finally {
       setLoading(false);

@@ -15,6 +15,8 @@ export const EventsTableColumnNames = {
   commandNumber: 'Номер распоряжения',
   commandDate: 'Дата распоряжения',
   orderId: 'Приказ',
+  status: 'Статус',
+  briefingStatus: 'Инструктаж',
   orderNumber: 'Номер приказа',
   orderDate: 'Дата составления приказа',
   startAt: 'Дата начала Реестр инвентаризаций',

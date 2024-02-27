@@ -23,12 +23,19 @@ export const UserStatus = {
 };
 
 export const EventStatuses = {
-  // Инструктаж
-  NOT_STARTED: 'Не начат',
-  IN_PROGRESS: 'В процессе',
-  PASSED: 'Пройден',
-  // Инвентаризация
   OPEN: 'Открыта',
   CLOSED: 'Закрыта',
   REMOVED: 'Удалена'
+};
+
+export const BriefingStatuses = {
+  NOT_STARTED: 'Не начат',
+  IN_PROGRESS: 'В процессе',
+  PASSED: 'Пройден'
+};
+
+export const ConferenceRoles = {
+  ATTENDEE: 'Участник-комиссии',
+  SPEAKER: 'Председатель',
+  MODERATOR: 'Модератор'
 };

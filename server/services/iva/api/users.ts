@@ -50,3 +50,11 @@ export const update = async (id: string, data: any) => {
     // do something
   }
 };
+
+export const remove = async (id: string) => {
+  try {
+    await ivaRequest(`/integration/users/${id}`, { method: 'DELETE' });
+  } catch (error) {
+    // do something
+  }
+};

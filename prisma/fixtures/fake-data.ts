@@ -1,9 +1,8 @@
 import * as moment from 'moment';
-import { UserStatus, UserRole, EventType, EventStatus } from '@prisma/client';
+import { UserStatus, UserRole, EventStatus, BriefingStatus } from '@prisma/client';
 import { fakerRU as faker } from '@faker-js/faker';
 import { random } from 'underscore';
 import { transliterate as tr } from 'transliteration';
-import { DATE_FORMAT } from '../../constants/date';
 
 export function fakeOrganisation() {
   return {
@@ -74,10 +73,13 @@ export function fakeUser() {
 
 export function fakeEvent() {
   const date = moment(faker.date.anytime());
-  const type = faker.helpers.arrayElement([EventType.AUDIT, EventType.BRIEFING] as const);
+  const briefingStatus = faker.helpers.arrayElement([
+    BriefingStatus.IN_PROGRESS,
+    BriefingStatus.NOT_STARTED,
+    BriefingStatus.PASSED
+  ]);
 
   return {
-    type,
     commandId: faker.string.uuid(),
     commandNumber: faker.string.numeric(3),
     commandDate: moment(faker.date.anytime()).toISOString(),
@@ -87,20 +89,105 @@ export function fakeEvent() {
     startAt: date.toISOString(),
     endAt: date.add({ year: 1 }).toISOString(),
     balanceUnit: faker.string.nanoid(5),
-    balanceUnitRegionCode: faker.string.numeric(2),
+    balanceUnitRegionCode: faker.helpers.arrayElement([
+      '1',
+      '2',
+      '3',
+      '4',
+      '5',
+      '6',
+      '7',
+      '08',
+      '09',
+      '10',
+      '11',
+      '12',
+      '13',
+      '14',
+      '15',
+      '16',
+      '17',
+      '18',
+      '19',
+      '20',
+      '21',
+      '22',
+      '23',
+      '24',
+      '25',
+      '26',
+      '27',
+      '28',
+      '29',
+      '30',
+      '31',
+      '32',
+      '33',
+      '34',
+      '35',
+      '36',
+      '37',
+      '38',
+      '39',
+      '40',
+      '41',
+      '42',
+      '43',
+      '44',
+      '45',
+      '46',
+      '47',
+      '48',
+      '49',
+      '50',
+      '51',
+      '52',
+      '53',
+      '54',
+      '55',
+      '56',
+      '57',
+      '58',
+      '59',
+      '60',
+      '61',
+      '62',
+      '63',
+      '64',
+      '65',
+      '66',
+      '67',
+      '68',
+      '69',
+      '70',
+      '71',
+      '72',
+      '73',
+      '74',
+      '75',
+      '76',
+      '77',
+      '78',
+      '79',
+      '83',
+      '86',
+      '87',
+      '89',
+      '99'
+    ]),
     updatedAt: faker.date.anytime(),
-    status:
-      type === EventType.AUDIT
-        ? faker.helpers.arrayElement([
-            EventStatus.OPEN,
-            EventStatus.CLOSED,
-            EventStatus.REMOVED
-          ])
-        : faker.helpers.arrayElement([
-            EventStatus.IN_PROGRESS,
-            EventStatus.NOT_STARTED,
-            EventStatus.PASSED
-          ])
+    status: faker.helpers.arrayElement([
+      EventStatus.OPEN,
+      EventStatus.CLOSED,
+      EventStatus.REMOVED
+    ]),
+    briefingStatus: faker.helpers.arrayElement([
+      BriefingStatus.IN_PROGRESS,
+      BriefingStatus.NOT_STARTED,
+      BriefingStatus.PASSED
+    ]),
+    briefingRoomInviteLink:
+      briefingStatus === BriefingStatus.IN_PROGRESS ? 'http://localhost:3000' : null
   };
 }
 
@@ -108,6 +195,6 @@ export function fakeInventory() {
   // @TODO добавить сведения по мере понимания их состава
   return {
     number: faker.string.numeric(1),
-    date: moment(faker.date.anytime()).format(DATE_FORMAT)
+    date: moment(faker.date.anytime()).format('DD.MM.YYYY')
   };
 }

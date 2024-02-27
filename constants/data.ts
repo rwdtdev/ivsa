@@ -18,15 +18,9 @@ export const dictionaryItems: NavItem[] = [
 export const registryItems: NavItem[] = [
   {
     title: 'Реестр инвентаризаций',
-    href: '/admin/events?type=audit',
+    href: '/admin/events',
     icon: 'table',
-    label: 'audit-events'
-  },
-  {
-    title: 'Реестр инструктажей',
-    href: '/admin/events?type=briefing',
-    icon: 'table',
-    label: 'briefing-events'
+    label: 'events'
   }
 ];
 

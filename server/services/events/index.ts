@@ -1,12 +1,22 @@
+import _ from 'underscore';
 import { SortOrder } from '@/constants/data';
 import ApiError from '@/server/utils/error';
+import prisma from '@/server/services/prisma';
 import { TransactionSession } from '@/types/prisma';
-import { Event, PrismaClient } from '@prisma/client';
-import { EventView, EventsGetData } from './types';
+import { Event, PrismaClient, User, UserRole } from '@prisma/client';
+import { CreateEventData, EventView, EventsGetData } from './types';
 import { PaginatedResponse } from '@/server/types';
 import { exclude } from '@/server/utils/exclude';
 import moment from 'moment';
 import { DATETIME_FORMAT, DATE_FORMAT } from '@/constants/date';
+import {
+  EventMustHaveChairman,
+  EventParticipantsMustBeNotEmptyError,
+  EventParticipantsMustContainSpeakerError,
+  SpeakerIsNotRegisteredInIvaError
+} from './errors';
+import { SoiParticipantRoles } from '@/constants/mappings/soi';
+import { IvaRoles, IvaRolesMapper } from '@/constants/mappings/iva';
 
 const defaultLimit = 100;
 
@@ -29,13 +39,35 @@ export class EventService {
     return new this(session);
   }
 
-  assertExist = async (id: string): Promise<void> => {
+  async assertExist(id: string): Promise<void> {
     const count = await this.prisma.event.count({ where: { id } });
 
     if (!count || count === 0) {
       throw new ApiError(`Event with id (${id}) not found`, 404);
     }
-  };
+  }
+
+  assertSpeakerExistAndRegisteredInIva(event: EventView): string {
+    const { participants } = event;
+
+    if (!participants || _.isEmpty(participants)) {
+      throw new EventParticipantsMustBeNotEmptyError();
+    }
+
+    const speaker = participants.find(
+      ({ role }) => IvaRolesMapper[role] === IvaRoles.SPEAKER
+    );
+
+    if (!speaker) {
+      throw new EventParticipantsMustContainSpeakerError();
+    }
+
+    if (!speaker.user.ivaProfileId) {
+      throw new SpeakerIsNotRegisteredInIvaError();
+    }
+
+    return speaker.user.ivaProfileId;
+  }
 
   async getEventById(id: string): Promise<EventView> {
     const event = await this.prisma.event.findFirst({
@@ -43,10 +75,7 @@ export class EventService {
       include: {
         inventories: true,
         participants: {
-          include: {
-            organisation: true,
-            department: true
-          }
+          include: { user: true }
         }
       }
     });
@@ -56,6 +85,48 @@ export class EventService {
     }
 
     return serializeToView(event);
+  }
+
+  async create(data: CreateEventData): Promise<EventView> {
+    const usersPromises = data.participants.map(async (participant) => {
+      const user = await this.prisma.user.findFirst({
+        where: {
+          tabelNumber: participant.tabelNumber
+        }
+      });
+
+      return (
+        user && {
+          userId: user.id,
+          role:
+            SoiParticipantRoles[participant.roleId as keyof typeof SoiParticipantRoles] ||
+            UserRole.PARTICIPANT
+        }
+      );
+    });
+
+    const users = (await Promise.all(usersPromises)).filter(_.identity);
+
+    const event = await this.prisma.event.create({
+      data: {
+        ...data,
+        participants: {
+          // @ts-ignore
+          create: users
+        }
+      }
+    });
+
+    return serializeToView(event);
+  }
+
+  async update(id: string, data: any) {
+    const updatedEvent = await this.prisma.event.update({
+      where: { id },
+      data
+    });
+
+    return updatedEvent;
   }
 
   async getEvents(
@@ -78,7 +149,6 @@ export class EventService {
 
     const where = {
       where: {
-        type: query?.type,
         ...(query && query.from && { startAt: { gte: query.from } }),
         ...(query && query.to && { endAt: { lte: query?.to } }),
         ...(conditions.length > 0 && { AND: conditions })
@@ -92,8 +162,8 @@ export class EventService {
       include: {
         participants: {
           include: {
-            organisation: true,
-            department: true
+            event: true,
+            user: true
           }
         }
       },

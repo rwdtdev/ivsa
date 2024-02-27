@@ -46,8 +46,10 @@ export type AttendeePermission =
 
 export type IvaParticipant = {
   // Идентификатор профиля пользователя в IVA
-  interlocutor: string;
-  roles?: ParticipantRole[];
+  interlocutor: {
+    profileId: string;
+  };
+  roles?: string[];
   interpreterLanguagesPair?: string[];
 };
 

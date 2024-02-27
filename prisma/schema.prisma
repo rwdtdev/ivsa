@@ -92,76 +92,89 @@ model User {
   departmentId           String?
   /// Объект с данными об отделе, в котором состоит пользователь
   department             Department?   @relation(fields: [departmentId], references: [id])
-  /// Объект с данными о событии, в котором пользователь является участником
-  event                  Event?        @relation(fields: [eventId], references: [id])
-  /// Сссылка на событие. в котором пользователь является участником
-  eventId                String?
-  /// Объект с данными описи, в которой участвует пользователь
-  inventory              Inventory?    @relation(fields: [inventoryId], references: [id])
-  /// Ссылка на опись, в которой участвует пользователь
-  inventoryId            String?
+
+  eventsParticipant EventParticipant[]
 
   @@map("users")
 }
 
 model Event {
   /// Идентификатор события в формате cUID
-  id                    String      @id @default(cuid())
-  /// Тип события
-  type                  EventType
+  id                     String             @id @default(cuid())
   /// Идентификатор распоряжения
-  commandId             String
+  commandId              String
   /// Номер распоряжения 
-  commandNumber         String
+  commandNumber          String
   /// Дата распоряжения
-  commandDate           String
+  commandDate            DateTime
   /// Идентификатор приказа формы № ИНВ-22
-  orderId               String
+  orderId                String
   /// Номер приказа формы № ИНВ-22
-  orderNumber           String
+  orderNumber            String
   /// Дата составления приказа формы № ИНВ-22
-  orderDate             String
+  orderDate              DateTime
   /// Дата начала события
-  startAt               DateTime
+  startAt                DateTime
   /// Дата окончания события
-  endAt                 DateTime
+  endAt                  DateTime
   /// Балансовая единица
-  balanceUnit           String
+  balanceUnit            String
   /// Код региона, в котором находится балансовая единица
-  balanceUnitRegionCode String
+  balanceUnitRegionCode  String
   /// Список участников события
-  participants          User[]
+  participants           EventParticipant[]
   /// Список описей
-  inventories           Inventory[]
+  inventories            Inventory[]
+  /// Глобальный статус события инвентаризации
+  status                 EventStatus        @default(OPEN)
+  /// Статус инструктужа, которые выставляется на основе 
+  briefingStatus         BriefingStatus     @default(NOT_STARTED)
+  /// Ссылка для подключения к открытой комнате видеоинструктажа
+  briefingRoomInviteLink String?
+  /// Идентификатор конференции в IVA-R
+  briefingSessionId      String?
   /// Дата и время создания записи
-  createdAt             DateTime    @default(now())
+  createdAt              DateTime           @default(now())
   /// Дата и время модификации записи
-  updatedAt             DateTime    @updatedAt
-  /// URL видео файла инвентаризации
-  videoFileUrl          String?
-  /// Статус событие инвентаризации или инструктажа
-  status                EventStatus
+  updatedAt              DateTime           @updatedAt
 
   @@map("events")
 }
 
+model EventParticipant {
+  id          String     @id @default(cuid())
+  eventId     String
+  event       Event      @relation(fields: [eventId], references: [id])
+  inventoryId String?
+  inventory   Inventory? @relation(fields: [inventoryId], references: [id])
+  userId      String
+  user        User       @relation(fields: [userId], references: [id])
+  role        UserRole
+
+  @@unique([eventId, userId, inventoryId, role])
+  @@map("event-participants")
+}
+
 model Inventory {
-  /// Идентификатор описи в формате cUID
-  id           String   @id @default(cuid())
+  /// Внешний Идентификаторр описи из Soi
+  id                  String             @id
   /// Идентификатор события к которому привязана опись
-  eventId      String
+  eventId             String
   /// Объект с данными о событии, с которым связана опись
-  event        Event    @relation(fields: [eventId], references: [id])
-  /// Участники описи
-  participants User[]
+  event               Event              @relation(fields: [eventId], references: [id])
   /// Номер описи
-  number       String
+  number              String
   /// Дата описи
-  date         String
+  date                DateTime
+  /// Идентификатор конференции в IVA-R
+  auditSessionId      String?
+  /// Ссылка для подключения к открытой комнате видеоинвентаризации
+  auditRoomInviteLink String?
   /// Дата и время создания записи
-  createdAt    DateTime @default(now())
+  createdAt           DateTime           @default(now())
   /// Дата и время модификации записи
-  updatedAt    DateTime @updatedAt
+  updatedAt           DateTime           @updatedAt
+  participants        EventParticipant[]
 
   @@map("inventories")
 }
@@ -198,26 +211,28 @@ enum UserRole {
   ENGINEER
 }
 
-enum EventType {
-  /// Событие тип "Инвентаризация"
-  AUDIT
-  /// Событие типа "Инструктаж"
-  BRIEFING
-}
-
 enum EventStatus {
-  /// Инструктаж не начат
-  NOT_STARTED
-  /// Инструктаж в процессе
-  IN_PROGRESS
-  /// Инструктаж пройден
-  PASSED
   /// Событие открыто
   OPEN
   /// Событие закрыто
   CLOSED
   /// Событие удалено
   REMOVED
+}
+
+enum BriefingStatus {
+  /// Инструктаж не начат
+  NOT_STARTED
+  /// Инструктаж в процессе
+  IN_PROGRESS
+  /// Инструктаж пройден
+  PASSED
+}
+
+enum ConferenseRole {
+  SPEAKER
+  MODERATOR
+  ATTENDEE
 }
 
 model SubSystems {

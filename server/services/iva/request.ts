@@ -9,7 +9,7 @@ type IvaRequestOptions = {
 export const ivaRequest = async (
   path: string,
   options?: IvaRequestOptions
-): Promise<JSON> => {
+): Promise<any> => {
   const token = await helpers.getJWTToken();
   const url = new URL(`${process.env.IVA_API_URL}${path}`);
 
@@ -28,16 +28,18 @@ export const ivaRequest = async (
     });
 
     if (!response.ok) {
-      throw new Error(await response.text());
+      return await response.text();
     }
 
     const contentType = response.headers.get('content-type');
+    console.log(contentType);
 
     if (contentType && contentType.includes('application/json')) {
       const data = JSON.parse(await response.text());
       return data;
     } else {
-      throw new Error('Response is not in JSON format');
+      return;
+      // throw new Error('Response is not in JSON format');
     }
   } catch (error) {
     throw error;

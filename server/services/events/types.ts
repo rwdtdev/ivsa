@@ -1,5 +1,6 @@
 import { SortOrder } from '@/constants/data';
-import { Event, EventStatus, EventType, Inventory, User } from '@prisma/client';
+import { RequiredNotNull } from '@/server/types';
+import { Event, EventStatus, Inventory, User, UserRole } from '@prisma/client';
 
 export type EventsGetData = Partial<{
   page: number;
@@ -7,7 +8,6 @@ export type EventsGetData = Partial<{
   searchTerm: string;
   sortDirection: SortOrder;
   query: {
-    type: EventType;
     from?: string;
     to?: string;
     statuses?: EventStatus[];
@@ -17,6 +17,19 @@ export type EventsGetData = Partial<{
 export type EventView = Omit<Event, 'startAt' | 'endAt'> & {
   startAt: string;
   endAt: string;
-  participants: User[];
+  participants: {
+    role: UserRole;
+    user: User;
+    inventory: Inventory;
+  }[];
   inventories: Inventory[];
 };
+
+export type CreateEventData = RequiredNotNull<
+  Omit<Event, 'participants'> & {
+    participants: {
+      tabelNumber: string;
+      roleId: string;
+    }[];
+  }
+>;

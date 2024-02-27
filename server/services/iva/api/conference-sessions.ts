@@ -11,14 +11,16 @@ export const createRoom = async (data: IvaConferenceSessionCreateRoomData) => {
 
     return createdRoom;
   } catch (error) {
+    console.log(error);
     // do something
   }
 };
 
-export const remove = async (id: string) => {
+export const closeRoom = async (id: string) => {
   try {
     await ivaRequest(`/integration/conference-sessions/${id}`, { method: 'DELETE' });
   } catch (error) {
+    console.log(error);
     // do something
   }
 };
@@ -29,6 +31,16 @@ export const update = async (id: string, data: IvaConferenceSessionUpdateData) =
       method: 'PATCH',
       data
     });
+  } catch (error) {
+    // do something
+  }
+};
+
+export const find = async (id: string) => {
+  try {
+    const conference = await ivaRequest(`/integration/conference-sessions/${id}`);
+
+    return conference;
   } catch (error) {
     // do something
   }

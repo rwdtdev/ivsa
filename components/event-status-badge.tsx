@@ -1,63 +1,60 @@
-import { EventStatuses } from '@/constants/mappings/prisma-enums';
-import { EventStatus } from '@prisma/client';
+import { cn } from '@/lib/utils';
+import { BriefingStatus, EventStatus } from '@prisma/client';
+import { BriefingStatuses, EventStatuses } from '@/constants/mappings/prisma-enums';
 import { Badge } from './ui/badge';
 import {
-  StopwatchIcon,
   CheckCircledIcon,
+  CircleIcon,
   CrossCircledIcon,
-  CircleIcon
+  StopwatchIcon
 } from '@radix-ui/react-icons';
 
-type EventStatusBadgeProps = {
-  status?: EventStatus;
-};
-
-export const EventStatusBadge = ({ status }: EventStatusBadgeProps) => {
+export const EventStatusBadge = ({ status }: { status?: EventStatus }) => {
   if (!status) return null;
 
-  const mappedStatus = EventStatuses[status];
+  const text = EventStatuses[status];
+
+  let Icon = null;
+  let classNames = 'bg-gray-200 hover:bg-gray-200';
 
   if (status === EventStatus.REMOVED) {
-    return (
-      <Badge
-        variant='secondary'
-        className='pointer-events-none bg-red-200 py-1 hover:bg-red-200'
-      >
-        <CrossCircledIcon className='mr-1' /> {mappedStatus}
-      </Badge>
-    );
+    Icon = CrossCircledIcon;
+    classNames = 'bg-red-200 hover:bg-red-200';
   }
 
-  if (status === EventStatus.IN_PROGRESS) {
-    return (
-      <Badge
-        variant='secondary'
-        className='pointer-events-none bg-blue-200 py-1 hover:bg-blue-200'
-      >
-        <StopwatchIcon className='mr-1' /> {mappedStatus}
-      </Badge>
-    );
+  if (status === EventStatus.CLOSED) {
+    Icon = CheckCircledIcon;
+    classNames = 'bg-green-200 hover:bg-green-200';
   }
 
-  if (status === EventStatus.NOT_STARTED || status === EventStatus.OPEN) {
-    return (
-      <Badge
-        variant='secondary'
-        className='pointer-events-none bg-gray-200 py-1 hover:bg-gray-200'
-      >
-        <CircleIcon className='mr-1' /> {mappedStatus}
-      </Badge>
-    );
+  return (
+    <Badge variant='secondary' className={cn('pointer-events-none py-1', classNames)}>
+      {Icon && <Icon className='mr-1' />} {text}
+    </Badge>
+  );
+};
+
+export const BriefingStatusBadge = ({ status }: { status?: BriefingStatus }) => {
+  if (!status) return null;
+
+  const text = BriefingStatuses[status];
+
+  let Icon = CircleIcon;
+  let classNames = 'bg-gray-200 hover:bg-gray-200';
+
+  if (status === BriefingStatus.IN_PROGRESS) {
+    Icon = StopwatchIcon;
+    classNames = 'bg-blue-200 hover:bg-blue-200';
   }
 
-  if (status === EventStatus.CLOSED || status === EventStatus.PASSED) {
-    return (
-      <Badge
-        variant='secondary'
-        className='pointer-events-none bg-green-200 py-1 hover:bg-green-200'
-      >
-        <CheckCircledIcon className='mr-1' /> {mappedStatus}
-      </Badge>
-    );
+  if (status === BriefingStatus.PASSED) {
+    Icon = CheckCircledIcon;
+    classNames = 'bg-green-200 hover:bg-green-200';
   }
+
+  return (
+    <Badge variant='secondary' className={cn('pointer-events-none py-1', classNames)}>
+      <Icon className='mr-1' /> {text}
+    </Badge>
+  );
 };

@@ -6,12 +6,13 @@ import { ClientUser, UserCreateData, UserUpdateData, UsersGetData } from './type
 import { PaginatedResponse } from '@/server/types';
 import { filterSearchTerm } from '@/server/utils';
 import { generatePasswordAsync } from '@/server/utils/password-generator';
-import { PrismaClient, User, UserStatus } from '@prisma/client';
+import { PrismaClient, User, UserRole, UserStatus } from '@prisma/client';
 import { exclude } from '@/server/utils/exclude';
 import { UserView } from '@/types/user';
 import { TransactionSession } from '@/types/prisma';
 import { SortOrder } from '@/constants/data';
 import IvaAPI from '../iva/api';
+import { CreateIvaUserError, IvaUserAlreadyExist } from './errors';
 
 const defaultLimit = 100;
 
@@ -249,7 +250,8 @@ export const createUser = async (userCreateData: UserCreateData): Promise<Client
     organisationId,
     role,
     status,
-    tabelNumber
+    tabelNumber,
+    password
   } = userCreateData;
 
   const isExistWithEmail = await prisma.user.findFirst({
@@ -288,19 +290,32 @@ export const createUser = async (userCreateData: UserCreateData): Promise<Client
     }
   }
 
-  const password = await generatePasswordAsync();
+  // const password = await generatePasswordAsync();
   const salt = await bcrypt.genSalt(10);
   const passwordHash = await bcrypt.hash(password, salt);
 
   const ivaUser = await IvaAPI.users.create({
     login: username,
-    userType: role,
+    userType: role === UserRole.ADMIN ? UserRole.ADMIN : UserRole.USER,
     securityLevel: 'UNCLASSIFIED',
     name,
     email: { value: email, privacy: 'AUTHORIZED' },
     phone: { value: phone, privacy: 'AUTHORIZED' },
-    password
+    password,
+    isConferenceCreationEnabled: true
   });
+
+  if (!ivaUser) {
+    throw new CreateIvaUserError();
+  }
+
+  // @TODO: узнать все коды ошибок IVA
+  if (ivaUser && !ivaUser.profileId) {
+    const res = JSON.parse(ivaUser);
+    if (res && res.reason === 'USER_WITH_SUCH_EMAIL_ALREADY_EXISTS') {
+      throw new IvaUserAlreadyExist();
+    }
+  }
 
   const user = await prisma.user.create({
     data: {

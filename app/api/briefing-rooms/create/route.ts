@@ -1,45 +1,91 @@
+import _ from 'underscore';
 import { NextRequest, NextResponse } from 'next/server';
-import prisma from '@/server/services/prisma';
-import {
-    makeResponseCORSLess, validateEventId, zodValidateEventId,
-} from '@/lib/api/helpers';
-import {
-  cn, gr, rd, yl,
-  generateConsoleLogPrefix,
-  validityState,
-  mg,
-} from '@/lib/api/ansi-helpers';
+import IvaAPI from '@/server/services/iva/api';
+import { EventService } from '@/server/services/events';
+import { BriefingStatus } from '@prisma/client';
+import { doTransaction } from '@/lib/prisma-transaction';
+import { TransactionSession } from '@/types/prisma';
+import { getErrorResponse } from '@/lib/helpers';
+import { BriefingRoomAlreadyExist } from './errors';
+import { IvaRolesMapper } from '@/constants/mappings/iva';
 
 export async function POST(request: NextRequest) {
-    const CONSOLE_LOG_PREFIX = generateConsoleLogPrefix(request.method, '/api/briefing-rooms/create');
-    const clog = (textToLog: string, ...args: any) => console.log(`${CONSOLE_LOG_PREFIX}${textToLog}`, ...args);
+  const reqBody = await request.json();
+  const eventId = reqBody.eventId;
 
-    const reqBody = await request.json();
-    const eventId = reqBody.eventId;
+  let conferenceSessionId;
 
-    // Placeholder response
-    let resp: NextResponse = NextResponse.json({
-      "briefingId": "049fc113-4408-4d97-b9e8-fef7a6cb5ae4",
-      "briefingLink": "https://www.ourdomain.ru/049fc113-4408-4d97-b9e8-fef7a6cb5ae4"
-    }, {
-      status: 201,
-      statusText: 'Created',
-    });
+  try {
+    return await doTransaction(async (txSession: TransactionSession) => {
+      const eventServiceWithSession = EventService.withSession(txSession);
 
-    //console.log(`${yl('Zod').b()} validаte for EventId '${cn(eventId)}': %O`, zodValidateEventId(eventId))
+      await eventServiceWithSession.assertExist(eventId);
 
-    if (!validateEventId(eventId)) {
-      resp = NextResponse.json({
-        "type": "urn:problem-type:unprocessable-content",
-        "title": "Необрабатываемый контент",
-        "detail": `Неверный формат id события: ${eventId}`,
-        "status": 422,
-      }, {
-        status: 422
+      const event = await eventServiceWithSession.getEventById(eventId);
+
+      if (event.briefingSessionId) {
+        throw new BriefingRoomAlreadyExist();
+      }
+
+      const speakerIvaProfileId =
+        eventServiceWithSession.assertSpeakerExistAndRegisteredInIva(event);
+
+      const createdRoom = await IvaAPI.conferenceSessions.createRoom({
+        name: `Видеоинструктаж по событию ${event.id}`,
+        description: 'Видеоинструктаж по событию инвентаризации',
+        owner: { profileId: speakerIvaProfileId },
+        conferenceTemplateId: '471f7e4e-15b7-48fc-bf34-88488b4e14dc',
+        settings: {
+          joinRestriction: 'INVITED_OR_REGISTERED',
+          attendeePermissions: [
+            'SPEAKER_OTHER',
+            'CHAT_SEND_WITHOUT_PREMODERATION',
+            'INVITING_PARTICIPANTS',
+            'PUBLISH_MESSAGES_IN_CHAT',
+            'RECEIVE_MEDIA'
+          ],
+          attendeeMediaState: 'AUDIO_VIDEO',
+          features: [
+            { key: 'ACTIVE_SPEAKER_INDICATION', value: true },
+            { key: 'MUTE_EXTERNAL_NOTIFICATIONS', value: true },
+            { key: 'ALWAYS_SHOW_PARTICIPANT_IN_STAGE', value: true }
+          ]
+        },
+        participants: event.participants.map(({ user, role }) => ({
+          interlocutor: { profileId: user.ivaProfileId as string },
+          roles: [IvaRolesMapper[role]],
+          interpreterLanguagesPair: ['RUSSIAN']
+        }))
       });
+
+      conferenceSessionId = createdRoom.conferenceSessionId;
+
+      const participants = await IvaAPI.conferenceSessions.findParticipants(
+        conferenceSessionId,
+        { requestedData: ['JOIN_LINK'] }
+      );
+
+      const link = participants.data[0].joinLink;
+
+      await eventServiceWithSession.update(eventId, {
+        briefingStatus: BriefingStatus.IN_PROGRESS,
+        briefingRoomInviteLink: link,
+        briefingSessionId: conferenceSessionId
+      });
+
+      return NextResponse.json(
+        {
+          briefingId: conferenceSessionId,
+          briefingLink: link
+        },
+        { status: 201 }
+      );
+    });
+  } catch (error) {
+    if (conferenceSessionId) {
+      await IvaAPI.conferenceSessions.closeRoom(conferenceSessionId);
     }
 
-    clog(`\n\t${validityState('eventId', validateEventId, eventId)}\n\trequest body: %O\n\tresponse status ${yl(resp.status.toString())}, '${yl(resp.statusText)}'\n`, reqBody);
-
-    return makeResponseCORSLess(resp);
+    return getErrorResponse(error);
+  }
 }

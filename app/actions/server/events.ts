@@ -6,12 +6,11 @@ import { EventService } from '@/server/services/events';
 import { EventView } from '@/server/services/events/types';
 import { PaginatedResponse } from '@/server/types';
 import { SearchParams } from '@/types';
-import { Event, EventType } from '@prisma/client';
+import { Event } from '@prisma/client';
 import { unstable_noStore as noStore } from 'next/cache';
 
 export async function getEventsAction(
-  searchParams: SearchParams,
-  type: EventType
+  searchParams: SearchParams
 ): Promise<
   PaginatedResponse<EventView> | { items: []; pagination: { pagesCount: number } }
 > {
@@ -45,7 +44,6 @@ export async function getEventsAction(
       limit,
       page: fallbackPage,
       query: {
-        type,
         from,
         to,
         ...(statuses.length > 0 && { statuses })

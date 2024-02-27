@@ -1,34 +1,39 @@
-import { NextRequest, NextResponse } from 'next/server';
-import prisma from '@/server/services/prisma';
-import {
-    makeResponseCORSLess, validateEventId,
-} from '@/lib/api/helpers';
-import {
-    generateConsoleLogPrefix,
-} from '@/lib/api/ansi-helpers';
+import { doTransaction } from '@/lib/prisma-transaction';
+import { EventService } from '@/server/services/events';
+import { TransactionSession } from '@/types/prisma';
+import { NextRequest } from 'next/server';
+import IvaAPI from '@/server/services/iva/api';
+import { BriefingStatus } from '@prisma/client';
+import { getErrorResponse } from '@/lib/helpers';
+import { BriefingRoomIsNotOpened } from './errors';
 
 export async function PUT(request: NextRequest) {
-    const CONSOLE_LOG_PREFIX = generateConsoleLogPrefix(request.method, '/api/briefing-rooms/close');
-    const clog = (textToLog: string, ...args: any) => console.log(`${CONSOLE_LOG_PREFIX}${textToLog}`, ...args);
+  const reqBody = await request.json();
+  const eventId = reqBody.eventId;
 
-    const reqBody = await request.json();
-    const eventId = reqBody.eventId;
+  try {
+    return await doTransaction(async (txSession: TransactionSession) => {
+      const eventServiceWithSession = EventService.withSession(txSession);
 
-     // Placeholder response
-     let resp: NextResponse = new NextResponse(undefined, { status: 204 });
+      await eventServiceWithSession.assertExist(eventId);
 
-     if (!validateEventId(eventId)) {
-       resp = NextResponse.json({
-         "type": "urn:problem-type:unprocessable-content",
-         "title": "Необрабатываемый контент",
-         "detail": `Неверный формат id события: ${eventId}`,
-         "status": 422,
-       }, {
-         status: 422
-       });
-     }
+      const event = await eventServiceWithSession.getEventById(eventId);
 
-     clog(`eventId is ${validateEventId(eventId) ? 'valid' : 'invalid'}\nrequest body: %O\nresponding with status ${resp.status}, '${resp.statusText}'`, reqBody)
+      if (!event.briefingSessionId) {
+        throw new BriefingRoomIsNotOpened();
+      }
 
-    return makeResponseCORSLess(resp);
+      await IvaAPI.conferenceSessions.closeRoom(event.briefingSessionId);
+
+      await eventServiceWithSession.update(eventId, {
+        briefingStatus: BriefingStatus.PASSED,
+        briefingRoomInviteLink: null,
+        briefingSessionId: null
+      });
+
+      return new Response(null, { status: 204 });
+    });
+  } catch (error) {
+    return getErrorResponse(error);
+  }
 }

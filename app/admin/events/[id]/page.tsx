@@ -6,7 +6,6 @@ import BreadCrumb from '@/components/breadcrumb';
 import { Heading } from '@/components/ui/heading';
 import { getEntityId } from '@/lib/get-entity-id';
 import { EventView } from '@/server/services/events/types';
-import { EventType } from '@prisma/client';
 import { usePathname } from 'next/navigation';
 import { useEffect, useState } from 'react';
 import { Avatar, AvatarFallback } from '@/components/ui/avatar';
@@ -15,13 +14,16 @@ import { P } from '@/components/ui/typography/p';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { UserRoles } from '@/constants/mappings/prisma-enums';
 import { DATETIME_FORMAT, DATE_FORMAT } from '@/constants/date';
-import { EventStatusBadge } from '@/components/event-status-badge';
+import { BriefingStatusBadge, EventStatusBadge } from '@/components/event-status-badge';
 import { Separator } from '@/components/ui/separator';
 
 import { CarouselSize } from '@/components/carousel';
 import { ScrollArea } from '@/components/ui/scroll-area';
 import Loading from '@/app/loading';
 import { REGION_CODES } from '@/constants/mappings/region-codes';
+import Link from 'next/link';
+import { EnterIcon } from '@radix-ui/react-icons';
+import { BriefingStatus } from '@prisma/client';
 
 export default function EventPage() {
   const [event, setEvent] = useState<EventView>();
@@ -44,20 +46,17 @@ export default function EventPage() {
     }
   }, []);
 
-  if (isLoadingEvent) {
+  if (!event || isLoadingEvent) {
     return <Loading />;
   }
 
   const breadcrumbItems = [
     {
-      title:
-        event?.type === EventType.BRIEFING
-          ? 'Реестр инструктажей'
-          : 'Реестр инвентаризаций',
-      link: `/admin/events?${event?.type.toLocaleLowerCase()}`
+      title: 'Реестр инвентаризаций',
+      link: '/admin/events'
     },
     {
-      title: event?.type === EventType.BRIEFING ? 'Инструктаж' : 'Инвентаризация',
+      title: 'Инвентаризация',
       link: ''
     }
   ];
@@ -67,10 +66,7 @@ export default function EventPage() {
       <main className='w-full pt-16'>
         <BreadCrumb items={breadcrumbItems} />
         <div className='flex items-center justify-between'>
-          <Heading
-            title={event?.type === EventType.BRIEFING ? 'Инструктаж' : 'Инвентаризация'}
-            description={`ID: ${id}`}
-          />
+          <Heading title='Инвентаризация' description={`ID: ${id}`} />
         </div>
         <div className='grid h-full grid-cols-5 gap-4 pt-5'>
           <Card className='col-span-1'>
@@ -79,41 +75,55 @@ export default function EventPage() {
                 <div className='grid text-sm'>
                   <div className='flex'>
                     <P className='mr-2 font-semibold'>Статус:</P>
-                    <EventStatusBadge status={event?.status} />
+                    <EventStatusBadge status={event.status} />
+                  </div>
+                  <div className='mt-4 flex items-center'>
+                    <P className='mr-2 font-semibold'>Инструктаж:</P>
+                    <BriefingStatusBadge status={event.briefingStatus} />
+                    {event.briefingRoomInviteLink &&
+                      event.briefingStatus === BriefingStatus.IN_PROGRESS && (
+                        <Link
+                          className='ml-3 hover:text-blue-500 hover:underline'
+                          href={event.briefingRoomInviteLink as string}
+                          target='_blank'
+                        >
+                          <EnterIcon />
+                        </Link>
+                      )}
                   </div>
                   <P className='text-sm'>
                     <span className='font-semibold'>Дата начала:</span>{' '}
-                    {moment(event?.startAt).format(DATETIME_FORMAT)}
+                    {moment(event.startAt).format(DATETIME_FORMAT)}
                   </P>
                   <P className='text-sm'>
                     <span className='font-semibold'>Дата начала:</span>{' '}
-                    {moment(event?.startAt).format(DATETIME_FORMAT)}
+                    {moment(event.startAt).format(DATETIME_FORMAT)}
                   </P>
                   <P className='text-sm'>
                     <span className='font-semibold'>Дата окончания:</span>{' '}
-                    {moment(event?.endAt).format(DATETIME_FORMAT)}
+                    {moment(event.endAt).format(DATETIME_FORMAT)}
                   </P>
                   <P className='text-sm'>
                     <span className='font-semibold'>Балансовая единица:</span>{' '}
-                    {event?.balanceUnit}
+                    {event.balanceUnit}
                   </P>
                   <P className='text-sm'>
                     <span className='font-semibold'>Код региона:</span>{' '}
-                    {event?.balanceUnitRegionCode},{' '}
+                    {event.balanceUnitRegionCode},{' '}
                     {
                       REGION_CODES[
-                        event?.balanceUnitRegionCode as keyof typeof REGION_CODES
+                        event.balanceUnitRegionCode as keyof typeof REGION_CODES
                       ]
                     }
                   </P>
                   <P className='text-sm'>
-                    <span className='font-semibold'>Приказ:</span> №{event?.orderNumber}{' '}
-                    от {moment(event?.orderDate).format(DATE_FORMAT)}
+                    <span className='font-semibold'>Приказ:</span> №{event.orderNumber} от{' '}
+                    {moment(event.orderDate).format(DATE_FORMAT)}
                   </P>
                   <P className='text-sm'>
                     <span className='font-semibold'>Распоряжение:</span> №
-                    {event?.commandNumber} от{' '}
-                    {moment(event?.commandDate).format(DATE_FORMAT)}
+                    {event.commandNumber} от{' '}
+                    {moment(event.commandDate).format(DATE_FORMAT)}
                   </P>
                 </div>
               </div>
@@ -127,13 +137,13 @@ export default function EventPage() {
               <ScrollArea>
                 <div className='space-y-4'>
                   <div className='grid gap-6'>
-                    {event?.participants.map((participant) => {
-                      const splited = participant.name.split(' ');
+                    {event.participants.map(({ user, role }) => {
+                      const splited = user.name.split(' ');
                       const initials = [splited[0][0], splited[1][0]].join('');
 
                       return (
                         <div
-                          key={participant.id}
+                          key={user.id}
                           className='flex items-center justify-between space-x-4'
                         >
                           <div className='flex items-center space-x-4'>
@@ -142,13 +152,13 @@ export default function EventPage() {
                             </Avatar>
                             <div>
                               <p className='text-sm font-medium leading-none'>
-                                {participant.name}
+                                {user.name}
                               </p>
                               <p className='text-sm text-muted-foreground'>
-                                {UserRoles[participant.role]}
+                                {UserRoles[role as keyof typeof UserRoles]}
                               </p>
                               <p className='text-sm text-muted-foreground'>
-                                Таб. номер: {participant.tabelNumber}
+                                Таб. номер: {user.tabelNumber}
                               </p>
                             </div>
                           </div>
@@ -167,14 +177,15 @@ export default function EventPage() {
             <CardContent className='h-full'>
               <ScrollArea className='h-4/5'>
                 <div className='space-y-4'>
-                  {event?.inventories.map((inventory, index) => {
+                  {event.inventories.map((inventory, index) => {
                     return (
                       <div key={inventory.id}>
                         <div className='grid grid-cols-4 gap-1 space-x-5'>
                           <div className='mr-10 flex cursor-pointer items-center space-x-4'>
                             <div>
                               <p className='text-md font-medium leading-none'>
-                                Опись № {inventory.number} от {inventory.date}
+                                Опись № {inventory.number} от{' '}
+                                {moment(inventory.date).format(DATE_FORMAT)}
                               </p>
                               <p className='text-sm text-muted-foreground'>
                                 ID: {inventory.id}

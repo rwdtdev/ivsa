@@ -1,3 +1,5 @@
+const _ = require('underscore');
+const { faker } = require('@faker-js/faker');
 const { PrismaClient, UserRole, UserStatus } = require('@prisma/client');
 const { hashSync } = require('bcryptjs');
 const { loadEnvConfig } = require('@next/env');
@@ -6,11 +8,10 @@ const {
   fakeOrganisation,
   fakeDepartment,
   fakeEvent,
-  fakeInventory
+  fakeInventory,
+  SoiParticipantRoles
 } = require('./fixtures/fake-data');
-const { random } = require('underscore');
-const { log } = require('console');
-
+const { random, keys } = require('underscore');
 // load process.env.DATABASE_URL from .env.local
 loadEnvConfig(process.cwd());
 
@@ -20,6 +21,15 @@ const numberOfOrganisations = 2;
 const numberOfDepartments = 2;
 const numberOfUsers = 5;
 const numberOfEvents = 10;
+
+const roles = {
+  '01': UserRole.CHAIRMAN,
+  '02': UserRole.PARTICIPANT,
+  '04': UserRole.FINANCIALLY_RESPONSIBLE_PERSON,
+  '05': UserRole.INSPECTOR,
+  '06': UserRole.ACCOUNTANT,
+  '07': UserRole.MANAGER
+};
 
 const createOrganisations = (n) =>
   Array.from(Array(n).keys())
@@ -55,9 +65,16 @@ const createEvents = (users) => {
     const firstUser = users[random(users.length - 1)];
     const anotherUser = users[random(users.length - 1)];
 
+    console.log(users.length);
+
     if (firstUser.id !== anotherUser.id) {
-      const userIds = [firstUser, anotherUser].map(({ id }) => ({ id }));
-      events.push({ ...fakeEvent(), participants: { connect: userIds } });
+      events.push({
+        ...fakeEvent(),
+        participants: [firstUser, anotherUser].map((user) => ({
+          userId: user.id,
+          role: roles[faker.helpers.arrayElement(keys(roles))]
+        }))
+      });
     }
 
     counter++;
@@ -194,14 +211,16 @@ class SeedSingleton {
 
     for (const event of events) {
       const createdEvent = await this.prisma.event.create({
-        data: event,
-        include: {
-          participants: true
+        data: {
+          ...event,
+          ...(event.participants &&
+            event.participants.length > 0 && {
+              participants: {
+                create: event.participants.filter(_.identity)
+              }
+            })
         }
       });
-      console.log(
-        `Created event: ${createdEvent.id}, withParticipants: ${!!createdEvent.participants.length}`
-      );
 
       const inventories = createInventories(random(13), createdEvent.id);
 

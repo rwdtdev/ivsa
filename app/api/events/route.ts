@@ -1,44 +1,30 @@
+import _ from 'underscore';
 import { NextRequest, NextResponse } from 'next/server';
-import prisma from '@/server/services/prisma';
-import {
-    makeResponseCORSLess, validateTabelNumber,
-} from '@/lib/api/helpers';
-import {
-    generateConsoleLogPrefix,
-} from '@/lib/api/ansi-helpers';
+import { EventService } from '@/server/services/events';
+import { getErrorResponse } from '@/lib/helpers';
+import { getDateFromString } from '@/server/utils';
 
-export async function POST(request: NextRequest) {
-  const CONSOLE_LOG_PREFIX = generateConsoleLogPrefix(request.method, '/api/events');
-  const clog = (textToLog: string, ...args: any) => console.log(`${CONSOLE_LOG_PREFIX}${textToLog}`, ...args);
+export async function POST(req: NextRequest) {
+  const reqBody = await req.json();
+  const eventService = new EventService();
 
-  const reqBody = await request.json();
+  try {
+    const event = await eventService.create(
+      _.omit(
+        {
+          ...reqBody,
+          startAt: getDateFromString(reqBody.auditStart),
+          endAt: getDateFromString(reqBody.auditEnd),
+          orderDate: getDateFromString(reqBody.orderDate),
+          commandDate: getDateFromString(reqBody.commandDate)
+        },
+        'auditStart',
+        'auditEnd'
+      )
+    );
 
-  // Placeholder response
-  let resp: NextResponse = NextResponse.json({
-    "eventId": "0433abdd-f103-40ed-b1b9-81f40aa0288a"
-  }, {
-    status: 201,
-    statusText: 'Created',
-  });
-
-
-  interface requestBodyArrayElement {
-    tabelNumber: string;
-    roleId: number;
+    return NextResponse.json({ eventId: event.id }, { status: 201 });
+  } catch (error) {
+    return getErrorResponse(error);
   }
-  const invalidTabNum = reqBody.participants.find((el: requestBodyArrayElement) => !validateTabelNumber(el.tabelNumber));
-  if (invalidTabNum !== undefined) {
-    resp = NextResponse.json({
-      "type": "urn:problem-type:unprocessable-content",
-      "title": "Необрабатываемый контент",
-      "detail": `Невалидный пользователь: ${invalidTabNum.tabelNumber}`,
-      "status": 422,
-    }, {
-      status: 422
-    });
-  }
-
-  clog(`request body: %O\nresponding with status ${resp.status}, '${resp.statusText}'`, reqBody)
-
-  return makeResponseCORSLess(resp);
 }

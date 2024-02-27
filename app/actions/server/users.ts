@@ -23,6 +23,7 @@ export async function createUserAction(formData: UserFormData) {
   try {
     await createUser(formData as UserCreateData);
   } catch (err) {
+    console.error(err);
     throw err;
   }
 

@@ -10,7 +10,6 @@ export type UserCreateData = RequiredNotNull<
     | 'id'
     | 'createdAt'
     | 'updatedAt'
-    | 'password'
     | 'passwordHashes'
     | 'refreshToken'
     | 'lastUpdatePasswordDate'

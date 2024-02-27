@@ -8,8 +8,8 @@ export const doTransaction = async (fn: Function): Promise<any> => {
       try {
         const result = await fn(session);
         return result;
-      } catch (err) {
-        throw new ApiError(`Server Error: ${err}`, 500);
+      } catch (error) {
+        throw error;
       }
     },
     {

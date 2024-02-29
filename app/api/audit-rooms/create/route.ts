@@ -9,19 +9,24 @@ import { InventoryService } from '@/server/services/inventories';
 import { BriefingStatus } from '@prisma/client';
 import { IvaRolesMapper } from '@/constants/mappings/iva';
 import { BriefingRoomIsStillOpenError } from './errors';
+import { CreateInventorySchema } from './validation';
+import { mapToInventoryAttributes } from '@/server/services/inventories/mappers/InventoryAttributesMapper';
+import { getDateFromString } from '@/server/utils';
 
 export async function POST(request: NextRequest) {
-  const reqBody = await request.json();
-  const eventId = reqBody.eventId;
-  const inventoryId = reqBody.inventoryId;
-  const inventoryNumber = reqBody.inventoryNumber;
-  // TODO Not have field specification
-  const inventoryContainerObject = reqBody.inventoryContainerObject;
-
   let conferenceSessionId;
 
   try {
-    const inventoryDate = new Date(Date.parse(reqBody.inventoryDate));
+    const {
+      eventId,
+      inventoryId,
+      inventoryName,
+      inventoryCode,
+      inventoryDate,
+      inventoryNumber,
+      inventoryShortName,
+      inventoryContainerObject
+    } = CreateInventorySchema.parse(await request.json());
 
     return await doTransaction(async (txSession: TransactionSession) => {
       const eventServiceWithSession = EventService.withSession(txSession);
@@ -39,8 +44,12 @@ export async function POST(request: NextRequest) {
       await intentoryServiceWithSession.create({
         eventId,
         id: inventoryId,
-        date: inventoryDate,
-        number: inventoryNumber
+        name: inventoryName,
+        code: inventoryCode,
+        number: inventoryNumber,
+        shortName: inventoryShortName,
+        date: getDateFromString(inventoryDate),
+        attributes: mapToInventoryAttributes(inventoryCode, inventoryContainerObject)
       });
 
       const speakerIvaProfileId =
@@ -72,6 +81,7 @@ export async function POST(request: NextRequest) {
             { key: 'ALWAYS_SHOW_PARTICIPANT_IN_STAGE', value: true }
           ]
         },
+        // TODO Проверят ли что у всех есть ivaProfileId или просто их пропускать?
         participants: event.participants.map(({ user, role }) => ({
           interlocutor: { profileId: user.ivaProfileId as string },
           roles: [IvaRolesMapper[role]],
@@ -85,8 +95,6 @@ export async function POST(request: NextRequest) {
         conferenceSessionId,
         { requestedData: ['JOIN_LINK'] }
       );
-
-      console.log(participants);
 
       const link = participants.data[0].joinLink;
 

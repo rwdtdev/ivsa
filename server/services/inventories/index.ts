@@ -1,3 +1,5 @@
+import _ from 'underscore';
+import { InventoryCreateData } from '@/server/services/inventories/types';
 import { TransactionSession } from '@/types/prisma';
 import { Inventory, PrismaClient } from '@prisma/client';
 import {
@@ -57,7 +59,7 @@ export class InventoryService {
     return inventory;
   }
 
-  async create(data: Partial<Inventory>): Promise<Inventory> {
+  async create(data: InventoryCreateData): Promise<Inventory> {
     const inventory = await this.prisma.inventory.create({ data });
 
     return inventory;

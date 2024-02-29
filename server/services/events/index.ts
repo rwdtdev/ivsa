@@ -17,6 +17,7 @@ import {
 } from './errors';
 import { SoiParticipantRoles } from '@/constants/mappings/soi';
 import { IvaRoles, IvaRolesMapper } from '@/constants/mappings/iva';
+import { log } from 'console';
 
 const defaultLimit = 100;
 
@@ -49,6 +50,8 @@ export class EventService {
 
   assertSpeakerExistAndRegisteredInIva(event: EventView): string {
     const { participants } = event;
+
+    log(participants);
 
     if (!participants || _.isEmpty(participants)) {
       throw new EventParticipantsMustBeNotEmptyError();

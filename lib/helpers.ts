@@ -1,10 +1,11 @@
 import _ from 'underscore';
+import { z } from 'zod';
 import { NextResponse } from 'next/server';
 import errors from './problem-json';
 import ProblemJson from './problem-json/ProblemJson';
 
 function map(
-  err: ProblemJson | Error | any,
+  err: ProblemJson | Error | z.ZodError | any,
   allowedErrors: any[],
   UnknownProductionError: any,
   UnknownDevelopmentError: any,
@@ -13,6 +14,15 @@ function map(
   const isAllowed = _(allowedErrors).some((E) => err instanceof E);
 
   if (isAllowed) return err;
+
+  if (err instanceof z.ZodError) {
+    return new errors.ValidationError({
+      invalidParams: [...err.issues].map(({ message, ...issue }) => ({
+        ...issue,
+        ...(message && !_.isEmpty(message) && { message })
+      }))
+    });
+  }
 
   if (env === 'production') {
     return new UnknownProductionError();
@@ -24,7 +34,7 @@ function map(
 }
 
 export function getErrorResponse(
-  originalErr: ProblemJson | Error | any,
+  originalErr: ProblemJson | Error | z.ZodError | any,
   allowedErrors = [ProblemJson],
   UnknownProductionError = errors.ServerError,
   UnknownDevelopmentError = errors.ServerError,
@@ -48,8 +58,10 @@ export function getErrorResponse(
         }
       : err;
 
-  // @TODO: поменять на нормальный лог
-  console.error(formattedErrorByEnv);
-
-  return NextResponse.json(formattedErrorByEnv, { status: formattedErrorByEnv.status });
+  return NextResponse.json(formattedErrorByEnv, {
+    status: formattedErrorByEnv.status,
+    headers: {
+      'Content-Type': 'application/problem+json'
+    }
+  });
 }

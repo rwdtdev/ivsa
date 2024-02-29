@@ -92,7 +92,7 @@ model User {
   departmentId           String?
   /// Объект с данными об отделе, в котором состоит пользователь
   department             Department?   @relation(fields: [departmentId], references: [id])
-
+  /// Ссылка на события, в которых состоит пользователь
   eventsParticipant EventParticipant[]
 
   @@map("users")
@@ -103,7 +103,7 @@ model Event {
   id                     String             @id @default(cuid())
   /// Идентификатор распоряжения
   commandId              String
-  /// Номер распоряжения 
+  /// Номер распоряжения
   commandNumber          String
   /// Дата распоряжения
   commandDate            DateTime
@@ -127,7 +127,7 @@ model Event {
   inventories            Inventory[]
   /// Глобальный статус события инвентаризации
   status                 EventStatus        @default(OPEN)
-  /// Статус инструктужа, которые выставляется на основе 
+  /// Статус инструктужа, которые выставляется на основе
   briefingStatus         BriefingStatus     @default(NOT_STARTED)
   /// Ссылка для подключения к открытой комнате видеоинструктажа
   briefingRoomInviteLink String?
@@ -143,12 +143,19 @@ model Event {
 
 model EventParticipant {
   id          String     @id @default(cuid())
+  /// Идентификатор события
   eventId     String
+  /// Объект с данными о событии, с которым связана опись
   event       Event      @relation(fields: [eventId], references: [id])
+  /// Идентификатор описи
   inventoryId String?
+  /// Объект с данными об описи
   inventory   Inventory? @relation(fields: [inventoryId], references: [id])
+  /// Идентификатор пользователя
   userId      String
+  /// Объект с данными о пользователе
   user        User       @relation(fields: [userId], references: [id])
+  /// Роль участника
   role        UserRole
 
   @@unique([eventId, userId, inventoryId, role])
@@ -164,6 +171,12 @@ model Inventory {
   event               Event              @relation(fields: [eventId], references: [id])
   /// Номер описи
   number              String
+  /// Код описи
+  code                String
+  /// Краткое наименование описи
+  shortName           String
+  /// Полное наименование описи
+  name                String
   /// Дата описи
   date                DateTime
   /// Идентификатор конференции в IVA-R
@@ -174,7 +187,10 @@ model Inventory {
   createdAt           DateTime           @default(now())
   /// Дата и время модификации записи
   updatedAt           DateTime           @updatedAt
+  /// Список участников
   participants        EventParticipant[]
+  /// Объект с аттрибутами описи
+  attributes          Json
 
   @@map("inventories")
 }

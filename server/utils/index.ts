@@ -55,12 +55,4 @@ export const filterSearchTerm = (
   );
 };
 
-export function getDateFromString(str: string): Date | null {
-  const date = Date.parse(str);
-
-  if (_.isNaN(date)) {
-    return null;
-  }
-
-  return new Date(date);
-}
+export const getDateFromString = (str: string): Date => new Date(Date.parse(str));

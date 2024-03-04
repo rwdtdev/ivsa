@@ -323,7 +323,7 @@ export const InventoryCodes = {
     ]
   },
   [InventoryCode.I02G11]: {
-    name: 'ФНУ-55(<12 вкл)',
+    name: 'ФНУ-55(< 12 вкл)',
     fields: [
       'SCHET_SUSCHET',
       'CSBB',
@@ -338,7 +338,7 @@ export const InventoryCodes = {
     ]
   },
   [InventoryCode.I02G22]: {
-    name: 'ФНУ-55(<12 иск)',
+    name: 'ФНУ-55(< 12 иск)',
     fields: [
       'SCHET_SUSCHET',
       'CSBB',

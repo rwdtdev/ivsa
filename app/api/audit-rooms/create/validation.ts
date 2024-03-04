@@ -1,52 +1,57 @@
 import { z } from 'zod';
-import _ from 'underscore';
 import { InventoryCode, InventoryCodes } from '@/server/services/inventories/types';
-
-const [firstKey, ...otherKeys] = _.keys(InventoryCodes);
 
 export const CreateInventorySchema = z
   .object({
     eventId: z.string().min(1),
     inventoryId: z.string().min(1),
     inventoryName: z.string().min(1),
-    inventoryCode: z.enum([firstKey, ...otherKeys]),
+    inventoryCode: z.nativeEnum(InventoryCode),
     inventoryDate: z.string().datetime().min(1),
     inventoryNumber: z.string().min(1),
     inventoryShortName: z.string().min(1),
     inventoryContainerObject: z
       .object({
-        SCHET_SUSCHET: z.string().optional(),
-        CSBB: z.string().optional(),
-        BUYER_NAME: z.string().optional(),
-        BUYER_OKPO: z.string().optional(),
-        NAME: z.string().optional(),
-        CODE: z.string().optional(),
-        FACTORYNUMBER: z.string().optional(),
-        PLACEMENT: z.string().optional(),
-        OTVXRANENIE_DATE: z.string().datetime().optional(),
+        SCHET_SUSCHET: z.string(),
+        CSBB: z.string(),
+        BUYER_NAME: z.string(),
+        BUYER_OKPO: z.string(),
+        NAME: z.string(),
+        CODE: z.string(),
+        FACTORYNUMBER: z.string(),
+        PLACEMENT: z.string(),
+        TERM_LEASE: z.string().datetime(),
+        OTVXRANENIE_DATE: z.string().datetime(),
         DOCNAME: z.string().optional(),
         DOCID: z.string().optional(),
-        DOCDATE: z.string().datetime().optional(),
-        EIID: z.string().optional(),
-        EINAME: z.string().optional(),
-        BATCH: z.string().optional(),
-        BU_KOL: z.number().optional(),
-        NOMNUMBER: z.number().optional(),
-        INVNUMBER: z.string().optional(),
-        PRICE: z.number().optional(),
-        FIO: z.string().optional(),
-        TABNUMBER: z.string().optional()
+        DOCDATE: z.string().datetime(),
+        EIID: z.string(),
+        NETWORK_NUM: z.string(),
+        PASSPORTNUM: z.string(),
+        EINAME: z.string(),
+        LOCATION: z.string(),
+        BATCH: z.string(),
+        OBJECT_STATE: z.string(),
+        BU_KOL: z.number(),
+        NOMNUMBER: z.number(),
+        BUILDBUY_YEAR: z.string().datetime(),
+        INVNUMBER: z.string(),
+        PRICE: z.number(),
+        FIO: z.string(),
+        TABNUMBER: z.string(),
+        DOC_UNUS_NAME: z.string(),
+        DOC_UNUS_DATE: z.string(),
+        DOC_UNUS_ID: z.string()
       })
-      .refine((inventoryAttributes) => !_.isEmpty(inventoryAttributes), {
-        message: 'Can not be empty'
-      })
+      .partial()
   })
+  .strict()
   .refine(
     ({ inventoryContainerObject, inventoryCode }) => {
-      const { fields } = InventoryCodes[inventoryCode as InventoryCode];
+      const { fields } = InventoryCodes[inventoryCode];
 
-      return fields.every((field) =>
-        Object.keys(inventoryContainerObject).includes(field)
+      return Object.keys(inventoryContainerObject).every((field) =>
+        fields.includes(field)
       );
     },
     ({ inventoryCode }) => ({

@@ -10,7 +10,6 @@ import { exclude } from '@/server/utils/exclude';
 import moment from 'moment';
 import { DATETIME_FORMAT, DATE_FORMAT } from '@/constants/date';
 import {
-  EventMustHaveChairman,
   EventParticipantsMustBeNotEmptyError,
   EventParticipantsMustContainSpeakerError,
   SpeakerIsNotRegisteredInIvaError

@@ -55,13 +55,13 @@ model Department {
 
 model User {
   /// Идентификатор пользователя в формате cUID
-  id                     String        @id @default(cuid())
+  id                     String             @id @default(cuid())
   /// ФИО
   name                   String
   /// Логин для входа в систему
-  username               String        @unique
+  username               String             @unique
   /// Адрес электронной почты
-  email                  String        @unique
+  email                  String             @unique
   /// Номер телефона
   phone                  String
   /// Хэш пароля
@@ -73,27 +73,27 @@ model User {
   /// Статус
   status                 UserStatus
   /// Дата и время создания записи
-  createdAt              DateTime      @default(now())
+  createdAt              DateTime           @default(now())
   /// Дата и время модификации записи
-  updatedAt              DateTime      @updatedAt
+  updatedAt              DateTime           @updatedAt
   /// Табельный номер
-  tabelNumber            String        @unique
+  tabelNumber            String             @unique
   /// Внешний идентификатор в системе IVA R
-  ivaProfileId           String?       @unique
+  ivaProfileId           String?            @unique
   /// Ссылка на организацию, в которой состоит пользователь
   organisationId         String?
   /// Токен для обновления accessToken-а в сессии пользователя
   refreshToken           String?
   /// Дата и время последней смены пароля
-  lastUpdatePasswordDate DateTime      @default(now())
+  lastUpdatePasswordDate DateTime           @default(now())
   /// Объект с данными об организации, в которой состоит пользователь
-  organisation           Organisation? @relation(fields: [organisationId], references: [id])
+  organisation           Organisation?      @relation(fields: [organisationId], references: [id])
   /// Ссылка на отдел, в котором состоит пользователь
   departmentId           String?
   /// Объект с данными об отделе, в котором состоит пользователь
-  department             Department?   @relation(fields: [departmentId], references: [id])
+  department             Department?        @relation(fields: [departmentId], references: [id])
   /// Ссылка на события, в которых состоит пользователь
-  eventsParticipant EventParticipant[]
+  eventsParticipant      EventParticipant[]
 
   @@map("users")
 }
@@ -191,6 +191,8 @@ model Inventory {
   participants        EventParticipant[]
   /// Объект с аттрибутами описи
   attributes          Json
+  /// Список URL на записи видео в Оперативном хранилище
+  videoFiles          String[]
 
   @@map("inventories")
 }

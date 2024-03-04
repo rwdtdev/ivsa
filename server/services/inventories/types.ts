@@ -101,7 +101,12 @@ export type InventoryContainerObject =
 
 export type InventoryCreateData = Omit<
   Inventory,
-  'auditSessionId' | 'auditRoomInviteLink' | 'createdAt' | 'updatedAt' | 'participants'
+  | 'auditSessionId'
+  | 'auditRoomInviteLink'
+  | 'createdAt'
+  | 'updatedAt'
+  | 'participants'
+  | 'videoFiles'
 >;
 
 export enum InventoryCode {

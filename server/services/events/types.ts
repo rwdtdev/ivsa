@@ -14,15 +14,18 @@ export type EventsGetData = Partial<{
   };
 }>;
 
-export type EventView = Omit<Event, 'startAt' | 'endAt'> & {
+export type EventView = Omit<Event, 'startAt' | 'endAt' | 'commandDate' | 'orderDate'> & {
   startAt: string;
   endAt: string;
-  participants: {
+  commandDate: string;
+  orderDate: string;
+  participants?: {
     role: UserRole;
     user: User;
     inventory: Inventory;
+    event: Event;
   }[];
-  inventories: Inventory[];
+  inventories?: Inventory[];
 };
 
 export type CreateEventData = RequiredNotNull<

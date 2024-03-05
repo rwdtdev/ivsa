@@ -1,41 +1,48 @@
 'use server';
 
+import Cache from 'node-cache';
 import { unstable_noStore as noStore } from 'next/cache';
 import { UserFormData } from '@/lib/form-validation-schemas/user-form-schema';
-import { UserService, createUser, updateUser } from '@/server/services/users';
 import { SearchParams } from '@/types';
-import { revalidatePath, revalidateTag } from 'next/cache';
+import { revalidatePath } from 'next/cache';
 import { redirect } from 'next/navigation';
 import { searchParamsSchema } from '@/lib/query-params-validation';
 
-import Cache from 'node-cache';
+import UserService from '@/server/services/users';
 import { UserView } from '@/types/user';
 import { PaginatedResponse } from '@/server/types';
 import { SortOrder } from '@/constants/data';
-import { User, UserRole, UserStatus } from '@prisma/client';
+import { UserRole, UserStatus } from '@prisma/client';
 import { UserCreateData } from '@/server/services/users/types';
 
-const cache = new Cache({
-  checkperiod: 120
-});
+const cache = new Cache({ checkperiod: 120 });
 
-export async function createUserAction(formData: UserFormData) {
+export async function createUserAction(formData: UserFormData): Promise<any> {
+  const userService = new UserService();
+
   try {
-    await createUser(formData as UserCreateData);
-  } catch (err) {
-    console.error(err);
-    throw err;
+    // TODO Refactor type casting
+    const user = await userService.create(formData as UserCreateData);
+
+    console.log(user);
+  } catch (error) {
+    console.debug(error);
+    return { error: JSON.stringify(error, Object.getOwnPropertyNames(error)) };
   }
 
   revalidatePath('/admin/users');
   redirect('/admin/users');
 }
 
-export async function updateUserAction(userId: string, formData: UserFormData) {
+export async function updateUserAction(id: string, formData: UserFormData) {
+  console.log('tet');
+  const userService = new UserService();
+
   try {
-    await updateUser(userId, formData);
-  } catch (err) {
-    throw err;
+    await userService.update(id, formData);
+  } catch (error) {
+    console.debug(error);
+    return { error: JSON.stringify(error, Object.getOwnPropertyNames(error)) };
   }
 
   revalidatePath('/admin/users');
@@ -46,18 +53,19 @@ export async function getUserByIdAction(id: string) {
   try {
     const cacheKey = `user_${id}`;
 
-    let data = cache.get(cacheKey);
+    let cachedUser = cache.get<UserView>(cacheKey) || null;
 
-    if (!data) {
+    if (!cachedUser) {
       const userService = new UserService();
-      const data = await userService.getUserById(id);
 
-      cache.set(cacheKey, data);
+      cachedUser = await userService.getById(id);
+
+      cache.set(cacheKey, cachedUser);
     }
 
-    return data;
-  } catch (err) {
-    console.debug(err);
+    return cachedUser;
+  } catch (error) {
+    console.debug(error);
     return null;
   }
 }
@@ -95,7 +103,7 @@ export async function getUsersAction(
 
     const userService = new UserService();
 
-    return await userService.getUsers({
+    return await userService.getAll({
       searchTerm: search,
       limit,
       page: fallbackPage,
@@ -106,13 +114,11 @@ export async function getUsersAction(
         ...(departmentsIds.length > 0 && { departmentsIds })
       }
     });
-  } catch (err) {
-    console.log(err);
+  } catch (error) {
+    console.debug(error);
     return {
       items: [],
-      pagination: {
-        pagesCount: 0
-      }
+      pagination: { pagesCount: 0 }
     };
   }
 }

@@ -15,7 +15,6 @@ import {
 export function UserNav() {
   const { data: session } = useSession();
 
-  console.log(session);
   if (session) {
     return (
       <DropdownMenu>

@@ -1,15 +1,22 @@
-import { NextRequest, NextResponse } from 'next/server';
-
-// export { default } from 'next-auth/middleware';
-
 import pino from 'pino';
 
-const logger = pino({
-  name: 'HTTP'
-});
+const logger = pino({ name: 'HTTP' });
 
-export function middleware(req: NextRequest) {
-  logger.info(`${req.method} [${req.url}]`);
+import { withAuth } from 'next-auth/middleware';
+import { NextResponse, NextRequest } from 'next/server';
+
+function yourOwnMiddleware(request: NextRequest) {
+  logger.info(`${request.method} [${request.url}]`);
+
+  // return NextResponse.redirect(new URL('/admin/users', request.url));
 }
 
-// export const config = { matcher: ['/admin/:path*', '/protected/:path*'] };
+export default withAuth(yourOwnMiddleware, {
+  callbacks: {
+    async authorized({ token, req }) {
+      return !!token;
+    }
+  }
+});
+
+export const config = { matcher: ['/admin/:path*', '/protected/:path*'] };

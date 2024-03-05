@@ -1,6 +1,7 @@
 'use client';
 
-import { useEffect, useState } from 'react';
+import _ from 'underscore';
+import { useState } from 'react';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { useForm } from 'react-hook-form';
 import { usePathname } from 'next/navigation';
@@ -32,7 +33,7 @@ import {
 import { Department, Organisation, UserRole, UserStatus } from '@prisma/client';
 import { PasswordInput } from '../password-input';
 import { createUserAction, updateUserAction } from '@/app/actions/server/users';
-import ProblemJson from '@/lib/problem-json/ProblemJson';
+import { revalidatePath } from 'next/cache';
 
 interface UserFormProps {
   initialData: any | null;
@@ -48,82 +49,73 @@ export const UserForm: React.FC<UserFormProps> = ({
   const { toast } = useToast();
   const pathname = usePathname();
   const [loading, setLoading] = useState(false);
+
   const title = initialData ? 'Редактирование пользователя' : 'Добавление пользователя';
+
   const description = initialData
     ? 'Изменить данные пользователя.'
     : 'Добавить нового пользователя в систему';
-  const toastMessage = initialData
-    ? 'Данные пользователя обновлены.'
-    : 'Пользователь добавлен.';
-  const action = initialData ? 'Сохранить' : 'Добавить';
 
-  const defaultValues = initialData
-    ? initialData
-    : {
-        username: '',
-        password: '',
-        name: '',
-        status: '',
-        orgnisationId: '',
-        departmentId: '',
-        email: '',
-        tabelNumber: '',
-        phone: '',
-        role: ''
-      };
+  const action = initialData ? 'Сохранить' : 'Добавить';
 
   const form = useForm<UserFormData>({
     resolver: zodResolver(UserFormSchema),
-    defaultValues
+    defaultValues: {
+      username: '',
+      password: '',
+      name: '',
+      status: UserStatus.ACTIVE,
+      email: '',
+      organisationId: '',
+      departmentId: '',
+      tabelNumber: '',
+      phone: '',
+      role: UserRole.USER
+    },
+    values: initialData,
+    mode: 'onChange'
   });
 
-  useEffect(() => {
-    if (initialData) {
-      form.setValue('username', initialData.username);
-      form.setValue('name', initialData.name);
-      form.setValue('status', initialData.status);
-      form.setValue('organisationId', initialData.organisationId);
-      form.setValue('departmentId', initialData.departmentId);
-      form.setValue('email', initialData.email);
-      form.setValue('tabelNumber', initialData.tabelNumber);
-      form.setValue('phone', initialData.phone);
-      form.setValue('role', initialData.role);
-    }
-  }, [initialData]);
-
   const onSubmit = async (data: UserFormData) => {
-    try {
-      const pathnameChunks = pathname.split('/');
-      const userId = pathnameChunks[pathnameChunks.length - 1];
+    console.log('CLICKED');
+    console.log(data);
 
-      setLoading(true);
-      if (initialData) {
-        await updateUserAction(userId, data);
-        toast({
-          variant: 'success',
-          title: 'Успех.',
-          description: 'Информация о пользователе успешно обновлена.'
-        });
-      } else {
-        await createUserAction(data);
-        toast({
-          variant: 'success',
-          title: 'Успех.',
-          description: 'Пользователь успешно добавлен.'
-        });
-      }
-    } catch (err) {
+    if (initialData && _.isEqual(initialData, data)) {
+      toast({
+        variant: 'success',
+        title: 'Успех.',
+        description: 'Информация о пользователе успешно обновлена.'
+      });
+      revalidatePath('/admin/users');
+    }
+
+    const pathnameChunks = pathname.split('/');
+    const userId = pathnameChunks[pathnameChunks.length - 1];
+
+    setLoading(true);
+
+    const result = initialData
+      ? await updateUserAction(userId, data)
+      : await createUserAction(data);
+
+    if (result && result.error) {
+      const { title, userMessage } = JSON.parse(result.error);
       toast({
         variant: 'destructive',
-        title: err instanceof ProblemJson ? err.message : 'Что-то пошло не так.',
-        description:
-          err instanceof ProblemJson
-            ? (err.detail as string)
-            : 'Возникла проблема при выполнении запроса.'
+        title: title || 'Что-то пошло не так.',
+        description: userMessage || 'Возникла проблема при выполнении запроса.'
       });
-    } finally {
-      setLoading(false);
+    } else {
+      toast({
+        variant: 'success',
+        title: 'Успех.',
+        description: initialData
+          ? 'Информация о пользователе успешно обновлена.'
+          : 'Пользователь успешно добавлен.'
+      });
     }
+
+    setLoading(false);
   };
 
   return (

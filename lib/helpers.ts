@@ -1,7 +1,7 @@
 import _ from 'underscore';
 import { z } from 'zod';
 import { NextResponse } from 'next/server';
-import errors from './problem-json';
+import { ServerError, ValidationError } from './problem-json';
 import ProblemJson from './problem-json/ProblemJson';
 
 function map(
@@ -16,7 +16,7 @@ function map(
   if (isAllowed) return err;
 
   if (err instanceof z.ZodError) {
-    return new errors.ValidationError({
+    return new ValidationError({
       invalidParams: [...err.issues].map(({ message, ...issue }) => ({
         ...issue,
         ...(message && !_.isEmpty(message) && { message })
@@ -36,8 +36,8 @@ function map(
 export function getErrorResponse(
   originalErr: ProblemJson | Error | z.ZodError | any,
   allowedErrors = [ProblemJson],
-  UnknownProductionError = errors.ServerError,
-  UnknownDevelopmentError = errors.ServerError,
+  UnknownProductionError = ServerError,
+  UnknownDevelopmentError = ServerError,
   env = process.env.NODE_ENV
 ) {
   const err = map(
@@ -64,4 +64,27 @@ export function getErrorResponse(
       'Content-Type': 'application/problem+json'
     }
   });
+}
+
+type ErrorWithMessage = {
+  message: string;
+};
+
+function isErrorWithMessage(error: unknown): error is ErrorWithMessage {
+  return (
+    typeof error === 'object' &&
+    error !== null &&
+    'message' in error &&
+    typeof (error as Record<string, unknown>).message === 'string'
+  );
+}
+
+export function toErrorWithMessage(maybeError: unknown): ErrorWithMessage {
+  if (isErrorWithMessage(maybeError)) return maybeError;
+
+  try {
+    return new Error(JSON.stringify(maybeError));
+  } catch {
+    return new Error(String(maybeError));
+  }
 }

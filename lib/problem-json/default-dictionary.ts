@@ -9,6 +9,11 @@ export default {
     title: 'Ресурс не принимает параметры',
     status: 400
   },
+  BadRequestError: {
+    type: 'urn:problem-type:unexpected-params-error',
+    title: 'Некорректные параметры',
+    status: 400
+  },
   UnauthorizedError: {
     type: 'urn:problem-type:unauthorized-error',
     title: 'Для доступа к запрашиваемому ресурсу требуется аутентификация',

@@ -27,6 +27,10 @@ export default function UpdateUserPage() {
       const listOfDepartments = await getDepartmentsAction();
       const listOfORganisations = await getOrganisationsAction();
 
+      // Hack for ShadCN forms, can't be pass default value as null only string or undefined (Have not resolved issue on git)
+      if (user.departmentId === null) user.departmentId = '';
+      if (user.organisationId === null) user.organisationId = '';
+
       setUserInitialData(user);
       setDepartments(listOfDepartments);
       setOrganisations(listOfORganisations);

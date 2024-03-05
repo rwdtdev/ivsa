@@ -1,11 +1,15 @@
-import errors from '@/lib/problem-json';
 import { makeErrorDictionary } from '@/lib/problem-json';
 
-export const { BriefingRoomIsStillOpenError } = makeErrorDictionary()({
-  ...errors,
-  BriefingRoomIsStillOpenError: {
-    type: 'urn:problem-type:briefing-room-is-still-open-error',
-    title: 'Инструктаж еще не окончен',
-    status: 409
-  }
-});
+export const { BriefingRoomIsStillOpenError, EmptyPartisipantsListError } =
+  makeErrorDictionary()({
+    BriefingRoomIsStillOpenError: {
+      type: 'urn:problem-type:briefing-room-is-still-open-error',
+      title: 'Инструктаж еще не окончен',
+      status: 409
+    },
+    EmptyPartisipantsListError: {
+      type: 'urn:problem-type:empty-participatns-list-error',
+      title: 'Список участников инструктажа не может быть пустым',
+      status: 400
+    }
+  });

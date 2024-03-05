@@ -1,11 +1,11 @@
-import ApiError from '@/server/utils/error';
 import { verifyToken } from '@/lib/jwt';
 import { generateAccessToken } from '@/lib/auth';
 import { UserSession } from '@/types/user';
+import { BadRequestError, ServerError, UnauthorizedError } from '@/lib/problem-json';
 
 export const refresh = async (refreshToken?: string): Promise<string> => {
   if (!refreshToken) {
-    throw new ApiError('Missing refresh token', 400);
+    throw new BadRequestError({ detail: 'Missing refresh token' });
   }
 
   try {
@@ -23,11 +23,11 @@ export const refresh = async (refreshToken?: string): Promise<string> => {
       });
 
       if (!user) {
-        throw new ApiError('Invalid refresh token', 401);
+        throw new UnauthorizedError({ detail: 'Invalid refresh token' });
       } else if (user.refreshToken != refreshToken) {
-        throw new ApiError('Refresh token mismatch', 401);
+        throw new UnauthorizedError({ detail: 'Refresh token mismatch' });
       } else {
-        const session: UserSession = {
+        const session = {
           id: user.id,
           email: user.email,
           name: user.name,
@@ -37,15 +37,15 @@ export const refresh = async (refreshToken?: string): Promise<string> => {
           status: user.status,
           organisationId: user.organisationId,
           departmentId: user.departmentId
-        };
+        } as UserSession;
 
         return generateAccessToken(session);
       }
     } else {
-      throw new ApiError('Invalid refresh token', 500);
+      throw new ServerError({ detail: 'Invalid refresh token' });
     }
   } catch (err) {
-    console.log(err);
-    throw new ApiError('Invalid refresh token', 401);
+    console.error(err);
+    throw new UnauthorizedError({ detail: 'Invalid refresh token' });
   }
 };

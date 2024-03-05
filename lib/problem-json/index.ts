@@ -36,4 +36,12 @@ export const makeErrorDictionary = ({
   return iterateDictionary;
 };
 
-export default makeErrorDictionary()(defaultDictionary, 'urn:problem-type');
+export const {
+  UnauthorizedError,
+  UnexpectedParamsErrorm,
+  ValidationError,
+  ForbiddenError,
+  NotFoundError,
+  ServerError,
+  BadRequestError
+} = makeErrorDictionary()(defaultDictionary, 'urn:problem-type');

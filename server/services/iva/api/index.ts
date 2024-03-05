@@ -2,21 +2,31 @@ import * as users from './users';
 import * as conferenceSessions from './conference-sessions';
 import { ivaRequest } from '../request';
 import { getIvaDomainId } from '../helpers';
+import { IvaRequestError } from './errors';
+import { toErrorWithMessage } from '@/lib/helpers';
 
 export const getServerStatus = async () => {
-  const baseUrl = process.env.IVA_API_URL;
-  const res = await fetch(`${baseUrl}/public/system/info`, { cache: 'no-cache' });
-  const data = await res.json();
+  try {
+    const baseUrl = process.env.IVA_API_URL;
+    const res = await fetch(`${baseUrl}/public/system/info`, { cache: 'no-cache' });
+    const data = await res.json();
 
-  return data;
+    return data;
+  } catch (error) {
+    throw new IvaRequestError({ detail: toErrorWithMessage(error).message });
+  }
 };
 
 export const findConferenceTemplates = async () => {
-  const templates = await ivaRequest('/integration/conference-templates', {
-    query: { domainId: getIvaDomainId() }
-  });
+  try {
+    const templates = await ivaRequest('/integration/conference-templates', {
+      query: { domainId: getIvaDomainId() }
+    });
 
-  return templates;
+    return templates;
+  } catch (error) {
+    throw new IvaRequestError({ detail: toErrorWithMessage(error).message });
+  }
 };
 
 export default {

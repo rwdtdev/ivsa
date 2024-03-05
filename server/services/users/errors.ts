@@ -1,16 +1,33 @@
 import { makeErrorDictionary } from '@/lib/problem-json';
-import errors from '@/lib/problem-json';
 
-export const { IvaUserAlreadyExist, CreateIvaUserError } = makeErrorDictionary()({
-  ...errors,
-  IvaUserAlreadyExist: {
-    type: 'urn:problem-type:iva-user-already-exist',
-    title: 'Пользовать уже зарегистрирован в IVA R',
-    status: 409
-  },
+export const {
+  CreateIvaUserError,
+  UserWithEmailAlreadyExistError,
+  UserWithUsernameAlreadyExistError,
+  UserWithTabelNumberAlreadyExistError
+} = makeErrorDictionary()({
   CreateIvaUserError: {
     type: 'urn:problem-type:create-iva-user-error',
-    title: 'Ошибка создания пользователя в IVA R',
-    status: 400
+    title: 'Произошла ошибка',
+    status: 400,
+    userMessage: 'Ошибка при создании пользователя в IVA R'
+  },
+  UserWithEmailAlreadyExistError: {
+    type: 'urn:problem-type:user-with-email-already-exist-error',
+    title: 'Произошла ошибка',
+    status: 409,
+    userMessage: 'Пользователь с таким почтовым адресом уже зарегистрирован в IVA R'
+  },
+  UserWithUsernameAlreadyExistError: {
+    type: 'urn:problem-type:user-with-username-already-exist-error',
+    title: 'Произошла ошибка',
+    status: 409,
+    userMessage: 'Пользовать с таким именем учетной записи уже зарегистрирован в IVA R'
+  },
+  UserWithTabelNumberAlreadyExistError: {
+    type: 'urn:problem-type:user-with-tabel-number-already-exist-error',
+    title: 'Произошла ошибка',
+    status: 409,
+    userMessage: 'Пользовать с таким табельным номером уже зарегистрирован в IVA R'
   }
 });

@@ -1,6 +1,8 @@
+import { toErrorWithMessage } from '@/lib/helpers';
 import { getIvaDomainId } from '../helpers';
 import { ivaRequest } from '../request';
 import { IvaUserCreateData } from '../types';
+import { IvaRequestError } from './errors';
 
 export const find = async (
   searchString?: string,
@@ -20,7 +22,7 @@ export const find = async (
     return users;
   } catch (error) {
     // @TODO: check api reasons and statuses
-    throw new Error(`Failed to fetch Iva users: ${error}`);
+    throw new IvaRequestError({ detail: toErrorWithMessage(error).message });
   }
 };
 
@@ -33,8 +35,7 @@ export const create = async (data: IvaUserCreateData) => {
 
     return user;
   } catch (error) {
-    throw error;
-    // throw new Error(`Failed to create Iva user: ${error}`);
+    throw new IvaRequestError({ detail: toErrorWithMessage(error).message });
   }
 };
 
@@ -47,7 +48,7 @@ export const update = async (id: string, data: any) => {
 
     return updatedUser;
   } catch (error) {
-    // do something
+    throw new IvaRequestError({ detail: toErrorWithMessage(error).message });
   }
 };
 
@@ -55,6 +56,6 @@ export const remove = async (id: string) => {
   try {
     await ivaRequest(`/integration/users/${id}`, { method: 'DELETE' });
   } catch (error) {
-    // do something
+    throw new IvaRequestError({ detail: toErrorWithMessage(error).message });
   }
 };

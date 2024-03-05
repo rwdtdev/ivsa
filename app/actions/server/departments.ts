@@ -1,10 +1,12 @@
 'use server';
 
-import { getAllDepartments } from '@/server/services/departments';
+import DepartmentService from '@/server/services/departments';
 
 export async function getDepartmentsAction() {
   try {
-    return getAllDepartments();
+    const departmentService = new DepartmentService();
+
+    return departmentService.getAll();
   } catch (err) {
     throw err;
   }

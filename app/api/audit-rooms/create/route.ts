@@ -8,10 +8,11 @@ import { EventService } from '@/server/services/events';
 import { InventoryService } from '@/server/services/inventories';
 import { BriefingStatus } from '@prisma/client';
 import { IvaRolesMapper } from '@/constants/mappings/iva';
-import { BriefingRoomIsStillOpenError } from './errors';
+import { BriefingRoomIsStillOpenError, EmptyPartisipantsListError } from './errors';
 import { CreateInventorySchema } from './validation';
 import { mapToInventoryAttributes } from '@/server/services/inventories/mappers/InventoryAttributesMapper';
 import { getDateFromString } from '@/server/utils';
+import { IvaParticipant } from '@/server/services/iva/types';
 
 export async function POST(request: NextRequest) {
   let conferenceSessionId;
@@ -39,6 +40,18 @@ export async function POST(request: NextRequest) {
 
       if (event.briefingStatus === BriefingStatus.IN_PROGRESS) {
         throw new BriefingRoomIsStillOpenError();
+      }
+
+      if (!event.participants || _.isEmpty(event.participants)) {
+        throw new EmptyPartisipantsListError();
+      }
+
+      const registeredIvaUsers = event.participants.filter(
+        ({ user }) => user.ivaProfileId
+      );
+
+      if (_.isEmpty(registeredIvaUsers)) {
+        throw new EmptyPartisipantsListError();
       }
 
       await intentoryServiceWithSession.create({
@@ -81,8 +94,7 @@ export async function POST(request: NextRequest) {
             { key: 'ALWAYS_SHOW_PARTICIPANT_IN_STAGE', value: true }
           ]
         },
-        // TODO Проверят ли что у всех есть ivaProfileId или просто их пропускать?
-        participants: event.participants.map(({ user, role }) => ({
+        participants: registeredIvaUsers.map(({ user, role }) => ({
           interlocutor: { profileId: user.ivaProfileId as string },
           roles: [IvaRolesMapper[role]],
           interpreterLanguagesPair: ['RUSSIAN']

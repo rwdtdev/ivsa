@@ -1,10 +1,12 @@
 'use server';
 
-import { getAllOrgnaisations } from '@/server/services/organisations';
+import OrganisationService from '@/server/services/organisations';
 
 export async function getOrganisationsAction() {
   try {
-    return getAllOrgnaisations();
+    const organisationService = new OrganisationService();
+
+    return organisationService.getAll();
   } catch (err) {
     throw err;
   }

@@ -70,7 +70,7 @@ export type IvaConferenceSessionCreateRoomData = {
     features?: { key: string; value: string | boolean }[];
   };
   // Список участников конференции
-  participants?: IvaParticipant[];
+  participants: IvaParticipant[];
   // Код для "аутентификации", чтобы зайти в конференцию по ее номеру для не зарегистриррованного пользователя
   guestPasscode?: string;
   speakerPasscode?: string;

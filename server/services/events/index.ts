@@ -10,6 +10,7 @@ import { exclude } from '@/server/utils/exclude';
 import moment from 'moment';
 import { DATETIME_FORMAT, DATE_FORMAT } from '@/constants/date';
 import {
+  EventNotFoundError,
   EventParticipantsMustBeNotEmptyError,
   EventParticipantsMustContainSpeakerError,
   SpeakerIsNotRegisteredInIvaError
@@ -24,8 +25,10 @@ const serializeToView = (event: Event): EventView => {
   return {
     ...event,
     startAt: moment(event.startAt).toISOString(),
-    endAt: moment(event.endAt).toISOString()
-  } as EventView;
+    endAt: moment(event.endAt).toISOString(),
+    commandDate: moment(event.commandDate).toISOString(),
+    orderDate: moment(event.orderDate).toISOString()
+  };
 };
 
 export class EventService {
@@ -43,7 +46,7 @@ export class EventService {
     const count = await this.prisma.event.count({ where: { id } });
 
     if (!count || count === 0) {
-      throw new ApiError(`Event with id (${id}) not found`, 404);
+      throw new EventNotFoundError({ detail: `Event with id (${id}) not found` });
     }
   }
 
@@ -83,7 +86,7 @@ export class EventService {
     });
 
     if (!event) {
-      throw new ApiError(`Event with id (${id}) not found`, 404);
+      throw new EventNotFoundError({ detail: `Event with id (${id}) not found` });
     }
 
     return serializeToView(event);
@@ -167,7 +170,8 @@ export class EventService {
             event: true,
             user: true
           }
-        }
+        },
+        inventories: true
       },
       skip: (page - 1) * limit,
       take: limit,
@@ -177,13 +181,7 @@ export class EventService {
     });
 
     return {
-      items: events.map((event) => ({
-        ...event,
-        startAt: moment(event.startAt).format(DATETIME_FORMAT),
-        endAt: moment(event.endAt).format(DATETIME_FORMAT),
-        commandDate: moment(event.commandDate).format(DATE_FORMAT),
-        orderDate: moment(event.orderDate).format(DATE_FORMAT)
-      })),
+      items: events.map((event) => serializeToView(event)),
       pagination: {
         total: totalCount,
         pagesCount: Math.ceil(totalCount / limit),

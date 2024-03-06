@@ -16,7 +16,7 @@ export async function getEventsAction(
 > {
   noStore();
   try {
-    const { page, per_page, sort, search, from, to, status } =
+    const { page, per_page, sort, search, from, to, status, briefingStatus } =
       searchParamsSchema.parse(searchParams);
 
     // Fallback page for invalid page numbers
@@ -36,6 +36,8 @@ export async function getEventsAction(
     ]) ?? ['startAt', 'asc'];
 
     const statuses = (status?.split('.') as Event['status'][]) ?? [];
+    const briefingStatuses =
+      (briefingStatus?.split('.') as Event['briefingStatus'][]) ?? [];
 
     const eventService = new EventService();
 
@@ -46,7 +48,8 @@ export async function getEventsAction(
       query: {
         from,
         to,
-        ...(statuses.length > 0 && { statuses })
+        ...(statuses.length > 0 && { statuses }),
+        ...(briefingStatuses.length > 0 && { briefingStatuses })
       }
     });
   } catch (err) {

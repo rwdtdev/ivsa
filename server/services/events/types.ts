@@ -1,6 +1,13 @@
 import { SortOrder } from '@/constants/data';
 import { RequiredNotNull } from '@/server/types';
-import { Event, EventStatus, Inventory, User, UserRole } from '@prisma/client';
+import {
+  BriefingStatus,
+  Event,
+  EventStatus,
+  Inventory,
+  User,
+  UserRole
+} from '@prisma/client';
 
 export type EventsGetData = Partial<{
   page: number;
@@ -11,6 +18,7 @@ export type EventsGetData = Partial<{
     from?: string;
     to?: string;
     statuses?: EventStatus[];
+    briefingStatuses?: BriefingStatus[];
   };
 }>;
 

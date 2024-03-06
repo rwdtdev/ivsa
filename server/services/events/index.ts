@@ -150,6 +150,10 @@ export class EventService {
       if (query.statuses) {
         conditions.push({ status: { in: query.statuses } });
       }
+
+      if (query.briefingStatuses) {
+        conditions.push({ briefingStatus: { in: query.briefingStatuses } });
+      }
     }
 
     const where = {

@@ -1,14 +1,11 @@
 import _ from 'underscore';
 import { SortOrder } from '@/constants/data';
-import ApiError from '@/server/utils/error';
 import prisma from '@/server/services/prisma';
 import { TransactionSession } from '@/types/prisma';
-import { Event, PrismaClient, User, UserRole } from '@prisma/client';
+import { Event, PrismaClient, UserRole } from '@prisma/client';
 import { CreateEventData, EventView, EventsGetData } from './types';
 import { PaginatedResponse } from '@/server/types';
-import { exclude } from '@/server/utils/exclude';
 import moment from 'moment';
-import { DATETIME_FORMAT, DATE_FORMAT } from '@/constants/date';
 import {
   EventNotFoundError,
   EventParticipantsMustBeNotEmptyError,
@@ -17,7 +14,6 @@ import {
 } from './errors';
 import { SoiParticipantRoles } from '@/constants/mappings/soi';
 import { IvaRoles, IvaRolesMapper } from '@/constants/mappings/iva';
-import { log } from 'console';
 
 const defaultLimit = 100;
 
@@ -52,8 +48,6 @@ export class EventService {
 
   assertSpeakerExistAndRegisteredInIva(event: EventView): string {
     const { participants } = event;
-
-    log(participants);
 
     if (!participants || _.isEmpty(participants)) {
       throw new EventParticipantsMustBeNotEmptyError();
@@ -198,5 +192,3 @@ export class EventService {
     };
   }
 }
-
-export const excludeFromEvent = (event: Event) => exclude(event);

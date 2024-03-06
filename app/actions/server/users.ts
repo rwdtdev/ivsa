@@ -35,7 +35,6 @@ export async function createUserAction(formData: UserFormData): Promise<any> {
 }
 
 export async function updateUserAction(id: string, formData: UserFormData) {
-  console.log('tet');
   const userService = new UserService();
 
   try {
@@ -49,7 +48,7 @@ export async function updateUserAction(id: string, formData: UserFormData) {
   redirect('/admin/users');
 }
 
-export async function getUserByIdAction(id: string) {
+export async function getUserByIdAction(id: string): Promise<UserView | null> {
   try {
     const cacheKey = `user_${id}`;
 

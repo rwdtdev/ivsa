@@ -4,7 +4,6 @@ import _ from 'underscore';
 import { useState } from 'react';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { useForm } from 'react-hook-form';
-import { usePathname } from 'next/navigation';
 import { Input } from '@/components/ui/input';
 import { Button } from '@/components/ui/button';
 import {
@@ -33,9 +32,9 @@ import {
 import { Department, Organisation, UserRole, UserStatus } from '@prisma/client';
 import { PasswordInput } from '../password-input';
 import { createUserAction, updateUserAction } from '@/app/actions/server/users';
-import { revalidatePath } from 'next/cache';
 
 interface UserFormProps {
+  userId: string;
   initialData: any | null;
   organisations: any;
   departments: any;
@@ -44,54 +43,44 @@ interface UserFormProps {
 export const UserForm: React.FC<UserFormProps> = ({
   initialData,
   organisations,
-  departments
+  departments,
+  userId
 }) => {
   const { toast } = useToast();
-  const pathname = usePathname();
   const [loading, setLoading] = useState(false);
 
+  const action = initialData ? 'Сохранить' : 'Добавить';
   const title = initialData ? 'Редактирование пользователя' : 'Добавление пользователя';
 
   const description = initialData
     ? 'Изменить данные пользователя.'
     : 'Добавить нового пользователя в систему';
 
-  const action = initialData ? 'Сохранить' : 'Добавить';
+  const successToastMessage = initialData
+    ? 'Информация о пользователе успешно обновлена.'
+    : 'Пользователь успешно добавлен.';
+
+  console.log(initialData);
+  const defaultValues: Partial<UserFormData> = initialData
+    ? initialData
+    : {
+        username: '',
+        password: '',
+        name: '',
+        status: UserStatus.ACTIVE,
+        email: '',
+        tabelNumber: '',
+        phone: '',
+        role: UserRole.USER
+      };
 
   const form = useForm<UserFormData>({
     resolver: zodResolver(UserFormSchema),
-    defaultValues: {
-      username: '',
-      password: '',
-      name: '',
-      status: UserStatus.ACTIVE,
-      email: '',
-      organisationId: '',
-      departmentId: '',
-      tabelNumber: '',
-      phone: '',
-      role: UserRole.USER
-    },
-    values: initialData,
-    mode: 'onChange'
+    defaultValues,
+    values: initialData
   });
 
   const onSubmit = async (data: UserFormData) => {
-    console.log('CLICKED');
-    console.log(data);
-
-    if (initialData && _.isEqual(initialData, data)) {
-      toast({
-        variant: 'success',
-        title: 'Успех.',
-        description: 'Информация о пользователе успешно обновлена.'
-      });
-      revalidatePath('/admin/users');
-    }
-
-    const pathnameChunks = pathname.split('/');
-    const userId = pathnameChunks[pathnameChunks.length - 1];
-
     setLoading(true);
 
     const result = initialData
@@ -109,9 +98,7 @@ export const UserForm: React.FC<UserFormProps> = ({
       toast({
         variant: 'success',
         title: 'Успех.',
-        description: initialData
-          ? 'Информация о пользователе успешно обновлена.'
-          : 'Пользователь успешно добавлен.'
+        description: successToastMessage
       });
     }
 

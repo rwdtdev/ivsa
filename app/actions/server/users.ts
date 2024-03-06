@@ -11,7 +11,6 @@ import { searchParamsSchema } from '@/lib/query-params-validation';
 import UserService from '@/server/services/users';
 import { UserView } from '@/types/user';
 import { PaginatedResponse } from '@/server/types';
-import { SortOrder } from '@/constants/data';
 import { UserRole, UserStatus } from '@prisma/client';
 import { UserCreateData } from '@/server/services/users/types';
 
@@ -22,9 +21,7 @@ export async function createUserAction(formData: UserFormData): Promise<any> {
 
   try {
     // TODO Refactor type casting
-    const user = await userService.create(formData as UserCreateData);
-
-    console.log(user);
+    await userService.create(formData as UserCreateData);
   } catch (error) {
     console.debug(error);
     return { error: JSON.stringify(error, Object.getOwnPropertyNames(error)) };
@@ -76,7 +73,7 @@ export async function getUsersAction(
 > {
   noStore();
   try {
-    const { page, per_page, sort, status, role, search, organisation, department } =
+    const { page, per_page, status, role, search, organisation, department } =
       searchParamsSchema.parse(searchParams);
 
     // Fallback page for invalid page numbers
@@ -86,14 +83,14 @@ export async function getUsersAction(
     const perPageAsNumber = Number(per_page);
     const limit = isNaN(perPageAsNumber) ? 10 : perPageAsNumber;
     // Number of items to skip
-    const offset = fallbackPage > 0 ? (fallbackPage - 1) * limit : 0;
+    // const offset = fallbackPage > 0 ? (fallbackPage - 1) * limit : 0;
     // Column and order to sort by
     // Spliting the sort string by "." to get the column and order
     // Example: "title.desc" => ["title", "desc"]
-    const [column, order] = (sort?.split('.') as [
-      keyof UserView | undefined,
-      SortOrder
-    ]) ?? ['title', 'asc'];
+    // const [column, order] = (sort?.split('.') as [
+    //   keyof UserView | undefined,
+    //   SortOrder
+    // ]) ?? ['title', 'asc'];
 
     const statuses = (status?.split('.') as UserStatus[]) ?? [];
     const roles = (role?.split('.') as UserRole[]) ?? [];

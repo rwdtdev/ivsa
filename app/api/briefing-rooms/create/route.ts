@@ -1,4 +1,3 @@
-import _ from 'underscore';
 import { NextRequest, NextResponse } from 'next/server';
 import IvaAPI from '@/server/services/iva/api';
 import { EventService } from '@/server/services/events';

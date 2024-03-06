@@ -1,5 +1,4 @@
 import { NextRequest, NextResponse } from 'next/server';
-import prisma from '@/server/services/prisma';
 import { makeResponseCORSLess, validateEventId } from '@/lib/api/helpers';
 import { b, cn, generateConsoleLogPrefix } from '@/lib/api/ansi-helpers';
 

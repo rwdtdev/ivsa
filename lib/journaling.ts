@@ -3,16 +3,17 @@ import prisma from '../server/services/prisma';
 
 const DEFAULT_MAX_RECORDS_TO_RETURN = 1000;
 
+/* eslint-disable */
 export enum payloadValidationErrors {
   EMPTY_OBJECT = 'Payload is an empty object',
-  NON_SERIALIZABLE_OBJECT = 'Payload object is not serializable',
+  NON_SERIALIZABLE_OBJECT = 'Payload object is not serializable'
 }
-
 export enum storeRecordErrors {
   NO_USERID = 'Missing user id',
   NO_SUBSYSTEMID = 'Missing subsystem id',
-  PRISMA = 'Prisma or lower level error',
+  PRISMA = 'Prisma or lower level error'
 }
+/* eslint-enable */
 
 export interface storeRecordReturnValue {
   success: boolean;
@@ -45,14 +46,23 @@ interface payloadValidationReturnValue {
   invalidationReason?: payloadValidationErrors;
 }
 
-function validatePayload(payload: Object): payloadValidationReturnValue {
-  const isEmpty = (obj: Object): payloadValidationErrors | undefined => Object.keys(obj).length === 0 ? payloadValidationErrors.EMPTY_OBJECT : undefined; 
+function validatePayload(payload: Record<string, any>): payloadValidationReturnValue {
+  const isEmpty = (obj: Record<string, any>): payloadValidationErrors | undefined =>
+    Object.keys(obj).length === 0 ? payloadValidationErrors.EMPTY_OBJECT : undefined;
 
-  const isSerializable = (obj: Object): payloadValidationErrors | undefined => {
-    const areEqual = (x: any, y: any): boolean => !(typeof x === 'object' && typeof x === typeof y) ? x === y  : (Object.keys(x).length === Object.keys(y).length && Object.keys(x).every(key => areEqual(x[key], y[key])));
+  const isSerializable = (
+    obj: Record<string, unknown>
+  ): payloadValidationErrors | undefined => {
+    const areEqual = (x: any, y: any): boolean =>
+      !(typeof x === 'object' && typeof x === typeof y)
+        ? x === y
+        : Object.keys(x).length === Object.keys(y).length &&
+          Object.keys(x).every((key) => areEqual(x[key], y[key]));
     const parsedObject = JSON.parse(JSON.stringify(obj));
-    return areEqual(obj, parsedObject) ? undefined : payloadValidationErrors.NON_SERIALIZABLE_OBJECT;
-  }
+    return areEqual(obj, parsedObject)
+      ? undefined
+      : payloadValidationErrors.NON_SERIALIZABLE_OBJECT;
+  };
 
   const error = isEmpty(payload) ?? isSerializable(payload);
 
@@ -90,9 +100,11 @@ export async function storeRecord(
   }
 
   try {
-    await prisma.operationRecord.create({ data: { userId, subsystemId, payload: JSON.stringify(payload) } });
+    await prisma.operationRecord.create({
+      data: { userId, subsystemId, payload: JSON.stringify(payload) }
+    });
     return {
-      success: true,
+      success: true
     };
   } catch (error) {
     return {
@@ -102,47 +114,47 @@ export async function storeRecord(
   }
 }
 
-export async function getRecords(params: getRecordsParameters): Promise<getRecordsReturnValue> {
+export async function getRecords(
+  params: getRecordsParameters
+): Promise<getRecordsReturnValue> {
   const maxRecords = params.maxRecordsToReturn ?? DEFAULT_MAX_RECORDS_TO_RETURN;
   const tstampFrom = params.timestampFrom ?? 0;
   const tstampTo = params.timestampTo ?? Date.now();
   const queryParams = [];
 
-  if (!!params.userIds) {
+  if (params.userIds) {
     queryParams.push({ userId: { in: params.userIds } });
   }
 
-  if (!!params.subsystemIds) {
+  if (params.subsystemIds) {
     queryParams.push({ subsystemId: { in: params.subsystemIds } });
   }
-  
+
   const records = await prisma.operationRecord.findMany({
     take: maxRecords,
     where: {
       AND: [
         ...queryParams,
-        { createdAt: {
+        {
+          createdAt: {
             gte: new Date(tstampFrom).toISOString(),
-            lte: new Date(tstampTo).toISOString(),
+            lte: new Date(tstampTo).toISOString()
           }
-        },
-      ],
+        }
+      ]
     },
     select: {
       id: true,
       userId: true,
       subsystemId: true,
       createdAt: true,
-      payload: true,
+      payload: true
     },
-    orderBy: [
-      { createdAt: 'desc' },
-      { id: 'desc' },
-    ],
+    orderBy: [{ createdAt: 'desc' }, { id: 'desc' }]
   });
 
   return {
     success: true,
-    records,
+    records
   };
 }

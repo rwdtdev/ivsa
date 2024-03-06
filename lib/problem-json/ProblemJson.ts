@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/ban-types */
 import _ from 'underscore';
 import { v4 as uuidv4 } from 'uuid';
 
@@ -42,7 +43,7 @@ export default class ProblemJson extends Error {
      * Полное описание произошедшей ошибки.
      * @example Entity with id=111 not found
      */
-    // @ts-ignore
+    // @ts-expect-error is not callable error
     this.detail = _(detail).isFunction() ? detail(params) : detail || defaultDetail;
 
     /**

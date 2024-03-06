@@ -21,10 +21,9 @@ import { DataTableFilterableColumn } from '@/types';
 
 const emptyCell = '';
 
-export function fetchUsersTableColumnDefs(
-  isPending: boolean,
-  startTransition: React.TransitionStartFunction
-): ColumnDef<UserView, unknown>[] {
+export function fetchUsersTableColumnDefs(): ColumnDef<UserView, unknown>[] {
+  // isPending: boolean,
+  // startTransition: React.TransitionStartFunction
   return [
     {
       id: 'select',
@@ -85,7 +84,7 @@ export function fetchUsersTableColumnDefs(
       accessorKey: 'status',
       header: ({ column }) => <DataTableColumnHeader column={column} title='Статус' />,
       cell: ({ row }) => {
-        let status: string = row.getValue('status');
+        const status: string = row.getValue('status');
 
         let isPasswordExpired = false;
         const { lastUpdatePasswordDate } = row.original;

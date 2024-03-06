@@ -4,10 +4,11 @@ import {
   ResetPasswordFormData,
   ResetPasswordFormSchema
 } from '@/lib/form-validation-schemas/reset-password-schema';
-import { getUserByUsername, updateUser } from '@/server/services/users';
+import UserService from '@/server/services/users';
 
 export async function updateUserPassword(data: ResetPasswordFormData, username: string) {
   const result = ResetPasswordFormSchema.safeParse(data);
+  const userService = new UserService();
 
   if (!result.success) {
     return false;
@@ -16,9 +17,9 @@ export async function updateUserPassword(data: ResetPasswordFormData, username: 
   const { password } = result.data;
 
   try {
-    const user = await getUserByUsername(username);
+    const user = await userService.getBy({ username });
 
-    await updateUser(user.id, { password });
+    await userService.update(user.id, { password });
     return true;
   } catch (err) {
     console.log(err);

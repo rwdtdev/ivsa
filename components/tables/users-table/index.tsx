@@ -19,11 +19,9 @@ interface UsersTableProps {
 export function UsersTable({ users, departments, organisations }: UsersTableProps) {
   const { items, pagination } = users;
 
-  const [isPending, startTransition] = React.useTransition();
-
   const columns = React.useMemo<ColumnDef<UserView, unknown>[]>(
-    () => fetchUsersTableColumnDefs(isPending, startTransition),
-    [isPending]
+    () => fetchUsersTableColumnDefs(),
+    []
   );
 
   const { dataTable } = useDataTable({

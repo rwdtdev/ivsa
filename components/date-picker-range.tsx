@@ -39,11 +39,13 @@ export function DatePickerWithRange({ className }: React.HTMLAttributes<HTMLDivE
 
   let qs = '';
   if (date && !_.isEmpty(date)) {
-    let dates = {};
+    const dates = {};
     if (date.from) {
+      // @ts-expect-error unspec type
       dates.from = moment(date.from).toISOString();
     }
     if (date.to) {
+      // @ts-expect-error unspec type
       dates.to = moment(date.to).toISOString();
     }
     qs = createQueryString(dates);

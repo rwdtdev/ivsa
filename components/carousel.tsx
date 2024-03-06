@@ -18,6 +18,7 @@ import {
   DialogTrigger
 } from '@/components/ui/dialog';
 import { DATE_FORMAT } from '@/constants/date';
+import Image from 'next/image';
 
 // @TODO: Заглушка
 const items = [
@@ -77,10 +78,13 @@ export function CarouselSize() {
               <DialogTrigger>
                 <div className='p-1'>
                   <div className='group relative flex h-20 w-20 items-center justify-center'>
-                    <img
+                    <Image
                       src='/stub.jpg'
+                      alt='image'
+                      width={120}
+                      height={100}
                       className='absolute rounded-md opacity-70 group-hover:opacity-100'
-                    ></img>
+                    />
                     <PlayCircle
                       className='invisible absolute text-white opacity-80 group-hover:visible'
                       size={32}

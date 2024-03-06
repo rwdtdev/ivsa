@@ -1,4 +1,3 @@
-import errors from '@/lib/problem-json';
 import { makeErrorDictionary } from '@/lib/problem-json';
 
 export const {
@@ -6,7 +5,6 @@ export const {
   InventoryNotExistError,
   InventoryNotBelongEventError
 } = makeErrorDictionary()({
-  ...errors,
   InventoryAlreadyExistError: {
     type: 'urn:problem-type:inventory-already-exist-error',
     title: 'Опись уже существует',

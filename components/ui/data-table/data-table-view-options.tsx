@@ -18,7 +18,7 @@ import {
 
 interface DataTableViewOptionsProps<TData> {
   table: Table<TData>;
-  columnNames: typeof UsersTableColumnNames | typeof EventsTableColumnNames;
+  columnNames: typeof UsersTableColumnNames | typeof EventsTableColumnNames | {};
 }
 
 export function DataTableViewOptions<TData>({
@@ -47,6 +47,7 @@ export function DataTableViewOptions<TData>({
             (column) => typeof column.accessorFn !== 'undefined' && column.getCanHide()
           )
           .map((column) => {
+            console.log(column.id);
             return (
               <DropdownMenuCheckboxItem
                 key={column.id}

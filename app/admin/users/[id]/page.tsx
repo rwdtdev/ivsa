@@ -43,6 +43,7 @@ export default function UpdateUserPage() {
 
   useEffect(() => {
     setInitialState();
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
   if (!userInitialData) {

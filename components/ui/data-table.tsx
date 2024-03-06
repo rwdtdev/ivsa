@@ -35,8 +35,7 @@ interface DataTableProps<TData, TValue> {
 
 export function DataTable<TData, TValue>({
   columns,
-  data,
-  searchKey
+  data
 }: DataTableProps<TData, TValue>) {
   const table = useReactTable({
     data,
@@ -76,6 +75,7 @@ export function DataTable<TData, TValue>({
                       checked={column.getIsVisible()}
                       onCheckedChange={(value) => column.toggleVisibility(!!value)}
                     >
+                      {/* @ts-ignore */}
                       {column.columnDef.header}
                     </DropdownMenuCheckboxItem>
                   );

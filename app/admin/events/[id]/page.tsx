@@ -44,7 +44,7 @@ export default function EventPage() {
     if (id) {
       fetchEventById(id);
     }
-  }, []);
+  }, [id]);
 
   if (!event || isLoadingEvent) {
     return <Loading />;
@@ -137,34 +137,35 @@ export default function EventPage() {
               <ScrollArea>
                 <div className='space-y-4'>
                   <div className='grid gap-6'>
-                    {event.participants.map(({ user, role }) => {
-                      const splited = user.name.split(' ');
-                      const initials = [splited[0][0], splited[1][0]].join('');
+                    {event.participants &&
+                      event.participants.map(({ user, role }) => {
+                        const splited = user.name.split(' ');
+                        const initials = [splited[0][0], splited[1][0]].join('');
 
-                      return (
-                        <div
-                          key={user.id}
-                          className='flex items-center justify-between space-x-4'
-                        >
-                          <div className='flex items-center space-x-4'>
-                            <Avatar>
-                              <AvatarFallback>{initials}</AvatarFallback>
-                            </Avatar>
-                            <div>
-                              <p className='text-sm font-medium leading-none'>
-                                {user.name}
-                              </p>
-                              <p className='text-sm text-muted-foreground'>
-                                {UserRoles[role as keyof typeof UserRoles]}
-                              </p>
-                              <p className='text-sm text-muted-foreground'>
-                                Таб. номер: {user.tabelNumber}
-                              </p>
+                        return (
+                          <div
+                            key={user.id}
+                            className='flex items-center justify-between space-x-4'
+                          >
+                            <div className='flex items-center space-x-4'>
+                              <Avatar>
+                                <AvatarFallback>{initials}</AvatarFallback>
+                              </Avatar>
+                              <div>
+                                <p className='text-sm font-medium leading-none'>
+                                  {user.name}
+                                </p>
+                                <p className='text-sm text-muted-foreground'>
+                                  {UserRoles[role as keyof typeof UserRoles]}
+                                </p>
+                                <p className='text-sm text-muted-foreground'>
+                                  Таб. номер: {user.tabelNumber}
+                                </p>
+                              </div>
                             </div>
                           </div>
-                        </div>
-                      );
-                    })}
+                        );
+                      })}
                   </div>
                 </div>
               </ScrollArea>
@@ -177,27 +178,31 @@ export default function EventPage() {
             <CardContent className='h-full'>
               <ScrollArea className='h-4/5'>
                 <div className='space-y-4'>
-                  {event.inventories.map((inventory, index) => {
-                    return (
-                      <div key={inventory.id}>
-                        <div className='grid grid-cols-4 gap-1 space-x-5'>
-                          <div className='mr-10 flex cursor-pointer items-center space-x-4'>
-                            <div>
-                              <p className='text-md font-medium leading-none'>
-                                Опись № {inventory.number} от{' '}
-                                {moment(inventory.date).format(DATE_FORMAT)}
-                              </p>
-                              <p className='text-sm text-muted-foreground'>
-                                ID: {inventory.id}
-                              </p>
+                  {event.inventories &&
+                    event.inventories.map((inventory, index) => {
+                      return (
+                        <div key={inventory.id}>
+                          <div className='grid grid-cols-4 gap-1 space-x-5'>
+                            <div className='mr-10 flex cursor-pointer items-center space-x-4'>
+                              <div>
+                                <p className='text-md font-medium leading-none'>
+                                  Опись № {inventory.number} от{' '}
+                                  {moment(inventory.date).format(DATE_FORMAT)}
+                                </p>
+                                <p className='text-sm text-muted-foreground'>
+                                  ID: {inventory.id}
+                                </p>
+                              </div>
                             </div>
+                            <CarouselSize />
                           </div>
-                          <CarouselSize />
+                          {event.inventories &&
+                          index === event.inventories.length - 1 ? null : (
+                            <Separator />
+                          )}
                         </div>
-                        {index === event.inventories.length - 1 ? null : <Separator />}
-                      </div>
-                    );
-                  })}
+                      );
+                    })}
                 </div>
               </ScrollArea>
             </CardContent>

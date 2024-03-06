@@ -1,16 +1,13 @@
-import ApiError from '@/server/utils/error';
 import { TransactionSession } from '@/types/prisma';
+import prisma from '@/server/services/prisma';
 import { Prisma } from '@prisma/client';
 
+// eslint-disable-next-line @typescript-eslint/ban-types
 export const doTransaction = async (fn: Function): Promise<any> => {
   return await prisma.$transaction(
     async (session: TransactionSession) => {
-      try {
-        const result = await fn(session);
-        return result;
-      } catch (error) {
-        throw error;
-      }
+      const result = await fn(session);
+      return result;
     },
     {
       // set highest level of isolation for transactions

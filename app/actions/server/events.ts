@@ -1,6 +1,5 @@
 'use server';
 
-import { SortOrder } from '@/constants/data';
 import { searchParamsSchema } from '@/lib/query-params-validation';
 import { EventService } from '@/server/services/events';
 import { EventView } from '@/server/services/events/types';
@@ -16,7 +15,7 @@ export async function getEventsAction(
 > {
   noStore();
   try {
-    const { page, per_page, sort, search, from, to, status, briefingStatus } =
+    const { page, per_page, search, from, to, status, briefingStatus } =
       searchParamsSchema.parse(searchParams);
 
     // Fallback page for invalid page numbers
@@ -26,14 +25,14 @@ export async function getEventsAction(
     const perPageAsNumber = Number(per_page);
     const limit = isNaN(perPageAsNumber) ? 10 : perPageAsNumber;
     // Number of items to skip
-    const offset = fallbackPage > 0 ? (fallbackPage - 1) * limit : 0;
+    // const offset = fallbackPage > 0 ? (fallbackPage - 1) * limit : 0;
     // Column and order to sort by
     // Spliting the sort string by "." to get the column and order
     // Example: "title.desc" => ["title", "desc"]
-    const [column, order] = (sort?.split('.') as [
-      keyof Event | undefined,
-      SortOrder
-    ]) ?? ['startAt', 'asc'];
+    // const [column, order] = (sort?.split('.') as [
+    //   keyof Event | undefined,
+    //   SortOrder
+    // ]) ?? ['startAt', 'asc'];
 
     const statuses = (status?.split('.') as Event['status'][]) ?? [];
     const briefingStatuses =

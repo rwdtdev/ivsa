@@ -15,13 +15,17 @@ import { useSearchParams, usePathname, useRouter } from 'next/navigation';
 import { useDebounce } from '@/hooks/use-debounce';
 import { DatePickerWithRange } from '../../date-picker-range';
 import { P } from '../typography/p';
+import {
+  EventsTableColumnNames,
+  UsersTableColumnNames
+} from '@/constants/mappings/tables-column-names';
 
 interface DataTableToolbarProps<TData> {
   table: Table<TData>;
   filterableColumns?: DataTableFilterableColumn<TData>[];
   searchableColumns?: DataTableSearchableColumn<TData>[];
   datePickers?: any;
-  columnNames: Record<string, string>;
+  columnNames: typeof UsersTableColumnNames | typeof EventsTableColumnNames | {};
   withSearch?: boolean;
   newRowLink?: string;
   deleteRowsAction?: React.MouseEventHandler<HTMLButtonElement>;
@@ -114,15 +118,15 @@ export function DataTableToolbar<TData>({
           />
         )}
         {datePickers.length > 0 &&
-          datePickers.map((datepicker, idx) =>
-            datepicker.type === 'range' ? (
-              <div key={idx} className='flex flex-row items-center'>
-                <P className='pr-2 text-sm font-normal'>{datepicker.title}:</P>
-                <DatePickerWithRange />
-              </div>
-            ) : (
-              <div></div>
-            )
+          datePickers.map(
+            // @ts-expect-error any type
+            (datepicker, idx) =>
+              datepicker.type === 'range' && (
+                <div key={idx} className='flex flex-row items-center'>
+                  <P className='pr-2 text-sm font-normal'>{datepicker.title}:</P>
+                  <DatePickerWithRange />
+                </div>
+              )
           )}
         {filterableColumns.length > 0 &&
           filterableColumns.map(

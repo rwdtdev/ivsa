@@ -16,11 +16,11 @@ export const makeErrorDictionary = ({
 
       if (val && _.isObject(val)) {
         if ('type' in val || 'title' in val || 'Parent' in val) {
-          // @ts-ignore
+          // @ts-expect-error wrong types
           return class extends (val.Parent || baseParent) {
             constructor(constructorParams: ProblemJsonOptions) {
               super({
-                // @ts-ignore
+                // @ts-expect-error reinit var
                 type: autoType,
                 ...val,
                 ...constructorParams

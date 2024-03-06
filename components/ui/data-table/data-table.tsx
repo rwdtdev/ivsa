@@ -139,16 +139,7 @@ export function DataTable<TData, TValue>({
               dataTable.getRowModel().rows.map((row) => (
                 <TableRow key={row.id} data-state={row.getIsSelected() && 'selected'}>
                   {row.getVisibleCells().map((cell) => (
-                    <TableCell
-                      key={cell.id}
-                      style={{
-                        width:
-                          cell.column.getSize() === Number.MAX_SAFE_INTEGER
-                            ? 'auto'
-                            : cell.column.getSize(),
-                        padding: 0
-                      }}
-                    >
+                    <TableCell key={cell.id} style={{ padding: 0 }}>
                       {flexRender(cell.column.columnDef.cell, cell.getContext())}
                     </TableCell>
                   ))}

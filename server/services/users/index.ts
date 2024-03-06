@@ -84,7 +84,7 @@ export default class UserService {
     return user;
   }
 
-  async getBy(query: Partial<ClientUser>): Promise<ClientUser | null> {
+  async getBy(query: Partial<ClientUser>): Promise<ClientUser> {
     const user = await this.prisma.user.findFirst({
       where: query
     });

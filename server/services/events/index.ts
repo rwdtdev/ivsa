@@ -38,7 +38,7 @@ export class EventService {
     return new this(session);
   }
 
-  async assertExist(id: string): Promise<void> {
+  async assertExist(id: string) {
     const count = await this.prisma.event.count({ where: { id } });
 
     if (!count || count === 0) {

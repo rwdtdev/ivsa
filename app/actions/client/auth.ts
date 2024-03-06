@@ -15,14 +15,10 @@ export async function authenticate(data: LoginFormData): Promise<boolean> {
       redirect: false
     });
 
-    if (res?.error) {
-      console.debug(res.error);
-      return false;
-    }
+    if (res?.error) return false;
 
     return true;
   }
 
-  console.debug(result.error.formErrors);
   return false;
 }

@@ -1,4 +1,4 @@
-export default {
+const errors = {
   ValidationError: {
     type: 'urn:problem-type:validation-error',
     title: 'Ошибка валидации входных параметров',
@@ -40,3 +40,5 @@ export default {
     status: 500
   }
 };
+
+export default errors;

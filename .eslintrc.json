@@ -1,15 +1,12 @@
 {
   "parser": "@typescript-eslint/parser",
-  "plugins": ["@typescript-eslint", "react-hooks"],
+  "plugins": ["react-hooks", "@typescript-eslint"],
   "extends": [
     "eslint:recommended",
     "plugin:react/recommended",
     "plugin:@typescript-eslint/recommended",
-    // "plugin:@typescript-eslint/recommended-requiring-type-checking",
-    "plugin:jest/recommended",
-    "plugin:jest/style",
-    "plugin:testing-library/react",
-    "prettier"
+    "prettier",
+    "next"
   ],
   "env": {
     "es6": true,
@@ -21,23 +18,24 @@
       "version": "detect"
     }
   },
+  "parserOptions": {
+    "ecmaVersion": "latest",
+    "ecmaFeatures": {
+      "jsx": true,
+      "modules": true
+    }
+  },
+  "ignorePatterns": ["components/ui"],
   "rules": {
     "react-hooks/rules-of-hooks": "error",
     "react/react-in-jsx-scope": 0,
     "react/display-name": 0,
     "react/prop-types": 0,
-    "@typescript-eslint/explicit-function-return-type": 0,
-    "@typescript-eslint/explicit-member-accessibility": 0,
-    // "@typescript-eslint/indent": 0,
+    "no-console": "off",
+    "no-unused-vars": ["error"],
     "@typescript-eslint/member-delimiter-style": 0,
     "@typescript-eslint/no-explicit-any": 0,
     "@typescript-eslint/no-var-requires": 0,
-    "@typescript-eslint/no-use-before-define": 0,
-    "@typescript-eslint/no-unused-vars": "warn",
-    "@typescript-eslint/no-empty-interface": "off",
-    "no-console": "warn",
-    // tests
-    "testing-library/no-node-access": "warn",
-    "testing-library/no-unnecessary-act": "warn"
+    "@typescript-eslint/no-use-before-define": 0
   }
 }

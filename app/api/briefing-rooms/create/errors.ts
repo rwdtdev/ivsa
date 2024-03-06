@@ -1,12 +1,10 @@
 import { makeErrorDictionary } from '@/lib/problem-json';
-import errors from '@/lib/problem-json';
 
 export const {
   BriefingRoomAlreadyExist,
   BriefingParticipantsMustContainSpeaker,
   NotRegisteredUserInIvaError
 } = makeErrorDictionary()({
-  ...errors,
   BriefingRoomAlreadyExist: {
     type: 'urn:problem-type:briefing-room-already-exist',
     title: 'Комната видеоинструктажа уже существует',

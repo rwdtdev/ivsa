@@ -29,7 +29,7 @@ export const authConfig = {
     })
   ],
   callbacks: {
-    // @ts-ignore
+    // @ts-expect-error types
     jwt: async ({ token, user }: JwtCallbackOptions) => {
       const isSignIn = !!user;
 
@@ -37,8 +37,8 @@ export const authConfig = {
       if (isSignIn) {
         const { accessToken, refreshToken, ...payload } = user;
         return {
-          accessToken: user.accessToken,
-          refreshToken: user.refreshToken,
+          accessToken,
+          refreshToken,
           user: payload
         };
       }
@@ -60,7 +60,7 @@ export const authConfig = {
         }
       }
     },
-    // @ts-ignore
+    // @ts-expect-error types
     session: async ({ session, token }: SessionCallbackOptions) => {
       if (token) {
         session.user = token.user;

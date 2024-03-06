@@ -1,5 +1,6 @@
-import { UserNav } from './user-nav';
+import Image from 'next/image';
 import Link from 'next/link';
+import { UserNav } from './user-nav';
 
 export default function Header() {
   return (
@@ -7,7 +8,7 @@ export default function Header() {
       <nav className='flex h-14 items-center justify-between px-4'>
         <div className='hidden md:block'>
           <Link href={'/admin'} target='_blank' className='flex'>
-            <img src='/logo.png' alt='Логотип' className='h-8 w-8' />
+            <Image src='/logo.png' alt='Логотип' width={30} height={50} />
             <h1 className='px-5 text-xl font-semibold'>Панель управления</h1>
           </Link>
         </div>

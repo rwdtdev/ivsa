@@ -12,7 +12,6 @@ import { BriefingRoomIsStillOpenError, EmptyPartisipantsListError } from './erro
 import { CreateInventorySchema } from './validation';
 import { mapToInventoryAttributes } from '@/server/services/inventories/mappers/InventoryAttributesMapper';
 import { getDateFromString } from '@/server/utils';
-import { IvaParticipant } from '@/server/services/iva/types';
 
 export async function POST(request: NextRequest) {
   let conferenceSessionId;

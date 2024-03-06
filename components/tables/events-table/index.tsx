@@ -22,11 +22,9 @@ interface EventsTableProps {
 export function EventsTable({ events }: EventsTableProps) {
   const { items, pagination } = events;
 
-  const [isPending, startTransition] = React.useTransition();
-
   const columns = React.useMemo<ColumnDef<EventView, unknown>[]>(
-    () => fetchEventsTableColumnDefs(isPending, startTransition),
-    [isPending]
+    () => fetchEventsTableColumnDefs(),
+    []
   );
 
   const { dataTable } = useDataTable({
@@ -40,7 +38,7 @@ export function EventsTable({ events }: EventsTableProps) {
     <DataTable
       dataTable={dataTable}
       columns={columns}
-      // @ts-ignore
+      // @ts-expect-error neex fix types
       datePickers={eventsDatePickers}
       columnNames={EventsTableColumnNames}
       filterableColumns={filterableColumns()}

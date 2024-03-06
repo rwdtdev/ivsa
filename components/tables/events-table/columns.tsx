@@ -1,6 +1,5 @@
 'use client';
 
-import _ from 'underscore';
 import { ColumnDef } from '@tanstack/react-table';
 import { DataTableColumnHeader } from '@/components/ui/data-table/data-table-column-header';
 import { EventView } from '@/server/services/events/types';
@@ -17,10 +16,7 @@ import { REGION_CODES } from '@/constants/mappings/region-codes';
 
 const padding = 9;
 
-export function fetchEventsTableColumnDefs(
-  isPending: boolean,
-  startTransition: React.TransitionStartFunction
-): ColumnDef<EventView, unknown>[] {
+export function fetchEventsTableColumnDefs(): ColumnDef<EventView, unknown>[] {
   return [
     {
       id: 'startAt',
@@ -169,18 +165,10 @@ export function fetchEventsTableColumnDefs(
       accessorKey: 'participants',
       header: 'Участники',
       cell: ({ row }) => {
-        // @ts-ignore
         const { participants } = row.original;
 
         if (participants && participants.length > 0) {
-          // @TODO: Найти главного в списке
-          // const participant = participants[0];
           return (
-            // <Link href={`/admin/events/${row.original.id}`}>
-            //   <div style={{ padding }}>
-            //     {participant && participant.name} (Участников: {participants.length})
-            //   </div>
-            // </Link>
             <Link href={`/admin/events/${row.original.id}`}>
               <div style={{ padding }}>
                 <ul>

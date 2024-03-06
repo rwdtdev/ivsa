@@ -1,5 +1,4 @@
 import { NextRequest, NextResponse } from 'next/server';
-import prisma from '@/server/services/prisma';
 import {
   makeResponseCORSLess,
   validateEventId,

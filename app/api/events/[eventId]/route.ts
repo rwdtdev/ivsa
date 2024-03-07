@@ -1,103 +1,94 @@
 import { NextRequest, NextResponse } from 'next/server';
 import {
+  checkEventId,
+  genClog,
   makeResponseCORSLess,
-  validateEventId,
-  validateTabelNumber
 } from '@/lib/api/helpers';
-import { generateConsoleLogPrefix } from '@/lib/api/ansi-helpers';
+import {
+  b,
+  cn,
+  generateConsoleLogPrefix,
+} from '@/lib/api/ansi-helpers';
+import { EventService } from '@/server/services/events';
+import { EventStatus } from '@prisma/client';
 
 interface iContext {
   params: {
-    eventId: string;
+    eventId: string,
   };
 }
 
 export async function PUT(request: NextRequest, context: iContext) {
-  const CONSOLE_LOG_PREFIX = generateConsoleLogPrefix(
-    request.method,
-    '/api/events/[eventId]'
-  );
-  const clog = (textToLog: string, ...args: any) =>
-    console.log(`${CONSOLE_LOG_PREFIX}${textToLog}`, ...args);
+    const CONSOLE_LOG_PREFIX = generateConsoleLogPrefix(request.method, '/api/events/[eventId]');
+    const clog = (textToLog: string, ...args: any) => console.log(`${CONSOLE_LOG_PREFIX}${textToLog}`, ...args);
 
-  const reqBody = await request.json();
-  const { eventId } = context.params;
+    const reqBody = await request.json();
 
-  // Placeholder response
-  let resp: NextResponse = new NextResponse(undefined, { status: 204 });
+    const { eventId } = context.params;
 
-  if (!validateEventId(eventId)) {
-    resp = NextResponse.json(
-      {
-        type: 'urn:problem-type:unprocessable-content',
-        title: 'Необрабатываемый контент',
-        detail: `Событие с eventId ${eventId} не найдено`,
-        status: 404
-      },
-      {
-        status: 404
-      }
-    );
+    const eventService = new EventService();
+
+    const eventIdErrorResponse = await checkEventId(clog, eventService, eventId);
+
+    if (eventIdErrorResponse !== undefined) {
+      return eventIdErrorResponse;
+    }
+  
+    //...validate body supplied data here...
+
+    await eventService.update(eventId, {
+      ...reqBody, //<=== currently unvalidated!!
+    });
+  /*
+  type Event = {
+    //id: string;
+    commandId: string;
+    commandNumber: string;
+    commandDate: Date;
+    orderId: string;
+    orderNumber: string;
+    orderDate: Date;
+    startAt: Date;
+    endAt: Date;
+    balanceUnit: string;
+    balanceUnitRegionCode: string;
+    status: $Enums.EventStatus;
+    briefingStatus: $Enums.BriefingStatus;
+    briefingRoomInviteLink: string | null;
+    briefingSessionId: string | null;
+    createdAt: Date;
+    updatedAt: Date;
   }
-
-  interface requestBodyArrayElement {
-    tabelNumber: string;
-    roleId: number;
-  }
-  const invalidTabNum = reqBody.participants.find(
-    (el: requestBodyArrayElement) => !validateTabelNumber(el.tabelNumber)
-  );
-  if (invalidTabNum !== undefined) {
-    resp = NextResponse.json(
-      {
-        type: 'urn:problem-type:unprocessable-content',
-        title: 'Необрабатываемый контент',
-        detail: `Невалидный пользователь: ${invalidTabNum.tabelNumber}`,
-        status: 422
-      },
-      {
-        status: 422
-      }
-    );
-  }
-
-  clog(
-    `eventId is ${validateEventId(eventId) ? 'valid' : 'invalid'}\nrequest body: %O\nresponding with status ${resp.status}, '${resp.statusText}'`,
-    reqBody
-  );
-
-  return makeResponseCORSLess(resp);
+  */
+    const resp: NextResponse = new NextResponse(undefined, { status: 204 });
+  
+    clog(`\n\teventId is ${b('valid').gr()} (${cn(eventId)})\n\tevent ${cn(eventId)} ${b('exists').gr()}\n\t\trequest body: %O\n\t\t${b('Responding with status ')}${resp.status}, '${resp.statusText}'\n`, reqBody);
+    
+    return makeResponseCORSLess(resp);
 }
 
 export async function DELETE(request: NextRequest, context: iContext) {
-  const CONSOLE_LOG_PREFIX = generateConsoleLogPrefix(
-    request.method,
-    '/api/events/[eventId]'
-  );
-  const clog = (textToLog: string, ...args: any) =>
-    console.log(`${CONSOLE_LOG_PREFIX}${textToLog}`, ...args);
+  const CONSOLE_LOG_PREFIX = generateConsoleLogPrefix(request.method, '/api/events/[eventId]');
+
+  const clog = genClog(CONSOLE_LOG_PREFIX);
+  
   const { eventId } = context.params;
 
-  // Placeholder response
-  let resp: NextResponse = new NextResponse(undefined, { status: 204 });
+  const eventService = new EventService();
 
-  if (!validateEventId(eventId)) {
-    resp = NextResponse.json(
-      {
-        type: 'urn:problem-type:unprocessable-content',
-        title: 'Необрабатываемый контент',
-        detail: `Событие с eventId ${eventId} не найдено`,
-        status: 404
-      },
-      {
-        status: 404
-      }
-    );
+  const eventIdErrorResponse = await checkEventId(clog, eventService, eventId);
+
+  if (eventIdErrorResponse !== undefined) {
+    return eventIdErrorResponse;
   }
 
-  clog(
-    `eventId is ${validateEventId(eventId) ? 'valid' : 'invalid'}\nresponding with status ${resp.status}, '${resp.statusText}'`
-  );
+  await eventService.update(eventId, {
+    status: EventStatus.REMOVED,
+  });
+
+  const resp: NextResponse = new NextResponse(undefined, { status: 204 });
+
+  clog(`\n\teventId is ${b('valid').gr()} (${cn(eventId)})\n\tevent ${cn(eventId)} ${b('exists').gr()}\n\t\t${b('Responding with status ')}${resp.status}, '${resp.statusText}'\n`);
 
   return makeResponseCORSLess(resp);
 }

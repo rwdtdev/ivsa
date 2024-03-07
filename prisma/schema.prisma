@@ -219,9 +219,16 @@ model Inventory {
 }
 
 model Jobs {
-  name        String
+  /// Название периодического задания
+  name        String    @unique
+  /// Краткое описание задания
   description String
-  lastStartAt DateTime
+  /// Дата последнего запуска задания
+  lastStartAt DateTime?
+  /// Лог ошибки в формате Json, возникшей во время выполнения задания или приводящей к его остановке
+  error       Json?
+
+  @@map("jobs")
 }
 
 enum UserStatus {

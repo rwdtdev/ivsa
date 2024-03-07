@@ -2,7 +2,10 @@ import { defineConfig } from 'vitest/config';
 
 export default defineConfig({
   test: {
-    include: ['src/**/*.{test,spec}.{j,t}s?(x)'],
+    include: [
+      'src/**/*.{test,spec}.{j,t}s?(x)',
+      '__tests__/**/*.{test,spec}.{j,t}s?(x)',
+    ],
     exclude: ['prisma'],
     reporters: ['verbose'],
     coverage: {

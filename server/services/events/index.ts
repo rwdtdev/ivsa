@@ -70,8 +70,7 @@ export class EventService {
       where: { id },
       include: {
         inventories: true,
-        participants: { include: { user: true } },
-        tabelNumbers: { where: { bindingAt: null } }
+        participants: { include: { user: true } }
       }
     });
 

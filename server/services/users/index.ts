@@ -76,6 +76,21 @@ export default class UserService {
     }
   }
 
+  private async findAndUpdateNotBindedTabelNumbers(user: User) {
+    // Finding for tabel numbers that have been added to events without an account.
+    const isHaveNotRegisteredParticipants = await this.prisma.eventParticipant.findFirst({
+      where: { tabelNumber: user.tabelNumber, userId: null }
+    });
+
+    // Update the registered user sign at current datetime in all events
+    if (isHaveNotRegisteredParticipants) {
+      await this.prisma.eventParticipant.updateMany({
+        data: { userId: user.id },
+        where: { tabelNumber: user.tabelNumber }
+      });
+    }
+  }
+
   async getById(id: string) {
     await this.assertExist(id);
 
@@ -218,7 +233,7 @@ export default class UserService {
       try {
         const error = JSON.parse(ivaResponse);
         throw new CreateIvaUserError({ detail: error.reason, info: error });
-      } finally {
+      } catch {
         throw new CreateIvaUserError();
       }
     }
@@ -239,6 +254,8 @@ export default class UserService {
         passwordHashes: passwordHash
       }
     });
+
+    await this.findAndUpdateNotBindedTabelNumbers(user);
 
     if (!user) {
       await IvaAPI.users.remove(ivaResponse.profileId);

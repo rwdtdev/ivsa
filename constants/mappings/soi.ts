@@ -8,3 +8,5 @@ export const SoiParticipantRoles = {
   '06': UserRole.ACCOUNTANT,
   '07': UserRole.MANAGER
 };
+
+export type SoiParticipantRole = keyof typeof SoiParticipantRoles;

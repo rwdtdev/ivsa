@@ -1,15 +1,14 @@
-import _ from 'underscore';
 import { SortOrder } from '@/constants/data';
 import prisma from '@/server/services/prisma';
 import { TransactionSession } from '@/types/prisma';
-import { Event, EventTabelNumber, PrismaClient, UserRole } from '@prisma/client';
-import { CreateEventData, EventView, EventsGetData } from './types';
+import { Event, PrismaClient, UserRole } from '@prisma/client';
+import { CreateEventData, EventView, EventsGetData, UpdateEventData } from './types';
 import { PaginatedResponse } from '@/server/types';
 import moment from 'moment';
 import {
   EventNotFoundError,
-  EventParticipantsMustBeNotEmptyError,
   EventParticipantsMustContainSpeakerError,
+  SpeakerIsNotRegisteredInAsviError,
   SpeakerIsNotRegisteredInIvaError
 } from './errors';
 import { SoiParticipantRoles } from '@/constants/mappings/soi';
@@ -46,19 +45,17 @@ export class EventService {
     }
   }
 
-  assertSpeakerExistAndRegisteredInIva(event: EventView): string {
-    const { participants } = event;
-
-    if (!participants || _.isEmpty(participants)) {
-      throw new EventParticipantsMustBeNotEmptyError();
-    }
-
-    const speaker = participants.find(
-      ({ role }) => IvaRolesMapper[role] === IvaRoles.SPEAKER
-    );
+  assertSpeakerExistAndRegisteredInIva({ participants }: EventView) {
+    const speaker =
+      participants &&
+      participants.find(({ role }) => IvaRolesMapper[role] === IvaRoles.SPEAKER);
 
     if (!speaker) {
       throw new EventParticipantsMustContainSpeakerError();
+    }
+
+    if (!speaker.user) {
+      throw new SpeakerIsNotRegisteredInAsviError();
     }
 
     if (!speaker.user.ivaProfileId) {
@@ -73,9 +70,8 @@ export class EventService {
       where: { id },
       include: {
         inventories: true,
-        participants: {
-          include: { user: true }
-        }
+        participants: { include: { user: true } },
+        tabelNumbers: { where: { bindingAt: null } }
       }
     });
 
@@ -86,58 +82,39 @@ export class EventService {
     return serializeToView(event);
   }
 
-  async create(data: CreateEventData): Promise<EventView> {
-    const tabelNumbersWithoutUsers: Partial<EventTabelNumber>[] = [];
-
-    const usersPromises = data.participants.map(async (participant) => {
+  async create(data: CreateEventData) {
+    const participantPromises = data.participants.map(async (participant) => {
       const user = await this.prisma.user.findFirst({
-        where: {
-          tabelNumber: participant.tabelNumber
-        }
+        where: { tabelNumber: participant.tabelNumber }
       });
 
-      if (!user) {
-        tabelNumbersWithoutUsers.push({
-          tabelNumber: participant.tabelNumber,
-          fio: participant.fio
-        });
-      }
-
-      return (
-        user && {
-          userId: user.id,
-          role:
-            SoiParticipantRoles[participant.roleId as keyof typeof SoiParticipantRoles] ||
-            UserRole.PARTICIPANT
-        }
-      );
+      return {
+        userId: (user && user.id) || null,
+        name: (user && user.name) || participant.name,
+        tabelNumber: (user && user.tabelNumber) || participant.tabelNumber,
+        role: SoiParticipantRoles[participant.roleId] || UserRole.PARTICIPANT
+      };
     });
 
-    const users = (await Promise.all(usersPromises)).filter(_.identity);
+    const participatns = await Promise.all(participantPromises);
 
     const event = await this.prisma.event.create({
       data: {
         ...data,
-        participants: {
-          // @ts-ignore
-          create: users
-        },
-        tabelNumbers: {
-          create: tabelNumbersWithoutUsers
-        }
+        participants: { create: participatns }
       }
     });
 
     return serializeToView(event);
   }
 
-  async update(id: string, data: any) {
+  async update(id: string, data: UpdateEventData) {
     const updatedEvent = await this.prisma.event.update({
-      where: { id },
-      data
+      data,
+      where: { id }
     });
 
-    return updatedEvent;
+    return serializeToView(updatedEvent);
   }
 
   async getEvents(
@@ -175,20 +152,12 @@ export class EventService {
     const events = await prisma.event.findMany({
       ...where,
       include: {
-        participants: {
-          include: {
-            event: true,
-            user: true
-          }
-        },
-        inventories: true,
-        tabelNumbers: true
+        participants: { include: { event: true, user: true } },
+        inventories: true
       },
       skip: (page - 1) * limit,
       take: limit,
-      orderBy: {
-        createdAt: sortDirection
-      }
+      orderBy: { createdAt: sortDirection }
     });
 
     return {

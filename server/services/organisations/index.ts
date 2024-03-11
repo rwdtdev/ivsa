@@ -1,3 +1,4 @@
+import prisma from '@/server/services/prisma';
 import { NotFoundError } from '@/lib/problem-json';
 import { TransactionSession } from '@/types/prisma';
 import { Organisation, PrismaClient } from '@prisma/client';

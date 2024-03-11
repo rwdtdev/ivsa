@@ -1,12 +1,13 @@
-import { NextRequest, NextResponse } from 'next/server';
+import _ from 'underscore';
 import IvaAPI from '@/server/services/iva/api';
+import { NextRequest, NextResponse } from 'next/server';
 import { EventService } from '@/server/services/events';
 import { BriefingStatus } from '@prisma/client';
 import { doTransaction } from '@/lib/prisma-transaction';
 import { TransactionSession } from '@/types/prisma';
 import { getErrorResponse } from '@/lib/helpers';
-import { BriefingRoomAlreadyExist } from './errors';
 import { IvaRolesMapper } from '@/constants/mappings/iva';
+import { BriefingRoomAlreadyExist, EventParticipantsMustBeNotEmptyError } from './errors';
 
 export async function POST(request: NextRequest) {
   const reqBody = await request.json();
@@ -24,6 +25,10 @@ export async function POST(request: NextRequest) {
 
       if (event.briefingSessionId) {
         throw new BriefingRoomAlreadyExist();
+      }
+
+      if (!event.participants || _.isEmpty(event.participants)) {
+        throw new EventParticipantsMustBeNotEmptyError();
       }
 
       const speakerIvaProfileId =
@@ -50,11 +55,16 @@ export async function POST(request: NextRequest) {
             { key: 'ALWAYS_SHOW_PARTICIPANT_IN_STAGE', value: true }
           ]
         },
-        participants: event.participants.map(({ user, role }) => ({
-          interlocutor: { profileId: user.ivaProfileId as string },
-          roles: [IvaRolesMapper[role]],
-          interpreterLanguagesPair: ['RUSSIAN']
-        }))
+        participants: event.participants
+          .map(
+            ({ user, role }) =>
+              user && {
+                interlocutor: { profileId: user.ivaProfileId as string },
+                roles: [IvaRolesMapper[role]],
+                interpreterLanguagesPair: ['RUSSIAN']
+              }
+          )
+          .filter(_.identity)
       });
 
       conferenceSessionId = createdRoom.conferenceSessionId;

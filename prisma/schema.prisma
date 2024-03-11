@@ -98,25 +98,6 @@ model User {
   @@map("users")
 }
 
-model EventTabelNumber {
-  // Табельный номер из приказа
-  tabelNumber String
-  /// Ссылка на событие инвентаризации
-  eventId     String
-  /// Список событий, в которых человек с табельным номером является участником вне зависимости от учетной записи в ASVI
-  event       Event     @relation(fields: [eventId], references: [id])
-  /// ФИО из приказа для полученного табельного номера
-  fio         String
-  /// Дата и время создания записи
-  createdAt   DateTime  @default(now())
-  /// Признак привязки табельного номера к пользователю ASVI. Null - не привязана, значением является время запуска процедуры привязкию
-  bindingAt   DateTime?
-
-  @@unique([tabelNumber, eventId])
-  @@index([eventId, tabelNumber])
-  @@map("event_tabel_numbers")
-}
-
 model Event {
   /// Идентификатор события в формате cUID
   id                     String             @id @default(cuid())
@@ -156,8 +137,6 @@ model Event {
   createdAt              DateTime           @default(now())
   /// Дата и время модификации записи
   updatedAt              DateTime           @updatedAt
-  /// Список табельных номеров в приказе, полученном из СОИ
-  tabelNumbers           EventTabelNumber[]
 
   @@map("events")
 }
@@ -172,10 +151,14 @@ model EventParticipant {
   inventoryId String?
   /// Объект с данными об описи
   inventory   Inventory? @relation(fields: [inventoryId], references: [id])
-  /// Идентификатор пользователя
-  userId      String
+  /// Идентификатор пользователя в виде табельного номера
+  tabelNumber String
+  /// Имя участника имя пользователя или имя, присланное поле name в API создания события
+  name        String?
   /// Объект с данными о пользователе
-  user        User       @relation(fields: [userId], references: [id])
+  user        User?      @relation(fields: [userId], references: [id])
+  /// Идентификатор пользователя
+  userId      String?
   /// Роль участника
   role        UserRole
 

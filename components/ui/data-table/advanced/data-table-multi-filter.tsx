@@ -1,83 +1,75 @@
-import * as React from "react"
-import { usePathname, useRouter, useSearchParams } from "next/navigation"
-import type { DataTableFilterOption } from "@/types"
+import * as React from 'react';
+import { usePathname, useRouter, useSearchParams } from 'next/navigation';
+import type { DataTableFilterOption } from '@/types';
 import {
   CopyIcon,
   DotsHorizontalIcon,
   TextAlignCenterIcon,
-  TrashIcon,
-} from "@radix-ui/react-icons"
-import type { Table } from "@tanstack/react-table"
+  TrashIcon
+} from '@radix-ui/react-icons';
+import type { Table } from '@tanstack/react-table';
 
-import { useDebounce } from "@/hooks/use-debounce"
-import { Button } from "@/components/ui/button"
+import { useDebounce } from '@/hooks/use-debounce';
+import { Button } from '@/components/ui/button';
 import {
   DropdownMenu,
   DropdownMenuContent,
   DropdownMenuItem,
-  DropdownMenuTrigger,
-} from "@/components/ui/dropdown-menu"
-import { Input } from "@/components/ui/input"
-import {
-  Popover,
-  PopoverContent,
-  PopoverTrigger,
-} from "@/components/ui/popover"
+  DropdownMenuTrigger
+} from '@/components/ui/dropdown-menu';
+import { Input } from '@/components/ui/input';
+import { Popover, PopoverContent, PopoverTrigger } from '@/components/ui/popover';
 import {
   Select,
   SelectContent,
   SelectGroup,
   SelectItem,
   SelectTrigger,
-  SelectValue,
-} from "@/components/ui/select"
-import { Separator } from "@/components/ui/separator"
+  SelectValue
+} from '@/components/ui/select';
+import { Separator } from '@/components/ui/separator';
 
-import { DataTableFacetedFilter } from "../data-table-faceted-filter"
+import { DataTableFacetedFilter } from '../data-table-faceted-filter';
 
 const operators = [
   {
-    label: "And",
-    value: "and",
+    label: 'And',
+    value: 'and'
   },
   {
-    label: "Or",
-    value: "or",
-  },
-]
+    label: 'Or',
+    value: 'or'
+  }
+];
 
 interface DataTableMultiFilterProps<TData> {
-  table: Table<TData>
-  allOptions: DataTableFilterOption<TData>[]
-  options: DataTableFilterOption<TData>[]
+  table: Table<TData>;
+  allOptions: DataTableFilterOption<TData>[];
+  options: DataTableFilterOption<TData>[];
   setSelectedOptions: React.Dispatch<
     React.SetStateAction<DataTableFilterOption<TData>[]>
-  >
+  >;
 }
 
 export function DataTableMultiFilter<TData>({
   table,
   allOptions,
   options,
-  setSelectedOptions,
+  setSelectedOptions
 }: DataTableMultiFilterProps<TData>) {
-  const [open, setOpen] = React.useState(true)
-  const [operator, setOperator] = React.useState(operators[0])
+  const [open, setOpen] = React.useState(true);
+  const [operator, setOperator] = React.useState(operators[0]);
 
   return (
     <Popover open={open} onOpenChange={setOpen}>
       <PopoverTrigger asChild>
-        <Button
-          variant="outline"
-          size="sm"
-          className="h-7 truncate rounded-full"
-        >
-          <TextAlignCenterIcon className="mr-2 size-3" aria-hidden="true" />
+        <Button variant='outline' size='sm' className='h-7 truncate rounded-full'>
+          <TextAlignCenterIcon className='mr-2 size-3' aria-hidden='true' />
           {options.length} rule
         </Button>
       </PopoverTrigger>
-      <PopoverContent className="w-fit p-0 text-xs" align="start">
-        <div className="space-y-2 p-4">
+      <PopoverContent className='w-fit p-0 text-xs' align='start'>
+        <div className='space-y-2 p-4'>
           {options.map((option, i) => (
             <MultiFilterRow
               key={option.id ?? i}
@@ -88,19 +80,20 @@ export function DataTableMultiFilter<TData>({
               options={options}
               setSelectedOptions={setSelectedOptions}
               operator={operator}
+              /* @ts-ignore */
               setOperator={setOperator}
             />
           ))}
         </div>
         <Separator />
-        <div className="p-1">
+        <div className='p-1'>
           <Button
-            aria-label="Delete filter"
-            variant="ghost"
-            size="sm"
-            className="w-full justify-start"
+            aria-label='Delete filter'
+            variant='ghost'
+            size='sm'
+            className='w-full justify-start'
             onClick={() => {
-              setSelectedOptions((prev) => prev.filter((item) => !item.isMulti))
+              setSelectedOptions((prev) => prev.filter((item) => !item.isMulti));
             }}
           >
             Delete filter
@@ -108,16 +101,16 @@ export function DataTableMultiFilter<TData>({
         </div>
       </PopoverContent>
     </Popover>
-  )
+  );
 }
 
 interface MultiFilterRowProps<TData> extends DataTableMultiFilterProps<TData> {
-  i: number
-  option: DataTableFilterOption<TData>
-  operator?: (typeof operators)[number]
+  i: number;
+  option: DataTableFilterOption<TData>;
+  operator?: (typeof operators)[number];
   setOperator: React.Dispatch<
     React.SetStateAction<(typeof operators)[number] | undefined>
-  >
+  >;
 }
 
 export function MultiFilterRow<TData>({
@@ -128,104 +121,102 @@ export function MultiFilterRow<TData>({
   options,
   setSelectedOptions,
   operator,
-  setOperator,
+  setOperator
 }: MultiFilterRowProps<TData>) {
-  const router = useRouter()
-  const pathname = usePathname()
-  const searchParams = useSearchParams()
-  const [value, setValue] = React.useState("")
-  const debounceValue = useDebounce(value, 500)
+  const router = useRouter();
+  const pathname = usePathname();
+  const searchParams = useSearchParams();
+  const [value, setValue] = React.useState('');
+  const debounceValue = useDebounce(value, 500);
 
   const [selectedOption, setSelectedOption] = React.useState<
     DataTableFilterOption<TData> | undefined
-  >(options[0])
+  >(options[0]);
 
   const filterVarieties = selectedOption?.items.length
-    ? ["is", "is not"]
-    : ["contains", "does not contain", "is", "is not"]
+    ? ['is', 'is not']
+    : ['contains', 'does not contain', 'is', 'is not'];
 
-  const [filterVariety, setFilterVariety] = React.useState(filterVarieties[0])
+  const [filterVariety, setFilterVariety] = React.useState(filterVarieties[0]);
 
   // Update filter variety
   React.useEffect(() => {
     if (selectedOption?.items.length) {
-      setFilterVariety("is")
+      setFilterVariety('is');
     }
-  }, [selectedOption?.items.length])
+  }, [selectedOption?.items.length]);
 
   // Create query string
   const createQueryString = React.useCallback(
     (params: Record<string, string | number | null>) => {
-      const newSearchParams = new URLSearchParams(searchParams?.toString())
+      const newSearchParams = new URLSearchParams(searchParams?.toString());
 
       for (const [key, value] of Object.entries(params)) {
         if (value === null) {
-          newSearchParams.delete(key)
+          newSearchParams.delete(key);
         } else {
-          newSearchParams.set(key, String(value))
+          newSearchParams.set(key, String(value));
         }
       }
 
-      return newSearchParams.toString()
+      return newSearchParams.toString();
     },
     [searchParams]
-  )
+  );
 
   // Update query string
   React.useEffect(() => {
     if (debounceValue.length > 0) {
       router.push(
         `${pathname}?${createQueryString({
-          [selectedOption?.value ?? ""]: `${debounceValue}${
-            debounceValue.length > 0 ? `.${filterVariety}` : ""
-          }`,
+          [selectedOption?.value ?? '']: `${debounceValue}${
+            debounceValue.length > 0 ? `.${filterVariety}` : ''
+          }`
         })}`,
         {
-          scroll: false,
+          scroll: false
         }
-      )
+      );
     }
 
     if (debounceValue.length === 0) {
       router.push(
         `${pathname}?${createQueryString({
-          [selectedOption?.value ?? ""]: null,
+          [selectedOption?.value ?? '']: null
         })}`,
         {
-          scroll: false,
+          scroll: false
         }
-      )
+      );
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [debounceValue, filterVariety, selectedOption?.value])
+  }, [debounceValue, filterVariety, selectedOption?.value]);
 
   // Update operator query string
   React.useEffect(() => {
     if (operator?.value) {
       router.push(
         `${pathname}?${createQueryString({
-          operator: operator.value,
+          operator: operator.value
         })}`,
         {
-          scroll: false,
+          scroll: false
         }
-      )
+      );
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [operator?.value])
+  }, [operator?.value]);
 
   return (
-    <div className="flex items-center space-x-2">
+    <div className='flex items-center space-x-2'>
       {i === 0 ? (
         <div>Where</div>
       ) : i === 1 ? (
         <Select
           value={operator?.value}
-          onValueChange={(value) =>
-            setOperator(operators.find((o) => o.value === value))
-          }
+          onValueChange={(value) => setOperator(operators.find((o) => o.value === value))}
         >
-          <SelectTrigger className="h-8 w-fit text-xs">
+          <SelectTrigger className='h-8 w-fit text-xs'>
             <SelectValue placeholder={operator?.label} />
           </SelectTrigger>
           <SelectContent>
@@ -234,7 +225,7 @@ export function MultiFilterRow<TData>({
                 <SelectItem
                   key={operator.value}
                   value={operator.value}
-                  className="text-xs"
+                  className='text-xs'
                 >
                   {operator.label}
                 </SelectItem>
@@ -248,22 +239,22 @@ export function MultiFilterRow<TData>({
       <Select
         value={String(selectedOption?.value)}
         onValueChange={(value) => {
-          setSelectedOption(allOptions.find((option) => option.value === value))
+          setSelectedOption(allOptions.find((option) => option.value === value));
           setSelectedOptions((prev) =>
             prev.map((item) => {
               if (item.id === option.id) {
                 return {
                   ...item,
-                  value,
-                }
+                  value
+                };
               } else {
-                return item
+                return item;
               }
             })
-          )
+          );
         }}
       >
-        <SelectTrigger className="h-8 w-full text-xs capitalize">
+        <SelectTrigger className='h-8 w-full text-xs capitalize'>
           <SelectValue placeholder={selectedOption?.label} />
         </SelectTrigger>
         <SelectContent>
@@ -272,7 +263,7 @@ export function MultiFilterRow<TData>({
               <SelectItem
                 key={String(option.value)}
                 value={String(option.value)}
-                className="text-xs capitalize"
+                className='text-xs capitalize'
               >
                 {option.label}
               </SelectItem>
@@ -280,11 +271,8 @@ export function MultiFilterRow<TData>({
           </SelectGroup>
         </SelectContent>
       </Select>
-      <Select
-        value={filterVariety}
-        onValueChange={(value) => setFilterVariety(value)}
-      >
-        <SelectTrigger className="h-8 w-full truncate px-2 py-0.5 hover:bg-muted/50">
+      <Select value={filterVariety} onValueChange={(value) => setFilterVariety(value)}>
+        <SelectTrigger className='h-8 w-full truncate px-2 py-0.5 hover:bg-muted/50'>
           <SelectValue placeholder={filterVarieties[0]} />
         </SelectTrigger>
         <SelectContent>
@@ -298,11 +286,11 @@ export function MultiFilterRow<TData>({
         </SelectContent>
       </Select>
       {selectedOption?.items.length ? (
-        table.getColumn(selectedOption.value ? String(option.value) : "") && (
+        table.getColumn(selectedOption.value ? String(option.value) : '') && (
           <DataTableFacetedFilter
             key={selectedOption.id}
             column={table.getColumn(
-              selectedOption.value ? String(selectedOption.value) : ""
+              selectedOption.value ? String(selectedOption.value) : ''
             )}
             title={selectedOption.label}
             options={selectedOption.items}
@@ -310,8 +298,8 @@ export function MultiFilterRow<TData>({
         )
       ) : (
         <Input
-          placeholder="Type here..."
-          className="h-8"
+          placeholder='Type here...'
+          className='h-8'
           value={value}
           onChange={(event) => setValue(event.target.value)}
           autoFocus
@@ -319,19 +307,17 @@ export function MultiFilterRow<TData>({
       )}
       <DropdownMenu>
         <DropdownMenuTrigger asChild>
-          <Button variant="ghost" size="icon" className="size-8 shrink-0">
-            <DotsHorizontalIcon className="size-4" aria-hidden="true" />
+          <Button variant='ghost' size='icon' className='size-8 shrink-0'>
+            <DotsHorizontalIcon className='size-4' aria-hidden='true' />
           </Button>
         </DropdownMenuTrigger>
         <DropdownMenuContent>
           <DropdownMenuItem
             onClick={() => {
-              setSelectedOptions((prev) =>
-                prev.filter((item) => item.id !== option.id)
-              )
+              setSelectedOptions((prev) => prev.filter((item) => item.id !== option.id));
             }}
           >
-            <TrashIcon className="mr-2 size-4" aria-hidden="true" />
+            <TrashIcon className='mr-2 size-4' aria-hidden='true' />
             Remove
           </DropdownMenuItem>
           <DropdownMenuItem
@@ -343,16 +329,16 @@ export function MultiFilterRow<TData>({
                   label: String(selectedOption?.label),
                   value: String(selectedOption?.value),
                   isMulti: true,
-                  items: selectedOption?.items ?? [],
-                },
-              ])
+                  items: selectedOption?.items ?? []
+                }
+              ]);
             }}
           >
-            <CopyIcon className="mr-2 size-4" aria-hidden="true" />
+            <CopyIcon className='mr-2 size-4' aria-hidden='true' />
             Duplicate
           </DropdownMenuItem>
         </DropdownMenuContent>
       </DropdownMenu>
     </div>
-  )
+  );
 }

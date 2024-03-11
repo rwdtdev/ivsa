@@ -14,7 +14,7 @@ ENV NEXT_TELEMETRY_DISABLED=true
 RUN npm install
 
 # Build the Next.js application with lint disabled
-#RUN npm run build --no-lint
+RUN npm run build --no-lint
 
 # Stage 2: Production stage
 FROM node:20-alpine AS production
@@ -27,4 +27,4 @@ COPY --from=build /app /app
 # Expose port
 
 # Command to run the application
-CMD ["npm", "run", "dev"]
+CMD ["npm", "run", "start"]

@@ -1,4 +1,5 @@
 ## ASVI service
+[![pipeline status](https://rwdt1.gitlab.yandexcloud.net/labeling/asvi/badges/main/pipeline.svg)](https://rwdt1.gitlab.yandexcloud.net/labeling/asvi/-/commits/main)
 
 ### Description
 

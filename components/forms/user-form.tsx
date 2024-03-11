@@ -33,7 +33,7 @@ import { PasswordInput } from '../password-input';
 import { createUserAction, updateUserAction } from '@/app/actions/server/users';
 
 interface UserFormProps {
-  userId: string;
+  userId?: string;
   initialData: any | null;
   organisations: any;
   departments: any;
@@ -59,7 +59,6 @@ export const UserForm: React.FC<UserFormProps> = ({
     ? 'Информация о пользователе успешно обновлена.'
     : 'Пользователь успешно добавлен.';
 
-  console.log(initialData);
   const defaultValues: Partial<UserFormData> = initialData
     ? initialData
     : {
@@ -82,9 +81,10 @@ export const UserForm: React.FC<UserFormProps> = ({
   const onSubmit = async (data: UserFormData) => {
     setLoading(true);
 
-    const result = initialData
-      ? await updateUserAction(userId, data)
-      : await createUserAction(data);
+    const result =
+      initialData && userId
+        ? await updateUserAction(userId, data)
+        : await createUserAction(data);
 
     if (result && result.error) {
       const { title, userMessage } = JSON.parse(result.error);

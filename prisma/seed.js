@@ -8,8 +8,7 @@ const {
   fakeOrganisation,
   fakeDepartment,
   fakeEvent,
-  fakeInventory,
-  SoiParticipantRoles
+  fakeInventory
 } = require('./fixtures/fake-data');
 const { random, keys } = require('underscore');
 // load process.env.DATABASE_URL from .env.local
@@ -20,7 +19,6 @@ const password = hashSync('123456', 10);
 const numberOfOrganisations = 2;
 const numberOfDepartments = 2;
 const numberOfUsers = 5;
-const numberOfEvents = 10;
 
 const roles = {
   '01': UserRole.CHAIRMAN,
@@ -71,7 +69,7 @@ const createEvents = (users) => {
       events.push({
         ...fakeEvent(),
         participants: [firstUser, anotherUser].map((user) => ({
-          userId: user.id,
+          tabelNumber: user.tabelNumber,
           role: roles[faker.helpers.arrayElement(keys(roles))]
         }))
       });

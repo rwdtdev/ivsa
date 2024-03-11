@@ -84,3 +84,5 @@ export const REGION_CODES = {
   '89': 'Ямало-Ненецкий автономный округ',
   '99': 'Иные территории, включая город и космодром Байконур'
 };
+
+export type RegionCode = keyof typeof REGION_CODES;

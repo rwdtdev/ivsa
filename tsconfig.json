@@ -15,6 +15,7 @@
     "jsx": "preserve",
     "incremental": true,
     "sourceMap": true,
+    "allowSyntheticDefaultImports": true,
     "plugins": [
       {
         "name": "next"

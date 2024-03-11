@@ -151,10 +151,14 @@ model EventParticipant {
   inventoryId String?
   /// Объект с данными об описи
   inventory   Inventory? @relation(fields: [inventoryId], references: [id])
-  /// Идентификатор пользователя
-  userId      String
+  /// Идентификатор пользователя в виде табельного номера
+  tabelNumber String
+  /// Имя участника имя пользователя или имя, присланное поле name в API создания события
+  name        String?
   /// Объект с данными о пользователе
-  user        User       @relation(fields: [userId], references: [id])
+  user        User?      @relation(fields: [userId], references: [id])
+  /// Идентификатор пользователя
+  userId      String?
   /// Роль участника
   role        UserRole
 
@@ -195,6 +199,19 @@ model Inventory {
   videoFiles          String[]
 
   @@map("inventories")
+}
+
+model Jobs {
+  /// Название периодического задания
+  name        String    @unique
+  /// Краткое описание задания
+  description String
+  /// Дата последнего запуска задания
+  lastStartAt DateTime?
+  /// Лог ошибки в формате Json, возникшей во время выполнения задания или приводящей к его остановке
+  error       Json?
+
+  @@map("jobs")
 }
 
 enum UserStatus {

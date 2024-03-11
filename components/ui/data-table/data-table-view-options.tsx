@@ -18,7 +18,7 @@ import {
 
 interface DataTableViewOptionsProps<TData> {
   table: Table<TData>;
-  columnNames: typeof UsersTableColumnNames | typeof EventsTableColumnNames | {};
+  columnNames?: typeof UsersTableColumnNames | typeof EventsTableColumnNames | {};
 }
 
 export function DataTableViewOptions<TData>({
@@ -55,7 +55,8 @@ export function DataTableViewOptions<TData>({
                 checked={column.getIsVisible()}
                 onCheckedChange={(value) => column.toggleVisibility(!!value)}
               >
-                {columnNames[column.id as keyof typeof columnNames]}
+                {(columnNames && columnNames[column.id as keyof typeof columnNames]) ||
+                  column.id}
               </DropdownMenuCheckboxItem>
             );
           })}

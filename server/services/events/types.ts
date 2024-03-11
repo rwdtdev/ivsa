@@ -1,5 +1,5 @@
 import { SortOrder } from '@/constants/data';
-import { RequiredNotNull } from '@/server/types';
+import { SoiParticipantRole } from '@/constants/mappings/soi';
 import {
   BriefingStatus,
   Event,
@@ -28,6 +28,8 @@ export type EventView = Omit<Event, 'startAt' | 'endAt' | 'commandDate' | 'order
   commandDate: string;
   orderDate: string;
   participants?: {
+    name: string;
+    tabelNumber: string;
     role: UserRole;
     user: User;
     inventory: Inventory;
@@ -36,11 +38,14 @@ export type EventView = Omit<Event, 'startAt' | 'endAt' | 'commandDate' | 'order
   inventories?: Inventory[];
 };
 
-export type CreateEventData = RequiredNotNull<
-  Omit<Event, 'participants'> & {
-    participants: {
-      tabelNumber: string;
-      roleId: string;
-    }[];
-  }
+export type CreateEventData = Omit<Event, 'participants' | 'createdAt' | 'updatedAt'> & {
+  participants: {
+    tabelNumber: string;
+    roleId: SoiParticipantRole;
+    name: string;
+  }[];
+};
+
+export type UpdateEventData = Partial<
+  Omit<Event, 'participants' | 'inventories' | 'createdAt' | 'updatedAt' | 'id'>
 >;

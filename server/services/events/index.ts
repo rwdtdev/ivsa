@@ -2,7 +2,7 @@ import _ from 'underscore';
 import { SortOrder } from '@/constants/data';
 import prisma from '@/server/services/prisma';
 import { TransactionSession } from '@/types/prisma';
-import { Event, PrismaClient, UserRole } from '@prisma/client';
+import { Event, EventTabelNumber, PrismaClient, UserRole } from '@prisma/client';
 import { CreateEventData, EventView, EventsGetData } from './types';
 import { PaginatedResponse } from '@/server/types';
 import moment from 'moment';
@@ -87,12 +87,21 @@ export class EventService {
   }
 
   async create(data: CreateEventData): Promise<EventView> {
+    const tabelNumbersWithoutUsers: Partial<EventTabelNumber>[] = [];
+
     const usersPromises = data.participants.map(async (participant) => {
       const user = await this.prisma.user.findFirst({
         where: {
           tabelNumber: participant.tabelNumber
         }
       });
+
+      if (!user) {
+        tabelNumbersWithoutUsers.push({
+          tabelNumber: participant.tabelNumber,
+          fio: participant.fio
+        });
+      }
 
       return (
         user && {
@@ -112,6 +121,9 @@ export class EventService {
         participants: {
           // @ts-ignore
           create: users
+        },
+        tabelNumbers: {
+          create: tabelNumbersWithoutUsers
         }
       }
     });
@@ -169,7 +181,8 @@ export class EventService {
             user: true
           }
         },
-        inventories: true
+        inventories: true,
+        tabelNumbers: true
       },
       skip: (page - 1) * limit,
       take: limit,

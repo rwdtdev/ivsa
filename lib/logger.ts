@@ -1,21 +1,24 @@
-/* eslint-disable max-classes-per-file */
-const chalk = require('chalk');
-const { format } = require('util');
+import chalk from 'chalk';
+import { format } from 'util';
 
-class Logger {
-  constructor({ name }) {
+export class Logger {
+  private name: string;
+
+  constructor({ name }: { name: string }) {
     this.name = name;
   }
 
-  static getDate() {
+  static getDate(): string {
     if (process.env.NODE_ENV === 'development') {
+      // @ts-expect-error ts believes that the subject may be undefined.
       return new Date().toISOString().split('T').pop().slice(0, -1);
     }
 
     return new Date().toUTCString();
   }
 
-  _format(color, ...args) {
+  // eslint-disable-next-line @typescript-eslint/ban-types
+  _format(color: Function, ...args: unknown[]) {
     return [
       chalk.gray(`[${Logger.getDate()}]`),
       chalk.magenta(`[${this.name}]`),
@@ -23,33 +26,22 @@ class Logger {
     ].join(' ');
   }
 
-  /* eslint-disable no-console */
-  log(...args) {
+  log(...args: unknown[]) {
     console.log(this._format(chalk.reset, ...args));
   }
 
-  info(...args) {
+  info(...args: unknown[]) {
     console.info(this._format(chalk.cyan, ...args));
   }
 
-  warn(...args) {
+  warn(...args: unknown[]) {
     console.warn(this._format(chalk.yellow, ...args));
   }
 
-  error(...args) {
+  error(...args: unknown[]) {
     console.error(this._format(chalk.red, ...args));
   }
   /* eslint-enable no-console */
 }
 
-class DummyLogger {
-  log() {}
-  info() {}
-  warn() {}
-  error() {}
-}
-
-const isTest = process.env.TAP === '1';
-
-module.exports = (name) => (isTest ? new DummyLogger() : new Logger({ name }));
-module.exports.Logger = Logger;
+export const createLogger = (name: string) => new Logger({ name });

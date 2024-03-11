@@ -137,35 +137,37 @@ export default function EventPage() {
               <ScrollArea>
                 <div className='space-y-4'>
                   <div className='grid gap-6'>
-                    {event.participants &&
-                      event.participants.map(({ user, role }) => {
-                        const splited = user.name.split(' ');
-                        const initials = [splited[0][0], splited[1][0]].join('');
+                    <div>
+                      {event.participants &&
+                        event.participants.map(({ user, role }) => {
+                          const splited = user.name.split(' ');
+                          const initials = [splited[0][0], splited[1][0]].join('');
 
-                        return (
-                          <div
-                            key={user.id}
-                            className='flex items-center justify-between space-x-4'
-                          >
-                            <div className='flex items-center space-x-4'>
-                              <Avatar>
-                                <AvatarFallback>{initials}</AvatarFallback>
-                              </Avatar>
-                              <div>
-                                <p className='text-sm font-medium leading-none'>
-                                  {user.name}
-                                </p>
-                                <p className='text-sm text-muted-foreground'>
-                                  {UserRoles[role as keyof typeof UserRoles]}
-                                </p>
-                                <p className='text-sm text-muted-foreground'>
-                                  Таб. номер: {user.tabelNumber}
-                                </p>
+                          return (
+                            <div
+                              key={user.id}
+                              className='flex items-center justify-between space-x-4'
+                            >
+                              <div className='flex items-center space-x-4'>
+                                <Avatar>
+                                  <AvatarFallback>{initials}</AvatarFallback>
+                                </Avatar>
+                                <div>
+                                  <p className='text-sm font-medium leading-none'>
+                                    {user.name}
+                                  </p>
+                                  <p className='text-sm text-muted-foreground'>
+                                    {UserRoles[role as keyof typeof UserRoles]}
+                                  </p>
+                                  <p className='text-sm text-muted-foreground'>
+                                    Таб. номер: {user.tabelNumber}
+                                  </p>
+                                </div>
                               </div>
                             </div>
-                          </div>
-                        );
-                      })}
+                          );
+                        })}
+                    </div>
                   </div>
                 </div>
               </ScrollArea>

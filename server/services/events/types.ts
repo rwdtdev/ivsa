@@ -41,6 +41,7 @@ export type CreateEventData = RequiredNotNull<
     participants: {
       tabelNumber: string;
       roleId: string;
+      fio: string;
     }[];
   }
 >;

@@ -7,6 +7,8 @@ WORKDIR /app
 # Copy application dependencies
 COPY . .
 
+RUN cp .env.sample .env
+
 # Disable Next.js telemetry
 ENV NEXT_TELEMETRY_DISABLED=true
 
@@ -14,7 +16,7 @@ ENV NEXT_TELEMETRY_DISABLED=true
 RUN npm install
 
 # Build the Next.js application with lint disabled
-RUN npm run build --no-lint
+RUN npm run build
 
 # Stage 2: Production stage
 FROM node:20-alpine AS production

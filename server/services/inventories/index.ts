@@ -60,7 +60,6 @@ export class InventoryService {
   }
 
   async create(data: InventoryCreateData): Promise<Inventory> {
-    //@ts-ignore
     const inventory = await this.prisma.inventory.create({ data });
 
     return inventory;

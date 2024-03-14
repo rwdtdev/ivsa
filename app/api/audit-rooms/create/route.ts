@@ -6,12 +6,14 @@ import { doTransaction } from '@/lib/prisma-transaction';
 import { TransactionSession } from '@/types/prisma';
 import { EventService } from '@/server/services/events';
 import { InventoryService } from '@/server/services/inventories';
-import { BriefingStatus } from '@prisma/client';
+import { BriefingStatus, UserStatus } from '@prisma/client';
 import { IvaRolesMapper } from '@/constants/mappings/iva';
 import { BriefingRoomIsStillOpenError, EmptyPartisipantsListError } from './errors';
 import { CreateInventorySchema } from './validation';
-import { mapToInventoryAttributes } from '@/server/services/inventories/mappers/InventoryAttributesMapper';
+import { mapToInventoryObject } from '@/server/services/inventories/mappers/InventoryObjectsMapper';
 import { getDateFromString } from '@/server/utils';
+import { InventoryCodes } from '@/server/services/inventories/types';
+import { InventoryObjectService } from '@/server/services/inventoryObjects';
 
 export async function POST(request: NextRequest) {
   let conferenceSessionId;
@@ -20,17 +22,17 @@ export async function POST(request: NextRequest) {
     const {
       eventId,
       inventoryId,
-      inventoryName,
       inventoryCode,
       inventoryDate,
       inventoryNumber,
-      inventoryShortName,
-      inventoryContainerObject
+      inventoryObjects
     } = CreateInventorySchema.parse(await request.json());
 
     return await doTransaction(async (txSession: TransactionSession) => {
       const eventServiceWithSession = EventService.withSession(txSession);
       const intentoryServiceWithSession = InventoryService.withSession(txSession);
+      const inventoryObjectServiceWithSession =
+        InventoryObjectService.withSession(txSession);
 
       await eventServiceWithSession.assertExist(eventId);
       await intentoryServiceWithSession.assertNotExist(inventoryId);
@@ -46,23 +48,31 @@ export async function POST(request: NextRequest) {
       }
 
       const registeredIvaUsers = event.participants.filter(
-        ({ user }) => user.ivaProfileId
+        ({ user }) => user && user.ivaProfileId
       );
 
       if (_.isEmpty(registeredIvaUsers)) {
         throw new EmptyPartisipantsListError();
       }
 
-      await intentoryServiceWithSession.create({
+      const inventory = await intentoryServiceWithSession.create({
         eventId,
         id: inventoryId,
-        name: inventoryName,
+        name: InventoryCodes[inventoryCode].name,
         code: inventoryCode,
         number: inventoryNumber,
-        shortName: inventoryShortName,
-        date: getDateFromString(inventoryDate),
-        attributes: mapToInventoryAttributes(inventoryCode, inventoryContainerObject)
+        shortName: InventoryCodes[inventoryCode].shortName,
+        date: getDateFromString(inventoryDate)
       });
+
+      const intentoryObjectPromises = inventoryObjects.map(async (object: any) =>
+        inventoryObjectServiceWithSession.create({
+          ...mapToInventoryObject(inventoryCode, object),
+          inventoryId: inventory.id
+        })
+      );
+
+      await Promise.all(intentoryObjectPromises);
 
       const speakerIvaProfileId =
         eventServiceWithSession.assertSpeakerExistAndRegisteredInIva(event);
@@ -117,7 +127,14 @@ export async function POST(request: NextRequest) {
       return NextResponse.json(
         {
           auditId: conferenceSessionId,
-          auditLink: link
+          auditLink: link,
+          users: event.participants
+            .filter(({ user }) => user)
+            .map(({ user }) => ({
+              tabelNumber: user.tabelNumber,
+              expiresAt: new Date(), // TODO заменить на поле из БД
+              isBlocked: user.status === UserStatus.BLOCKED
+            }))
         },
         { status: 201 }
       );
@@ -126,6 +143,8 @@ export async function POST(request: NextRequest) {
     if (conferenceSessionId) {
       await IvaAPI.conferenceSessions.closeRoom(conferenceSessionId);
     }
+
+    console.log(error);
 
     return getErrorResponse(error);
   }

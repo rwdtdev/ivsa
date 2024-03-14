@@ -1,5 +1,4 @@
 import { Inventory } from '@prisma/client';
-import { JsonValue } from '@prisma/client/runtime/library';
 
 export type Inv1Form = {
   account: string;
@@ -125,231 +124,130 @@ export enum InventoryCode {
   I02G22 = 'I02G22'
 }
 
+const Inv3Fields = [
+  'NAME',
+  'CODE',
+  'EIID',
+  'EINAME',
+  'INVNUMBER',
+  'PASSPORTNUM',
+  'BATCH',
+  'BU_KOL'
+];
+const Inv3FieldsRequired = ['NAME', 'CODE', 'EIID', 'EINAME'];
+
+const Inv5Fields = [
+  'NAME',
+  'CODE',
+  'FACTORYNUMBER',
+  'PLACEMENT',
+  'EIID',
+  'EINAME',
+  'BATCH',
+  'BU_KOL'
+];
+const Inv5FieldsRequired = ['NAME', 'CODE', 'EIID', 'EINAME'];
+
+const Fnu50Fields = [
+  'NAME',
+  'NOMNUMBER',
+  'INVNUMBER',
+  'FACTORYNUMBER',
+  'EIID',
+  'EINAME',
+  'BU_KOL'
+];
+const Fnu50FieldsRequired = ['NAME', 'NOMNUMBER', 'EIID', 'EINAME'];
+
+const Fnu55Fields = ['NAME', 'CODE', 'EIID', 'EINAME', 'BATCH', 'BU_KOL'];
+const Fnu55FieldsRequired = ['NAME', 'CODE', 'EIID', 'EINAME'];
+
 export const InventoryCodes = {
   [InventoryCode.I01A01]: {
-    name: 'ИНВ-1 (ОС)',
+    name: 'Инвентаризационная опись основных средств (кроме зданий и сооруж., зем. участков, об-тов природопольз-я, груз. вагонов)',
+    shortName: 'ИНВ-1 (ОС)',
     fields: [
-      'SCHET_SUSCHET',
-      'CSBB',
       'NAME',
       'LOCATION',
-      'TERM_LEASE',
-      'DOCNAME',
-      'DOCDATE',
-      'DOCID',
-      'BUILDBUY_YEAR',
       'INVNUMBER',
       'FACTORYNUMBER',
       'NETWORK_NUM',
       'PASSPORTNUM',
       'BU_KOL',
-      'OBJECT_STATE',
-      'DOC_UNUS_NAME',
-      'DOC_UNUS_DATE',
-      'DOC_UNUS_ID'
-    ]
+      'OBJECT_STATE'
+    ],
+    fieldsRequired: ['NAME']
   },
   [InventoryCode.I02001]: {
-    name: 'ИНВ-3',
-    fields: [
-      'SCHET_SUSCHET',
-      'CSBB',
-      'FIO',
-      'TABNUMBER',
-      'NAME',
-      'CODE',
-      'EIID',
-      'EINAME',
-      'PRICE',
-      'BATCH',
-      'BU_KOL'
-    ]
+    name: 'Инвентаризационная опись товарно-материальных ценностей',
+    shortName: 'ИНВ-3',
+    fields: Inv3Fields,
+    fieldsRequired: Inv3FieldsRequired
   },
   [InventoryCode.I02A02]: {
-    name: 'ИНВ-3 (ОУ)',
-    fields: [
-      'SCHET_SUSCHET',
-      'CSBB',
-      'FIO',
-      'TABNUMBER',
-      'NAME',
-      'CODE',
-      'EIID',
-      'EINAME',
-      'PRICE',
-      'BATCH',
-      'BU_KOL'
-    ]
+    name: 'Инвентаризационная опись товарно-материальных ценностей (оборудование к установке)',
+    shortName: 'ИНВ-3 (ОУ)',
+    fields: Inv3Fields,
+    fieldsRequired: Inv3FieldsRequired
   },
   [InventoryCode.I02F01]: {
-    name: 'ИНВ-5 (ОХ)',
-    fields: [
-      'SCHET_SUSCHET',
-      'CSBB',
-      'BUYER_NAME',
-      'BUYER_OKPO',
-      'NAME',
-      'CODE',
-      'FACTORYNUMBER',
-      'PLACEMENT',
-      'OTVXRANENIE_DATE',
-      'DOCNAME',
-      'DOCID',
-      'DOCDATE',
-      'EIID',
-      'EINAME',
-      'BATCH',
-      'BU_KOL'
-    ]
+    name: 'Инвентаризационная опись товарно-материальных ценностей, принятых на ответ.хранение',
+    shortName: 'ИНВ-5 (ОХ)',
+    fields: Inv5Fields,
+    fieldsRequired: Inv5FieldsRequired
   },
   [InventoryCode.I02F02]: {
-    name: 'ИНВ-5 (МП)',
-    fields: [
-      'SCHET_SUSCHET',
-      'CSBB',
-      'BUYER_NAME',
-      'BUYER_OKPO',
-      'NAME',
-      'CODE',
-      'FACTORYNUMBER',
-      'PLACEMENT',
-      'OTVXRANENIE_DATE',
-      'DOCNAME',
-      'DOCID',
-      'DOCDATE',
-      'EIID',
-      'EINAME',
-      'BATCH',
-      'BU_KOL'
-    ]
+    name: 'Инвентаризационная опись товарно-материальных ценностей, принятых на ответ.хранение (Материалы, принятые на переработку)',
+    shortName: 'ИНВ-5 (МП)',
+    fields: Inv5Fields,
+    fieldsRequired: Inv5FieldsRequired
   },
   [InventoryCode.I02F03]: {
-    name: 'ИНВ-5 (ТК)',
-    fields: [
-      'SCHET_SUSCHET',
-      'CSBB',
-      'BUYER_NAME',
-      'BUYER_OKPO',
-      'NAME',
-      'CODE',
-      'FACTORYNUMBER',
-      'PLACEMENT',
-      'OTVXRANENIE_DATE',
-      'DOCNAME',
-      'DOCID',
-      'DOCDATE',
-      'EIID',
-      'EINAME',
-      'BATCH',
-      'BU_KOL'
-    ]
+    name: 'Инвентаризационная опись товарно-материальных ценностей, принятых на ответ.хранение (Товары, принятые на комиссию)',
+    shortName: 'ИНВ-5 (ТК)',
+    fields: Inv5Fields,
+    fieldsRequired: Inv5FieldsRequired
   },
   [InventoryCode.I02F04]: {
-    name: 'ИНВ-5 (ОМ)',
-    fields: [
-      'SCHET_SUSCHET',
-      'CSBB',
-      'BUYER_NAME',
-      'BUYER_OKPO',
-      'NAME',
-      'CODE',
-      'FACTORYNUMBER',
-      'PLACEMENT',
-      'OTVXRANENIE_DATE',
-      'DOCNAME',
-      'DOCID',
-      'DOCDATE',
-      'EIID',
-      'EINAME',
-      'BATCH',
-      'BU_KOL'
-    ]
+    name: 'Инвентаризационная опись товарно-материальных ценностей, принятых на ответ.хранение (Оборудование, принятое для монтажа)',
+    shortName: 'ИНВ-5 (ОМ)',
+    fields: Inv5Fields,
+    fieldsRequired: Inv5FieldsRequired
   },
   [InventoryCode.I01011]: {
-    name: 'ФНУ-49',
-    fields: [
-      'SCHET_SUSCHET',
-      'CSBB',
-      'NAME',
-      'NOMNUMBER',
-      'INVNUMBER',
-      'FACTORYNUMBER',
-      'BU_KOL'
-    ]
+    name: 'Инвентаризационная опись малоценных ОС и иных аналогичных активов, переданных в эксплуатацию (на 013, 023 забал. счетах)',
+    shortName: 'ФНУ-49',
+    fields: ['NAME', 'NOMNUMBER', 'INVNUMBER', 'FACTORYNUMBER', 'BU_KOL'],
+    fieldsRequired: ['NAME', 'INVNUMBER']
   },
   [InventoryCode.I02G01]: {
-    name: 'ФНУ-50 (< 12м.)',
-    fields: [
-      'SCHET_SUSCHET',
-      'CSBB',
-      'NAME',
-      'NOMNUMBER',
-      'INVNUMBER',
-      'FACTORYNUMBER',
-      'BU_KOL',
-      'EIID',
-      'EINAME',
-      'PRICE'
-    ]
+    name: 'Инвентаризационная опись активов со сроком использования не более 12 месяцев, учитываемых в качестве МПЗ, переданных в производство',
+    shortName: 'ФНУ-50 (< 12м.)',
+    fields: Fnu50Fields,
+    fieldsRequired: Fnu50FieldsRequired
   },
   [InventoryCode.I02G02]: {
-    name: 'ФНУ-50 (> 12м.)',
-    fields: [
-      'SCHET_SUSCHET',
-      'CSBB',
-      'NAME',
-      'NOMNUMBER',
-      'INVNUMBER',
-      'FACTORYNUMBER',
-      'BU_KOL',
-      'EIID',
-      'EINAME',
-      'PRICE'
-    ]
+    name: 'Инвентаризационная опись активов со сроком использования более 12 месяцев, учитываемых в качестве МПЗ, переданных в производство',
+    shortName: 'ФНУ-50 (> 12м.)',
+    fields: Fnu50Fields,
+    fieldsRequired: Fnu50FieldsRequired
   },
   [InventoryCode.I02011]: {
-    name: 'ФНУ-55',
-    fields: [
-      'SCHET_SUSCHET',
-      'CSBB',
-      'NAME',
-      'BU_KOL',
-      'EIID',
-      'EINAME',
-      'PRICE',
-      'FIO',
-      'TABNUMBER',
-      'CODE'
-    ]
+    name: 'Инвентаризационная опись спецодежды в эксплуатации',
+    shortName: 'ФНУ-55',
+    fields: Fnu55Fields,
+    fieldsRequired: Fnu55FieldsRequired
   },
   [InventoryCode.I02G11]: {
-    name: 'ФНУ-55(< 12 вкл)',
-    fields: [
-      'SCHET_SUSCHET',
-      'CSBB',
-      'NAME',
-      'BU_KOL',
-      'EIID',
-      'EINAME',
-      'PRICE',
-      'FIO',
-      'TABNUMBER',
-      'CODE'
-    ]
+    name: 'Инвентаризационная опись спецодежды в эксплуатации cо сроком использования <12м включая класс 502100',
+    shortName: 'ФНУ-55(< 12 вкл)',
+    fields: Fnu55Fields,
+    fieldsRequired: Fnu55FieldsRequired
   },
   [InventoryCode.I02G22]: {
-    name: 'ФНУ-55(< 12 иск)',
-    fields: [
-      'SCHET_SUSCHET',
-      'CSBB',
-      'NAME',
-      'BU_KOL',
-      'EIID',
-      'EINAME',
-      'PRICE',
-      'FIO',
-      'TABNUMBER',
-      'CODE'
-    ]
+    name: 'Инвентаризационная опись спецодежды в эксплуатации cо сроком использования <12м.исключая класс 502100 только кл. 502200',
+    shortName: 'ФНУ-55(< 12 иск)',
+    fields: Fnu55Fields,
+    fieldsRequired: Fnu55FieldsRequired
   }
 };

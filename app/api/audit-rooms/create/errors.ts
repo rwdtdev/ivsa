@@ -9,7 +9,7 @@ export const { BriefingRoomIsStillOpenError, EmptyPartisipantsListError } =
     },
     EmptyPartisipantsListError: {
       type: 'urn:problem-type:empty-participatns-list-error',
-      title: 'Список участников инструктажа не может быть пустым',
+      title: 'Список участников не может быть пустым',
       status: 400
     }
   });

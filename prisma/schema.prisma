@@ -193,12 +193,35 @@ model Inventory {
   updatedAt           DateTime           @updatedAt
   /// Список участников
   participants        EventParticipant[]
-  /// Объект с аттрибутами описи
-  attributes          Json
   /// Список URL на записи видео в Оперативном хранилище
   videoFiles          String[]
+  /// Список объектов описи
+  objects             InventoryObject[]
 
   @@map("inventories")
+}
+
+model InventoryObject {
+  id                 String    @id @default(cuid())
+  inventoryId        String
+  inventory          Inventory @relation(fields: [inventoryId], references: [id])
+  inventoryNumber    String?
+  location           String?
+  serialNumber       String?
+  networkNumber      String?
+  passportNumber     String?
+  quantity           Int?
+  state              String?
+  name               String?
+  unitCode           String?
+  unitName           String?
+  batchNumber        String?
+  placement          String?
+  nomenclatureNumber String?
+  /// Дата и время создания записи
+  createdAt          DateTime  @default(now())
+  /// Дата и время модификации записи
+  updatedAt          DateTime  @updatedAt
 }
 
 model Jobs {

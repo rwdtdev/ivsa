@@ -5,7 +5,7 @@ import {
   ForgotPasswordFormData,
   ForgotPasswordFormSchema
 } from '@/lib/form-validation-schemas/forgot-password-schema';
-import UserService from '@/server/services/users';
+import { UserService } from '@/core/user/UserService';
 import { JwtSecret } from '@/constants/jwt';
 import { transporter } from '@/lib/smtp-transporter';
 import { UserStatus } from '@prisma/client';
@@ -35,8 +35,10 @@ export async function sendRecoveryLinkAction(data: ForgotPasswordFormData) {
 }
 
 export async function setActiveAndSendRecoveryLinkAction(userId: string, email: string) {
-  await doTransaction(async (txSession: TransactionSession) => {
-    const userServiceWithSession = UserService.withSession(txSession);
+  const userService = new UserService();
+
+  await doTransaction(async (session: TransactionSession) => {
+    const userServiceWithSession = userService.withSession(session);
 
     await userServiceWithSession.assertExist(userId);
     await userServiceWithSession.setNewStatus(userId, UserStatus.ACTIVE);

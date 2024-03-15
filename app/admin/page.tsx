@@ -1,6 +1,5 @@
 import { ScrollArea } from '@/components/ui/scroll-area';
-import IvaAPI from '@/server/services/iva/api';
-import { findConferenceTemplates } from '@/server/services/iva/api';
+import { IvaService } from '@/core/iva/IvaService';
 import {
   Collapsible,
   CollapsibleContent,
@@ -9,10 +8,11 @@ import {
 import { Button } from '@/components/ui/button';
 
 export default async function page() {
-  const users = await IvaAPI.users.find('');
-  const conferenceTemplates = await findConferenceTemplates();
+  const ivaService = new IvaService();
+  const users = await ivaService.findUsers('');
+  const conferenceTemplates = await ivaService.findConferenceTemplates();
 
-  const conferenceParticipants = await IvaAPI.conferenceSessions.findParticipants(
+  const conferenceParticipants = await ivaService.findConferenceParticipants(
     'a1191fee-2fb5-43db-8f25-e547a1fc9c96',
     {
       requestedData: ['JOIN_LINK']

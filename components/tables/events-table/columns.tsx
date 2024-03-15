@@ -2,7 +2,7 @@
 
 import { ColumnDef } from '@tanstack/react-table';
 import { DataTableColumnHeader } from '@/components/ui/data-table/data-table-column-header';
-import { EventView } from '@/server/services/events/types';
+import { EventView } from '@/core/event/types';
 import Link from 'next/link';
 import { BriefingStatus, EventStatus, UserRole } from '@prisma/client';
 import {

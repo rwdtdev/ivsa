@@ -1,5 +1,3 @@
-import _ from 'underscore';
-
 export const uniqueString = (length: number) => {
   let result = '';
   const characters = 'abcdefghijklmnopqrstuvwxyz0123456789';

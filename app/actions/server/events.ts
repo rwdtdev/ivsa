@@ -1,8 +1,8 @@
 'use server';
 
 import { searchParamsSchema } from '@/lib/query-params-validation';
-import { EventService } from '@/server/services/events';
-import { EventView } from '@/server/services/events/types';
+import { EventService } from '@/core/event/EventService';
+import { EventView } from '@/core/event/types';
 import { PaginatedResponse } from '@/server/types';
 import { SearchParams } from '@/types';
 import { Event } from '@prisma/client';
@@ -66,7 +66,7 @@ export const getEventByIdAction = async (id: string): Promise<EventView | null> 
   try {
     const eventService = new EventService();
 
-    return await eventService.getEventById(id);
+    return await eventService.getById(id);
   } catch (err) {
     console.error(err);
     return null;

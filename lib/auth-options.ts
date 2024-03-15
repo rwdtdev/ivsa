@@ -1,7 +1,7 @@
 import { NextAuthOptions } from 'next-auth';
 import CredentialsProvider from 'next-auth/providers/credentials';
-import { login } from '@/server/services/auth/login';
-import { refresh } from '@/server/services/auth/refresh';
+import { login } from '@/core/auth/login';
+import { refresh } from '@/core/auth/refresh';
 import { JwtCallbackOptions, SessionCallbackOptions, AuthorizedUser } from '@/types/auth';
 
 export const authConfig = {

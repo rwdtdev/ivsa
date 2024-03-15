@@ -10,7 +10,7 @@ import { useDataTable } from '@/hooks/use-data-table';
 import { PaginatedResponse } from '@/server/types';
 import { DataTable } from '@/components/ui/data-table/data-table';
 import { ColumnDef } from '@tanstack/react-table';
-import { EventView } from '@/server/services/events/types';
+import { EventView } from '@/core/event/types';
 import { EventsTableColumnNames } from '@/constants/mappings/tables-column-names';
 
 interface EventsTableProps {

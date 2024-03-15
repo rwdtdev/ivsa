@@ -1,134 +1,79 @@
 import { NextRequest, NextResponse } from 'next/server';
+import { getErrorResponse } from '@/lib/helpers';
 import {
-  makeResponseCORSLess,
-  validateEventId,
-  validateInventoryId
-} from '@/lib/api/helpers';
-import { generateConsoleLogPrefix } from '@/lib/api/ansi-helpers';
+  CreateIndividualInventorySchema,
+  PathParamsSchema,
+  RemoveIndividualInvenoryPathParamsSchema,
+  RemoveIndividualInvenoryQueryParamsSchema
+} from './validation';
 
-interface iContext {
+import { InventoryService } from '@/core/inventory/InventoryService';
+import { IvaService } from '@/core/iva/IvaService';
+import { EventService } from '@/core/event/EventService';
+import { AuditRoomManager } from '@/core/audit-room/AuditRoomManager';
+import { InventoryObjectService } from '@/core/inventory-object/InventoryObjectService';
+
+interface IContext {
   params: {
     inventoryId: string;
+    complexInventoryId: string;
+    inventoryNumber: string;
+    inventoryDate: Date;
+    inventoryContainerObject: object;
   };
 }
 
-export async function DELETE(request: NextRequest, context: iContext) {
-  const CONSOLE_LOG_PREFIX = generateConsoleLogPrefix(
-    request.method,
-    '/api/inventories/[inventoryId]/individual-inventory'
-  );
-  const clog = (textToLog: string, ...args: any) =>
-    console.log(`${CONSOLE_LOG_PREFIX}${textToLog}`, ...args);
-  const { inventoryId } = context.params;
-  const { searchParams } = new URL(request.url);
-  const eventId = searchParams.get('eventId');
-  const inventoryIdQ = searchParams.get('inventoryId');
+export async function DELETE(request: NextRequest, context: IContext) {
+  const inventoryService = new InventoryService();
 
-  // Placeholder response
-  let resp: NextResponse = new NextResponse(undefined, { status: 204 });
+  try {
+    const { inventoryId: complexInventoryId } =
+      RemoveIndividualInvenoryPathParamsSchema.parse(context.params);
 
-  if (!validateInventoryId(inventoryId)) {
-    resp = NextResponse.json(
-      {
-        type: 'urn:problem-type:unprocessable-content',
-        title: 'Необрабатываемый контент',
-        detail: `Опись с inventoryId ${inventoryId} не найдена`,
-        status: 404
-      },
-      {
-        status: 404
-      }
-    );
+    const { searchParams } = new URL(request.url);
+
+    const { eventId, inventoryId: individualInventoryId } =
+      RemoveIndividualInvenoryQueryParamsSchema.parse({
+        eventId: searchParams.get('eventId'),
+        inventoryId: searchParams.get('inventoryId')
+      });
+
+    await inventoryService.assertExistAndBelongEvent(complexInventoryId, eventId);
+    await inventoryService.assertExist(individualInventoryId);
+    await inventoryService.assertIsParent(complexInventoryId, individualInventoryId);
+
+    await inventoryService.removeInventoryLogical(individualInventoryId);
+
+    return new Response(null, { status: 204 });
+  } catch (error) {
+    return getErrorResponse(error);
   }
-
-  if (!!eventId && !validateEventId(eventId)) {
-    resp = NextResponse.json(
-      {
-        type: 'urn:problem-type:unprocessable-content',
-        title: 'Необрабатываемый контент',
-        detail: `Неверный формат id события: ${eventId}`,
-        status: 422
-      },
-      {
-        status: 422
-      }
-    );
-  }
-
-  if (!!inventoryIdQ && !validateInventoryId(inventoryIdQ)) {
-    resp = NextResponse.json(
-      {
-        type: 'urn:problem-type:unprocessable-content',
-        title: 'Необрабатываемый контент',
-        detail: `Неверный формат id инвентаризации: ${inventoryId}`,
-        status: 422
-      },
-      {
-        status: 422
-      }
-    );
-  }
-
-  clog(
-    `inventoryId(path): ${inventoryId}\ninventoryId (query): ${inventoryIdQ}\neventId: ${eventId}\nresponding with status ${resp.status}, '${resp.statusText}'`
-  );
-
-  return makeResponseCORSLess(resp);
 }
 
-export async function POST(request: NextRequest, context: iContext) {
-  const CONSOLE_LOG_PREFIX = generateConsoleLogPrefix(
-    request.method,
-    '/api/inventories/[inventoryId]/individual-inventory'
-  );
-  const clog = (textToLog: string, ...args: any) =>
-    console.log(`${CONSOLE_LOG_PREFIX}${textToLog}`, ...args);
+export async function POST(request: NextRequest, context: IContext) {
+  let conferenceSessionId;
 
-  const reqBody = await request.json();
-  const eventId = reqBody.eventId;
-  const { inventoryId } = context.params;
-
-  // Placeholder response
-  let resp: NextResponse = NextResponse.json(
-    {},
-    {
-      status: 200,
-      statusText: 'OK'
-    }
+  const auditRoomManager = new AuditRoomManager(
+    new IvaService(),
+    new EventService(),
+    new InventoryService(),
+    new InventoryObjectService()
   );
 
-  if (!validateInventoryId(inventoryId)) {
-    resp = NextResponse.json(
-      {
-        type: 'urn:problem-type:unprocessable-content',
-        title: 'Необрабатываемый контент',
-        detail: `Опись с inventoryId ${inventoryId} не найдена`,
-        status: 404
-      },
-      {
-        status: 404
-      }
-    );
+  try {
+    const { inventoryId } = PathParamsSchema.parse(context.params);
+
+    const response = await auditRoomManager.createRoom({
+      ...CreateIndividualInventorySchema.parse(await request.json()),
+      inventoryId
+    });
+
+    conferenceSessionId = response.auditId;
+
+    return NextResponse.json(response, { status: 201 });
+  } catch (error) {
+    await auditRoomManager.closeConference(conferenceSessionId);
+
+    return getErrorResponse(error);
   }
-
-  if (!validateEventId(eventId)) {
-    resp = NextResponse.json(
-      {
-        type: 'urn:problem-type:unprocessable-content',
-        title: 'Необрабатываемый контент',
-        detail: `Неверный формат id события: ${eventId}`,
-        status: 422
-      },
-      {
-        status: 422
-      }
-    );
-  }
-
-  clog(
-    `eventId is ${validateEventId(eventId) ? 'valid' : 'invalid'}\ninventoryId is ${validateInventoryId(inventoryId) ? 'valid' : 'invalid'}\nrequest body: %O\nresponding with status ${resp.status}, '${resp.statusText}'`,
-    reqBody
-  );
-
-  return makeResponseCORSLess(resp);
 }

@@ -1,33 +1,33 @@
 import { z } from 'zod';
-import { InventoryCode, InventoryCodes } from '@/server/services/inventories/types';
+import { InventoryCode, InventoryCodes } from '@/core/inventory/types';
 
 const inventoryObjectSchema = z
   .object({
-    NAME: z.string(),
-    CODE: z.string(),
-    LOCATION: z.string(),
-    FACTORYNUMBER: z.string(),
-    PLACEMENT: z.string(),
-    EIID: z.string(),
-    NETWORK_NUM: z.string(),
-    PASSPORTNUM: z.string(),
-    EINAME: z.string(),
-    BATCH: z.string(),
-    OBJECT_STATE: z.string(),
+    NAME: z.string().trim(),
+    CODE: z.string().trim(),
+    LOCATION: z.string().trim(),
+    FACTORYNUMBER: z.string().trim(),
+    PLACEMENT: z.string().trim(),
+    EIID: z.string().trim(),
+    NETWORK_NUM: z.string().trim(),
+    PASSPORTNUM: z.string().trim(),
+    EINAME: z.string().trim(),
+    BATCH: z.string().trim(),
+    OBJECT_STATE: z.string().trim(),
     BU_KOL: z.number(),
-    NOMNUMBER: z.string(),
-    INVNUMBER: z.string()
+    NOMNUMBER: z.string().trim(),
+    INVNUMBER: z.string().trim()
   })
   .partial()
   .strict();
 
 export const CreateInventorySchema = z
   .object({
-    eventId: z.string().min(1),
-    inventoryId: z.string().min(1),
+    eventId: z.string().trim().min(1),
+    inventoryId: z.string().trim().min(1).uuid(),
     inventoryCode: z.nativeEnum(InventoryCode),
-    inventoryDate: z.string().datetime().min(1),
-    inventoryNumber: z.string().min(1),
+    inventoryDate: z.string().trim().datetime().min(1),
+    inventoryNumber: z.string().trim().min(1),
     inventoryObjects: z.array(inventoryObjectSchema)
   })
   .strict()

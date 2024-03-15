@@ -7,5 +7,3 @@
 -- DropIndex
 DROP INDEX "event-participants_eventId_userId_role_key";
 
--- CreateIndex
-CREATE UNIQUE INDEX "event-participants_eventId_userId_inventoryId_role_key" ON "event-participants"("eventId", "userId", "inventoryId", "role");

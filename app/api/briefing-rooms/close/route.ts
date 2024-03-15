@@ -1,38 +1,23 @@
-import { doTransaction } from '@/lib/prisma-transaction';
-import { EventService } from '@/server/services/events';
-import { TransactionSession } from '@/types/prisma';
 import { NextRequest } from 'next/server';
-import IvaAPI from '@/server/services/iva/api';
-import { BriefingStatus } from '@prisma/client';
 import { getErrorResponse } from '@/lib/helpers';
-import { BriefingRoomIsNotOpened } from './errors';
+import { CloseBriefingRoomBodySchema } from './validation';
+
+import { IvaService } from '@/core/iva/IvaService';
+import { EventService } from '@/core/event/EventService';
+import { BriefingRoomManager } from '@/core/briefing-room/BriefingRoomManager';
 
 export async function PUT(request: NextRequest) {
-  const reqBody = await request.json();
-  const eventId = reqBody.eventId;
+  const briefingRoomManager = new BriefingRoomManager(
+    new IvaService(),
+    new EventService()
+  );
 
   try {
-    return await doTransaction(async (txSession: TransactionSession) => {
-      const eventServiceWithSession = EventService.withSession(txSession);
+    await briefingRoomManager.closeRoom(
+      CloseBriefingRoomBodySchema.parse(await request.json())
+    );
 
-      await eventServiceWithSession.assertExist(eventId);
-
-      const event = await eventServiceWithSession.getEventById(eventId);
-
-      if (!event.briefingSessionId) {
-        throw new BriefingRoomIsNotOpened();
-      }
-
-      await IvaAPI.conferenceSessions.closeRoom(event.briefingSessionId);
-
-      await eventServiceWithSession.update(eventId, {
-        briefingStatus: BriefingStatus.PASSED,
-        briefingRoomInviteLink: null,
-        briefingSessionId: null
-      });
-
-      return new Response(null, { status: 204 });
-    });
+    return new Response(null, { status: 204 });
   } catch (error) {
     return getErrorResponse(error);
   }

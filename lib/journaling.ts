@@ -1,5 +1,5 @@
 import { JsonValue } from '@prisma/client/runtime/library';
-import prisma from '../server/services/prisma';
+import prisma from '../core/prisma';
 
 const DEFAULT_MAX_RECORDS_TO_RETURN = 1000;
 

@@ -1,27 +1,13 @@
-import _ from 'underscore';
 import { NextRequest, NextResponse } from 'next/server';
-import { EventService } from '@/server/services/events';
 import { getErrorResponse } from '@/lib/helpers';
-import { getDateFromString } from '@/server/utils';
+import { CreateEventSchema } from './validation';
+import { EventService } from '@/core/event/EventService';
 
 export async function POST(req: NextRequest) {
-  const reqBody = await req.json();
   const eventService = new EventService();
 
   try {
-    const event = await eventService.create(
-      _.omit(
-        {
-          ...reqBody,
-          startAt: getDateFromString(reqBody.auditStart),
-          endAt: getDateFromString(reqBody.auditEnd),
-          orderDate: getDateFromString(reqBody.orderDate),
-          commandDate: getDateFromString(reqBody.commandDate)
-        },
-        'auditStart',
-        'auditEnd'
-      )
-    );
+    const event = await eventService.create(CreateEventSchema.parse(await req.json()));
 
     return NextResponse.json({ eventId: event.id }, { status: 201 });
   } catch (error) {

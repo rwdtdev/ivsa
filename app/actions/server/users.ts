@@ -8,11 +8,11 @@ import { revalidatePath } from 'next/cache';
 import { redirect } from 'next/navigation';
 import { searchParamsSchema } from '@/lib/query-params-validation';
 
-import UserService from '@/server/services/users';
+import { UserService } from '@/core/user/UserService';
 import { UserView } from '@/types/user';
 import { PaginatedResponse } from '@/server/types';
 import { UserRole, UserStatus } from '@prisma/client';
-import { UserCreateData } from '@/server/services/users/types';
+import { UserCreateData } from '@/core/user/types';
 
 const cache = new Cache({ checkperiod: 120 });
 

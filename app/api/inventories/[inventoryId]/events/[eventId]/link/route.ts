@@ -1,10 +1,8 @@
 import { NextRequest, NextResponse } from 'next/server';
-import {
-  makeResponseCORSLess,
-  validateEventId,
-  validateInventoryId
-} from '@/lib/api/helpers';
-import { b, cn, generateConsoleLogPrefix } from '@/lib/api/ansi-helpers';
+
+import { getErrorResponse } from '@/lib/helpers';
+import { GetInventoryPortalLinkPathParamsSchema } from './validation';
+import { InventoryService } from '@/core/inventory/InventoryService';
 
 interface iContext {
   params: {
@@ -13,59 +11,21 @@ interface iContext {
   };
 }
 
-export async function GET(request: NextRequest, context: iContext) {
-  const CONSOLE_LOG_PREFIX = generateConsoleLogPrefix(
-    request.method,
-    '/api/inventories/{inventoryId}/events/{eventId}/link'
-  );
-  const clog = (textToLog: string) => console.log(`${CONSOLE_LOG_PREFIX}${textToLog}`);
-  const { eventId, inventoryId } = context.params;
+export async function GET(_: NextRequest, context: iContext) {
+  const inventoryService = new InventoryService();
 
-  const isEventIdValid = validateEventId(eventId);
-  const isInventoryIdValid = validateInventoryId(inventoryId);
-
-  // Placeholder response
-  let resp: NextResponse = NextResponse.json(
-    {
-      portalLink: 'https://www.ourdomain.ru/12302488-1ec4-4491-a9d1-4b1ba6e0a1eb'
-    },
-    {
-      status: 200,
-      statusText: 'OK'
-    }
-  );
-
-  if (!isEventIdValid) {
-    resp = NextResponse.json(
-      {
-        type: 'urn:problem-type:unprocessable-content',
-        title: 'Необрабатываемый контент',
-        detail: `Событие с eventId ${eventId} не найдено`,
-        status: 404
-      },
-      {
-        status: 404
-      }
+  try {
+    const { inventoryId, eventId } = GetInventoryPortalLinkPathParamsSchema.parse(
+      context.params
     );
-  }
 
-  if (!isInventoryIdValid) {
-    resp = NextResponse.json(
-      {
-        type: 'urn:problem-type:unprocessable-content',
-        title: 'Необрабатываемый контент',
-        detail: `Опись с inventoryId ${inventoryId} не найдена`,
-        status: 404
-      },
-      {
-        status: 404
-      }
+    await inventoryService.assertExistAndBelongEvent(inventoryId, eventId);
+
+    return NextResponse.json(
+      { portalLink: `${process.env.NEXTAUTH_URL}/admin/inventories/${inventoryId}` },
+      { status: 200, statusText: 'OK' }
     );
+  } catch (error) {
+    return getErrorResponse(error);
   }
-
-  clog(
-    `inventoryId is ${isInventoryIdValid ? b('valid').gr() : b('invalid').rd()} (${cn(inventoryId)}), eventId is ${isEventIdValid ? b('valid').gr() : b('invalid').rd()} (${cn(eventId)})\nresponding with status ${resp.status}, '${resp.statusText}'`
-  );
-
-  return makeResponseCORSLess(resp);
 }

@@ -55,52 +55,54 @@ model Department {
 
 model User {
   /// Идентификатор пользователя в формате cUID
-  id                     String             @id @default(cuid())
+  id                     String        @id @default(cuid())
   /// ФИО
   name                   String
   /// Логин для входа в систему
-  username               String             @unique
+  username               String        @unique
   /// Адрес электронной почты
-  email                  String             @unique
+  email                  String        @unique
   /// Номер телефона
   phone                  String
   /// Хэш пароля
   password               String
   /// Список последних 5ти захешированных паролей пользователя, разделенных ","
-  passwordHashes         String
+  passwordHashes         String[]
   /// Роль
   role                   UserRole
   /// Статус
   status                 UserStatus
   /// Дата и время создания записи
-  createdAt              DateTime           @default(now())
+  createdAt              DateTime      @default(now())
   /// Дата и время модификации записи
-  updatedAt              DateTime           @updatedAt
+  updatedAt              DateTime      @updatedAt
+  /// Дата и время окончания действия аккаунта (по умполчанию - один год от даты создания)
+  expiresAt              DateTime      @default(dbgenerated("NOW() + interval '1 year'"))
   /// Табельный номер
-  tabelNumber            String             @unique
+  tabelNumber            String        @unique
   /// Внешний идентификатор в системе IVA R
-  ivaProfileId           String?            @unique
+  ivaProfileId           String?       @unique
   /// Ссылка на организацию, в которой состоит пользователь
   organisationId         String?
   /// Токен для обновления accessToken-а в сессии пользователя
   refreshToken           String?
   /// Дата и время последней смены пароля
-  lastUpdatePasswordDate DateTime           @default(now())
+  lastUpdatePasswordDate DateTime      @default(now())
   /// Объект с данными об организации, в которой состоит пользователь
-  organisation           Organisation?      @relation(fields: [organisationId], references: [id])
+  organisation           Organisation? @relation(fields: [organisationId], references: [id])
   /// Ссылка на отдел, в котором состоит пользователь
   departmentId           String?
   /// Объект с данными об отделе, в котором состоит пользователь
-  department             Department?        @relation(fields: [departmentId], references: [id])
-  /// Ссылка на события, в которых состоит пользователь
-  eventsParticipant      EventParticipant[]
+  department             Department?   @relation(fields: [departmentId], references: [id])
+  /// Список описей и событий инвентаризаций, в которых пользователь является участником
+  participants           Participant[]
 
   @@map("users")
 }
 
 model Event {
   /// Идентификатор события в формате cUID
-  id                     String             @id @default(cuid())
+  id                     String         @id @default(cuid())
   /// Идентификатор распоряжения
   commandId              String
   /// Номер распоряжения
@@ -122,26 +124,26 @@ model Event {
   /// Код региона, в котором находится балансовая единица
   balanceUnitRegionCode  String
   /// Список участников события
-  participants           EventParticipant[]
+  participants           Participant[]
   /// Список описей
   inventories            Inventory[]
   /// Глобальный статус события инвентаризации
-  status                 EventStatus        @default(OPEN)
+  status                 EventStatus    @default(OPEN)
   /// Статус инструктужа, которые выставляется на основе
-  briefingStatus         BriefingStatus     @default(NOT_STARTED)
+  briefingStatus         BriefingStatus @default(NOT_STARTED)
   /// Ссылка для подключения к открытой комнате видеоинструктажа
   briefingRoomInviteLink String?
   /// Идентификатор конференции в IVA-R
   briefingSessionId      String?
   /// Дата и время создания записи
-  createdAt              DateTime           @default(now())
+  createdAt              DateTime       @default(now())
   /// Дата и время модификации записи
-  updatedAt              DateTime           @updatedAt
+  updatedAt              DateTime       @updatedAt
 
   @@map("events")
 }
 
-model EventParticipant {
+model Participant {
   id          String     @id @default(cuid())
   /// Идентификатор события
   eventId     String
@@ -153,7 +155,7 @@ model EventParticipant {
   inventory   Inventory? @relation(fields: [inventoryId], references: [id])
   /// Идентификатор пользователя в виде табельного номера
   tabelNumber String
-  /// Имя участника имя пользователя или имя, присланное поле name в API создания события
+  /// Имя участника имя пользователя
   name        String?
   /// Объект с данными о пользователе
   user        User?      @relation(fields: [userId], references: [id])
@@ -162,17 +164,17 @@ model EventParticipant {
   /// Роль участника
   role        UserRole
 
-  @@unique([eventId, userId, inventoryId, role])
-  @@map("event-participants")
+  @@unique([eventId, inventoryId, tabelNumber])
+  @@map("participants")
 }
 
 model Inventory {
   /// Внешний Идентификаторр описи из Soi
-  id                  String             @id
+  id                  String            @id
   /// Идентификатор события к которому привязана опись
   eventId             String
   /// Объект с данными о событии, с которым связана опись
-  event               Event              @relation(fields: [eventId], references: [id])
+  event               Event             @relation(fields: [eventId], references: [id])
   /// Номер описи
   number              String
   /// Код описи
@@ -188,13 +190,17 @@ model Inventory {
   /// Ссылка для подключения к открытой комнате видеоинвентаризации
   auditRoomInviteLink String?
   /// Дата и время создания записи
-  createdAt           DateTime           @default(now())
+  createdAt           DateTime          @default(now())
   /// Дата и время модификации записи
-  updatedAt           DateTime           @updatedAt
+  updatedAt           DateTime          @updatedAt
   /// Список участников
-  participants        EventParticipant[]
+  participants        Participant[]
   /// Список URL на записи видео в Оперативном хранилище
   videoFiles          String[]
+  /// Cтатус описи
+  status              InventoryStatus   @default(AVAILABLE)
+  /// Идентификатор комплексной описи, если текущая опись является индивидуальной, в ином случае всегда = null
+  parentId            String?
   /// Список объектов описи
   objects             InventoryObject[]
 
@@ -267,6 +273,13 @@ enum UserRole {
   ACCOUNTANT_ACCEPTOR
   /// Оператор-технолог
   ENGINEER
+}
+
+enum InventoryStatus {
+  /// Опись доступна
+  AVAILABLE
+  /// Опись удалена
+  REMOVED
 }
 
 enum EventStatus {

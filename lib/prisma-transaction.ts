@@ -1,5 +1,5 @@
 import { TransactionSession } from '@/types/prisma';
-import prisma from '@/server/services/prisma';
+import prisma from '@/core/prisma';
 import { Prisma } from '@prisma/client';
 
 // eslint-disable-next-line @typescript-eslint/ban-types

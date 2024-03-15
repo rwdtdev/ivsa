@@ -1,64 +1,27 @@
-import { NextRequest, NextResponse } from 'next/server';
-import {
-  makeResponseCORSLess,
-  validateEventId,
-  validateInventoryId
-} from '@/lib/api/helpers';
-import { generateConsoleLogPrefix } from '@/lib/api/ansi-helpers';
+import { NextRequest } from 'next/server';
+import { getErrorResponse } from '@/lib/helpers';
+import { PathParamsSchema, QueryParamsSchema } from './validation';
+import { ParticipantService } from '@/core/participant/ParticipantService';
+import { InventoryService } from '@/core/inventory/InventoryService';
 
-interface iContext {
-  params: {
-    inventoryId: string;
-  };
+interface IContext {
+  params: { inventoryId: string };
 }
 
-export async function PUT(request: NextRequest, context: iContext) {
-  const CONSOLE_LOG_PREFIX = generateConsoleLogPrefix(
-    request.method,
-    '/api/inventories/[inventoryId]/participants/delete-all'
-  );
-  const clog = (textToLog: string, ...args: any) =>
-    console.log(`${CONSOLE_LOG_PREFIX}${textToLog}`, ...args);
+export async function PUT(request: NextRequest, context: IContext) {
+  const participantService = new ParticipantService();
+  const inventoryService = new InventoryService();
 
-  const { inventoryId } = context.params;
+  try {
+    const { inventoryId } = PathParamsSchema.parse(context.params);
+    const { searchParams } = new URL(request.url);
+    const { eventId } = QueryParamsSchema.parse(searchParams.get('eventId'));
 
-  const { searchParams } = new URL(request.url);
-  const eventId = searchParams.get('eventId');
+    await inventoryService.assertExistAndBelongEvent(inventoryId, eventId);
+    await participantService.removeInventoryParticipants(inventoryId, eventId);
 
-  // Placeholder response
-  let resp: NextResponse = new NextResponse(undefined, { status: 204 });
-
-  if (!validateInventoryId(inventoryId)) {
-    resp = NextResponse.json(
-      {
-        type: 'urn:problem-type:unprocessable-content',
-        title: 'Необрабатываемый контент',
-        detail: `Опись с inventoryId ${inventoryId} не найдена`,
-        status: 404
-      },
-      {
-        status: 404
-      }
-    );
+    return new Response(null, { status: 200, statusText: 'OK' });
+  } catch (error) {
+    return getErrorResponse(error);
   }
-
-  if (!!eventId && !validateEventId(eventId)) {
-    resp = NextResponse.json(
-      {
-        type: 'urn:problem-type:unprocessable-content',
-        title: 'Необрабатываемый контент',
-        detail: `Событие с eventId ${eventId} не найдено`,
-        status: 422
-      },
-      {
-        status: 422
-      }
-    );
-  }
-
-  clog(
-    `eventId: ${eventId}\ninventoryId: ${inventoryId}\nresponding with status ${resp.status}, '${resp.statusText}'`
-  );
-
-  return makeResponseCORSLess(resp);
 }

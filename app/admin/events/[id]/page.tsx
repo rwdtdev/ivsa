@@ -5,7 +5,7 @@ import { getEventByIdAction } from '@/app/actions/server/events';
 import BreadCrumb from '@/components/breadcrumb';
 import { Heading } from '@/components/ui/heading';
 import { getEntityId } from '@/lib/get-entity-id';
-import { EventView } from '@/server/services/events/types';
+import { EventView } from '@/core/event/types';
 import { usePathname } from 'next/navigation';
 import { useEffect, useState } from 'react';
 import { Avatar, AvatarFallback } from '@/components/ui/avatar';

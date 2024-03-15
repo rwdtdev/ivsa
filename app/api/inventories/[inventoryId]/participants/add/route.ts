@@ -1,86 +1,37 @@
-import { NextRequest, NextResponse } from 'next/server';
-import {
-  makeResponseCORSLess,
-  validateEventId,
-  validateInventoryId,
-  validateTabelNumber
-} from '@/lib/api/helpers';
-import { generateConsoleLogPrefix } from '@/lib/api/ansi-helpers';
+import { getErrorResponse } from '@/lib/helpers';
+import { NextRequest } from 'next/server';
+import { PathParamsSchema, UpdateInventorySchema } from './validation';
+import { doTransaction } from '@/lib/prisma-transaction';
+import { TransactionSession } from '@/types/prisma';
+import { InventoryService } from '@/core/inventory/InventoryService';
+import { ParticipantService } from '@/core/participant/ParticipantService';
 
-interface iContext {
-  params: {
-    inventoryId: string;
-  };
+interface IContext {
+  params: { inventoryId: string };
 }
 
-export async function PUT(request: NextRequest, context: iContext) {
-  const CONSOLE_LOG_PREFIX = generateConsoleLogPrefix(
-    request.method,
-    '/api/inventories/[inventoryId]/participants/add'
-  );
-  const clog = (textToLog: string, ...args: any) =>
-    console.log(`${CONSOLE_LOG_PREFIX}${textToLog}`, ...args);
+export async function PUT(request: NextRequest, context: IContext) {
+  const inventoryService = new InventoryService();
+  const participantService = new ParticipantService();
 
-  const { inventoryId } = context.params;
-  const reqBody = await request.json();
-  const eventId = reqBody.eventId;
+  try {
+    const { inventoryId } = PathParamsSchema.parse(context.params);
+    const { eventId, participants } = UpdateInventorySchema.parse(await request.json());
 
-  // Placeholder response
-  let resp: NextResponse = new NextResponse(undefined, { status: 204 });
+    return await doTransaction(async (session: TransactionSession) => {
+      const eventParticipantServiceWithSession = participantService.withSession(session);
 
-  if (!validateInventoryId(inventoryId)) {
-    resp = NextResponse.json(
-      {
-        type: 'urn:problem-type:unprocessable-content',
-        title: 'Необрабатываемый контент',
-        detail: `Опись с inventoryId ${inventoryId} не найдена`,
-        status: 404
-      },
-      {
-        status: 404
-      }
-    );
+      await inventoryService.assertExistAndBelongEvent(inventoryId, eventId);
+
+      await eventParticipantServiceWithSession.createMany(
+        participants,
+        eventId,
+        inventoryId
+      );
+
+      return new Response(null, { status: 204 });
+    });
+  } catch (error) {
+    return getErrorResponse(error);
   }
-
-  if (!validateEventId(eventId)) {
-    resp = NextResponse.json(
-      {
-        type: 'urn:problem-type:unprocessable-content',
-        title: 'Необрабатываемый контент',
-        detail: `Событие с eventId ${eventId} не найдено`,
-        status: 422
-      },
-      {
-        status: 422
-      }
-    );
-  }
-
-  interface requestBodyArrayElement {
-    tabelNumber: string;
-    roleId: number;
-  }
-  const invalidTabNum = reqBody.participants.find(
-    (el: requestBodyArrayElement) => !validateTabelNumber(el.tabelNumber)
-  );
-  if (invalidTabNum !== undefined) {
-    resp = NextResponse.json(
-      {
-        type: 'urn:problem-type:unprocessable-content',
-        title: 'Необрабатываемый контент',
-        detail: `Невалидный пользователь: ${invalidTabNum.tabelNumber}`,
-        status: 422
-      },
-      {
-        status: 422
-      }
-    );
-  }
-
-  clog(
-    `inventoryId: ${inventoryId}\nrequest body: %O\nresponding with status ${resp.status}, '${resp.statusText}'`,
-    reqBody
-  );
-
-  return makeResponseCORSLess(resp);
 }

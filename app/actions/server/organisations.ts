@@ -1,6 +1,6 @@
 'use server';
 
-import OrganisationService from '@/server/services/organisations';
+import { OrganisationService } from '@/core/organisation/OrganisationService';
 
 export async function getOrganisationsAction() {
   const organisationService = new OrganisationService();

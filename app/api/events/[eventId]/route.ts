@@ -1,94 +1,46 @@
-import { NextRequest, NextResponse } from 'next/server';
+import { NextRequest } from 'next/server';
+import { getErrorResponse } from '@/lib/helpers';
 import {
-  checkEventId,
-  genClog,
-  makeResponseCORSLess,
-} from '@/lib/api/helpers';
-import {
-  b,
-  cn,
-  generateConsoleLogPrefix,
-} from '@/lib/api/ansi-helpers';
-import { EventService } from '@/server/services/events';
-import { EventStatus } from '@prisma/client';
+  RemoveEventPathParamsSchema,
+  UpdateEventPathParamsSchema,
+  UpdateEventSchema
+} from './validation';
 
-interface iContext {
-  params: {
-    eventId: string,
-  };
+import { ParticipantService } from '@/core/participant/ParticipantService';
+import { EventManager } from '@/core/event/EventManager';
+import { EventService } from '@/core/event/EventService';
+
+interface IContext {
+  params: { eventId: string };
 }
 
-export async function PUT(request: NextRequest, context: iContext) {
-    const CONSOLE_LOG_PREFIX = generateConsoleLogPrefix(request.method, '/api/events/[eventId]');
-    const clog = (textToLog: string, ...args: any) => console.log(`${CONSOLE_LOG_PREFIX}${textToLog}`, ...args);
+export async function PUT(request: NextRequest, context: IContext) {
+  const eventManager = new EventManager(new EventService(), new ParticipantService());
 
-    const reqBody = await request.json();
+  try {
+    const { eventId } = UpdateEventPathParamsSchema.parse(context.params);
 
-    const { eventId } = context.params;
+    await eventManager.updateEvent(
+      eventId,
+      UpdateEventSchema.parse(await request.json())
+    );
 
-    const eventService = new EventService();
-
-    const eventIdErrorResponse = await checkEventId(clog, eventService, eventId);
-
-    if (eventIdErrorResponse !== undefined) {
-      return eventIdErrorResponse;
-    }
-  
-    //...validate body supplied data here...
-
-    await eventService.update(eventId, {
-      ...reqBody, //<=== currently unvalidated!!
-    });
-  /*
-  type Event = {
-    //id: string;
-    commandId: string;
-    commandNumber: string;
-    commandDate: Date;
-    orderId: string;
-    orderNumber: string;
-    orderDate: Date;
-    startAt: Date;
-    endAt: Date;
-    balanceUnit: string;
-    balanceUnitRegionCode: string;
-    status: $Enums.EventStatus;
-    briefingStatus: $Enums.BriefingStatus;
-    briefingRoomInviteLink: string | null;
-    briefingSessionId: string | null;
-    createdAt: Date;
-    updatedAt: Date;
+    return new Response(null, { status: 204 });
+  } catch (error) {
+    return getErrorResponse(error);
   }
-  */
-    const resp: NextResponse = new NextResponse(undefined, { status: 204 });
-  
-    clog(`\n\teventId is ${b('valid').gr()} (${cn(eventId)})\n\tevent ${cn(eventId)} ${b('exists').gr()}\n\t\trequest body: %O\n\t\t${b('Responding with status ')}${resp.status}, '${resp.statusText}'\n`, reqBody);
-    
-    return makeResponseCORSLess(resp);
 }
 
-export async function DELETE(request: NextRequest, context: iContext) {
-  const CONSOLE_LOG_PREFIX = generateConsoleLogPrefix(request.method, '/api/events/[eventId]');
+export async function DELETE(_: NextRequest, context: IContext) {
+  const eventManager = new EventManager(new EventService(), new ParticipantService());
 
-  const clog = genClog(CONSOLE_LOG_PREFIX);
-  
-  const { eventId } = context.params;
+  try {
+    const { eventId } = RemoveEventPathParamsSchema.parse(context.params);
 
-  const eventService = new EventService();
+    await eventManager.removeEventLogical(eventId);
 
-  const eventIdErrorResponse = await checkEventId(clog, eventService, eventId);
-
-  if (eventIdErrorResponse !== undefined) {
-    return eventIdErrorResponse;
+    return new Response(null, { status: 204 });
+  } catch (error) {
+    return getErrorResponse(error);
   }
-
-  await eventService.update(eventId, {
-    status: EventStatus.REMOVED,
-  });
-
-  const resp: NextResponse = new NextResponse(undefined, { status: 204 });
-
-  clog(`\n\teventId is ${b('valid').gr()} (${cn(eventId)})\n\tevent ${cn(eventId)} ${b('exists').gr()}\n\t\t${b('Responding with status ')}${resp.status}, '${resp.statusText}'\n`);
-
-  return makeResponseCORSLess(resp);
 }

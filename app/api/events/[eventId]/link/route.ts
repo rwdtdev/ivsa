@@ -1,37 +1,25 @@
 import { NextRequest, NextResponse } from 'next/server';
-import { checkEventId, genClog, makeResponseCORSLess } from '@/lib/api/helpers';
-import { b, cn, generateConsoleLogPrefix } from '@/lib/api/ansi-helpers';
-import { EventService } from '@/server/services/events';
+import { getErrorResponse } from '@/lib/helpers';
+import { GetEventPortalLinkPathParamsSchema } from './validation';
+import { EventService } from '@/core/event/EventService';
 
-interface iContext {
-  params: {
-    eventId: string,
-  };
+interface IContext {
+  params: { eventId: string };
 }
 
-export async function GET(request: NextRequest, context: iContext) {
-  const CONSOLE_LOG_PREFIX = generateConsoleLogPrefix(request.method, '/api/events/{eventId}/link');
-
-  const clog = genClog(CONSOLE_LOG_PREFIX);
-
-  const { eventId } = context.params;
-
+export async function GET(_: NextRequest, context: IContext) {
   const eventService = new EventService();
 
-  const eventIdErrorResponse = await checkEventId(clog, eventService, eventId);
+  try {
+    const { eventId } = GetEventPortalLinkPathParamsSchema.parse(context.params);
 
-  if (eventIdErrorResponse !== undefined) {
-    return eventIdErrorResponse;
+    await eventService.assertExist(eventId);
+
+    return NextResponse.json(
+      { portalLink: `${process.env.NEXTAUTH_URL}/admin/events/${eventId}` },
+      { status: 200, statusText: 'OK' }
+    );
+  } catch (error) {
+    return getErrorResponse(error);
   }
-
-  const resp = NextResponse.json({
-    'portalLink': `${request.nextUrl.host}/admin/events/${eventId}`,
-  }, {
-    status: 200,
-    statusText: 'OK'
-  });
-
-  clog(`\n\teventId is ${b('valid').gr()} (${cn(eventId)})\n\tevent ${cn(eventId)} ${b('exists').gr()}\n\t\t${b('Responding with status ')}${b(String(resp.status)).yl()}, '${resp.statusText}'\n`);
-
-  return makeResponseCORSLess(resp);
 }

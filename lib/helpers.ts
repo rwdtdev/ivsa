@@ -3,6 +3,9 @@ import { z } from 'zod';
 import { NextResponse } from 'next/server';
 import { ServerError, ValidationError } from './problem-json';
 import ProblemJson from './problem-json/ProblemJson';
+import { createLogger } from './logger';
+
+const logger = createLogger('error');
 
 function map(
   err: ProblemJson | Error | z.ZodError | any,
@@ -57,6 +60,8 @@ export function getErrorResponse(
           instance: err.instance
         }
       : err;
+
+  logger.error(err);
 
   return NextResponse.json(formattedErrorByEnv, {
     status: formattedErrorByEnv.status,

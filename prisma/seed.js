@@ -53,7 +53,7 @@ const createUsers = (n, departmentId, organisationId) =>
 const createInventories = (n, eventId) =>
   Array.from(Array(n).keys())
     .reverse()
-    .map(() => ({ ...fakeInventory(), eventId }));
+    .manpm run prisma: seedp(() => ({ ...fakeInventory(), eventId }));
 
 const createEvents = (users) => {
   let counter = 0;

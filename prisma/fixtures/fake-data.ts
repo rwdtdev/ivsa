@@ -270,6 +270,5 @@ export function fakeInventory() {
     code,
     shortName: names[code].shortName,
     name: names[code].name,
-    attributes: null
   };
 }

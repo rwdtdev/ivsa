@@ -47,7 +47,7 @@ const createUsers = (n, departmentId, organisationId) =>
       organisationId,
       departmentId,
       password,
-      passwordHashes: password
+      passwordHashes: [password]
     }));
 
 const createInventories = (n, eventId) =>
@@ -195,7 +195,7 @@ class SeedSingleton {
         username: 'admin',
         email: 'admin@email.com',
         password: adminPassword,
-        passwordHashes: adminPassword,
+        passwordHashes: [adminPassword],
         role: UserRole.ADMIN,
         status: UserStatus.ACTIVE,
         departmentId: null,
@@ -213,10 +213,10 @@ class SeedSingleton {
           ...event,
           ...(event.participants &&
             event.participants.length > 0 && {
-              participants: {
-                create: event.participants.filter(_.identity)
-              }
-            })
+            participants: {
+              create: event.participants.filter(_.identity)
+            }
+          })
         }
       });
 

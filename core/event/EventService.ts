@@ -1,13 +1,14 @@
 import { SortOrder } from '@/constants/data';
 import prisma from '@/core/prisma';
 import { TransactionSession } from '@/types/prisma';
-import { Event, PrismaClient, UserRole } from '@prisma/client';
+import { Event, PrismaClient, UserRole, UserStatus } from '@prisma/client';
 import { EventView, EventsGetData, UpdateEventDataExtended } from './types';
 import { PaginatedResponse } from '@/server/types';
 import moment from 'moment';
 import {
   EventNotFoundError,
   EventParticipantsMustContainSpeakerError,
+  SpeakerIsBlockedOrRecusedError,
   SpeakerIsNotRegisteredInAsviError,
   SpeakerIsNotRegisteredInIvaError
 } from './errors';
@@ -63,6 +64,13 @@ export class EventService {
 
     if (!speaker.user.ivaProfileId) {
       throw new SpeakerIsNotRegisteredInIvaError();
+    }
+
+    if (
+      speaker.user.status === UserStatus.BLOCKED ||
+      speaker.user.status === UserStatus.RECUSED
+    ) {
+      throw new SpeakerIsBlockedOrRecusedError();
     }
 
     return speaker.user.ivaProfileId;

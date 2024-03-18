@@ -18,6 +18,7 @@ export class AccountManager {
       users: items.map(({ tabelNumber, expiresAt, status }) => ({
         tabelNumber,
         expiresAt: moment(expiresAt).format(ISO_DATETIME_FORMAT),
+        isRecused: status === UserStatus.RECUSED,
         isBlocked: status === UserStatus.BLOCKED || expiresAt.getTime() < Date.now()
       }))
     };

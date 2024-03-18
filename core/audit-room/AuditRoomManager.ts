@@ -74,7 +74,11 @@ export class AuditRoomManager {
       }
 
       const registeredIvaUsers = event.participants.filter(
-        ({ user }) => user && user.ivaProfileId
+        ({ user }) =>
+          user &&
+          user.ivaProfileId &&
+          user.status !== UserStatus.BLOCKED &&
+          user.status !== UserStatus.RECUSED
       );
 
       if (_.isEmpty(registeredIvaUsers)) {
@@ -159,6 +163,7 @@ export class AuditRoomManager {
           .map(({ user }) => ({
             tabelNumber: user.tabelNumber,
             expiresAt: moment(user.expiresAt).format(ISO_DATETIME_FORMAT),
+            isRecused: user.status === UserStatus.RECUSED,
             isBlocked:
               user.status === UserStatus.BLOCKED || user.expiresAt.getTime() < Date.now()
           }))

@@ -4,6 +4,7 @@ export const {
   EventParticipantsMustContainSpeakerError,
   SpeakerIsNotRegisteredInAsviError,
   SpeakerIsNotRegisteredInIvaError,
+  SpeakerIsBlockedOrRecusedError,
   EventNotFoundError
 } = makeErrorDictionary()({
   EventParticipantsMustContainSpeakerError: {
@@ -19,6 +20,11 @@ export const {
   SpeakerIsNotRegisteredInIvaError: {
     type: 'urn:problem-type:speaker-is-not-registered-in-iva-error',
     title: 'Председателя события нет в списке зарегистрированных пользователей в IVA R',
+    status: 409
+  },
+  SpeakerIsBlockedOrRecusedError: {
+    type: 'urn:problem-type:speaker-is-blocked-or-recused-error',
+    title: 'Председатель события заблокирован или отстранен от должности',
     status: 409
   },
   EventNotFoundError: {

@@ -2,11 +2,11 @@ import _ from 'underscore';
 import { doTransaction } from '@/lib/prisma-transaction';
 import { TransactionSession } from '@/types/prisma';
 import {
-  BriefingRoomAlreadyExist,
+  BriefingRoomAlreadyExistError,
   BriefingRoomIsNotOpened,
   EventParticipantsMustBeNotEmptyError
 } from './errors';
-import { BriefingStatus, UserStatus } from '@prisma/client';
+import { BriefingStatus, UserRole, UserStatus } from '@prisma/client';
 
 import { IvaService } from '../iva/IvaService';
 import { IvaRolesMapper } from '@/constants/mappings/iva';
@@ -31,12 +31,21 @@ export class BriefingRoomManager {
       const event = await eventService.getById(eventId);
 
       if (event.briefingSessionId) {
-        throw new BriefingRoomAlreadyExist();
+        throw new BriefingRoomAlreadyExistError();
       }
 
       if (!event.participants || _.isEmpty(event.participants)) {
         throw new EventParticipantsMustBeNotEmptyError();
       }
+
+      const registeredAndNotBlockedParticipants = event.participants.filter(
+        ({ user, ...participant }) =>
+          user &&
+          user.ivaProfileId &&
+          participant.role !== UserRole.CHAIRMAN &&
+          user.status !== UserStatus.BLOCKED &&
+          user.status !== UserStatus.RECUSED
+      );
 
       const speakerIvaProfileId =
         eventService.assertSpeakerExistAndRegisteredInIva(event);
@@ -62,16 +71,11 @@ export class BriefingRoomManager {
             { key: 'ALWAYS_SHOW_PARTICIPANT_IN_STAGE', value: true }
           ]
         },
-        participants: event.participants
-          .map(
-            ({ user, role }) =>
-              user && {
-                interlocutor: { profileId: user.ivaProfileId as string },
-                roles: [IvaRolesMapper[role]],
-                interpreterLanguagesPair: ['RUSSIAN']
-              }
-          )
-          .filter(_.identity)
+        participants: registeredAndNotBlockedParticipants.map(({ user, role }) => ({
+          interlocutor: { profileId: user.ivaProfileId as string },
+          roles: [IvaRolesMapper[role]],
+          interpreterLanguagesPair: ['RUSSIAN']
+        }))
       });
 
       const participants = await this.ivaService.findConferenceParticipants(
@@ -95,6 +99,7 @@ export class BriefingRoomManager {
           .map(({ user }) => ({
             tabelNumber: user.tabelNumber,
             expiresAt: moment(user.expiresAt).format(ISO_DATETIME_FORMAT),
+            isRecused: user.status === UserStatus.RECUSED,
             isBlocked:
               user.status === UserStatus.BLOCKED || user.expiresAt.getTime() < Date.now()
           }))

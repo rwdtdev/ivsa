@@ -1,7 +1,7 @@
 import { makeErrorDictionary } from '@/lib/problem-json';
 
 export const {
-  BriefingRoomAlreadyExist,
+  BriefingRoomAlreadyExistError,
   BriefingParticipantsMustContainSpeaker,
   NotRegisteredUserInIvaError,
   EventParticipantsMustBeNotEmptyError,

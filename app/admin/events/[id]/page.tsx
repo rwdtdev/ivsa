@@ -135,41 +135,45 @@ export default function EventPage() {
                   <div className='grid gap-6'>
                     <div>
                       {event.participants &&
-                        event.participants.map(
-                          ({ name, tabelNumber, user, role }, idx) => {
-                            const splited = name.split(' ');
-                            const initials = [splited[0][0], splited[1][0]].join('');
+                        event.participants.map(({ tabelNumber, user, role }, idx) => {
+                          const splited =
+                            (user && user.name && user.name.split(' ')) || null;
+                          const initials =
+                            splited && [splited[0][0], splited[1][0]].join('');
 
-                            return (
-                              <div
-                                key={idx}
-                                className='mt-3 flex items-center justify-between space-x-4'
-                              >
-                                <div className='flex items-center space-x-4'>
+                          return (
+                            <div
+                              key={idx}
+                              className='mt-3 flex items-center justify-between space-x-4'
+                            >
+                              <div className='flex items-center space-x-4'>
+                                {initials && (
                                   <Avatar>
                                     <AvatarFallback>{initials}</AvatarFallback>
                                   </Avatar>
-                                  <div>
-                                    <p className='text-sm font-medium leading-none'>
-                                      {name}{' '}
+                                )}
+                                <div>
+                                  <p className='text-sm font-medium leading-none'>
+                                    {(user && user.name) || tabelNumber}{' '}
+                                  </p>
+                                  {!user && (
+                                    <p className='text-xs text-red-500'>
+                                      Пользователь не зарегистрирован
                                     </p>
-                                    {!user && (
-                                      <p className='text-xs text-red-500'>
-                                        Пользователь не зарегистрирован
-                                      </p>
-                                    )}
-                                    <p className='text-sm text-muted-foreground'>
-                                      {UserRoles[role]}
-                                    </p>
+                                  )}
+                                  <p className='text-sm text-muted-foreground'>
+                                    {UserRoles[role]}
+                                  </p>
+                                  {user && (
                                     <p className='text-sm text-muted-foreground'>
                                       Таб. номер: {tabelNumber}
                                     </p>
-                                  </div>
+                                  )}
                                 </div>
                               </div>
-                            );
-                          }
-                        )}
+                            </div>
+                          );
+                        })}
                     </div>
                   </div>
                 </div>

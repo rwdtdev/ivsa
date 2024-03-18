@@ -57,7 +57,9 @@ export function getErrorResponse(
           type: err.type,
           title: err.title,
           detail: err.detail,
-          instance: err.instance
+          status: err.status,
+          instance: err.instance,
+          ...(err.invalidParams && { invalidParams: err.invalidParams })
         }
       : err;
 

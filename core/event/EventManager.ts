@@ -6,14 +6,21 @@ import { ParticipantsData, UpdateEventData } from '@/app/api/events/[eventId]/va
 import { ParticipantService } from '../participant/ParticipantService';
 import { EventStatus } from '@prisma/client';
 import { EventService } from './EventService';
+import { UserService } from '../user/UserService';
 
 export class EventManager {
   private eventService: EventService;
   private participantService: ParticipantService;
+  private userService: UserService;
 
-  constructor(eventService: EventService, participantService: ParticipantService) {
+  constructor(
+    eventService: EventService,
+    participantService: ParticipantService,
+    userService: UserService
+  ) {
     this.eventService = eventService;
     this.participantService = participantService;
+    this.userService = userService;
   }
 
   async createEvent(data: CreateEventData) {
@@ -23,11 +30,31 @@ export class EventManager {
   }
 
   async updateEvent(id: string, data: UpdateEventData) {
+    await this.eventService.assertExist(id);
     await this.eventService.update(id, _.omit(data, 'participants'));
+
+    if (data.participants) {
+      const participants = await this.linkParticipantsToUsers(data.participants);
+
+      await this.participantService.updateParticipants(id, participants);
+    }
   }
 
-  async updateEventParticipants(eventId: string, participants: ParticipantsData) {
+  private async linkParticipantsToUsers(participants: ParticipantsData) {
+    const participantPromises = participants.map(async (participant) => {
+      const user = await this.userService.getByTabelNumber(participant.tabelNumber);
+
+      return { ...participant, ...(user && { userId: user.id }) };
+    });
+
+    return Promise.all(participantPromises);
+  }
+
+  async updateEventParticipants(eventId: string, data: ParticipantsData) {
     await this.eventService.assertExist(eventId);
+
+    const participants = await this.linkParticipantsToUsers(data);
+
     await this.participantService.updateParticipants(eventId, participants);
   }
 

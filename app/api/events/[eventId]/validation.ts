@@ -15,7 +15,11 @@ const ParticipantSchema = z
 
 export const ParticipantsSchema = z.array(ParticipantSchema).min(1);
 
-export type ParticipantsData = z.infer<typeof ParticipantsSchema>;
+export type ParticipantsData = Array<{
+  tabelNumber: string;
+  roleId: string;
+  userId?: string;
+}>;
 
 export const UpdateEventSchema = z
   .object({

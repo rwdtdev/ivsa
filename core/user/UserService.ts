@@ -82,6 +82,12 @@ export class UserService {
     };
   }
 
+  async getByTabelNumber(tabelNumber: string): Promise<ClientUser | null> {
+    const user = await prisma.user.findFirst({ where: { tabelNumber } });
+
+    return user;
+  }
+
   async getById(id: string): Promise<ClientUser> {
     const user = await this.prisma.user.findFirst({ where: { id } });
 

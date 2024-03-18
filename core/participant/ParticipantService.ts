@@ -41,7 +41,11 @@ export class ParticipantService {
     });
   }
 
-  async createMany(participants: ParticipantsData, eventId: string, inventoryId: string) {
+  async createMany(
+    participants: ParticipantsData,
+    eventId: string,
+    inventoryId?: string
+  ) {
     const participantPromises = participants.map(async (participant) => {
       const user = await this.prisma.user.findFirst({
         where: { tabelNumber: participant.tabelNumber }
@@ -98,6 +102,7 @@ export class ParticipantService {
           tabelNumber: participant.tabelNumber,
           inventoryId: null,
           eventId,
+          userId: participant.userId,
           role: SoiParticipantRoles[
             participant.roleId as keyof typeof SoiParticipantRoles
           ]

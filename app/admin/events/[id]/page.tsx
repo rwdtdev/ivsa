@@ -23,7 +23,8 @@ import Loading from '@/app/loading';
 import { REGION_CODES, RegionCode } from '@/constants/mappings/region-codes';
 import Link from 'next/link';
 import { EnterIcon } from '@radix-ui/react-icons';
-import { BriefingStatus } from '@prisma/client';
+import { BriefingStatus, UserStatus } from '@prisma/client';
+import { UserRoundXIcon } from 'lucide-react';
 
 const breadcrumbItems = [
   {
@@ -139,7 +140,8 @@ export default function EventPage() {
                           const splited =
                             (user && user.name && user.name.split(' ')) || null;
                           const initials =
-                            splited && [splited[0][0], splited[1][0]].join('');
+                            splited &&
+                            [splited[0][0], splited[1][0]].join('').toUpperCase();
 
                           return (
                             <div
@@ -147,18 +149,27 @@ export default function EventPage() {
                               className='mt-3 flex items-center justify-between space-x-4'
                             >
                               <div className='flex items-center space-x-4'>
-                                {initials && (
+                                {initials ? (
                                   <Avatar>
                                     <AvatarFallback>{initials}</AvatarFallback>
+                                  </Avatar>
+                                ) : (
+                                  <Avatar>
+                                    <AvatarFallback>
+                                      <UserRoundXIcon />
+                                    </AvatarFallback>
                                   </Avatar>
                                 )}
                                 <div>
                                   <p className='text-sm font-medium leading-none'>
                                     {(user && user.name) || tabelNumber}{' '}
                                   </p>
-                                  {!user && (
-                                    <p className='text-xs text-red-500'>
-                                      Пользователь не зарегистрирован
+                                  {user && user.status === UserStatus.BLOCKED && (
+                                    <p className='text-sm text-red-500 '>Заблокирован</p>
+                                  )}
+                                  {user && user.status === UserStatus.RECUSED && (
+                                    <p className='text-sm text-orange-500'>
+                                      Отстранен от должности
                                     </p>
                                   )}
                                   <p className='text-sm text-muted-foreground'>
@@ -190,26 +201,31 @@ export default function EventPage() {
                   {event.inventories &&
                     event.inventories.map((inventory, index) => {
                       return (
-                        <div key={inventory.id}>
-                          <div className='grid grid-cols-4 gap-1 space-x-5'>
-                            <div className='mr-10 flex cursor-pointer items-center space-x-4'>
-                              <div>
-                                <p className='text-md font-medium leading-none'>
-                                  Опись № {inventory.number} от{' '}
-                                  {moment(inventory.date).format(DATE_FORMAT)}
-                                </p>
-                                <p className='text-sm text-muted-foreground'>
-                                  ID: {inventory.id}
-                                </p>
+                        <Link
+                          key={inventory.id}
+                          href={`/admin/inventories/${inventory.id}`}
+                        >
+                          <div>
+                            <div className='grid grid-cols-4 gap-1 space-x-5'>
+                              <div className='mr-10 flex cursor-pointer items-center space-x-4'>
+                                <div>
+                                  <p className='text-md font-medium leading-none'>
+                                    Опись № {inventory.number} от{' '}
+                                    {moment(inventory.date).format(DATE_FORMAT)}
+                                  </p>
+                                  <p className='text-sm text-muted-foreground'>
+                                    ID: {inventory.id}
+                                  </p>
+                                </div>
                               </div>
+                              <CarouselSize />
                             </div>
-                            <CarouselSize />
+                            {event.inventories &&
+                            index === event.inventories.length - 1 ? null : (
+                              <Separator />
+                            )}
                           </div>
-                          {event.inventories &&
-                          index === event.inventories.length - 1 ? null : (
-                            <Separator />
-                          )}
-                        </div>
+                        </Link>
                       );
                     })}
                 </div>

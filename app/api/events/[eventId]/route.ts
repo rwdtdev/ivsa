@@ -9,13 +9,18 @@ import {
 import { ParticipantService } from '@/core/participant/ParticipantService';
 import { EventManager } from '@/core/event/EventManager';
 import { EventService } from '@/core/event/EventService';
+import { UserService } from '@/core/user/UserService';
 
 interface IContext {
   params: { eventId: string };
 }
 
 export async function PUT(request: NextRequest, context: IContext) {
-  const eventManager = new EventManager(new EventService(), new ParticipantService());
+  const eventManager = new EventManager(
+    new EventService(),
+    new ParticipantService(),
+    new UserService()
+  );
 
   try {
     const { eventId } = UpdateEventPathParamsSchema.parse(context.params);
@@ -32,7 +37,11 @@ export async function PUT(request: NextRequest, context: IContext) {
 }
 
 export async function DELETE(_: NextRequest, context: IContext) {
-  const eventManager = new EventManager(new EventService(), new ParticipantService());
+  const eventManager = new EventManager(
+    new EventService(),
+    new ParticipantService(),
+    new UserService()
+  );
 
   try {
     const { eventId } = RemoveEventPathParamsSchema.parse(context.params);

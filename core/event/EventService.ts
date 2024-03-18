@@ -81,7 +81,10 @@ export class EventService {
       where: { id },
       include: {
         inventories: true,
-        participants: { include: { user: true } }
+        participants: {
+          include: { user: true },
+          orderBy: { userId: { sort: 'desc', nulls: 'last' } }
+        }
       }
     });
 

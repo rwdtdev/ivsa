@@ -13,15 +13,26 @@ import { UserView } from '@/types/user';
 import { PaginatedResponse } from '@/server/types';
 import { UserRole, UserStatus } from '@prisma/client';
 import { UserCreateData } from '@/core/user/types';
+import { UserManager } from '@/core/user/UserManager';
+import { IvaService } from '@/core/iva/IvaService';
+import { DepartmentService } from '@/core/department/DepartmentService';
+import { ParticipantService } from '@/core/participant/ParticipantService';
+import { OrganisationService } from '@/core/organisation/OrganisationService';
 
 const cache = new Cache({ checkperiod: 120 });
 
 export async function createUserAction(formData: UserFormData): Promise<any> {
-  const userService = new UserService();
+  const userManager = new UserManager(
+    new IvaService(),
+    new UserService(),
+    new DepartmentService(),
+    new ParticipantService(),
+    new OrganisationService()
+  );
 
   try {
     // TODO Refactor type casting
-    await userService.create(formData as UserCreateData);
+    await userManager.createUser(formData as UserCreateData);
   } catch (error) {
     console.debug(error);
     return { error: JSON.stringify(error, Object.getOwnPropertyNames(error)) };

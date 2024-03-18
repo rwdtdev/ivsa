@@ -14,10 +14,10 @@ const participantSchema = z
 
 export const CreateEventSchema = z
   .object({
-    commandId: z.string().trim().min(1).uuid(),
+    commandId: z.string().trim().min(1),
     commandNumber: z.string().trim().min(1),
     commandDate: isoDatetimeSchema,
-    orderId: z.string().trim().min(1).uuid(),
+    orderId: z.string().trim().min(1),
     orderNumber: z.string().trim().min(1),
     orderDate: isoDatetimeSchema,
     auditStart: isoDatetimeSchema,

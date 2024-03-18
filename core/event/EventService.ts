@@ -32,8 +32,8 @@ const serializeToView = (event: Event): EventView => {
 export class EventService {
   private prisma: PrismaClient | TransactionSession;
 
-  constructor(transactionSession?: TransactionSession) {
-    this.prisma = transactionSession ?? prisma;
+  constructor(session?: TransactionSession) {
+    this.prisma = session || prisma;
   }
 
   withSession(session: TransactionSession) {

@@ -1,4 +1,5 @@
 import _ from 'underscore';
+import prisma from '@/core/prisma';
 import { SoiParticipantRoles } from '@/constants/mappings/soi';
 import { TransactionSession } from '@/types/prisma';
 import { PrismaClient, UserRole } from '@prisma/client';
@@ -9,7 +10,7 @@ export class ParticipantService {
   private prisma: PrismaClient | TransactionSession;
 
   constructor(session?: TransactionSession) {
-    this.prisma = session ?? prisma;
+    this.prisma = session || prisma;
   }
 
   withSession(session: TransactionSession) {

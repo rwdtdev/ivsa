@@ -1,3 +1,4 @@
+import prisma from '@/core/prisma';
 import { verifyToken } from '@/lib/jwt';
 import { generateAccessToken } from '@/lib/auth';
 import { UserSession } from '@/types/user';
@@ -15,7 +16,7 @@ export const refresh = async (refreshToken?: string): Promise<string> => {
     );
 
     if (decoded) {
-      const user = await prisma.user.findFirst({
+      const user = await prisma?.user.findFirst({
         where: {
           id: decoded.id,
           username: decoded.username

@@ -7,7 +7,7 @@ export class OrganisationService {
   private prisma: PrismaClient | TransactionSession;
 
   constructor(session?: TransactionSession) {
-    this.prisma = session ?? prisma;
+    this.prisma = session || prisma;
   }
 
   withSession(session: TransactionSession) {

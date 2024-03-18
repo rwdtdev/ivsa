@@ -1,3 +1,4 @@
+import prisma from '@/core/prisma';
 import { TransactionSession } from '@/types/prisma';
 import { InventoryObject, PrismaClient } from '@prisma/client';
 import { InventoryObjectCreateData } from './types';
@@ -6,7 +7,7 @@ export class InventoryObjectService {
   private prisma: PrismaClient | TransactionSession;
 
   constructor(transactionSession?: TransactionSession) {
-    this.prisma = transactionSession ?? prisma;
+    this.prisma = transactionSession || prisma;
   }
 
   withSession(session: TransactionSession) {

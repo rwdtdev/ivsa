@@ -1,5 +1,7 @@
 import { UserStatus } from '@prisma/client';
 import { UserService } from '../user/UserService';
+import moment from 'moment';
+import { ISO_DATETIME_FORMAT } from '@/constants/date';
 
 export class AccountManager {
   private userService: UserService;
@@ -15,7 +17,7 @@ export class AccountManager {
       total,
       users: items.map(({ tabelNumber, expiresAt, status }) => ({
         tabelNumber,
-        expiresAt,
+        expiresAt: moment(expiresAt).format(ISO_DATETIME_FORMAT),
         isBlocked: status === UserStatus.BLOCKED || expiresAt.getTime() < Date.now()
       }))
     };

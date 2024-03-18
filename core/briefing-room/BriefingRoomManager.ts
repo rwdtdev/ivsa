@@ -13,6 +13,8 @@ import { IvaRolesMapper } from '@/constants/mappings/iva';
 import { CloseBriefingRoomData } from '@/app/api/briefing-rooms/close/validation';
 import { CreateBriefingRoomData } from '@/app/api/briefing-rooms/create/validation';
 import { EventService } from '../event/EventService';
+import { ISO_DATETIME_FORMAT } from '@/constants/date';
+import moment from 'moment';
 
 export class BriefingRoomManager {
   private ivaService: IvaService;
@@ -92,7 +94,7 @@ export class BriefingRoomManager {
           .filter(({ user }) => user)
           .map(({ user }) => ({
             tabelNumber: user.tabelNumber,
-            expiresAt: user.expiresAt,
+            expiresAt: moment(user.expiresAt).format(ISO_DATETIME_FORMAT),
             isBlocked:
               user.status === UserStatus.BLOCKED || user.expiresAt.getTime() < Date.now()
           }))

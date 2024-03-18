@@ -17,6 +17,8 @@ import { IvaService } from '../iva/IvaService';
 import { IvaRolesMapper } from '@/constants/mappings/iva';
 import { CloseAuditRoomData } from '@/app/api/audit-rooms/close/validation';
 import { EventService } from '../event/EventService';
+import moment from 'moment';
+import { ISO_DATETIME_FORMAT } from '@/constants/date';
 
 export class AuditRoomManager {
   private ivaService: IvaService;
@@ -156,7 +158,7 @@ export class AuditRoomManager {
           .filter(({ user }) => user)
           .map(({ user }) => ({
             tabelNumber: user.tabelNumber,
-            expiresAt: user.expiresAt,
+            expiresAt: moment(user.expiresAt).format(ISO_DATETIME_FORMAT),
             isBlocked:
               user.status === UserStatus.BLOCKED || user.expiresAt.getTime() < Date.now()
           }))

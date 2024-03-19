@@ -23,10 +23,10 @@ export type ParticipantsData = Array<{
 
 export const UpdateEventSchema = z
   .object({
-    commandId: z.string().trim().min(1).uuid(),
+    commandId: z.string().trim().min(1),
     commandNumber: z.string().trim().min(1),
     commandDate: z.string().trim().min(1).datetime(),
-    orderId: z.string().trim().min(1).uuid(),
+    orderId: z.string().trim().min(1),
     orderNumber: z.string().trim().min(1),
     orderDate: z.string().trim().min(1).datetime(),
     auditStart: z.string().trim().min(1).datetime(),

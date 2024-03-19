@@ -14,5 +14,5 @@ export const UpdateInventorySchema = z.object({
 export type UpdateInventoryData = z.infer<typeof UpdateInventorySchema>;
 
 export const PathParamsSchema = z.object({
-  inventoryId: z.string().trim().min(1).uuid()
+  inventoryId: z.string().trim().min(1)
 });

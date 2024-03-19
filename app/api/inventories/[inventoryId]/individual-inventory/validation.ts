@@ -70,14 +70,14 @@ export type CreateIndividualInventoryData = z.infer<
 >;
 
 export const PathParamsSchema = z.object({
-  inventoryId: z.string().trim().min(1).uuid()
+  inventoryId: z.string().trim().min(1)
 });
 
 export const RemoveIndividualInvenoryPathParamsSchema = z.object({
-  inventoryId: z.string().trim().min(1).uuid()
+  inventoryId: z.string().trim().min(1)
 });
 
 export const RemoveIndividualInvenoryQueryParamsSchema = z.object({
   eventId: z.string().trim().min(1).cuid(),
-  inventoryId: z.string().trim().min(1).uuid()
+  inventoryId: z.string().trim().min(1)
 });

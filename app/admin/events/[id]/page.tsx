@@ -137,11 +137,23 @@ export default function EventPage() {
                     <div>
                       {event.participants &&
                         event.participants.map(({ tabelNumber, user, role }, idx) => {
-                          const splited =
-                            (user && user.name && user.name.split(' ')) || null;
-                          const initials =
-                            splited &&
-                            [splited[0][0], splited[1][0]].join('').toUpperCase();
+                          let initials;
+
+                          if (user) {
+                            const splited = user.name.split(' ');
+
+                            if (splited.length > 1) {
+                              initials = [splited[0][0], splited[1][0]]
+                                .join('')
+                                .toUpperCase();
+                            } else if (splited.length === 1) {
+                              initials = [splited[0][0], splited[0][1]]
+                                .join('')
+                                .toUpperCase();
+                            } else {
+                              initials = <UserRoundXIcon />;
+                            }
+                          }
 
                           return (
                             <div
@@ -149,17 +161,10 @@ export default function EventPage() {
                               className='mt-3 flex items-center justify-between space-x-4'
                             >
                               <div className='flex items-center space-x-4'>
-                                {initials ? (
-                                  <Avatar>
-                                    <AvatarFallback>{initials}</AvatarFallback>
-                                  </Avatar>
-                                ) : (
-                                  <Avatar>
-                                    <AvatarFallback>
-                                      <UserRoundXIcon />
-                                    </AvatarFallback>
-                                  </Avatar>
-                                )}
+                                <Avatar>
+                                  <AvatarFallback>{initials}</AvatarFallback>
+                                </Avatar>
+
                                 <div>
                                   <p className='text-sm font-medium leading-none'>
                                     {(user && user.name) || tabelNumber}{' '}

@@ -269,6 +269,6 @@ export function fakeInventory() {
     id: faker.string.uuid(),
     code,
     shortName: names[code].shortName,
-    name: names[code].name,
+    name: names[code].name
   };
 }

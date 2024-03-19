@@ -7,8 +7,6 @@ WORKDIR /app
 # Copy application dependencies
 COPY . .
 
-RUN cp .env.sample .env
-
 # Disable Next.js telemetry
 ENV NEXT_TELEMETRY_DISABLED=true
 
@@ -27,6 +25,7 @@ WORKDIR /app
 # Copy built files from the previous stage
 COPY --from=build /app /app
 # Expose port
+RUN rm -f .env.sample
 
 # Command to run the application
 CMD ["npm", "run", "start"]

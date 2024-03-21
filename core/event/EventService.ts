@@ -135,11 +135,17 @@ export class EventService {
   async update(id: string, data: UpdateEventDataExtended) {
     const updatedEvent = await this.prisma.event.update({
       data: {
-        ...data,
-        ...(data.auditStart && { startAt: getDateFromString(data.auditStart) }),
-        ...(data.auditEnd && { endAt: getDateFromString(data.auditEnd) }),
-        ...(data.orderDate && { orderDate: getDateFromString(data.orderDate) }),
-        ...(data.commandDate && { startAt: getDateFromString(data.commandDate) })
+        ..._.omit(
+          {
+            ...data,
+            ...(data.auditStart && { startAt: getDateFromString(data.auditStart) }),
+            ...(data.auditEnd && { endAt: getDateFromString(data.auditEnd) }),
+            ...(data.orderDate && { orderDate: getDateFromString(data.orderDate) }),
+            ...(data.commandDate && { startAt: getDateFromString(data.commandDate) })
+          },
+          'auditStart',
+          'auditEnd'
+        )
       },
       where: { id }
     });

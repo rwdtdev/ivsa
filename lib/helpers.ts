@@ -11,8 +11,7 @@ function map(
   err: ProblemJson | Error | z.ZodError | any,
   allowedErrors: any[],
   UnknownProductionError: any,
-  UnknownDevelopmentError: any,
-  env: string
+  UnknownDevelopmentError: any
 ) {
   const isAllowed = _(allowedErrors).some((E) => err instanceof E);
 
@@ -25,10 +24,6 @@ function map(
         ...(message && !_.isEmpty(message) && { message })
       }))
     });
-  }
-
-  if (env === 'production') {
-    return new UnknownProductionError();
   }
 
   return err instanceof Error
@@ -47,8 +42,7 @@ export function getErrorResponse(
     originalErr,
     allowedErrors,
     UnknownProductionError,
-    UnknownDevelopmentError,
-    env
+    UnknownDevelopmentError
   );
 
   const formattedErrorByEnv =

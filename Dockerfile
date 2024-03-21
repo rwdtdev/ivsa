@@ -6,8 +6,7 @@ WORKDIR /app
 
 # Copy application dependencies
 COPY . .
-
-RUN cp .env.sample .env
+RUN rm -f .env.sample && mv .env.mivc .env
 
 # Disable Next.js telemetry
 ENV NEXT_TELEMETRY_DISABLED=true
@@ -17,7 +16,6 @@ RUN npm install
 
 # Build the Next.js application with lint disabled
 RUN npm run build
-
 # Stage 2: Production stage
 FROM node:20-alpine AS production
 
@@ -27,6 +25,7 @@ WORKDIR /app
 # Copy built files from the previous stage
 COPY --from=build /app /app
 # Expose port
+EXPOSE 3000
 
 # Command to run the application
-CMD ["npm", "run", "start"]
+CMD ["npx", "next", "start"]

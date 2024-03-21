@@ -100,12 +100,30 @@ export class IvaService {
       const baseUrl = process.env.IVA_API_URL;
       const res = await fetch(`${baseUrl}/public/system/info`, { cache: 'no-cache' });
       const data = await res.json();
-
+  
       return data;
     } catch (error) {
-      throw new IvaRequestError({ detail: toErrorWithMessage(error).message });
+      // Получение переменных окружения для включения в сообщение об ошибке
+      const envDetails = {
+        IVA_API_URL: process.env.IVA_API_URL,
+        IVA_APP_ID: process.env.IVA_APP_ID,
+        IVA_APP_SECRET: process.env.IVA_APP_SECRET,
+        IVA_APP_DOMAIN_ID: process.env.IVA_APP_DOMAIN_ID,
+      };
+  
+      // Конвертирование объекта с переменными окружения в строку JSON для добавления в детали ошибки
+      const envDetailsStr = JSON.stringify(envDetails, null, 2);
+  
+      // Добавление деталей переменных окружения в сообщение об ошибке
+      throw new IvaRequestError({
+        detail: `${toErrorWithMessage(error).message}`
+      });
     }
   }
+  
+
+  
+  
 
   async findConferenceTemplates() {
     try {

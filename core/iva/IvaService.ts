@@ -1,12 +1,13 @@
 /* eslint-disable no-useless-catch */
 import CryptoJS from 'crypto-js';
-import { IvaRequestError } from './errors';
+import { IvaConfigurationError, IvaRequestError } from './errors';
 import { toErrorWithMessage } from '@/lib/helpers';
 import {
   IvaConferenceSessionCreateRoomData,
   IvaParticipant,
   IvaUserCreateData
 } from './types';
+import ProblemJson from '@/lib/problem-json/ProblemJson';
 
 type IvaRequestOptions = {
   data?: Record<string, any>;
@@ -47,8 +48,6 @@ export class IvaService {
   private getIvaDomainId() {
     const domainId = process.env.IVA_APP_DOMAIN_ID;
 
-    console.log(domainId);
-
     if (!domainId || domainId.trim() === '') {
       throw new Error(
         'Not set IVA_APP_DOMAIN_ID option in .env file not be a null or empty'
@@ -56,6 +55,12 @@ export class IvaService {
     }
 
     return domainId;
+  }
+
+  private makeErrorDetail(ivaError: any) {
+    return {
+      detail: `${ivaError.message || ivaError.reason}. (${ivaError.type})`
+    };
   }
 
   private async request(path: string, options?: IvaRequestOptions) {
@@ -77,21 +82,43 @@ export class IvaService {
       });
 
       if (!response.ok) {
-        return await response.text();
+        throw new IvaRequestError({ detail: await response.text() });
       }
+
+      const status = response.status;
+
+      if (status === 204) return null;
 
       const contentType = response.headers.get('content-type');
-      console.log(contentType);
 
-      if (contentType && contentType.includes('application/json')) {
-        const data = JSON.parse(await response.text());
+      if (status !== 204 && contentType && contentType.includes('application/json')) {
+        const data = await response.json();
+
+        if (data.reason) {
+          let error;
+
+          switch (data.reason) {
+            case 'INVALID_SUB':
+              error = new IvaConfigurationError(this.makeErrorDetail(data));
+              break;
+            default:
+              error = new IvaRequestError(this.makeErrorDetail(data));
+              break;
+          }
+
+          throw error;
+        }
+
         return data;
       } else {
-        return;
-        // throw new Error('Response is not in JSON format');
+        throw new IvaRequestError({ detail: 'Iva response is not have json format' });
       }
     } catch (error) {
-      throw error;
+      if (error instanceof ProblemJson) {
+        throw error;
+      } else {
+        throw new IvaRequestError({ detail: toErrorWithMessage(error).message });
+      }
     }
   }
 
@@ -100,7 +127,7 @@ export class IvaService {
       const baseUrl = process.env.IVA_API_URL;
       const res = await fetch(`${baseUrl}/public/system/info`, { cache: 'no-cache' });
       const data = await res.json();
-  
+
       return data;
     } catch (error) {
       // Получение переменных окружения для включения в сообщение об ошибке
@@ -108,164 +135,99 @@ export class IvaService {
         IVA_API_URL: process.env.IVA_API_URL,
         IVA_APP_ID: process.env.IVA_APP_ID,
         IVA_APP_SECRET: process.env.IVA_APP_SECRET,
-        IVA_APP_DOMAIN_ID: process.env.IVA_APP_DOMAIN_ID,
+        IVA_APP_DOMAIN_ID: process.env.IVA_APP_DOMAIN_ID
       };
-  
-      // Конвертирование объекта с переменными окружения в строку JSON для добавления в детали ошибки
-      const envDetailsStr = JSON.stringify(envDetails, null, 2);
-  
+
       // Добавление деталей переменных окружения в сообщение об ошибке
       throw new IvaRequestError({
-        detail: `${toErrorWithMessage(error).message}`
+        detail: `${toErrorWithMessage(error).message}`,
+        env: envDetails
       });
     }
   }
-  
-
-  
-  
 
   async findConferenceTemplates() {
-    try {
-      const templates = await this.request('/integration/conference-templates', {
-        query: { domainId: this.getIvaDomainId() }
-      });
-
-      return templates;
-    } catch (error) {
-      throw new IvaRequestError({ detail: toErrorWithMessage(error).message });
-    }
+    return await this.request('/integration/conference-templates', {
+      query: { domainId: this.getIvaDomainId() }
+    });
   }
 
   async createConference(data: IvaConferenceSessionCreateRoomData) {
-    try {
-      const createdRoom = await this.request(
-        '/integration/conference-sessions/create-room',
-        {
-          method: 'POST',
-          data: { ...data, domainId: this.getIvaDomainId() }
-        }
-      );
-
-      return createdRoom;
-    } catch (error) {
-      throw new IvaRequestError({ detail: toErrorWithMessage(error).message });
-    }
+    return await this.request('/integration/conference-sessions/create-room', {
+      method: 'POST',
+      data: { ...data, domainId: this.getIvaDomainId() }
+    });
   }
 
-  async closeConference(id: string) {
-    try {
-      await this.request(`/integration/conference-sessions/${id}`, { method: 'DELETE' });
-    } catch (error) {
-      throw new IvaRequestError({ detail: toErrorWithMessage(error).message });
-    }
+  async closeConference(id: string): Promise<void> {
+    await this.request(`/integration/conference-sessions/${id}`, { method: 'DELETE' });
   }
 
   async updateConference(id: string, data: any) {
-    try {
-      await this.request(`/integration/conference-sessions/${id}`, {
-        method: 'PATCH',
-        data
-      });
-    } catch (error) {
-      throw new IvaRequestError({ detail: toErrorWithMessage(error).message });
-    }
+    return await this.request(`/integration/conference-sessions/${id}`, {
+      method: 'PATCH',
+      data
+    });
   }
 
   async findConference(id: string) {
-    try {
-      const conference = await this.request(`/integration/conference-sessions/${id}`);
-
-      return conference;
-    } catch (error) {
-      throw new IvaRequestError({ detail: toErrorWithMessage(error).message });
-    }
+    return await this.request(`/integration/conference-sessions/${id}`);
   }
 
   async addConferenceParticipants(id: string, participants: IvaParticipant[]) {
-    try {
-      await this.request(`/integration/conference-sessions/${id}/participants/add`, {
-        method: 'POST',
-        data: participants
-      });
-    } catch (error) {
-      throw new IvaRequestError({ detail: toErrorWithMessage(error).message });
-    }
+    return await this.request(`/integration/conference-sessions/${id}/participants/add`, {
+      method: 'POST',
+      data: participants
+    });
   }
 
-  async findConferenceParticipants(id: string, query: any) {
-    try {
-      const participants = await this.request(
-        `/integration/conference-sessions/${id}/participants`,
-        { query }
-      );
+  async findConferenceParticipants(id: string, query: any): Promise<Array<any>> {
+    const response = await this.request(
+      `/integration/conference-sessions/${id}/participants`,
+      {
+        query
+      }
+    );
 
-      return participants;
-    } catch (error) {
-      throw new IvaRequestError({ detail: toErrorWithMessage(error).message });
-    }
+    return response && response.data && response.data;
   }
 
   async removeConferenceParticipants(id: string, profileIds: string[]) {
-    try {
-      await this.request(`/integration/conference-sessions/${id}/participants/remove`, {
+    return await this.request(
+      `/integration/conference-sessions/${id}/participants/remove`,
+      {
         method: 'POST',
         data: profileIds
-      });
-    } catch (error) {
-      throw new IvaRequestError({ detail: toErrorWithMessage(error).message });
-    }
+      }
+    );
   }
 
   async findUsers(searchString?: string, limit: number = 20, offset: number = 0) {
-    try {
-      const query = {
+    return await this.request('/integration/users', {
+      query: {
         searchString,
         limit: limit.toString(),
         offset: offset.toString(),
         domainId: this.getIvaDomainId()
-      };
-
-      const users = await this.request('/integration/users', { query });
-
-      return users;
-    } catch (error) {
-      // @TODO: check api reasons and statuses
-      throw new IvaRequestError({ detail: toErrorWithMessage(error).message });
-    }
+      }
+    });
   }
 
   async createUser(data: IvaUserCreateData) {
-    try {
-      const user = await this.request('/integration/users', {
-        method: 'POST',
-        data: { ...data, domainId: this.getIvaDomainId() }
-      });
-
-      return user;
-    } catch (error) {
-      throw new IvaRequestError({ detail: toErrorWithMessage(error).message });
-    }
+    return await this.request('/integration/users', {
+      method: 'POST',
+      data: { ...data, domainId: this.getIvaDomainId() }
+    });
   }
 
   async updateUser(id: string, data: any) {
-    try {
-      const updatedUser = await this.request(`/integration/users/${id}`, {
-        method: 'PATCH',
-        data
-      });
-
-      return updatedUser;
-    } catch (error) {
-      throw new IvaRequestError({ detail: toErrorWithMessage(error).message });
-    }
+    return await this.request(`/integration/users/${id}`, {
+      method: 'PATCH',
+      data
+    });
   }
 
-  async removeUser(id: string) {
-    try {
-      await this.request(`/integration/users/${id}`, { method: 'DELETE' });
-    } catch (error) {
-      throw new IvaRequestError({ detail: toErrorWithMessage(error).message });
-    }
+  async removeUser(id: string): Promise<void> {
+    await this.request(`/integration/users/${id}`, { method: 'DELETE' });
   }
 }

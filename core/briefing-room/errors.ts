@@ -5,7 +5,8 @@ export const {
   BriefingParticipantsMustContainSpeaker,
   NotRegisteredUserInIvaError,
   EventParticipantsMustBeNotEmptyError,
-  BriefingRoomIsNotOpened
+  BriefingRoomIsNotOpened,
+  BriefingAlreadyEndError
 } = makeErrorDictionary()({
   EventParticipantsMustBeNotEmptyError: {
     type: 'urn:problem-type:event-participants-must-be-not-empty-error',
@@ -30,6 +31,11 @@ export const {
   BriefingRoomIsNotOpened: {
     type: 'urn:problem-type:briefing-room-is-not-opened',
     title: 'Комната видеоинструктажа не открыта',
+    status: 409
+  },
+  BriefingAlreadyEndError: {
+    type: 'urn:problem-type:briefing-already-end-error',
+    title: 'Видеоинструктаж уже завершен',
     status: 409
   }
 });

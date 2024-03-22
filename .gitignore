@@ -45,4 +45,4 @@ next-env.d.ts
 # Compiled faker functions for create entities into prisma seeds
 /prisma/fixtures/fake-data.js
 
-/docs/models
+/docs/models/

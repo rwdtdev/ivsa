@@ -3,8 +3,8 @@ import {
   Event,
   EventStatus,
   Inventory,
-  User,
-  UserRole
+  Participant,
+  User
 } from '@prisma/client';
 import { UpdateEventData } from '@/app/api/events/[eventId]/validation';
 import { SortOrder } from '@/constants/data';
@@ -37,18 +37,25 @@ export type EventsGetData = Partial<{
   };
 }>;
 
-export type EventView = Omit<Event, 'startAt' | 'endAt' | 'commandDate' | 'orderDate'> & {
+export type ParticipantWithUser = Participant & { user: User };
+
+export type RegisteredParticipant = Participant & {
+  user: Omit<User, 'ivaProfileId'> & { ivaProfileId: string };
+};
+
+export type EventWithIncludeFileds = Event & {
+  participants?: ParticipantWithUser[];
+  inventories?: Inventory[];
+};
+
+export type EventView = Omit<
+  EventWithIncludeFileds,
+  'startAt' | 'endAt' | 'orderDate' | 'commandDate' | 'participants' | 'inventories'
+> & {
   startAt: string;
   endAt: string;
-  commandDate: string;
   orderDate: string;
-  participants?: {
-    name: string;
-    tabelNumber: string;
-    role: UserRole;
-    user: User;
-    inventory: Inventory;
-    event: Event;
-  }[];
-  inventories?: Inventory[];
+  commandDate: string;
+  participants: ParticipantWithUser[] | [];
+  inventories: Inventory[] | [];
 };

@@ -1,18 +1,18 @@
-import { worker } from '@/lib/jobs';
+const { worker } = require('../../lib/jobs');
 
 if (!process.env.JOBS) {
   throw new Error('Process env variable JOBS is not defined');
 }
 
-export type JobConfig = {
-  [key: string]: {
-    schedule: string;
-    enabled: boolean;
-    options: Record<string, unknown>;
-  };
-};
+// export type JobConfig = {
+//   [key: string]: {
+//     schedule: string;
+//     enabled: boolean;
+//     options: Record<string, unknown>;
+//   };
+// };
 
-const config: JobConfig = JSON.parse(process.env.JOBS);
+const config = JSON.parse(process.env.JOBS);
 
 worker.create({
   jobsDir: 'jobs',

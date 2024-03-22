@@ -14,11 +14,11 @@ import { CreateInventoryData } from '@/app/api/audit-rooms/create/validation';
 import { getDateFromString } from '@/server/utils';
 import { mapToInventoryObject } from '@/core/inventory/mappers/InventoryObjectsMapper';
 import { IvaService } from '../iva/IvaService';
-import { IvaRolesMapper } from '@/constants/mappings/iva';
+import { IvaRoles, IvaRolesMapper } from '@/constants/mappings/iva';
 import { CloseAuditRoomData } from '@/app/api/audit-rooms/close/validation';
 import { EventService } from '../event/EventService';
-import moment from 'moment';
-import { ISO_DATETIME_FORMAT } from '@/constants/date';
+import { toUTCDatetime } from '@/lib/helpers/dates';
+import { ParticipantWithUser } from '../event/types';
 
 export class AuditRoomManager {
   private ivaService: IvaService;
@@ -38,6 +38,15 @@ export class AuditRoomManager {
     this.inventoryObjectService = inventoryObjectService;
   }
 
+  async getAuditJoinLink(conferenceSessionId: string): Promise<string> {
+    const participants = await this.ivaService.findConferenceParticipants(
+      conferenceSessionId,
+      { requestedData: ['JOIN_LINK'] }
+    );
+
+    return participants[0].joinLink;
+  }
+
   async createRoom({
     eventId,
     inventoryId,
@@ -47,8 +56,6 @@ export class AuditRoomManager {
     inventoryNumber,
     inventoryObjects
   }: CreateInventoryData & { complexInventoryId?: string }) {
-    let conferenceSessionId;
-
     return await doTransaction(async (session: TransactionSession) => {
       const eventService = this.eventService.withSession(session);
       const inventoryService = this.inventoryService.withSession(session);
@@ -69,23 +76,27 @@ export class AuditRoomManager {
         throw new BriefingRoomIsStillOpenError();
       }
 
-      if (!event.participants || _.isEmpty(event.participants)) {
+      if (_.isEmpty(event.participants)) {
         throw new EmptyPartisipantsListError();
       }
 
-      const registeredIvaUsers = event.participants.filter(
-        ({ user }) =>
+      const registeredAndNotBlockedParticipants = event.participants.filter(
+        ({ user }: ParticipantWithUser) =>
           user &&
           user.ivaProfileId &&
           user.status !== UserStatus.BLOCKED &&
           user.status !== UserStatus.RECUSED
       );
 
-      if (_.isEmpty(registeredIvaUsers)) {
-        throw new EmptyPartisipantsListError();
-      }
+      console.warn(registeredAndNotBlockedParticipants);
 
-      const inventory = await inventoryService.create({
+      const speaker = registeredAndNotBlockedParticipants.find(
+        ({ role }) => IvaRolesMapper[role] === IvaRoles.SPEAKER
+      );
+
+      const speakerIvaProfileId = eventService.validateSpeakerAndGetIvaProfileId(speaker);
+
+      const createdInventory = await inventoryService.create({
         eventId,
         id: complexInventoryId ?? inventoryId,
         name: InventoryCodes[inventoryCode].name,
@@ -99,14 +110,11 @@ export class AuditRoomManager {
       const intentoryObjectPromises = inventoryObjects.map(async (object: any) =>
         inventoryObjectService.create({
           ...mapToInventoryObject(inventoryCode, object),
-          inventoryId: inventory.id
+          inventoryId: createdInventory.id
         })
       );
 
       await Promise.all(intentoryObjectPromises);
-
-      const speakerIvaProfileId =
-        eventService.assertSpeakerExistAndRegisteredInIva(event);
 
       const conference = await this.ivaService.createConference({
         name: `Видеоинвентаризация по описи №${inventoryNumber}`,
@@ -134,35 +142,27 @@ export class AuditRoomManager {
             { key: 'ALWAYS_SHOW_PARTICIPANT_IN_STAGE', value: true }
           ]
         },
-        participants: registeredIvaUsers.map(({ user, role }) => ({
+        participants: registeredAndNotBlockedParticipants.map(({ user, role }) => ({
           interlocutor: { profileId: user.ivaProfileId as string },
           roles: [IvaRolesMapper[role]],
           interpreterLanguagesPair: ['RUSSIAN']
         }))
       });
-
-      conferenceSessionId = conference.conferenceSessionId;
-
-      const participants = await this.ivaService.findConferenceParticipants(
-        conferenceSessionId,
-        { requestedData: ['JOIN_LINK'] }
-      );
-
-      const link = participants.data[0].joinLink;
+      const link = await this.getAuditJoinLink(conference.conferenceSessionId);
 
       await inventoryService.update(inventoryId, {
         auditRoomInviteLink: link,
-        auditSessionId: conferenceSessionId
+        auditSessionId: conference.conferenceSessionId
       });
 
       return {
-        auditId: conferenceSessionId,
+        auditId: conference.conferenceSessionId,
         auditLink: link,
         users: event.participants
           .filter(({ user }) => user)
           .map(({ user }) => ({
             tabelNumber: user.tabelNumber,
-            expiresAt: moment(user.expiresAt).format(ISO_DATETIME_FORMAT),
+            expiresAt: toUTCDatetime(user.expiresAt),
             isRecused: user.status === UserStatus.RECUSED,
             isBlocked:
               user.status === UserStatus.BLOCKED || user.expiresAt.getTime() < Date.now()
@@ -191,7 +191,6 @@ export class AuditRoomManager {
         });
       }
 
-      await this.ivaService.closeConference(inventory.auditSessionId);
       await eventService.update(eventId, { status: EventStatus.CLOSED });
     });
   }

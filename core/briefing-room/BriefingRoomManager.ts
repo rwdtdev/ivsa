@@ -2,19 +2,20 @@ import _ from 'underscore';
 import { doTransaction } from '@/lib/prisma-transaction';
 import { TransactionSession } from '@/types/prisma';
 import {
+  BriefingAlreadyEndError,
   BriefingRoomAlreadyExistError,
   BriefingRoomIsNotOpened,
   EventParticipantsMustBeNotEmptyError
 } from './errors';
-import { BriefingStatus, UserRole, UserStatus } from '@prisma/client';
+import { BriefingStatus, UserStatus } from '@prisma/client';
 
 import { IvaService } from '../iva/IvaService';
-import { IvaRolesMapper } from '@/constants/mappings/iva';
+import { IvaRoles, IvaRolesMapper } from '@/constants/mappings/iva';
 import { CloseBriefingRoomData } from '@/app/api/briefing-rooms/close/validation';
 import { CreateBriefingRoomData } from '@/app/api/briefing-rooms/create/validation';
 import { EventService } from '../event/EventService';
-import { ISO_DATETIME_FORMAT } from '@/constants/date';
-import moment from 'moment';
+import { toUTCDatetime } from '@/lib/helpers/dates';
+import { ParticipantWithUser } from '../event/types';
 
 export class BriefingRoomManager {
   private ivaService: IvaService;
@@ -25,32 +26,47 @@ export class BriefingRoomManager {
     this.eventService = eventService;
   }
 
+  async getBriefingJoinLink(conferenceSessionId: string): Promise<string> {
+    const participants = await this.ivaService.findConferenceParticipants(
+      conferenceSessionId,
+      { requestedData: ['JOIN_LINK'] }
+    );
+
+    return participants[0].joinLink;
+  }
+
   async createRoom({ eventId }: CreateBriefingRoomData) {
     return await doTransaction(async (session: TransactionSession) => {
       const eventService = this.eventService.withSession(session);
       const event = await eventService.getById(eventId);
 
-      if (event.briefingSessionId) {
+      if (event.briefingStatus === BriefingStatus.PASSED) {
+        throw new BriefingAlreadyEndError();
+      }
+
+      if (event.briefingStatus === BriefingStatus.IN_PROGRESS) {
         throw new BriefingRoomAlreadyExistError();
       }
 
-      if (!event.participants || _.isEmpty(event.participants)) {
+      if (_.isEmpty(event.participants)) {
         throw new EventParticipantsMustBeNotEmptyError();
       }
 
       const registeredAndNotBlockedParticipants = event.participants.filter(
-        ({ user, ...participant }) =>
+        ({ user }: ParticipantWithUser) =>
           user &&
           user.ivaProfileId &&
-          participant.role !== UserRole.CHAIRMAN &&
           user.status !== UserStatus.BLOCKED &&
           user.status !== UserStatus.RECUSED
       );
 
-      const speakerIvaProfileId =
-        eventService.assertSpeakerExistAndRegisteredInIva(event);
+      const speaker = registeredAndNotBlockedParticipants.find(
+        ({ role }) => IvaRolesMapper[role] === IvaRoles.SPEAKER
+      );
 
-      const createdRoom = await this.ivaService.createConference({
+      const speakerIvaProfileId = eventService.validateSpeakerAndGetIvaProfileId(speaker);
+
+      const conference = await this.ivaService.createConference({
         name: `Видеоинструктаж по событию инвентаризации`,
         description: 'Видеоинструктаж по событию инвентаризации',
         owner: { profileId: speakerIvaProfileId },
@@ -78,27 +94,22 @@ export class BriefingRoomManager {
         }))
       });
 
-      const participants = await this.ivaService.findConferenceParticipants(
-        createdRoom.conferenceSessionId,
-        { requestedData: ['JOIN_LINK'] }
-      );
-
-      const link = participants.data[0].joinLink;
+      const link = await this.getBriefingJoinLink(conference.conferenceSessionId);
 
       await eventService.update(eventId, {
         briefingStatus: BriefingStatus.IN_PROGRESS,
         briefingRoomInviteLink: link,
-        briefingSessionId: createdRoom.conferenceSessionId
+        briefingSessionId: conference.conferenceSessionId
       });
 
       return {
-        briefingId: createdRoom.conferenceSessionId,
+        briefingId: conference.conferenceSessionId,
         briefingLink: link,
         users: event.participants
           .filter(({ user }) => user)
           .map(({ user }) => ({
             tabelNumber: user.tabelNumber,
-            expiresAt: moment(user.expiresAt).format(ISO_DATETIME_FORMAT),
+            expiresAt: toUTCDatetime(user.expiresAt),
             isRecused: user.status === UserStatus.RECUSED,
             isBlocked:
               user.status === UserStatus.BLOCKED || user.expiresAt.getTime() < Date.now()
@@ -115,6 +126,10 @@ export class BriefingRoomManager {
     await this.eventService.assertExist(eventId);
 
     const event = await this.eventService.getById(eventId);
+
+    if (event.briefingStatus === BriefingStatus.PASSED) {
+      throw new BriefingAlreadyEndError();
+    }
 
     if (!event.briefingSessionId) {
       throw new BriefingRoomIsNotOpened();

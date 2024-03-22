@@ -3,7 +3,7 @@ import { z } from 'zod';
 
 const participantSchema = z.object({
   tabelNumber: z.string().trim().length(8),
-  roleId: z.nativeEnum(SoiParticipantRolesEnum)
+  roleId: z.enum([SoiParticipantRolesEnum.ACCOUNTANT, SoiParticipantRolesEnum.INSPECTOR])
 });
 
 export const UpdateInventorySchema = z.object({

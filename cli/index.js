@@ -1,15 +1,12 @@
-#! /usr/bin/env node
-
-import figlet from 'figlet';
-import { Command } from 'commander';
-import { jobs } from '@/lib/jobs';
-import { JobConfig } from '@/jobs/worker';
+const figlet = require('figlet');
+const { Command } = require('commander');
+const { jobs } = require('../lib/jobs');
 
 if (!process.env.JOBS) {
   throw new Error('Process env variable JOBS is not defined');
 }
 
-const jobsConfig: JobConfig = JSON.parse(process.env.JOBS);
+const jobsConfig = JSON.parse(process.env.JOBS);
 
 const program = new Command();
 

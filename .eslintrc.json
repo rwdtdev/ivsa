@@ -27,6 +27,7 @@
   },
   "ignorePatterns": ["components/ui"],
   "rules": {
+    "react-hooks/exhaustive-deps": 0,
     "react-hooks/rules-of-hooks": "error",
     "react/react-in-jsx-scope": 0,
     "react/display-name": 0,

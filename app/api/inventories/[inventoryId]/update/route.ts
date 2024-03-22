@@ -1,31 +1,28 @@
-import { NextRequest, NextResponse } from 'next/server';
-import { makeResponseCORSLess } from '@/lib/api/helpers';
+import { NextRequest } from 'next/server';
 import { InventoryService } from '@/core/inventory/InventoryService';
 import { InventoryObjectService } from '@/core/inventory-object/InventoryObjectService';
 import { InventoryManager } from '@/core/inventory/InventoryManager';
 import { getErrorResponse } from '@/lib/helpers';
+import { UpdateInventoryPathParamsSchema, UpdateInventorySchema } from './validation';
 
-interface iContext {
-  params: {
-    inventoryId: string;
-  };
+interface IContext {
+  params: { inventoryId: string };
 }
 
-export async function POST(request: NextRequest, context: iContext) {
-  const reqBody = await request.json();
-  const { inventoryId } = context.params;
-  const eventId = reqBody.eventId;
-
-  const inventoryManager = new InventoryManager(new InventoryService(), new InventoryObjectService());
+export async function POST(request: NextRequest, context: IContext) {
+  const inventoryManager = new InventoryManager(
+    new InventoryService(),
+    new InventoryObjectService()
+  );
 
   try {
-    await inventoryManager.updateInventory(eventId, inventoryId, reqBody);
+    const data = UpdateInventorySchema.parse(await request.json());
+    const { inventoryId } = UpdateInventoryPathParamsSchema.parse(context.params);
 
-    const resp: NextResponse = new NextResponse(undefined, { status: 204 });
+    await inventoryManager.updateInventory(inventoryId, data);
 
-    return makeResponseCORSLess(resp);
-  } catch (err: any) {
-
-    return getErrorResponse(err);
+    return new Response(null, { status: 204 });
+  } catch (error) {
+    return getErrorResponse(error);
   }
 }

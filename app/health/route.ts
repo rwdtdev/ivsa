@@ -22,7 +22,7 @@ export async function GET() {
     IVA_API_URL: process.env.IVA_API_URL,
     IVA_APP_ID: process.env.IVA_APP_ID,
     IVA_APP_SECRET: process.env.IVA_APP_SECRET,
-    IVA_APP_DOMAIN_ID: process.env.IVA_APP_DOMAIN_ID,
+    IVA_APP_DOMAIN_ID: process.env.IVA_APP_DOMAIN_ID
   };
 
   const iva: IvaHealthcheck = {
@@ -41,7 +41,6 @@ export async function GET() {
   } catch (err) {
     iva.status = 'NOT OK';
     iva.error = err;
-    // Нет необходимости добавлять envDetails здесь, так как они уже добавлены выше
   }
 
   return NextResponse.json({ iva }, { status: 201 });

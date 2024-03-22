@@ -1,9 +1,11 @@
-import { Inventory, InventoryStatus } from "@prisma/client";
-import { InventoryObjectService } from "../inventory-object/InventoryObjectService";
-import { InventoryService } from "./InventoryService";
-import { InventoryCodes } from "./types";
-import { mapToInventoryObject } from "./mappers/InventoryObjectsMapper";
-import { EventService } from "../event/EventService";
+import { Inventory, InventoryStatus } from '@prisma/client';
+import { InventoryObjectService } from '../inventory-object/InventoryObjectService';
+import { InventoryService } from './InventoryService';
+import { InventoryCodes } from './types';
+import { mapToInventoryObject } from './mappers/InventoryObjectsMapper';
+import { doTransaction } from '@/lib/prisma-transaction';
+import { TransactionSession } from '@/types/prisma';
+import { UpdateInventoryData } from '@/app/api/inventories/[inventoryId]/update/validation';
 
 export interface InventoryUpdateRequestBody {
   eventId: string;
@@ -27,36 +29,44 @@ export class InventoryManager {
     this.inventoryObjectService = inventoryObjectService;
   }
 
-  async updateInventory(eventId: string, inventoryId: string, reqBody: InventoryUpdateRequestBody) {
-    const newOrOld = <T>(bodyPropName: string, inventoryPropName: string): T => (reqBody[bodyPropName as keyof InventoryUpdateRequestBody] ?? currentInventory[inventoryPropName as keyof Inventory]) as T;
+  async updateInventory(inventoryId: string, { eventId, ...data }: UpdateInventoryData) {
+    await doTransaction(async (session: TransactionSession) => {
+      const newOrOld = <T>(bodyPropName: string, inventoryPropName: string): T =>
+        (data[bodyPropName as keyof Omit<UpdateInventoryData, 'eventId'>] ??
+          inventory[inventoryPropName as keyof Inventory]) as T;
 
-    await this.inventoryService.assertExistAndBelongEvent(inventoryId, eventId);
+      const inventoryService = this.inventoryService.withSession(session);
+      const inventoryObjectService = this.inventoryObjectService.withSession(session);
 
-    const currentInventory = await this.inventoryService.getById(inventoryId);
+      await inventoryService.assertExistAndBelongEvent(inventoryId, eventId);
 
-    const newInventoryData = {
-      eventId: newOrOld<string>('eventId', 'eventId'),
-      number: newOrOld<string>('inventoryNumber', 'number'),
-      code: newOrOld<string>('inventoryCode', 'code'),
-      shortName: InventoryCodes[ newOrOld('inventoryCode', 'code') as keyof typeof InventoryCodes ].shortName,
-      name: InventoryCodes[ newOrOld('inventoryCode', 'code') as keyof typeof InventoryCodes ].name,
-      date: newOrOld<Date>('inventoryDate', 'date'),
-      status: newOrOld<InventoryStatus>('inventoryStatus', 'status'),
-      parentId: newOrOld<string>('inventoryParentId', 'parentId')
-    };
+      const inventory = await inventoryService.getById(inventoryId);
 
-    const updatedInventory = await this.inventoryService.update(inventoryId, newInventoryData);
+      await inventoryService.update(inventoryId, {
+        eventId: newOrOld<string>('eventId', 'eventId'),
+        number: newOrOld<string>('inventoryNumber', 'number'),
+        code: newOrOld<string>('inventoryCode', 'code'),
+        shortName:
+          InventoryCodes[newOrOld('inventoryCode', 'code') as keyof typeof InventoryCodes]
+            .shortName,
+        name: InventoryCodes[
+          newOrOld('inventoryCode', 'code') as keyof typeof InventoryCodes
+        ].name,
+        date: newOrOld<Date>('inventoryDate', 'date'),
+        status: newOrOld<InventoryStatus>('inventoryStatus', 'status'),
+        parentId: newOrOld<string>('inventoryParentId', 'parentId')
+      });
 
-    if (Boolean(reqBody.inventoryObjects)) {
-      const intentoryObjectPromises = reqBody.inventoryObjects!.map(async (object: any) =>
-        this.inventoryObjectService.update({
+      if (!data.inventoryObjects) return;
+
+      const intentoryObjectPromises = data.inventoryObjects!.map(async (object: any) =>
+        inventoryObjectService.update({
           ...mapToInventoryObject(newOrOld('inventoryCode', 'code'), object),
-          inventoryId: inventoryId,
+          inventoryId
         })
       );
-      
+
       await Promise.all(intentoryObjectPromises);
-    }
-    return updatedInventory;
+    });
   }
 }

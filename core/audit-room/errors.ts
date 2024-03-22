@@ -3,7 +3,8 @@ import { makeErrorDictionary } from '@/lib/problem-json';
 export const {
   BriefingRoomIsStillOpenError,
   EmptyPartisipantsListError,
-  AuditRoomIsNotOpened
+  AuditRoomIsNotOpened,
+  AuditRoomAlreadyOpenedOrEndedError
 } = makeErrorDictionary()({
   BriefingRoomIsStillOpenError: {
     type: 'urn:problem-type:briefing-room-is-still-open-error',
@@ -12,12 +13,17 @@ export const {
   },
   EmptyPartisipantsListError: {
     type: 'urn:problem-type:empty-participatns-list-error',
-    title: 'Список участников пуст',
+    title: 'Список зарегистрированных участников пуст',
     status: 400
   },
   AuditRoomIsNotOpened: {
     type: 'urn:problem-type:audit-room-is-not-opened',
     title: 'Комната видеоинвентаризации не открыта',
+    status: 409
+  },
+  AuditRoomAlreadyOpenedOrEndedError: {
+    type: 'urn:problem-type:audit-room-already-opened-or-ended-error',
+    title: 'Инвентаризации по описи уже начата или окончена',
     status: 409
   }
 });

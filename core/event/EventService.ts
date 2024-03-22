@@ -1,8 +1,14 @@
 import { SortOrder } from '@/constants/data';
 import prisma from '@/core/prisma';
 import { TransactionSession } from '@/types/prisma';
-import { Event, PrismaClient, UserRole, UserStatus } from '@prisma/client';
-import { EventView, EventsGetData, UpdateEventDataExtended } from './types';
+import { PrismaClient, UserRole, UserStatus } from '@prisma/client';
+import {
+  EventView,
+  EventWithIncludeFileds,
+  EventsGetData,
+  ParticipantWithUser,
+  UpdateEventDataExtended
+} from './types';
 import { PaginatedResponse } from '@/server/types';
 import moment from 'moment';
 import {
@@ -13,16 +19,17 @@ import {
   SpeakerIsNotRegisteredInIvaError
 } from './errors';
 import { SoiParticipantRoles } from '@/constants/mappings/soi';
-import { IvaRoles, IvaRolesMapper } from '@/constants/mappings/iva';
 import { CreateEventData } from '@/app/api/events/validation';
 import { getDateFromString } from '@/server/utils';
 import _ from 'underscore';
 
 const defaultLimit = 100;
 
-const serializeToView = (event: Event): EventView => {
+const serializeToView = (event: EventWithIncludeFileds): EventView => {
   return {
     ...event,
+    participants: event.participants || [],
+    inventories: event.inventories || [],
     startAt: moment(event.startAt).toISOString(),
     endAt: moment(event.endAt).toISOString(),
     commandDate: moment(event.commandDate).toISOString(),
@@ -49,11 +56,7 @@ export class EventService {
     }
   }
 
-  assertSpeakerExistAndRegisteredInIva({ participants }: EventView) {
-    const speaker =
-      participants &&
-      participants.find(({ role }) => IvaRolesMapper[role] === IvaRoles.SPEAKER);
-
+  validateSpeakerAndGetIvaProfileId(speaker?: ParticipantWithUser): string {
     if (!speaker) {
       throw new EventParticipantsMustContainSpeakerError();
     }
@@ -76,7 +79,7 @@ export class EventService {
     return speaker.user.ivaProfileId;
   }
 
-  async getById(id: string) {
+  async getById(id: string): Promise<EventView> {
     const event = await this.prisma.event.findFirst({
       where: { id },
       include: {
@@ -92,6 +95,7 @@ export class EventService {
       throw new EventNotFoundError({ detail: `Event with id (${id}) not found` });
     }
 
+    // @ts-expect-error user cannot be undefined in participant array
     return serializeToView(event);
   }
 
@@ -197,6 +201,7 @@ export class EventService {
     });
 
     return {
+      // @ts-expect-error user cannot be undefined in participant array
       items: events.map((event) => serializeToView(event)),
       pagination: {
         total: totalCount,

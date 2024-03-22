@@ -108,6 +108,7 @@ export type InventoryCreateData = Omit<
   | 'videoFiles'
   | 'parentId'
   | 'status'
+  | 'isFilesSaved'
 > & {
   parentId?: string;
 };

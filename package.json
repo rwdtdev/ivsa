@@ -8,6 +8,7 @@
     "start": "next start",
     "lint": "next lint",
     "test": "vitest",
+    "cli": "./cli/index.js",
     "test:coverage": "vitest run --coverage",
     "prisma:generate": "npx prisma generate",
     "prisma:fixtures-compile": "./node_modules/.bin/tsc ./prisma/fixtures/fake-data.ts",
@@ -113,8 +114,5 @@
   },
   "prisma": {
     "seed": "node prisma/seed-run.js"
-  },
-  "bin": {
-    "asvi": "./dist/cli/index.js"
   }
 }

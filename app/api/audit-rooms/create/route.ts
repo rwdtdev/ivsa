@@ -27,7 +27,9 @@ export async function POST(request: NextRequest) {
 
     return NextResponse.json(response, { status: 201 });
   } catch (error) {
-    await auditRoomManager.closeConference(conferenceSessionId);
+    if (conferenceSessionId) {
+      await auditRoomManager.closeConference(conferenceSessionId);
+    }
 
     return getErrorResponse(error);
   }

@@ -76,46 +76,36 @@ export class UserManager {
         isConferenceCreationEnabled: true
       });
 
-      if (!ivaResponse) {
+      if (!ivaResponse.profileId) {
         throw new CreateIvaUserError();
       }
 
-      // TODO Has a long list of error causes, can be categorized for improve in user expirience (for toast userMessage errors).
-      if (ivaResponse && !ivaResponse.profileId) {
-        try {
-          const error = JSON.parse(ivaResponse);
-          throw new CreateIvaUserError({ detail: error.reason, info: error });
-        } catch {
-          throw new CreateIvaUserError();
-        }
-      }
+      try {
+        const user = await userService.create({
+          name,
+          username,
+          email,
+          phone,
+          status,
+          departmentId,
+          organisationId,
+          role,
+          tabelNumber,
+          ivaProfileId: ivaResponse.profileId,
+          password: passwordHash,
+          passwordHashes: [passwordHash]
+        });
 
-      const user = await userService.create({
-        name,
-        username,
-        email,
-        phone,
-        status,
-        departmentId,
-        organisationId,
-        role,
-        tabelNumber,
-        ivaProfileId: ivaResponse.profileId,
-        password: passwordHash,
-        passwordHashes: [passwordHash]
-      });
+        await this.updateParticipantsUser(user);
 
-      if (!user) {
+        return user;
+      } catch (error) {
         await this.ivaService.removeUser(ivaResponse.profileId);
 
         throw new CreateIvaUserError({
           detail: `Problems occurred during the user (${username}:${tabelNumber}) save process in ASVI.`
         });
       }
-
-      await this.updateParticipantsUser(user);
-
-      return user;
     });
   }
 

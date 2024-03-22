@@ -25,6 +25,7 @@ import Link from 'next/link';
 import { EnterIcon } from '@radix-ui/react-icons';
 import { BriefingStatus, UserStatus } from '@prisma/client';
 import { UserRoundXIcon } from 'lucide-react';
+import { InventoryCodes } from '@/core/inventory/types';
 
 const breadcrumbItems = [
   {
@@ -150,9 +151,9 @@ export default function EventPage() {
                               initials = [splited[0][0], splited[0][1]]
                                 .join('')
                                 .toUpperCase();
-                            } else {
-                              initials = <UserRoundXIcon />;
                             }
+                          } else {
+                            initials = <UserRoundXIcon />;
                           }
 
                           return (
@@ -217,6 +218,14 @@ export default function EventPage() {
                                   <p className='text-md font-medium leading-none'>
                                     Опись № {inventory.number} от{' '}
                                     {moment(inventory.date).format(DATE_FORMAT)}
+                                  </p>
+                                  <p className='text-sm text-muted-foreground'>
+                                    Форма:{' '}
+                                    {
+                                      InventoryCodes[
+                                        inventory.code as keyof typeof InventoryCodes
+                                      ].shortName
+                                    }
                                   </p>
                                   <p className='text-sm text-muted-foreground'>
                                     ID: {inventory.id}

@@ -50,25 +50,18 @@ export class AuditRoomManager {
   async createRoom({
     eventId,
     inventoryId,
-    complexInventoryId,
     inventoryCode,
     inventoryDate,
     inventoryNumber,
     inventoryObjects
-  }: CreateInventoryData & { complexInventoryId?: string }) {
+  }: CreateInventoryData) {
     return await doTransaction(async (session: TransactionSession) => {
       const eventService = this.eventService.withSession(session);
       const inventoryService = this.inventoryService.withSession(session);
       const inventoryObjectService = this.inventoryObjectService.withSession(session);
 
       await eventService.assertExist(eventId);
-
-      if (complexInventoryId) {
-        await inventoryService.assertNotExist(complexInventoryId);
-        await inventoryService.assertExistAndBelongEvent(inventoryId, eventId);
-      } else {
-        await inventoryService.assertNotExist(inventoryId);
-      }
+      await inventoryService.assertNotExist(inventoryId, eventId);
 
       const event = await eventService.getById(eventId);
 
@@ -98,13 +91,12 @@ export class AuditRoomManager {
 
       const createdInventory = await inventoryService.create({
         eventId,
-        id: complexInventoryId ?? inventoryId,
+        id: inventoryId,
         name: InventoryCodes[inventoryCode].name,
         code: inventoryCode,
         number: inventoryNumber,
         shortName: InventoryCodes[inventoryCode].shortName,
-        date: getDateFromString(inventoryDate),
-        ...(complexInventoryId && { parentId: inventoryId })
+        date: getDateFromString(inventoryDate)
       });
 
       const intentoryObjectPromises = inventoryObjects.map(async (object: any) =>
@@ -181,9 +173,8 @@ export class AuditRoomManager {
       const inventoryService = this.inventoryService.withSession(session);
 
       await eventService.assertExist(eventId);
-      await inventoryService.assertExistAndBelongEvent(inventoryId, eventId);
 
-      const inventory = await inventoryService.getById(inventoryId);
+      const inventory = await inventoryService.getByIdAndEventId(inventoryId, eventId);
 
       if (!inventory.auditSessionId) {
         throw new AuditRoomIsNotOpened({

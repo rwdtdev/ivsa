@@ -88,9 +88,7 @@ export class InventoryManager {
       const inventoryService = this.inventoryService.withSession(session);
       const inventoryObjectService = this.inventoryObjectService.withSession(session);
 
-      await inventoryService.assertExistAndBelongEvent(inventoryId, eventId);
-
-      const inventory = await inventoryService.getById(inventoryId);
+      const inventory = await inventoryService.getByIdAndEventId(inventoryId, eventId);
 
       await inventoryService.update(inventoryId, {
         eventId: newOrOld<string>('eventId', 'eventId'),

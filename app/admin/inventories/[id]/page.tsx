@@ -35,6 +35,8 @@ export default function InventoryPage() {
   const id = getEntityId(pathname);
 
   const fetchEventById = async (id: string) => {
+    // TODO add event ids!!!!
+    // @ts-expect-error need add eventId second param
     const result = await getInventoryByIdAction(id);
     if (result) {
       setInventory(result);

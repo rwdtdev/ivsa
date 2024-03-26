@@ -19,8 +19,8 @@ export class InventoryService {
     return new InventoryService(session);
   }
 
-  async assertNotExist(id: string) {
-    const count = await this.prisma.inventory.count({ where: { id } });
+  async assertNotExist(id: string, eventId: string) {
+    const count = await this.prisma.inventory.count({ where: { id, eventId } });
 
     if (count && count > 0) {
       throw new InventoryAlreadyExistError();
@@ -76,8 +76,8 @@ export class InventoryService {
     }
   }
 
-  async getById(id: string): Promise<Inventory> {
-    const inventory = await this.prisma.inventory.findFirst({ where: { id } });
+  async getByIdAndEventId(id: string, eventId: string): Promise<Inventory> {
+    const inventory = await this.prisma.inventory.findFirst({ where: { id, eventId } });
 
     if (!inventory) {
       throw new InventoryNotExistError();

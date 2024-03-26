@@ -13,7 +13,9 @@ export async function DELETE(request: NextRequest, context: IContext) {
   try {
     const { inventoryId } = PathParamsSchema.parse(context.params);
     const { searchParams } = new URL(request.url);
-    const eventId = QueryParamsSchema.parse(searchParams.get('eventId'));
+    const { eventId } = QueryParamsSchema.parse({
+      eventId: searchParams.get('eventId') ?? undefined
+    });
 
     await inventoryService.assertExistAndBelongEvent(inventoryId, eventId);
     await inventoryService.removeInventoryLogical(inventoryId);

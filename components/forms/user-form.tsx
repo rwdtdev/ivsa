@@ -31,6 +31,7 @@ import {
 import { Department, Organisation, UserRole, UserStatus } from '@prisma/client';
 import { PasswordInput } from '../password-input';
 import { createUserAction, updateUserAction } from '@/app/actions/server/users';
+import _ from 'underscore';
 
 interface UserFormProps {
   userId?: string;
@@ -223,11 +224,13 @@ export const UserForm: React.FC<UserFormProps> = ({
                       </SelectTrigger>
                     </FormControl>
                     <SelectContent>
-                      {Object.keys(UserRole).map((role, idx) => (
-                        <SelectItem key={idx} value={role}>
-                          {UserRoles[role as keyof typeof UserRole]}
-                        </SelectItem>
-                      ))}
+                      {Object.keys(_.pick(UserRole, UserRole.ADMIN, UserRole.USER)).map(
+                        (role, idx) => (
+                          <SelectItem key={idx} value={role}>
+                            {UserRoles[role as keyof typeof UserRole]}
+                          </SelectItem>
+                        )
+                      )}
                     </SelectContent>
                   </Select>
                   <FormMessage />

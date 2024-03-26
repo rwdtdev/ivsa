@@ -1,4 +1,4 @@
-import { NextRequest, NextResponse } from 'next/server';
+import { NextRequest } from 'next/server';
 import { getErrorResponse } from '@/lib/helpers';
 import {
   CreateIndividualInventorySchema,
@@ -8,10 +8,8 @@ import {
 } from './validation';
 
 import { InventoryService } from '@/core/inventory/InventoryService';
-import { IvaService } from '@/core/iva/IvaService';
-import { EventService } from '@/core/event/EventService';
-import { AuditRoomManager } from '@/core/audit-room/AuditRoomManager';
 import { InventoryObjectService } from '@/core/inventory-object/InventoryObjectService';
+import { InventoryManager } from '@/core/inventory/InventoryManager';
 
 interface IContext {
   params: {
@@ -24,25 +22,28 @@ interface IContext {
 }
 
 export async function DELETE(request: NextRequest, context: IContext) {
-  const inventoryService = new InventoryService();
+  const inventoryManager = new InventoryManager(
+    new InventoryService(),
+    new InventoryObjectService()
+  );
 
   try {
-    const { inventoryId: complexInventoryId } =
+    const { inventoryId: individualInventoryId } =
       RemoveIndividualInvenoryPathParamsSchema.parse(context.params);
 
     const { searchParams } = new URL(request.url);
 
-    const { eventId, inventoryId: individualInventoryId } =
+    const { eventId, inventoryId: complexInventoryId } =
       RemoveIndividualInvenoryQueryParamsSchema.parse({
         eventId: searchParams.get('eventId'),
         inventoryId: searchParams.get('inventoryId')
       });
 
-    await inventoryService.assertExistAndBelongEvent(complexInventoryId, eventId);
-    await inventoryService.assertExist(individualInventoryId);
-    await inventoryService.assertIsParent(complexInventoryId, individualInventoryId);
-
-    await inventoryService.removeInventoryLogical(individualInventoryId);
+    await inventoryManager.removeIndividual(
+      individualInventoryId,
+      complexInventoryId,
+      eventId
+    );
 
     return new Response(null, { status: 204 });
   } catch (error) {
@@ -51,11 +52,7 @@ export async function DELETE(request: NextRequest, context: IContext) {
 }
 
 export async function POST(request: NextRequest, context: IContext) {
-  let conferenceSessionId;
-
-  const auditRoomManager = new AuditRoomManager(
-    new IvaService(),
-    new EventService(),
+  const inventoryManager = new InventoryManager(
     new InventoryService(),
     new InventoryObjectService()
   );
@@ -63,17 +60,13 @@ export async function POST(request: NextRequest, context: IContext) {
   try {
     const { inventoryId } = PathParamsSchema.parse(context.params);
 
-    const response = await auditRoomManager.createRoom({
+    await inventoryManager.createIndividual({
       ...CreateIndividualInventorySchema.parse(await request.json()),
-      inventoryId
+      id: inventoryId
     });
 
-    conferenceSessionId = response.auditId;
-
-    return NextResponse.json(response, { status: 201 });
+    return new Response(null, { status: 201 });
   } catch (error) {
-    await auditRoomManager.closeConference(conferenceSessionId);
-
     return getErrorResponse(error);
   }
 }

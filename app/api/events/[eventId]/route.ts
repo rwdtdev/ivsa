@@ -1,4 +1,4 @@
-import { NextRequest } from 'next/server';
+import { NextRequest, NextResponse } from 'next/server';
 import { getErrorResponse } from '@/lib/helpers';
 import {
   RemoveEventPathParamsSchema,
@@ -25,12 +25,12 @@ export async function PUT(request: NextRequest, context: IContext) {
   try {
     const { eventId } = UpdateEventPathParamsSchema.parse(context.params);
 
-    await eventManager.updateEvent(
+    const response = await eventManager.updateEvent(
       eventId,
       UpdateEventSchema.parse(await request.json())
     );
 
-    return new Response(null, { status: 204 });
+    return NextResponse.json(response, { status: 200, statusText: 'OK' });
   } catch (error) {
     return getErrorResponse(error);
   }

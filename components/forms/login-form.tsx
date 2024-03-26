@@ -30,6 +30,7 @@ import {
   LoginFormSchema
 } from '@/lib/form-validation-schemas/login-form-schema';
 import { PasswordInput } from '../password-input';
+import { IsBlocked } from '@/app/actions/server/users';
 
 const LoginForm = () => {
   const router = useRouter();
@@ -64,7 +65,21 @@ const LoginForm = () => {
         )
       });
     } else {
-      router.push(redirectPath);
+      const isBlocked = await IsBlocked(data.username);
+
+      if (isBlocked) {
+        toast({
+          title: 'Ошибка',
+          description: (
+            <pre className='mt-2 w-[340px] rounded-md bg-red-200 p-4'>
+              <p className='text-black'>Пользователь заблокирован.</p>
+              <p className='text-black'>Обратитесь к администратору системы.</p>
+            </pre>
+          )
+        });
+      } else {
+        router.push(redirectPath);
+      }
     }
   };
 

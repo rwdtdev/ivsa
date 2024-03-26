@@ -4,9 +4,10 @@ import { CreateEventData } from '@/app/api/events/validation';
 import { ParticipantsData, UpdateEventData } from '@/app/api/events/[eventId]/validation';
 
 import { ParticipantService } from '../participant/ParticipantService';
-import { EventStatus } from '@prisma/client';
+import { EventStatus, UserStatus } from '@prisma/client';
 import { EventService } from './EventService';
 import { UserService } from '../user/UserService';
+import { toUTCDatetime } from '@/lib/helpers/dates';
 
 export class EventManager {
   private eventService: EventService;
@@ -24,9 +25,20 @@ export class EventManager {
   }
 
   async createEvent(data: CreateEventData) {
-    const created = await this.eventService.create(data);
+    const event = await this.eventService.create(data);
 
-    return created;
+    return {
+      eventId: event.id,
+      users: event.participants
+        .filter(({ user }) => user)
+        .map(({ user }) => ({
+          tabelNumber: user.tabelNumber,
+          expiresAt: toUTCDatetime(user.expiresAt),
+          isRecused: user.status === UserStatus.RECUSED,
+          isBlocked:
+            user.status === UserStatus.BLOCKED || user.expiresAt.getTime() < Date.now()
+        }))
+    };
   }
 
   async updateEvent(id: string, data: UpdateEventData) {
@@ -38,6 +50,21 @@ export class EventManager {
 
       await this.participantService.updateParticipants(id, participants);
     }
+
+    const event = await this.eventService.getById(id);
+
+    return {
+      eventId: event.id,
+      users: event.participants
+        .filter(({ user }) => user)
+        .map(({ user }) => ({
+          tabelNumber: user.tabelNumber,
+          expiresAt: toUTCDatetime(user.expiresAt),
+          isRecused: user.status === UserStatus.RECUSED,
+          isBlocked:
+            user.status === UserStatus.BLOCKED || user.expiresAt.getTime() < Date.now()
+        }))
+    };
   }
 
   private async linkParticipantsToUsers(participants: ParticipantsData) {

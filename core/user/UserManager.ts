@@ -1,5 +1,3 @@
-import bcrypt from 'bcryptjs';
-
 import { ClientUser, UserCreateData } from './types';
 import { DepartmentService } from '../department/DepartmentService';
 import { IvaService } from '../iva/IvaService';
@@ -63,8 +61,6 @@ export class UserManager {
         await departmentService.assertExist(departmentId, 400);
       }
 
-      const passwordHash = await bcrypt.hash(password, await bcrypt.genSalt(10));
-
       const ivaResponse = await this.ivaService.createUser({
         login: username,
         userType: role === UserRole.ADMIN ? UserRole.ADMIN : UserRole.USER,
@@ -92,8 +88,7 @@ export class UserManager {
           role,
           tabelNumber,
           ivaProfileId: ivaResponse.profileId,
-          password: passwordHash,
-          passwordHashes: [passwordHash]
+          password
         });
 
         await this.updateParticipantsUser(user);

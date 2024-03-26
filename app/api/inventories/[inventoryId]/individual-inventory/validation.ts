@@ -67,7 +67,7 @@ export const CreateIndividualInventorySchema = z
 
 export type CreateIndividualInventoryData = z.infer<
   typeof CreateIndividualInventorySchema
->;
+> & { id: string };
 
 export const PathParamsSchema = z.object({
   inventoryId: z.string().trim().min(1)

@@ -129,3 +129,11 @@ export async function getUsersAction(
     };
   }
 }
+
+export async function IsBlocked(username: string) {
+  const userService = new UserService();
+
+  const user = await userService.getBy({ username });
+
+  return user.status === UserStatus.BLOCKED;
+}

@@ -1,5 +1,6 @@
-import { SortOrder } from '@/constants/data';
+import _ from 'underscore';
 import prisma from '@/core/prisma';
+import { SortOrder } from '@/constants/data';
 import { TransactionSession } from '@/types/prisma';
 import { PrismaClient, UserRole, UserStatus } from '@prisma/client';
 import {
@@ -21,7 +22,6 @@ import {
 import { SoiParticipantRoles } from '@/constants/mappings/soi';
 import { CreateEventData } from '@/app/api/events/validation';
 import { getDateFromString } from '@/server/utils';
-import _ from 'underscore';
 
 const defaultLimit = 100;
 
@@ -130,9 +130,11 @@ export class EventService {
           'auditEnd'
         ),
         participants: { create: participants }
-      }
+      },
+      include: { participants: { include: { user: true } } }
     });
 
+    // @ts-expect-error user cannot be undefined in participant array
     return serializeToView(event);
   }
 

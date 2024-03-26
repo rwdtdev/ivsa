@@ -27,6 +27,14 @@ export class InventoryService {
     }
   }
 
+  async assertNotExistWithEvent(id: string, eventId: string) {
+    const count = await this.prisma.inventory.count({ where: { id, eventId } });
+
+    if (count && count > 0) {
+      throw new InventoryAlreadyExistError();
+    }
+  }
+
   async assertExist(id: string) {
     const count = await this.prisma.inventory.count({ where: { id } });
 
@@ -47,10 +55,16 @@ export class InventoryService {
     }
   }
 
-  async removeInventoryLogical(id: string) {
-    return this.prisma.inventory.update({
+  async remove(id: string, eventId: string) {
+    return this.prisma.inventory.delete({ where: { id, eventId } });
+  }
+
+  async removeLogical(id: string) {
+    await this.prisma.inventory.updateMany({
       data: { status: InventoryStatus.REMOVED },
-      where: { id }
+      where: {
+        OR: [{ id }, { parentId: id }]
+      }
     });
   }
 

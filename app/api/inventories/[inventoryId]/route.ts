@@ -18,7 +18,7 @@ export async function DELETE(request: NextRequest, context: IContext) {
     });
 
     await inventoryService.assertExistAndBelongEvent(inventoryId, eventId);
-    await inventoryService.removeInventoryLogical(inventoryId);
+    await inventoryService.removeLogical(inventoryId);
 
     return new Response(null, { status: 204 });
   } catch (error) {

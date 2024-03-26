@@ -19,14 +19,18 @@ export class InventoryObjectService {
 
     return inventoryObject;
   }
-  
+
   async update(data: InventoryObjectCreateData): Promise<InventoryObject> {
     await this.prisma.inventoryObject.deleteMany({
-      where: { inventoryId: data.inventoryId },
-    })    
+      where: { inventoryId: data.inventoryId }
+    });
 
     const updatedInventoryObject = await this.prisma.inventoryObject.create({ data });
 
     return updatedInventoryObject;
+  }
+
+  async removeByInventoryId(inventoryId: string) {
+    await this.prisma.inventoryObject.deleteMany({ where: { inventoryId } });
   }
 }

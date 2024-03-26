@@ -3,12 +3,14 @@ import prisma from '@/core/prisma';
 import { UserCredentials } from '@/app/types';
 import { UserSession } from '@/types/user';
 import { UnauthorizedError } from '@/lib/problem-json';
+import { UserStatus } from '@prisma/client';
+
+let globalCounter = 0;
 
 export const login = async ({ username, password }: UserCredentials) => {
   if (!username || !password) {
     throw new UnauthorizedError({ detail: 'Missing username or password' });
   }
-
   const user = await prisma.user.findFirst({ where: { username } });
 
   if (!user) {
@@ -37,6 +39,15 @@ export const login = async ({ username, password }: UserCredentials) => {
 
       return { ...session, accessToken, refreshToken };
     } else {
+      if (globalCounter >= 4) {
+        await prisma.user.update({
+          data: { status: UserStatus.BLOCKED },
+          where: { username }
+        });
+      } else {
+        globalCounter++;
+      }
+
       throw new UnauthorizedError({ detail: 'Invalid email or password' });
     }
   }

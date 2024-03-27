@@ -5,6 +5,7 @@ import { doTransaction } from '@/lib/prisma-transaction';
 import { TransactionSession } from '@/types/prisma';
 import { InventoryService } from '@/core/inventory/InventoryService';
 import { ParticipantService } from '@/core/participant/ParticipantService';
+import { assertAPICallIsAuthorized } from '@/lib/api/helpers';
 
 interface IContext {
   params: { inventoryId: string };
@@ -15,6 +16,8 @@ export async function PUT(request: NextRequest, context: IContext) {
   const participantService = new ParticipantService();
 
   try {
+    assertAPICallIsAuthorized(request);
+
     const { inventoryId } = PathParamsSchema.parse(context.params);
     const { eventId, participants } = UpdateInventorySchema.parse(await request.json());
 

@@ -10,6 +10,7 @@ import {
 import { InventoryService } from '@/core/inventory/InventoryService';
 import { InventoryObjectService } from '@/core/inventory-object/InventoryObjectService';
 import { InventoryManager } from '@/core/inventory/InventoryManager';
+import { assertAPICallIsAuthorized } from '@/lib/api/helpers';
 
 interface IContext {
   params: {
@@ -28,6 +29,8 @@ export async function DELETE(request: NextRequest, context: IContext) {
   );
 
   try {
+    assertAPICallIsAuthorized(request);
+
     const { inventoryId: individualInventoryId } =
       RemoveIndividualInvenoryPathParamsSchema.parse(context.params);
 
@@ -58,6 +61,8 @@ export async function POST(request: NextRequest, context: IContext) {
   );
 
   try {
+    assertAPICallIsAuthorized(request);
+    
     const { inventoryId } = PathParamsSchema.parse(context.params);
 
     await inventoryManager.createIndividual({

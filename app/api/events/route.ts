@@ -5,6 +5,7 @@ import { EventService } from '@/core/event/EventService';
 import { EventManager } from '@/core/event/EventManager';
 import { ParticipantService } from '@/core/participant/ParticipantService';
 import { UserService } from '@/core/user/UserService';
+import { assertAPICallIsAuthorized } from '@/lib/api/helpers';
 
 export async function POST(req: NextRequest) {
   const eventManager = new EventManager(
@@ -14,6 +15,8 @@ export async function POST(req: NextRequest) {
   );
 
   try {
+    assertAPICallIsAuthorized(req);
+
     const response = await eventManager.createEvent(
       CreateEventSchema.parse(await req.json())
     );

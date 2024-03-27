@@ -4,6 +4,7 @@ import { InventoryObjectService } from '@/core/inventory-object/InventoryObjectS
 import { InventoryManager } from '@/core/inventory/InventoryManager';
 import { getErrorResponse } from '@/lib/helpers';
 import { UpdateInventoryPathParamsSchema, UpdateInventorySchema } from './validation';
+import { assertAPICallIsAuthorized } from '@/lib/api/helpers';
 
 interface IContext {
   params: { inventoryId: string };
@@ -16,6 +17,8 @@ export async function POST(request: NextRequest, context: IContext) {
   );
 
   try {
+    assertAPICallIsAuthorized(request);
+
     const data = UpdateInventorySchema.parse(await request.json());
     const { inventoryId } = UpdateInventoryPathParamsSchema.parse(context.params);
 

@@ -1,8 +1,24 @@
 import { z } from 'zod';
-import { NextResponse } from 'next/server';
+import { NextRequest, NextResponse } from 'next/server';
 import { b, cn } from './ansi-helpers';
 import { EventService } from '@/core/event/EventService';
 import { InventoryService } from '@/core/inventory/InventoryService';
+import { UnauthorizedError } from '../problem-json';
+
+export function assertAPICallIsAuthorized(request: NextRequest | Request) {
+  const basicAuthHeaderBase64String = (request.headers.get('authorization')?.slice(6) ?? '');
+
+  const nameAndKeyFromHeader = Buffer.from(basicAuthHeaderBase64String, 'base64').toString().trim();
+
+  const keyFromHeader = nameAndKeyFromHeader.slice(nameAndKeyFromHeader.indexOf(':') + 1);
+
+  const authOk = process.env.ASVI_API_KEY === keyFromHeader;
+  
+  console.log(`\nASVI_API_KEY='${process.env.ASVI_API_KEY}'\nrequest.headers.get('authorization')?.slice(6): %O\nkeyFromHeader: '${keyFromHeader}'\nauthOk: ${authOk}`, request.headers.get('authorization')?.slice(6))
+  if (!authOk) {
+    throw new UnauthorizedError();
+  }
+}
 
 export function makeResponseCORSLess(
   response: NextResponse | Response

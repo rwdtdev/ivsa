@@ -113,6 +113,7 @@
     "vitest": "^1.0.4"
   },
   "prisma": {
-    "seed": "node prisma/seed-run.js"
+    "seed": "node prisma/seed-run.js",
+    "schema": "prisma/schema.prisma"
   }
 }

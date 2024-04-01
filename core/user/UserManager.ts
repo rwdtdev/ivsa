@@ -46,6 +46,7 @@ export class UserManager {
 
     return await doTransaction(async (session: TransactionSession) => {
       const userService = this.userService.withSession(session);
+      const participantService = this.participantService.withSession(session);
       const departmentService = this.departmentService.withSession(session);
       const organisationService = this.organisationService.withSession(session);
 
@@ -91,7 +92,7 @@ export class UserManager {
           password
         });
 
-        await this.updateParticipantsUser(user);
+        await this.updateParticipantsUser(user, participantService);
 
         return user;
       } catch (error) {
@@ -104,12 +105,14 @@ export class UserManager {
     });
   }
 
-  async updateParticipantsUser({ id, tabelNumber }: ClientUser) {
-    const isHaveNotRegistered =
-      await this.participantService.isHaveNotRegistered(tabelNumber);
+  async updateParticipantsUser(
+    { id, tabelNumber }: ClientUser,
+    participantService: ParticipantService
+  ) {
+    const isHaveNotRegistered = await participantService.isHaveNotRegistered(tabelNumber);
 
     if (isHaveNotRegistered) {
-      await this.participantService.linkParticipantsWithUser(id, tabelNumber);
+      await participantService.linkParticipantsWithUser(id, tabelNumber);
     }
   }
 

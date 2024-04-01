@@ -1,4 +1,5 @@
 import bcrypt from 'bcryptjs';
+import moment from 'moment';
 import prisma from '@/core/prisma';
 import { ClientUser, UserUpdateData, UsersGetData } from './types';
 import { PaginatedResponse } from '@/server/types';
@@ -190,6 +191,13 @@ export class UserService {
       data.passwordHashes = [passwordHash];
       data.lastUpdatePasswordDate = new Date();
     }
+
+    const current = moment();
+
+    data.createdAt = current.toDate();
+    data.updatedAt = current.toDate();
+    // Make configurable when needed
+    data.expiresAt = current.add(1, 'year').toDate();
 
     const newUser = await this.prisma.user.create({ data });
 

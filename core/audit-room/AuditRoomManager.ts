@@ -8,7 +8,7 @@ import {
   BriefingRoomIsStillOpenError,
   EmptyPartisipantsListError
 } from './errors';
-import { BriefingStatus, EventStatus, UserStatus } from '@prisma/client';
+import { BriefingStatus, EventStatus, InventoryStatus, UserStatus } from '@prisma/client';
 import { InventoryCodes } from '@/core/inventory/types';
 import { CreateInventoryData } from '@/app/api/audit-rooms/create/validation';
 import { getDateFromString } from '@/server/utils';
@@ -182,7 +182,20 @@ export class AuditRoomManager {
         });
       }
 
-      await eventService.update(eventId, { status: EventStatus.CLOSED });
+      await inventoryService.update(inventoryId, { status: InventoryStatus.CLOSED });
+
+      if (await this.isAllClosedInventories(eventId, inventoryService)) {
+        await eventService.update(eventId, { status: EventStatus.CLOSED });
+      }
     });
+  }
+
+  private async isAllClosedInventories(
+    eventId: string,
+    inventoryService: InventoryService
+  ) {
+    const inventories = await inventoryService.findBy({ eventId });
+
+    return inventories.every((inventory) => inventory.status === InventoryStatus.CLOSED);
   }
 }

@@ -300,6 +300,8 @@ enum InventoryStatus {
   AVAILABLE
   /// Опись удалена
   REMOVED
+  /// Комната по описи закрыта
+  CLOSED
 }
 
 enum EventStatus {

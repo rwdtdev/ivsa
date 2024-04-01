@@ -17,8 +17,8 @@ import { IvaService } from '../iva/IvaService';
 import { IvaRoles, IvaRolesMapper } from '@/constants/mappings/iva';
 import { CloseAuditRoomData } from '@/app/api/audit-rooms/close/validation';
 import { EventService } from '../event/EventService';
-import { toUTCDatetime } from '@/lib/helpers/dates';
 import { ParticipantWithUser } from '../event/types';
+import { getRegisteredParticipants } from '@/lib/get-registered-participants';
 
 export class AuditRoomManager {
   private ivaService: IvaService;
@@ -150,15 +150,7 @@ export class AuditRoomManager {
       return {
         auditId: conference.conferenceSessionId,
         auditLink: link,
-        users: event.participants
-          .filter(({ user }) => user)
-          .map(({ user }) => ({
-            tabelNumber: user.tabelNumber,
-            expiresAt: toUTCDatetime(user.expiresAt),
-            isRecused: user.status === UserStatus.RECUSED,
-            isBlocked:
-              user.status === UserStatus.BLOCKED || user.expiresAt.getTime() < Date.now()
-          }))
+        users: getRegisteredParticipants(event.participants)
       };
     });
   }

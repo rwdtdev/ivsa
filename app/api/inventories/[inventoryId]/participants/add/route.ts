@@ -1,39 +1,34 @@
 import { getErrorResponse } from '@/lib/helpers';
-import { NextRequest } from 'next/server';
+import { NextRequest, NextResponse } from 'next/server';
 import { PathParamsSchema, UpdateInventorySchema } from './validation';
-import { doTransaction } from '@/lib/prisma-transaction';
-import { TransactionSession } from '@/types/prisma';
 import { InventoryService } from '@/core/inventory/InventoryService';
 import { ParticipantService } from '@/core/participant/ParticipantService';
 import { assertAPICallIsAuthorized } from '@/lib/api/helpers';
+import { ParticipantManager } from '@/core/participant/ParticipantManager';
+import { EventService } from '@/core/event/EventService';
 
 interface IContext {
   params: { inventoryId: string };
 }
 
 export async function PUT(request: NextRequest, context: IContext) {
-  const inventoryService = new InventoryService();
-  const participantService = new ParticipantService();
+  const participantManager = new ParticipantManager(
+    new EventService(),
+    new InventoryService(),
+    new ParticipantService()
+  );
 
   try {
     assertAPICallIsAuthorized(request);
 
     const { inventoryId } = PathParamsSchema.parse(context.params);
-    const { eventId, participants } = UpdateInventorySchema.parse(await request.json());
 
-    return await doTransaction(async (session: TransactionSession) => {
-      const eventParticipantServiceWithSession = participantService.withSession(session);
+    const response = await participantManager.createInventoryParticipants(
+      inventoryId,
+      UpdateInventorySchema.parse(await request.json())
+    );
 
-      await inventoryService.assertExistAndBelongEvent(inventoryId, eventId);
-
-      await eventParticipantServiceWithSession.createMany(
-        participants,
-        eventId,
-        inventoryId
-      );
-
-      return new Response(null, { status: 204 });
-    });
+    return NextResponse.json(response, { status: 200 });
   } catch (error) {
     return getErrorResponse(error);
   }

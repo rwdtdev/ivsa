@@ -4,10 +4,10 @@ import { CreateEventData } from '@/app/api/events/validation';
 import { ParticipantsData, UpdateEventData } from '@/app/api/events/[eventId]/validation';
 
 import { ParticipantService } from '../participant/ParticipantService';
-import { EventStatus, UserStatus } from '@prisma/client';
+import { EventStatus } from '@prisma/client';
 import { EventService } from './EventService';
 import { UserService } from '../user/UserService';
-import { toUTCDatetime } from '@/lib/helpers/dates';
+import { getRegisteredParticipants } from '@/lib/get-registered-participants';
 
 export class EventManager {
   private eventService: EventService;
@@ -29,15 +29,7 @@ export class EventManager {
 
     return {
       eventId: event.id,
-      users: event.participants
-        .filter(({ user }) => user)
-        .map(({ user }) => ({
-          tabelNumber: user.tabelNumber,
-          expiresAt: toUTCDatetime(user.expiresAt),
-          isRecused: user.status === UserStatus.RECUSED,
-          isBlocked:
-            user.status === UserStatus.BLOCKED || user.expiresAt.getTime() < Date.now()
-        }))
+      users: getRegisteredParticipants(event.participants)
     };
   }
 
@@ -55,15 +47,7 @@ export class EventManager {
 
     return {
       eventId: event.id,
-      users: event.participants
-        .filter(({ user }) => user)
-        .map(({ user }) => ({
-          tabelNumber: user.tabelNumber,
-          expiresAt: toUTCDatetime(user.expiresAt),
-          isRecused: user.status === UserStatus.RECUSED,
-          isBlocked:
-            user.status === UserStatus.BLOCKED || user.expiresAt.getTime() < Date.now()
-        }))
+      users: getRegisteredParticipants(event.participants)
     };
   }
 

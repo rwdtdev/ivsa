@@ -14,8 +14,8 @@ import { IvaRoles, IvaRolesMapper } from '@/constants/mappings/iva';
 import { CloseBriefingRoomData } from '@/app/api/briefing-rooms/close/validation';
 import { CreateBriefingRoomData } from '@/app/api/briefing-rooms/create/validation';
 import { EventService } from '../event/EventService';
-import { toUTCDatetime } from '@/lib/helpers/dates';
 import { ParticipantWithUser } from '../event/types';
+import { getRegisteredParticipants } from '@/lib/get-registered-participants';
 
 export class BriefingRoomManager {
   private ivaService: IvaService;
@@ -39,10 +39,6 @@ export class BriefingRoomManager {
     return await doTransaction(async (session: TransactionSession) => {
       const eventService = this.eventService.withSession(session);
       const event = await eventService.getById(eventId);
-
-      if (event.briefingStatus === BriefingStatus.PASSED) {
-        throw new BriefingAlreadyEndError();
-      }
 
       if (event.briefingStatus === BriefingStatus.IN_PROGRESS) {
         throw new BriefingRoomAlreadyExistError();
@@ -105,15 +101,7 @@ export class BriefingRoomManager {
       return {
         briefingId: conference.conferenceSessionId,
         briefingLink: link,
-        users: event.participants
-          .filter(({ user }) => user)
-          .map(({ user }) => ({
-            tabelNumber: user.tabelNumber,
-            expiresAt: toUTCDatetime(user.expiresAt),
-            isRecused: user.status === UserStatus.RECUSED,
-            isBlocked:
-              user.status === UserStatus.BLOCKED || user.expiresAt.getTime() < Date.now()
-          }))
+        users: getRegisteredParticipants(event.participants)
       };
     });
   }

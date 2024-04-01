@@ -18,7 +18,7 @@ import { IvaRoles, IvaRolesMapper } from '@/constants/mappings/iva';
 import { CloseAuditRoomData } from '@/app/api/audit-rooms/close/validation';
 import { EventService } from '../event/EventService';
 import { ParticipantWithUser } from '../event/types';
-import { getRegisteredParticipants } from '@/lib/get-registered-participants';
+import { getRegisteredParticipants } from '@/lib/helpers/responses';
 
 export class AuditRoomManager {
   private ivaService: IvaService;

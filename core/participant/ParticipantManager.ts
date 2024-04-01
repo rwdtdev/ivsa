@@ -4,7 +4,7 @@ import { InventoryService } from '../inventory/InventoryService';
 import { ParticipantService } from './ParticipantService';
 import { TransactionSession } from '@/types/prisma';
 import { UpdateInventoryData } from '@/app/api/inventories/[inventoryId]/participants/add/validation';
-import { getRegisteredParticipants } from '@/lib/get-registered-participants';
+import { getRegisteredParticipants } from '@/lib/helpers/responses';
 
 export class ParticipantManager {
   private eventService: EventService;

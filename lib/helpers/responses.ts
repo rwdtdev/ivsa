@@ -1,5 +1,5 @@
 import { UserStatus } from '@prisma/client';
-import { toUTCDatetime } from './helpers/dates';
+import { toUTCDatetime } from './dates';
 import { ParticipantWithUser } from '@/core/event/types';
 
 export const getRegisteredParticipants = (participants: ParticipantWithUser[]) => {

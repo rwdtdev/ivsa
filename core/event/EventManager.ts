@@ -7,7 +7,7 @@ import { ParticipantService } from '../participant/ParticipantService';
 import { EventStatus } from '@prisma/client';
 import { EventService } from './EventService';
 import { UserService } from '../user/UserService';
-import { getRegisteredParticipants } from '@/lib/get-registered-participants';
+import { getRegisteredParticipants } from '@/lib/helpers/responses';
 
 export class EventManager {
   private eventService: EventService;

@@ -15,7 +15,7 @@ import { CloseBriefingRoomData } from '@/app/api/briefing-rooms/close/validation
 import { CreateBriefingRoomData } from '@/app/api/briefing-rooms/create/validation';
 import { EventService } from '../event/EventService';
 import { ParticipantWithUser } from '../event/types';
-import { getRegisteredParticipants } from '@/lib/get-registered-participants';
+import { getRegisteredParticipants } from '@/lib/helpers/responses';
 
 export class BriefingRoomManager {
   private ivaService: IvaService;

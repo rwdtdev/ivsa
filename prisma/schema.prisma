@@ -76,8 +76,8 @@ model User {
   createdAt              DateTime      @default(now())
   /// Дата и время модификации записи
   updatedAt              DateTime      @updatedAt
-  /// Дата и время окончания действия аккаунта (по умполчанию - один год от даты создания)
-  expiresAt              DateTime      @default(dbgenerated("NOW() + interval '1 year'"))
+  /// Дата и время окончания действия аккаунта
+  expiresAt              DateTime
   /// Табельный номер
   tabelNumber            String        @unique
   /// Внешний идентификатор в системе IVA R
@@ -248,19 +248,6 @@ model InventoryObject {
   createdAt          DateTime  @default(now())
   /// Дата и время модификации записи
   updatedAt          DateTime  @updatedAt
-}
-
-model Jobs {
-  /// Название периодического задания
-  name        String    @unique
-  /// Краткое описание задания
-  description String
-  /// Дата последнего запуска задания
-  lastStartAt DateTime?
-  /// Лог ошибки в формате Json, возникшей во время выполнения задания или приводящей к его остановке
-  error       Json?
-
-  @@map("jobs")
 }
 
 enum UserStatus {

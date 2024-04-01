@@ -13,9 +13,6 @@ ALTER TABLE "event-participants" DROP CONSTRAINT "event-participants_inventoryId
 -- DropForeignKey
 ALTER TABLE "event-participants" DROP CONSTRAINT "event-participants_userId_fkey";
 
--- AlterTable
-ALTER TABLE "users" ALTER COLUMN "expiresAt" SET DEFAULT NOW() + interval '1 year';
-
 -- DropTable
 DROP TABLE "event-participants";
 

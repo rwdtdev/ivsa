@@ -6,5 +6,4 @@
 */
 -- AlterTable
 ALTER TABLE "users" DROP COLUMN "passwordHashes",
-ADD COLUMN     "passwordHashes" TEXT[],
-ALTER COLUMN "expiresAt" SET DEFAULT NOW() + interval '1 year';
+ADD COLUMN     "passwordHashes" TEXT[]

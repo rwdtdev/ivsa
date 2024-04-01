@@ -30,10 +30,7 @@
     "**/*.ts",
     "**/*.tsx",
     ".next/types/**/*.ts",
-    "postcss.config.cts",
-    "cli/jobs/copyVideoToOperativeStorage.js",
-    "cli/jobs/worker.js",
-    "cli/index.js"
+    "postcss.config.cts"
   ],
   "exclude": ["node_modules", "docs", "dist", "prisma"]
 }

@@ -4,9 +4,6 @@ CREATE TYPE "InventoryStatus" AS ENUM ('AVAILABLE', 'REMOVED');
 -- AlterTable
 ALTER TABLE "inventories" ADD COLUMN     "status" "InventoryStatus" NOT NULL DEFAULT 'AVAILABLE';
 
--- AlterTable
-ALTER TABLE "users" ALTER COLUMN "expiresAt" SET DEFAULT NOW() + interval '1 year';
-
 -- CreateTable
 CREATE TABLE "individual-inventories" (
     "id" TEXT NOT NULL,

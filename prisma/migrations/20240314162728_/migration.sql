@@ -15,9 +15,6 @@ ALTER TABLE "individual-inventories" DROP CONSTRAINT "individual-inventories_par
 -- AlterTable
 ALTER TABLE "inventories" ADD COLUMN     "parentId" TEXT;
 
--- AlterTable
-ALTER TABLE "users" ALTER COLUMN "expiresAt" SET DEFAULT NOW() + interval '1 year';
-
 -- DropTable
 DROP TABLE "InventoryObject";
 

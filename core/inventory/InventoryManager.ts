@@ -6,7 +6,7 @@ import { mapToInventoryObject } from './mappers/InventoryObjectsMapper';
 import { doTransaction } from '@/lib/prisma-transaction';
 import { TransactionSession } from '@/types/prisma';
 import { UpdateInventoryData } from '@/app/api/inventories/[inventoryId]/update/validation';
-import { CreateIndividualInventoryData } from '@/app/api/inventories/[inventoryId]/individual-inventory/validation';
+import { CreateIndividualInventoryData } from '@/app/api/inventories/[inventoryId]/individual_inventory/validation';
 
 export interface InventoryUpdateRequestBody {
   eventId: string;

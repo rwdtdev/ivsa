@@ -1,12 +1,14 @@
 import { NextResponse } from 'next/server';
 import { IvaService } from '@/core/iva/IvaService';
+import { getErrorResponse } from '@/lib/helpers';
 
 type IvaHealthcheck = {
   status: string;
   apiVersion?: string;
   timestamp?: number;
-  error: unknown;
-  envDetails?: {
+  error?: unknown;
+  isHaveAdmin?: boolean;
+  env?: {
     IVA_API_URL?: string;
     IVA_APP_ID?: string;
     IVA_APP_SECRET?: string;
@@ -18,29 +20,32 @@ export async function GET() {
   const ivaService = new IvaService();
 
   // Добавление деталей переменных окружения
-  const envDetails = {
+  const env = {
     IVA_API_URL: process.env.IVA_API_URL,
     IVA_APP_ID: process.env.IVA_APP_ID,
     IVA_APP_SECRET: process.env.IVA_APP_SECRET,
     IVA_APP_DOMAIN_ID: process.env.IVA_APP_DOMAIN_ID
   };
 
-  const iva: IvaHealthcheck = {
-    status: 'OK',
-    error: undefined,
-    envDetails // Включение деталей переменных окружения в ответ
-  };
+  const iva: IvaHealthcheck = { status: 'OK' };
 
   try {
+    const users = await ivaService.findUsers('');
+
+    if (users && users.totalCount > 0) {
+      iva.isHaveAdmin = users.data.some(
+        (user: any) => user.userType === 'CHIEF_SYSTEM_ADMINISTRATOR'
+      );
+    }
+
     const status = await ivaService.getServerStatus();
 
-    if (status) {
-      iva.apiVersion = status.apiVersion;
-      iva.timestamp = status.timestamp;
-    }
+    iva.apiVersion = status.apiVersion;
+    iva.env = env;
   } catch (err) {
+    console.log(err);
     iva.status = 'NOT OK';
-    iva.error = err;
+    iva.error = getErrorResponse(err);
   }
 
   return NextResponse.json({ iva }, { status: 201 });

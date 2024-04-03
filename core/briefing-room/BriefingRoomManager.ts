@@ -2,9 +2,7 @@ import _ from 'underscore';
 import { doTransaction } from '@/lib/prisma-transaction';
 import { TransactionSession } from '@/types/prisma';
 import {
-  BriefingAlreadyEndError,
   BriefingRoomAlreadyExistError,
-  BriefingRoomIsNotOpened,
   EventParticipantsMustBeNotEmptyError
 } from './errors';
 import { BriefingStatus, UserStatus } from '@prisma/client';
@@ -115,13 +113,7 @@ export class BriefingRoomManager {
 
     const event = await this.eventService.getById(eventId);
 
-    if (event.briefingStatus === BriefingStatus.PASSED) {
-      throw new BriefingAlreadyEndError();
-    }
-
-    if (!event.briefingSessionId) {
-      throw new BriefingRoomIsNotOpened();
-    }
+    if (!event.briefingSessionId) return;
 
     await this.ivaService.closeConference(event.briefingSessionId);
 

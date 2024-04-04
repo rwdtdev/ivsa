@@ -15,9 +15,7 @@ import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { UserRoles } from '@/constants/mappings/prisma-enums';
 import { DATETIME_FORMAT, DATE_FORMAT } from '@/constants/date';
 import { BriefingStatusBadge, EventStatusBadge } from '@/components/event-status-badge';
-import { Separator } from '@/components/ui/separator';
 
-import { CarouselSize } from '@/components/carousel';
 import { ScrollArea } from '@/components/ui/scroll-area';
 import Loading from '@/app/loading';
 import { REGION_CODES, RegionCode } from '@/constants/mappings/region-codes';
@@ -26,6 +24,21 @@ import { EnterIcon } from '@radix-ui/react-icons';
 import { BriefingStatus, UserStatus } from '@prisma/client';
 import { UserRoundXIcon } from 'lucide-react';
 import { InventoryCodes } from '@/core/inventory/types';
+import {
+  Accordion,
+  AccordionContent,
+  AccordionItem,
+  AccordionTrigger
+} from '@/components/ui/accordion';
+import {
+  Table,
+  TableBody,
+  TableCell,
+  TableHead,
+  TableHeader,
+  TableRow
+} from '@/components/ui/table';
+import { CarouselSize } from '@/components/carousel';
 
 const breadcrumbItems = [
   {
@@ -197,52 +210,111 @@ export default function EventPage() {
               </ScrollArea>
             </CardContent>
           </Card>
-          <Card className='col-span-3'>
+          <Card className='col-span-3 h-full'>
             <CardHeader>
               <CardTitle>Описи</CardTitle>
             </CardHeader>
-            <CardContent className='h-full'>
+            <CardContent>
               <ScrollArea className='h-4/5'>
-                <div className='space-y-4'>
+                <Accordion type='multiple'>
                   {event.inventories &&
-                    event.inventories.map((inventory, index) => {
-                      return (
-                        <Link
-                          key={inventory.id}
-                          href={`/admin/inventories/${inventory.id}`}
-                        >
-                          <div>
-                            <div className='grid grid-cols-4 gap-1 space-x-5'>
-                              <div className='mr-10 flex cursor-pointer items-center space-x-4'>
-                                <div>
-                                  <p className='text-md font-medium leading-none'>
-                                    Опись № {inventory.number} от{' '}
+                    event.inventories
+                      .filter((inventory) => !inventory.parentId)
+                      .map((inventory) => {
+                        return (
+                          <AccordionItem value={inventory.id} key={inventory.id}>
+                            <AccordionTrigger className='hover:no-underline'>
+                              <div className='flex flex-col'>
+                                <div className='flex justify-start'>
+                                  <Link
+                                    href={`/admin/inventories/${inventory.id}`}
+                                    className='text-sm hover:underline'
+                                  >
+                                    Комплексная опись № {inventory.number} от{' '}
                                     {moment(inventory.date).format(DATE_FORMAT)}
-                                  </p>
-                                  <p className='text-sm text-muted-foreground'>
-                                    Форма:{' '}
+                                  </Link>
+                                </div>
+                                <div className='flex justify-start'>
+                                  <p className='text-xs text-muted-foreground'>
                                     {
                                       InventoryCodes[
                                         inventory.code as keyof typeof InventoryCodes
                                       ].shortName
                                     }
                                   </p>
-                                  <p className='text-sm text-muted-foreground'>
-                                    ID: {inventory.id}
-                                  </p>
                                 </div>
                               </div>
+                            </AccordionTrigger>
+                            <AccordionContent>
                               <CarouselSize />
-                            </div>
-                            {event.inventories &&
-                            index === event.inventories.length - 1 ? null : (
-                              <Separator />
-                            )}
-                          </div>
-                        </Link>
-                      );
-                    })}
-                </div>
+                              <Table key={inventory.id}>
+                                <TableHeader>
+                                  <TableRow>
+                                    <TableHead className='w-[60px]'>№</TableHead>
+                                    <TableHead className='w-[300px]'>Форма</TableHead>
+                                    <TableHead>Код формы</TableHead>
+                                    <TableHead>Дата</TableHead>
+                                    <TableHead>Номер</TableHead>
+                                  </TableRow>
+                                </TableHeader>
+                                <TableBody>
+                                  {event.inventories
+                                    .filter(({ parentId }) => parentId === inventory.id)
+                                    .map((child, index) => (
+                                      <TableRow key={child.id}>
+                                        <TableCell>
+                                          <Link
+                                            href={`/admin/inventories/${child.id}`}
+                                            className='flex text-muted-foreground'
+                                          >
+                                            {index + 1}
+                                          </Link>
+                                        </TableCell>
+                                        <TableCell>
+                                          <Link
+                                            href={`/admin/inventories/${child.id}`}
+                                            className='flex'
+                                          >
+                                            {
+                                              InventoryCodes[
+                                                child.code as keyof typeof InventoryCodes
+                                              ].shortName
+                                            }
+                                          </Link>
+                                        </TableCell>
+                                        <TableCell>
+                                          <Link
+                                            href={`/admin/inventories/${child.id}`}
+                                            className='flex'
+                                          >
+                                            {child.code}
+                                          </Link>
+                                        </TableCell>
+                                        <TableCell>
+                                          <Link
+                                            href={`/admin/inventories/${child.id}`}
+                                            className='flex'
+                                          >
+                                            {moment(child.date).format(DATE_FORMAT)}
+                                          </Link>
+                                        </TableCell>
+                                        <TableCell>
+                                          <Link
+                                            href={`/admin/inventories/${child.id}`}
+                                            className='flex'
+                                          >
+                                            {child.number}
+                                          </Link>
+                                        </TableCell>
+                                      </TableRow>
+                                    ))}
+                                </TableBody>
+                              </Table>
+                            </AccordionContent>
+                          </AccordionItem>
+                        );
+                      })}
+                </Accordion>
               </ScrollArea>
             </CardContent>
           </Card>

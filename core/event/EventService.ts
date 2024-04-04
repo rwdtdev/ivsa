@@ -101,7 +101,8 @@ export class EventService {
 
   async create(data: CreateEventData) {
     const existEvent = await this.prisma.event.findFirst({
-      where: { orderId: data.orderId }
+      where: { orderId: data.orderId },
+      include: { participants: { include: { user: true } } }
     });
 
     if (existEvent) return serializeToView(existEvent);

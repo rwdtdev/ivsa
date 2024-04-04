@@ -247,69 +247,73 @@ export default function EventPage() {
                             </AccordionTrigger>
                             <AccordionContent>
                               <CarouselSize />
-                              <Table key={inventory.id}>
-                                <TableHeader>
-                                  <TableRow>
-                                    <TableHead className='w-[60px]'>№</TableHead>
-                                    <TableHead className='w-[300px]'>Форма</TableHead>
-                                    <TableHead>Код формы</TableHead>
-                                    <TableHead>Дата</TableHead>
-                                    <TableHead>Номер</TableHead>
-                                  </TableRow>
-                                </TableHeader>
-                                <TableBody>
-                                  {event.inventories
-                                    .filter(({ parentId }) => parentId === inventory.id)
-                                    .map((child, index) => (
-                                      <TableRow key={child.id}>
-                                        <TableCell>
-                                          <Link
-                                            href={`/admin/inventories/${child.id}`}
-                                            className='flex text-muted-foreground'
-                                          >
-                                            {index + 1}
-                                          </Link>
-                                        </TableCell>
-                                        <TableCell>
-                                          <Link
-                                            href={`/admin/inventories/${child.id}`}
-                                            className='flex'
-                                          >
-                                            {
-                                              InventoryCodes[
-                                                child.code as keyof typeof InventoryCodes
-                                              ].shortName
-                                            }
-                                          </Link>
-                                        </TableCell>
-                                        <TableCell>
-                                          <Link
-                                            href={`/admin/inventories/${child.id}`}
-                                            className='flex'
-                                          >
-                                            {child.code}
-                                          </Link>
-                                        </TableCell>
-                                        <TableCell>
-                                          <Link
-                                            href={`/admin/inventories/${child.id}`}
-                                            className='flex'
-                                          >
-                                            {moment(child.date).format(DATE_FORMAT)}
-                                          </Link>
-                                        </TableCell>
-                                        <TableCell>
-                                          <Link
-                                            href={`/admin/inventories/${child.id}`}
-                                            className='flex'
-                                          >
-                                            {child.number}
-                                          </Link>
-                                        </TableCell>
-                                      </TableRow>
-                                    ))}
-                                </TableBody>
-                              </Table>
+                              {event.inventories.some(
+                                (child) => child.parentId === inventory.id
+                              ) && (
+                                <Table key={inventory.id}>
+                                  <TableHeader>
+                                    <TableRow>
+                                      <TableHead className='w-[60px]'>№</TableHead>
+                                      <TableHead className='w-[300px]'>Форма</TableHead>
+                                      <TableHead>Код формы</TableHead>
+                                      <TableHead>Дата</TableHead>
+                                      <TableHead>Номер</TableHead>
+                                    </TableRow>
+                                  </TableHeader>
+                                  <TableBody>
+                                    {event.inventories
+                                      .filter(({ parentId }) => parentId === inventory.id)
+                                      .map((child, index) => (
+                                        <TableRow key={child.id}>
+                                          <TableCell>
+                                            <Link
+                                              href={`/admin/inventories/${child.id}`}
+                                              className='flex text-muted-foreground'
+                                            >
+                                              {index + 1}
+                                            </Link>
+                                          </TableCell>
+                                          <TableCell>
+                                            <Link
+                                              href={`/admin/inventories/${child.id}`}
+                                              className='flex'
+                                            >
+                                              {
+                                                InventoryCodes[
+                                                  child.code as keyof typeof InventoryCodes
+                                                ].shortName
+                                              }
+                                            </Link>
+                                          </TableCell>
+                                          <TableCell>
+                                            <Link
+                                              href={`/admin/inventories/${child.id}`}
+                                              className='flex'
+                                            >
+                                              {child.code}
+                                            </Link>
+                                          </TableCell>
+                                          <TableCell>
+                                            <Link
+                                              href={`/admin/inventories/${child.id}`}
+                                              className='flex'
+                                            >
+                                              {moment(child.date).format(DATE_FORMAT)}
+                                            </Link>
+                                          </TableCell>
+                                          <TableCell>
+                                            <Link
+                                              href={`/admin/inventories/${child.id}`}
+                                              className='flex'
+                                            >
+                                              {child.number}
+                                            </Link>
+                                          </TableCell>
+                                        </TableRow>
+                                      ))}
+                                  </TableBody>
+                                </Table>
+                              )}
                             </AccordionContent>
                           </AccordionItem>
                         );

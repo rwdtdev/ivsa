@@ -1,4 +1,4 @@
-import { RequiredNotNull } from '@/server/types';
+import { RequiredNotNull } from '@/types';
 import { User, UserRole, UserStatus } from '@prisma/client';
 import { SortOrder } from '@/constants/data';
 

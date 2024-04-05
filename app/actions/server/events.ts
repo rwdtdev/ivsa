@@ -3,7 +3,7 @@
 import { searchParamsSchema } from '@/lib/query-params-validation';
 import { EventService } from '@/core/event/EventService';
 import { EventView } from '@/core/event/types';
-import { PaginatedResponse } from '@/server/types';
+import { PaginatedResponse } from '@/types';
 import { SearchParams } from '@/types';
 import { Event } from '@prisma/client';
 import { unstable_noStore as noStore } from 'next/cache';

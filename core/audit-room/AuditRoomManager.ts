@@ -11,7 +11,7 @@ import {
 import { BriefingStatus, EventStatus, InventoryStatus, UserStatus } from '@prisma/client';
 import { InventoryCodes } from '@/core/inventory/types';
 import { CreateInventoryData } from '@/app/api/audit-rooms/create/validation';
-import { getDateFromString } from '@/server/utils';
+import { getDateFromString } from '@/utils';
 import { mapToInventoryObject } from '@/core/inventory/mappers/InventoryObjectsMapper';
 import { IvaService } from '../iva/IvaService';
 import { IvaRoles, IvaRolesMapper } from '@/constants/mappings/iva';

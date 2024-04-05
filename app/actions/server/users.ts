@@ -10,7 +10,7 @@ import { searchParamsSchema } from '@/lib/query-params-validation';
 
 import { UserService } from '@/core/user/UserService';
 import { UserView } from '@/types/user';
-import { PaginatedResponse } from '@/server/types';
+import { PaginatedResponse } from '@/types';
 import { UserRole, UserStatus } from '@prisma/client';
 import { UserCreateData } from '@/core/user/types';
 import { UserManager } from '@/core/user/UserManager';

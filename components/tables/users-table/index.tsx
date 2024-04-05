@@ -3,7 +3,7 @@
 import { fetchUsersTableColumnDefs, filterableColumns } from './columns';
 import React from 'react';
 import { useDataTable } from '@/hooks/use-data-table';
-import { PaginatedResponse } from '@/server/types';
+import { PaginatedResponse } from '@/types';
 import { UserView } from '@/types/user';
 import { DataTable } from '@/components/ui/data-table/data-table';
 import { ColumnDef } from '@tanstack/react-table';

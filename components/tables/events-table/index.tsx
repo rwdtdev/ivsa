@@ -7,7 +7,7 @@ import {
 } from './columns';
 import React from 'react';
 import { useDataTable } from '@/hooks/use-data-table';
-import { PaginatedResponse } from '@/server/types';
+import { PaginatedResponse } from '@/types';
 import { DataTable } from '@/components/ui/data-table/data-table';
 import { ColumnDef } from '@tanstack/react-table';
 import { EventView } from '@/core/event/types';

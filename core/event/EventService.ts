@@ -10,7 +10,7 @@ import {
   ParticipantWithUser,
   UpdateEventDataExtended
 } from './types';
-import { PaginatedResponse } from '@/server/types';
+import { PaginatedResponse } from '@/types';
 import moment from 'moment';
 import {
   EventNotFoundError,
@@ -21,7 +21,7 @@ import {
 } from './errors';
 import { SoiParticipantRoles } from '@/constants/mappings/soi';
 import { CreateEventData } from '@/app/api/events/validation';
-import { getDateFromString } from '@/server/utils';
+import { getDateFromString } from '@/utils';
 
 const defaultLimit = 100;
 

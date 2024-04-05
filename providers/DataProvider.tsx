@@ -1,6 +1,6 @@
 'use client';
 
-import { PaginatedResponse } from '@/server/types';
+import { PaginatedResponse } from '@/types';
 import { UserView } from '@/types/user';
 import { Department, Organisation } from '@prisma/client';
 import React, { createContext } from 'react';

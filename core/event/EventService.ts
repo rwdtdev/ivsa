@@ -105,6 +105,7 @@ export class EventService {
       include: { participants: { include: { user: true } } }
     });
 
+    // @ts-expect-error user cannot be undefined in participant array
     if (existEvent) return serializeToView(existEvent);
 
     const participantPromises = data.participants.map(async (participant) => {

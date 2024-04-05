@@ -77,16 +77,16 @@ export default function EventPage() {
   }
 
   return (
-    <div className='flex-1 space-y-4 p-8'>
+    <div className='space-y-4 p-8'>
       <main className='w-full pt-16'>
         <BreadCrumb items={breadcrumbItems} />
         <div className='flex items-center justify-between'>
           <Heading title='Инвентаризация' description={`ID: ${id}`} />
         </div>
-        <div className='grid h-full grid-cols-5 gap-4 pt-5'>
+        <div className='grid h-full gap-4 pt-5 lg:md:sm:grid-cols-1 xl:grid-cols-2 2xl:grid-cols-4'>
           <Card className='col-span-1'>
             <CardContent>
-              <div className='my-4 space-y-4'>
+              <div className='my-4'>
                 <div className='grid text-sm'>
                   <div className='flex'>
                     <P className='mr-2 font-semibold'>Статус:</P>
@@ -140,7 +140,7 @@ export default function EventPage() {
               </div>
             </CardContent>
           </Card>
-          <Card className='col-span-1'>
+          <Card className='xl:lg:col-span-2 2xl:col-span-1'>
             <CardHeader>
               <CardTitle>Участники</CardTitle>
             </CardHeader>
@@ -210,7 +210,7 @@ export default function EventPage() {
               </ScrollArea>
             </CardContent>
           </Card>
-          <Card className='col-span-3 h-full'>
+          <Card className='h-full xl:col-span-3 2xl:col-span-2'>
             <CardHeader>
               <CardTitle>Описи</CardTitle>
             </CardHeader>
@@ -253,11 +253,19 @@ export default function EventPage() {
                                 <Table key={inventory.id}>
                                   <TableHeader>
                                     <TableRow>
-                                      <TableHead className='w-[60px]'>№</TableHead>
-                                      <TableHead className='w-[300px]'>Форма</TableHead>
-                                      <TableHead>Код формы</TableHead>
-                                      <TableHead>Дата</TableHead>
-                                      <TableHead>Номер</TableHead>
+                                      <TableHead className='min-w-[60px]'>№</TableHead>
+                                      <TableHead className='min-w-[140px] max-w-[300px]'>
+                                        Форма
+                                      </TableHead>
+                                      <TableHead className='min-2-[200px] max-w-[100px]'>
+                                        Код формы
+                                      </TableHead>
+                                      <TableHead className='max-w-[100px]'>
+                                        Дата
+                                      </TableHead>
+                                      <TableHead className='max-w-[100px]'>
+                                        Номер
+                                      </TableHead>
                                     </TableRow>
                                   </TableHeader>
                                   <TableBody>

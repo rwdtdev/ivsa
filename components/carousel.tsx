@@ -92,10 +92,10 @@ export function CarouselSize() {
       }}
       className='grid grid-flow-col'
     >
-      <div className='m-auto flex w-full justify-start'>
+      <div className='m-auto flex justify-start'>
         <CarouselPrevious />
       </div>
-      <div className='col-span-6 px-2'>
+      <div className='xs:col-span-1 px-2 sm:min-w-[100px] md:min-w-[300px] xl:col-span-2 xl:min-w-[850px] 2xl:col-span-6 2xl:min-w-[490px]'>
         <CarouselContent>
           {items.map((item, index) => (
             <CarouselItem key={index} className='basis-[120px]'>
@@ -136,7 +136,7 @@ export function CarouselSize() {
           ))}
         </CarouselContent>
       </div>
-      <div className='m-auto flex w-full justify-end'>
+      <div className='m-auto flex justify-end'>
         <CarouselNext />
       </div>
     </Carousel>

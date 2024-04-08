@@ -1,74 +1,126 @@
-## ASVI service
+## ASVI
+
 [![pipeline status](https://rwdt1.gitlab.yandexcloud.net/labeling/asvi/badges/main/pipeline.svg)](https://rwdt1.gitlab.yandexcloud.net/labeling/asvi/-/commits/main)
 
-### Description
+Сервис автоматизации видеинвентаризаций с приминением программного обеспечения IVA R (АС
+ВИ)
 
-### Requirements
+- [Спецификация Openapi-3.0 ](./docs/openapi.yaml)
+- [Публичная спецификация Openapi-3.0](./docs/openapi-public.yaml)
+- [Публичная спецификация IVA R](./docs/openapi-iva.yaml)
 
-- NextJs >= 14.x.x
-- NodeJs >= 24.x.x
+### Компоненты и их версии
 
-### Development setup
+- Next.js >= 14.x.x
+- Node.js >= 24.x.x
 
-Easiest way to get started is to use [NIX package manager](https://nixos.org/download). It
-can be used on Linux, WSL and MacOS. To install nix package manager run:
+### Сборка продуктовой версии
 
 ```bash
-sh <(curl -L https://nixos.org/nix/install) --daemon
+# Сборка
+➜ npm run build
+# Запуск продуктовой сборки
+➜ npm run start
 ```
 
-After installation is complete, enable experimental features (nix flakes and nix command):
+### Настройка
 
-Add the following to ~/.config/nix/nix.conf or /etc/nix/nix.conf:
+Настройка приложения осуществялется через переменные окружения, которые хранятся в `.env`
+файлах.
+
+Пример переменных окружения со значениями: [.env.sample](./.env.sample)
+
+#### 1. Установка зафиксированных зависимостей
+
+```bash
+# Установка зависимостей, которые зафиксированы в package-lock.json файле
+➜ npm ci
+```
+
+#### 2. Запуск миграций
+
+```bash
+# Для локальной разработки
+➜ npx prisma migrate dev
+# Для продуктовой разработки
+➜ npx prisma migrate deploy
+```
+
+#### 3. [Опционально] Генерация описания сущностей СУБД и работа с моделями
+
+```bash
+# Доступ к спецификации будет доступен на 5858 порту
+➜ npm run prisma:docs
+# Запускает утилиту, которую предоставляет сама Prisma для управления СУБД на основе моделей
+➜ npx prisma studio
+```
+
+#### 4. Запуск
+
+Для запуска приложения с HotReloader-ом и FileWatcher-ом необходимо выполнить:
+
+```bash
+➜ npm run dev
+```
+
+#### 5. [Опционально] Настройка локального окружения через NixOS
+
+[Пакетный менеджер NIX](https://nixos.org/download).
+
+Поддержка OS:
+
+- Linux
+- WSL
+- MaxOS
+
+Для установки пакетного менеджера:
+
+```bash
+➜ sh <(curl -L https://nixos.org/nix/install) --daemon
+```
+
+После установки необходимо включить эксперементальные функции
+
+Для этого необходимо добавить опцию для в `~/.config/nix/nix.conf` или
+`/etc/nix/nix.conf`:
 
 ```bash
 experimental-features = nix-command flakes
 ```
 
-Now you are ready to initialize development environment:
+Инициализация dev-окружения
 
 ```bash
-nix develop .
+➜ nix develop .
 ```
 
-Install dependencies:
+Установка зависимостей:
 
 ```bash
-npm install
+➜ npm install
 ```
 
-Copy .env file:
+Копирование файла с переменными окружения .env:
 
 ```bash
-cp .env.sample .env
+➜ cp .env.sample .env
 ```
 
-Initialize database:
+Инициализация БД:
 
 ```bash
-npx prisma generate
-npx prisma migrate dev
-npm run prisma:seed
+➜ npx prisma generate
+➜ npx prisma migrate dev
 ```
 
-Run development server:
+Запуск dev-сервера:
 
 ```bash
-npm run dev
+➜  npm run dev
 ```
 
-### Tests
+### Запуск тестов
 
 ```bash
 ➜ npm run test
-```
-
-### Generate and serve database models docs
-
-```bash
-# See docs on 5858 port
-➜ npm run prisma:docs
-# Prisma studio for database management
-➜ npx prisma studio
-
 ```

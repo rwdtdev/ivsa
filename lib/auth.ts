@@ -63,9 +63,6 @@ export const isAuthorized = (request: NextRequest | Request) => {
     .split(':');
   const apiKey = credentials[1];
 
-  console.log('Credentials: ', credentials);
-  console.log('ApiKey: ', apiKey);
-
   if (apiKey === ocrvApiKey || apiKey === asviApiKey) {
     return true;
   }

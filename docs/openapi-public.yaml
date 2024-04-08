@@ -1,0 +1,1088 @@
+openapi: 3.0.0
+info:
+  title: API Командный шлюз АС ВИ
+  version: v1.r1
+  description: >
+    **Аутентификация**
+
+
+    Все запросы к API аутентифицируются через HTTP Basic Auth.
+
+
+    В качестве пароля используется API ключ, сгенерированный для конкретного пользователя.
+
+
+    Имя пользователя можно передавать любое - все операции будут аттрибутированы владельцу
+    API ключа.
+security:
+  - basicHttp: []
+tags:
+  - name: accounts
+    description: Учетные записи
+  - name: events
+    description: События инвентаризации
+  - name: briefing-rooms
+    description: Комнаты видеоинструктажа
+  - name: audit-rooms
+    description: Комнаты видеоинвентаризации
+  - name: inventories
+    description: Описи
+paths:
+  /api/accounts/check:
+    post:
+      tags:
+        - accounts
+      summary: Проверка наличия учетных записей
+      description: >
+        Со стороны СОИ присылается список табельных номеров пользователей на проверку
+        наличия соответствующим им учетным записям в системе. Возвращается список
+        найденных учетных записей.
+      operationId: accountsCheck
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                tabelNumbers:
+                  type: array
+                  description: Список табельных номеров
+                  items:
+                    type: string
+              example: { tabelNumbers: ['11111111', '22222222'] }
+      responses:
+        200:
+          description: Учетная запись найдена
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/RegisteredTabelNumberObject'
+        400:
+          $ref: '#/components/responses/BadRequest'
+        403:
+          $ref: '#/components/responses/Forbidden'
+        404:
+          $ref: '#/components/responses/NotFound'
+        422:
+          $ref: '#/components/responses/UnprocessableContent'
+
+  /api/events:
+    post:
+      tags:
+        - events
+      summary: Создание события
+      description: >-
+        Перед началом передачи описей и состава участника в АС ВИ создается событие
+        инвентаризации.
+      operationId: createEvent
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/Event'
+      responses:
+        201:
+          $ref: '#/components/responses/CreatedInventoryEvent'
+        400:
+          $ref: '#/components/responses/BadRequest'
+        403:
+          $ref: '#/components/responses/Forbidden'
+        404:
+          $ref: '#/components/responses/NotFound'
+        409:
+          $ref: '#/components/responses/Conflict'
+
+  /api/events/{eventId}:
+    put:
+      tags:
+        - events
+      summary: Обновление события инвентаризации
+      description: Обновление данных события инвентаризации.
+      operationId: updateEvent
+      parameters:
+        - $ref: '#/components/parameters/eventIdPath'
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/Event'
+      responses:
+        204:
+          description: OK
+        400:
+          $ref: '#/components/responses/BadRequest'
+        403:
+          $ref: '#/components/responses/Forbidden'
+        404:
+          $ref: '#/components/responses/NotFound'
+        422:
+          $ref: '#/components/responses/UnprocessableContent'
+    delete:
+      tags:
+        - events
+      summary: Удаление события инвентаризации
+      description: >-
+        Удаление события инвентаризации - soft delete, не показываем пользователю, но
+        храним для истории (три года).
+      operationId: deleteEvent
+      parameters:
+        - $ref: '#/components/parameters/eventIdPath'
+      responses:
+        204:
+          description: No Content
+        403:
+          $ref: '#/components/responses/Forbidden'
+        404:
+          $ref: '#/components/responses/NotFound'
+        422:
+          $ref: '#/components/responses/UnprocessableContent'
+
+  /api/events/{eventId}/participants:
+    put:
+      tags:
+        - events
+      summary: Обновление состава участников инвентаризации
+      description: >-
+        Для обновления пользователей со стороны СОИ передается следующий запрос в КШ.
+      operationId: updateParticipants
+      parameters:
+        - $ref: '#/components/parameters/eventIdPath'
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: array
+              items:
+                $ref: '#/components/schemas/Participant'
+              example:
+                - tabelNumber: '11111111'
+                  roleId: 1
+                - tabelNumber: '22222222'
+                  roleId: 2
+      responses:
+        204:
+          description: OK
+        400:
+          $ref: '#/components/responses/BadRequest'
+        403:
+          $ref: '#/components/responses/Forbidden'
+        404:
+          $ref: '#/components/responses/NotFound'
+        422:
+          $ref: '#/components/responses/UnprocessableContent'
+
+  /api/events/{eventId}/link:
+    get:
+      tags:
+        - events
+      summary: Получение ссылки, ведущей на портал конкретного события
+      description: По ID события запрашивается ссылка на соответствующую страницу портала.
+      operationId: getEventLink
+      parameters:
+        - $ref: '#/components/parameters/eventIdPath'
+      responses:
+        200:
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/PortalLinkLookupSuccess'
+        403:
+          $ref: '#/components/responses/Forbidden'
+        404:
+          $ref: '#/components/responses/NotFound'
+        422:
+          $ref: '#/components/responses/UnprocessableContent'
+
+  /api/briefing-rooms/create:
+    post:
+      tags:
+        - briefing-rooms
+      summary: Создание комнаты видеоинструктажа
+      description: >-
+        При необходимости создания комнаты для видеоинструктажа с СОИ в КШ передаются
+        данные по указанному запросу.
+      operationId: briefingRoomCreate
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                eventId:
+                  $ref: '#/components/schemas/EventId'
+      responses:
+        201:
+          description: Created
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/BriefingCreateSuccess'
+        400:
+          $ref: '#/components/responses/BadRequest'
+        403:
+          $ref: '#/components/responses/Forbidden'
+        409:
+          $ref: '#/components/responses/Conflict'
+
+  /api/briefing-rooms/close:
+    put:
+      tags:
+        - briefing-rooms
+      summary: Закрытие комнаты видеоинструктажа
+      description: >
+        После проведения видеоинструктажа из СОИ в КШ должна отправляться команда о
+
+        закрытии комнаты по указанному запросу.
+      operationId: briefingRoomClose
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                eventId:
+                  $ref: '#/components/schemas/EventId'
+      responses:
+        204:
+          description: No Content
+        400:
+          $ref: '#/components/responses/BadRequest'
+        403:
+          $ref: '#/components/responses/Forbidden'
+        404:
+          $ref: '#/components/responses/NotFound'
+        409:
+          $ref: '#/components/responses/Conflict'
+
+  /api/audit-rooms/create:
+    post:
+      tags:
+        - audit-rooms
+      summary: Создание комнаты видеоинвентаризации
+      description: >-
+        Для создания комнаты для проведения видеоинвентаризации из СОИ в КШ направляется
+        следующий запрос.
+      operationId: auditRoomCreate
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/AuditRoomCreateBody'
+      responses:
+        201:
+          description: Created
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/AuditCreateSuccess'
+        400:
+          $ref: '#/components/responses/BadRequest'
+        403:
+          $ref: '#/components/responses/Forbidden'
+        404:
+          $ref: '#/components/responses/NotFound'
+        409:
+          $ref: '#/components/responses/Conflict'
+
+  /api/audit-rooms/close:
+    put:
+      tags:
+        - audit-rooms
+      summary: Закрытие комнаты видеоинвентаризации
+      description: >-
+        После проведения видеоинвентаризации из СОИ в КШ должна отправляться команда о
+        закрытии комнаты по следующему запросу.
+      operationId: auditRoomClose
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                eventId:
+                  $ref: '#/components/schemas/EventId'
+                inventoryId:
+                  $ref: '#/components/schemas/InventoryId'
+      responses:
+        204:
+          description: No Content
+        400:
+          $ref: '#/components/responses/BadRequest'
+        403:
+          $ref: '#/components/responses/Forbidden'
+        404:
+          $ref: '#/components/responses/NotFound'
+        409:
+          $ref: '#/components/responses/Conflict'
+
+  /api/inventories/{inventoryId}/update:
+    post:
+      tags:
+        - inventories
+      summary: Запрос на обновление данных в описи
+      description: Регистрация запроса на обновление данных в описи.
+      operationId: inventoryUpdateRequest
+      parameters:
+        - $ref: '#/components/parameters/inventoryIdPath'
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                eventId:
+                  $ref: '#/components/schemas/EventId'
+                inventoryNumber:
+                  $ref: '#/components/schemas/InventoryNumber'
+      responses:
+        204:
+          description: No Content
+        400:
+          $ref: '#/components/responses/BadRequest'
+        403:
+          $ref: '#/components/responses/Forbidden'
+        404:
+          $ref: '#/components/responses/NotFound'
+        422:
+          $ref: '#/components/responses/UnprocessableContent'
+
+  /api/inventories/{inventoryId}/individual_inventory:
+    post:
+      tags:
+        - inventories
+      summary: Добавление индивидуальной описи из комплектной описи
+      description: Осуществляется добавление дополнительной описи к комплексной описи.
+      operationId: individualInventoryAddToComplexInventory
+      parameters:
+        - $ref: '#/components/parameters/inventoryIdPath'
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/IndividualInventoryCreateBody'
+      responses:
+        '200':
+          description: ОК
+        '400':
+          $ref: '#/components/responses/BadRequest'
+        '403':
+          $ref: '#/components/responses/Forbidden'
+        '404':
+          $ref: '#/components/responses/NotFound'
+        '422':
+          $ref: '#/components/responses/UnprocessableContent'
+    delete:
+      tags:
+        - inventories
+      summary: Удаление индивидуальной описи из комплектной описи
+      description: >-
+        Удаляется привязка дополнительной описи к комплексной описи и удаляется сама
+        дополнительная опись.
+      operationId: individualInventoryDeleteFromComplexInventory
+      parameters:
+        - $ref: '#/components/parameters/individualInventoryIdPath'
+        - $ref: '#/components/parameters/eventId'
+        - $ref: '#/components/parameters/complexInventoryId'
+      responses:
+        204:
+          description: No Content
+        400:
+          $ref: '#/components/responses/BadRequest'
+        403:
+          $ref: '#/components/responses/Forbidden'
+        404:
+          $ref: '#/components/responses/NotFound'
+        422:
+          $ref: '#/components/responses/UnprocessableContent'
+
+  /api/inventories/{inventoryId}:
+    delete:
+      tags:
+        - inventories
+      summary: Удаление описи
+      description: >-
+        Удаление описи, для которой создавалась комната видеоинвентаризации. В АС ВИ опись
+        помечается удалённой, но просмотр материалов для данной описи остаётся доступен.
+      operationId: inventoryDelete
+      parameters:
+        - $ref: '#/components/parameters/inventoryIdPath'
+        - $ref: '#/components/parameters/eventId'
+      responses:
+        204:
+          description: No Content
+        400:
+          $ref: '#/components/responses/BadRequest'
+        403:
+          $ref: '#/components/responses/Forbidden'
+        404:
+          $ref: '#/components/responses/NotFound'
+        422:
+          $ref: '#/components/responses/UnprocessableContent'
+
+  /api/inventories/{inventoryId}/events/{eventId}/link:
+    get:
+      tags:
+        - inventories
+      summary: Запрос ссылки на портал для описи
+      description: >-
+        По идентификатору события и описи запрашивается ссылка на соответствующую страницу
+        портала.
+      operationId: getInventoryLink
+      parameters:
+        - $ref: '#/components/parameters/eventIdPath'
+        - $ref: '#/components/parameters/inventoryIdPath'
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/PortalLinkLookupSuccess'
+        403:
+          $ref: '#/components/responses/Forbidden'
+        404:
+          $ref: '#/components/responses/NotFound'
+        422:
+          $ref: '#/components/responses/UnprocessableContent'
+
+  /api/inventories/{inventoryId}/participants/add:
+    put:
+      tags:
+        - inventories
+      summary: Добавление бухгалтера/проверяющего в опись
+      description: В опись добавляются бухгалтеры/проверяющие из списка.
+      operationId: inventoryParticipantsAdd
+      parameters:
+        - $ref: '#/components/parameters/inventoryIdPath'
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                eventId:
+                  $ref: '#/components/schemas/EventId'
+                participats:
+                  type: array
+                  items:
+                    $ref: '#/components/schemas/Participant'
+      responses:
+        204:
+          description: No Content
+        400:
+          $ref: '#/components/responses/BadRequest'
+        403:
+          $ref: '#/components/responses/Forbidden'
+        404:
+          $ref: '#/components/responses/NotFound'
+        422:
+          $ref: '#/components/responses/UnprocessableContent'
+
+  /api/inventories/{inventoryId}/participants/delete-all:
+    put:
+      tags:
+        - inventories
+      summary: Удаление всех бухгалтеров/проверяющих из описи
+      description: Из описи удаляются все бухгалтеры/проверяющие.
+      operationId: inventoryParticipantsDeleteAll
+      parameters:
+        - $ref: '#/components/parameters/inventoryIdPath'
+        - $ref: '#/components/parameters/eventId'
+      responses:
+        204:
+          description: No Content
+        400:
+          $ref: '#/components/responses/BadRequest'
+        403:
+          $ref: '#/components/responses/Forbidden'
+        404:
+          $ref: '#/components/responses/NotFound'
+        422:
+          $ref: '#/components/responses/UnprocessableContent'
+
+components:
+  securitySchemes:
+    basicHttp:
+      type: http
+      scheme: basic
+
+  schemas:
+    EventId:
+      type: string
+      description: Идентификатор события инвентаризации
+      example: '9dcb6c49-f700-41be-8d60-64454e11a575'
+
+    InventoryId:
+      type: string
+      description: Идентификатор описи
+      example: 'ec6ee679-5a38-4086-aa5a-738e639e3d50'
+
+    Participant:
+      type: object
+      properties:
+        tabelNumber:
+          type: string
+          description: Табельный номер участника
+          example: '11111111'
+        roleId:
+          type: integer
+          description: Идентификатор роли участника
+          example: 6
+
+    Event:
+      type: object
+      properties:
+        commandId:
+          type: string
+          description: Идентификатор распоряжения
+          example: '1f69b4d1-a7a8-4631-9414-8a77eeece028'
+        commandNumber:
+          type: string
+          description: Номер распоряжения
+          example: '22'
+        commandDate:
+          type: string
+          format: date-time
+          example: '2024-03-07T00:00:00Z'
+        orderId:
+          type: string
+          description: Идентификатор приказа формы № ИНВ-22
+          example: '8cccbede-5f16-4307-a7e9-000fe54696ca'
+        orderNumber:
+          type: string
+          description: Номер приказа формы № ИНВ-22
+          example: '22'
+        orderDate:
+          type: string
+          format: date-time
+          description: Дата составления приказа формы № ИНВ-22
+          example: '2024-03-07T00:00:00Z'
+        auditStart:
+          type: string
+          format: date-time
+          description: Дата начала инвентаризации
+          example: '2024-03-07T00:00:00Z'
+        auditEnd:
+          type: string
+          format: date-time
+          description: Дата окончания инвентаризации
+          example: '2024-03-08T00:00:00Z'
+        balanceUnit:
+          type: string
+          description: Балансовая единица
+          example: '1n05H'
+        balanceUnitRegionCode:
+          type: string
+          description: Код региона с которым связана балансовая единица
+          example: '77'
+        participants:
+          type: array
+          items:
+            $ref: '#/components/schemas/Participant'
+          example:
+            - tabelNumber: '11111111'
+              roleId: 1
+            - tabelNumber: '22222222'
+              roleId: 2
+
+    AuditRoomCreateBody:
+      type: object
+      properties:
+        eventId:
+          $ref: '#/components/schemas/EventId'
+        inventoryId:
+          $ref: '#/components/schemas/InventoryId'
+        inventoryNumber:
+          $ref: '#/components/schemas/InventoryNumber'
+        inventoryDate:
+          $ref: '#/components/schemas/InventoryDate'
+        inventoryCode:
+          $ref: '#/components/schemas/InventoryCode'
+        inventoryObjects:
+          type: array
+          description: Список объектов описи
+          items:
+            $ref: '#/components/schemas/InventoryObject'
+
+    IndividualInventoryCreateBody:
+      type: object
+      properties:
+        eventId:
+          $ref: '#/components/schemas/EventId'
+        individualInventoryId:
+          type: string
+          description: Идентификатор индивидуальной описи
+          example: '9c24c153-8208-4c69-b787-147b2f709dcb'
+        inventoryNumber:
+          $ref: '#/components/schemas/InventoryNumber'
+        inventoryDate:
+          $ref: '#/components/schemas/InventoryDate'
+        inventoryCode:
+          $ref: '#/components/schemas/InventoryCode'
+        inventoryObjects:
+          type: array
+          description: Список объектов описи
+          items:
+            $ref: '#/components/schemas/InventoryObject'
+
+    InventoryObject:
+      oneOf:
+        - $ref: '#/components/schemas/Fnu49InventoryForm'
+        - $ref: '#/components/schemas/Fnu50InventoryForm'
+        - $ref: '#/components/schemas/Fnu55InventoryForm'
+        - $ref: '#/components/schemas/Inv1InventoryForm'
+        - $ref: '#/components/schemas/Inv3InventoryForm'
+        - $ref: '#/components/schemas/Inv5InventoryForm'
+
+    InventoryNumber:
+      type: string
+      description: Номер описи
+      example: '1'
+
+    InventoryDate:
+      type: string
+      format: date-time
+      example: '2024-03-07T00:00:00Z'
+
+    InventoryCode:
+      type: string
+      description: |
+        Код формы описи:
+
+        * I01011 - [ФНУ-49] Инв. опись малоценных ОС и иных аналогичных активов, переданных в эксплуатацию (на 013, 023 забал. счетах)
+        * I02G01 - [ФНУ-50 (< 12м)] Инв. опись активов со сроком использования не более 12 месяцев, учитываемых в качестве МПЗ, переданных в производство
+        * I02G02 - [ФНУ-50 (> 12м)] Инв. опись активов со сроком использования более 12 месяцев, учитываемых в качестве МПЗ, переданных в производство
+        * I02011 - [ФНУ-55] Инв. опись спецодежды в эксплуатации
+        * I02G11 - [ФНУ-55(<12 вкл)] Инв. опись спецодежды в эксплуатации cо сроком использования <12м включая класс 502100
+        * I02G22 - [ФНУ-55(<12 иск)] Инв. опись спецодежды в эксплуатации cо сроком использования <12м.исключая класс 502100 только кл. 502200
+        * I01A01 - [ИНВ-1 (ОС)] Инв. опись основных средств (кроме зданий и сооруж., зем. участков, об-тов природопольз-я, груз. вагонов)
+        * I02001 - [ИНВ-3] Инв. опись товарно-материальных ценностей
+        * I02A02 - [ИНВ-3 (ОУ)] Инв. опись товарно-материальных ценностей (оборудование к установке)
+        * I02F01 - [ИНВ-5 (ОХ)] Инв. опись товарно-материальных ценностей, принятых на ответ.хранение
+        * I02F02 - [ИНВ-5 (МП)] Инв. опись товарно-материальных ценностей, принятых на ответ.хранение (Материалы, принятые на переработку)
+
+      enum:
+        - 'I01011'
+        - 'I02G01'
+        - 'I02G02'
+        - 'I02011'
+        - 'I02G11'
+        - 'I02G22'
+        - 'I01A01'
+        - 'I02001'
+        - 'I02A02'
+        - 'I02F01'
+        - 'I02F02'
+      example: 'I01011'
+
+    BriefingCreateSuccess:
+      type: object
+      properties:
+        briefingId:
+          type: string
+          example: '049fc113-4408-4d97-b9e8-fef7a6cb5ae4'
+        briefingLink:
+          type: string
+          example: https://www.ourdomain.ru/049fc113-4408-4d97-b9e8-fef7a6cb5ae4
+        users:
+          type: array
+          items:
+            $ref: '#/components/schemas/RegisteredTabelNumberObject'
+
+    RegisteredTabelNumberObject:
+      type: object
+      properties:
+        tabelNumber:
+          type: string
+          description: Табельный номер зарегистрированного в АСВИ участника события
+          example: '11111111'
+        expiresAt:
+          type: string
+          format: date-time
+          description: Дата истечения времени учетной записи в формате ISO 8601
+          example: '2024-03-07T00:00:00Z'
+        isBlocked:
+          type: boolean
+          description: Признак, указывающий на блокировку учетной записи
+
+    IndividualInventoryAddSuccess:
+      type: object
+      properties:
+        eventId:
+          type: string
+          example: 'a5fb206c-8881-4385-8a88-f15d62c58051'
+        complexInventoryId:
+          type: string
+          example: '7d99471a-8e23-4bdc-b10a-c9227b8568b2'
+        inventoryId:
+          type: string
+          example: '9777f657-de8a-4c9c-b418-76183ef9c825'
+
+    AuditCreateSuccess:
+      type: object
+      properties:
+        auditId:
+          type: string
+          example: 'e2af492a-4eac-4f83-b61a-ae898c3fc77e'
+        auditLink:
+          type: string
+          example: 'https://www.ourdomain.ru/e2af492a-4eac-4f83-b61a-ae898c3fc77e'
+        users:
+          type: array
+          items:
+            $ref: '#/components/schemas/RegisteredTabelNumberObject'
+
+    PortalLinkLookupSuccess:
+      type: object
+      properties:
+        portalLink:
+          type: string
+          example: 'https://'
+
+    Fnu49InventoryForm:
+      type: object
+      description: Объект описи формы ФНУ-49
+      properties:
+        NAME:
+          type: string
+          description: Наименование имущества, характеристика
+        NOMNUMBER:
+          type: string
+          description: Номенклатурный номер
+        INVNUMBER:
+          type: string
+          description: Инвентарный номер
+        FACTORYNUMBER:
+          type: string
+          description: Серийный/заводской номер
+        BU_KOL:
+          type: number
+          description: Количество по данным бухгалтерского учета
+
+    Fnu50InventoryForm:
+      type: object
+      description: Объект описи формы ФНУ-50
+      properties:
+        NAME:
+          type: string
+          description: Наименование актива
+        NOMNUMBER:
+          type: string
+          description: Номенклатурный номер
+        INVNUMBER:
+          type: string
+          description: Инвентарный номер
+        FACTORYNUMBER:
+          type: string
+          description: Серийный/заводской номер
+        EIID:
+          type: string
+          description: Код единицы измерения (ОКЕИ)
+        EINAME:
+          type: string
+          description: Наименование единицы измерения
+        BU_KOL:
+          type: number
+          description: Количество по данным бухгалтерского учета
+
+    Fnu55InventoryForm:
+      type: object
+      description: Объект описи формы ФНУ-55
+      properties:
+        NAME:
+          type: string
+          description: Наименование, характеристика материальных ценностей
+        CODE:
+          type: string
+          description: Номенклатурный номер (код СКМТР)
+        EIID:
+          type: string
+          description: Код единицы измерения (ОКЕИ)
+        EINAME:
+          type: string
+          description: Наименование единицы измерения
+        BATCH:
+          type: string
+          description: Номер партии
+        BU_KOL:
+          type: string
+          description: Количество по данным бухгалтерского учета
+
+    Inv1InventoryForm:
+      type: object
+      description: Объект описи формы ИНВ-1
+      properties:
+        NAME:
+          type: string
+          description: Наименование и краткая характеристика объекта
+        LOCATION:
+          type: string
+          description: Местонахождение
+        INVNUMBER:
+          type: string
+          description: Инвентарный номер
+        FACTORYNUMBER:
+          type: string
+          description: Заводской/серийный номер
+        NETWORK_NUM:
+          type: string
+          description: Сетевой номер
+        PASSPORTNUM:
+          type: string
+          description: Номер паспорта (документа о регистрации)
+        BU_KOL:
+          type: number
+          description: Количество по данным бухгалтерского учета
+        OBJECT_STATE:
+          type: string
+          description: Состояние объекта
+
+    Inv3InventoryForm:
+      type: object
+      description: Объект описи формы ИНВ-3
+      properties:
+        NAME:
+          type: string
+          description: Наименование, характеристика ТМЦ
+        CODE:
+          type: string
+          description: Номенклатурный номер (код СКМТР)
+        EIID:
+          type: string
+          description: Код единицы измерения (ОКЕИ)
+        EINAME:
+          type: string
+          description: Наименование единицы измерения
+        INVNUMBER:
+          type: string
+          description: Инвентарный или табельный номер
+        PASSPORTNUM:
+          type: string
+          description: Номер паспорта
+        BATCH:
+          type: string
+          description: Номер партии
+        BU_KOL:
+          type: number
+          description: Количество по данным бухгалтерского учета
+
+    Inv5InventoryForm:
+      type: object
+      description: Объект описи формы ИНВ-5
+      properties:
+        NAME:
+          type: string
+          description:
+            Наименование, характеристика ТМЦ, принятых на ответственное хранение
+        CODE:
+          type: string
+          description: Номенклатурный номер (код СКМТР)
+        FACTORYNUMBER:
+          type: string
+          description: Заводской номер
+        PLACEMENT:
+          type: string
+          description: Место хранения
+        EIID:
+          type: string
+          description: Код единицы измерения (ОКЕИ)
+        EINAME:
+          type: string
+          description: Наименование единицы измерения
+        BATCH:
+          type: string
+          description: Номер партии
+        BU_KOL:
+          type: number
+          description: Количество по данным бухгалтерского учета
+
+  parameters:
+    tabelNumbers:
+      name: tabelNumbers
+      in: query
+      description: Список табельных номеров
+      required: true
+      schema:
+        type: array
+        items:
+          type: string
+          example: '11111111'
+        example:
+          - '11111111'
+          - '22222222'
+          - '33333333'
+    eventId:
+      name: eventId
+      in: query
+      description: Идентификатор события
+      required: true
+      schema:
+        $ref: '#/components/schemas/EventId'
+    eventIdPath:
+      name: eventId
+      in: path
+      required: true
+      description: Идентификатор события
+      schema:
+        $ref: '#/components/schemas/EventId'
+    complexInventoryId:
+      name: complexInventoryId
+      in: query
+      description: Идентификатор комплексной описи
+      required: true
+      schema:
+        $ref: '#/components/schemas/InventoryId'
+    individualInventoryIdPath:
+      name: inventoryId
+      in: path
+      description: Идентификатор индивидуальной описи
+      required: true
+      schema:
+        $ref: '#/components/schemas/InventoryId'
+    inventoryIdPath:
+      name: inventoryId
+      in: path
+      description: Идентификатор описи
+      required: true
+      schema:
+        $ref: '#/components/schemas/InventoryId'
+
+  responses:
+    CreatedInventoryEvent:
+      description: Created
+      content:
+        application/json:
+          schema:
+            type: object
+            properties:
+              eventId:
+                type: string
+                description: Идентификатор созданного события инвентаризации
+                example: 0433abdd-f103-40ed-b1b9-81f40aa0288a
+    NotFound:
+      description: Not Found
+      content:
+        application/problem+json:
+          schema:
+            type: object
+            properties:
+              type:
+                type: string
+                description: Уникальный идентификатор ошибки
+                example: urn:problem-type:entity-not-found
+              title:
+                type: string
+                description: Краткое описание ошибки
+                example: Сущность не существует
+              detail:
+                type: string
+                description: Расширенное описание ошибки
+                example: Сущность с id={идентификатор} не существует
+              status:
+                type: integer
+                description: Код статуса ответа
+                example: 404
+    Forbidden:
+      description: Forbidden
+      content:
+        application/problem+json:
+          schema:
+            type: object
+            properties:
+              type:
+                type: string
+                description: Уникальный идентификатор ошибки
+                example: urn:problem-type:forbidden
+              title:
+                type: string
+                description: Краткое описание ошибки
+                example: Доступ запрещен
+              detail:
+                type: string
+                description: Расширенное описание ошибки
+                example: Доступ запрещен
+              status:
+                type: integer
+                description: Код статуса ответа
+                example: 403
+    UnprocessableContent:
+      description: Unprocessable Content
+      content:
+        application/problem+json:
+          schema:
+            type: object
+            properties:
+              type:
+                type: string
+                description: Уникальный идентификатор ошибки
+                example: urn:problem-type:unprocessable-content
+              title:
+                type: string
+                description: Краткое описание ошибки
+                example: Необрабатываемый контент
+              detail:
+                type: string
+                description: Расширенное описание ошибки
+                example: Необрабатываемый контент
+              status:
+                type: integer
+                description: Код статуса ответа
+                example: 422
+    Conflict:
+      description: Conflict
+      content:
+        application/problem+json:
+          schema:
+            type: object
+            properties:
+              type:
+                type: string
+                description: Уникальный идентификатор ошибки
+                example: urn:problem-type:conflict
+              title:
+                type: string
+                description: Краткое описание ошибки
+                example: Конфликт
+              detail:
+                type: string
+                description: Расширенное описание ошибки
+                example: Конфликт
+              status:
+                type: integer
+                description: Код статуса ответа
+                example: 409
+    BadRequest:
+      description: Bad Request
+      content:
+        application/problem+json:
+          schema:
+            type: object
+            properties:
+              type:
+                type: string
+                description: Уникальный идентификатор ошибки
+                example: urn:problem-type:bad-request
+              title:
+                type: string
+                description: Краткое описание ошибки
+                example: Плохой запрос
+              detail:
+                type: string
+                description: Расширенное описание ошибки
+                example: Плохой запрос
+              status:
+                type: integer
+                description: Код статуса ответа
+                example: 400

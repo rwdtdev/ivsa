@@ -81,8 +81,6 @@ export class AuditRoomManager {
           user.status !== UserStatus.RECUSED
       );
 
-      console.warn(registeredAndNotBlockedParticipants);
-
       const speaker = registeredAndNotBlockedParticipants.find(
         ({ role }) => IvaRolesMapper[role] === IvaRoles.SPEAKER
       );

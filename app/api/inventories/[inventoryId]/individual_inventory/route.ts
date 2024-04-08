@@ -14,7 +14,7 @@ import { InventoryManager } from '@/core/inventory/InventoryManager';
 interface IContext {
   params: {
     inventoryId: string;
-    complexInventoryId: string;
+    individualInventoryId: string;
     inventoryNumber: string;
     inventoryDate: Date;
     inventoryContainerObject: object;
@@ -28,22 +28,19 @@ export async function DELETE(request: NextRequest, context: IContext) {
   );
 
   try {
-    const { inventoryId: individualInventoryId } =
-      RemoveIndividualInvenoryPathParamsSchema.parse(context.params);
+    const { inventoryId } = RemoveIndividualInvenoryPathParamsSchema.parse(
+      context.params
+    );
 
     const { searchParams } = new URL(request.url);
 
-    const { eventId, inventoryId: complexInventoryId } =
+    const { eventId, complexInventoryId } =
       RemoveIndividualInvenoryQueryParamsSchema.parse({
         eventId: searchParams.get('eventId'),
-        inventoryId: searchParams.get('inventoryId')
+        inventoryId: searchParams.get('complexInventoryId')
       });
 
-    await inventoryManager.removeIndividual(
-      individualInventoryId,
-      complexInventoryId,
-      eventId
-    );
+    await inventoryManager.removeIndividual(inventoryId, complexInventoryId, eventId);
 
     return new Response(null, { status: 204 });
   } catch (error) {

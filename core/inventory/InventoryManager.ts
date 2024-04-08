@@ -37,13 +37,13 @@ export class InventoryManager {
 
       await inventoryService.assertExistAndBelongEvent(data.id, data.eventId);
       await inventoryService.assertNotExistWithEvent(
-        data.complexInventoryId,
+        data.individualInventoryId,
         data.eventId
       );
 
       const inventory = await inventoryService.create({
         eventId: data.eventId,
-        id: data.complexInventoryId,
+        id: data.individualInventoryId,
         parentId: data.id,
         code: data.inventoryCode,
         name: InventoryCodes[data.inventoryCode].name,

@@ -29,7 +29,7 @@ const inventoryObjectSchema = z
 export const CreateIndividualInventorySchema = z
   .object({
     eventId: z.string().trim().min(1).cuid(),
-    complexInventoryId: z.string().trim().min(1),
+    individualInventoryId: z.string().trim().min(1),
     inventoryCode: z.nativeEnum(InventoryCode),
     inventoryDate: isoDatetimeSchema,
     inventoryNumber: z.string().trim().min(1),
@@ -79,5 +79,5 @@ export const RemoveIndividualInvenoryPathParamsSchema = z.object({
 
 export const RemoveIndividualInvenoryQueryParamsSchema = z.object({
   eventId: z.string().trim().min(1).cuid(),
-  inventoryId: z.string().trim().min(1)
+  complexInventoryId: z.string().trim().min(1)
 });

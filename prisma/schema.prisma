@@ -168,24 +168,6 @@ model Participant {
   @@map("participants")
 }
 
-model File {
-  id                     String    @id @default(uuid())
-  /// Идентификатор описи, к которой относятся файлы
-  inventoryId            String
-  /// Объект с данными об описи, связанной с файлом
-  inventory              Inventory @relation(fields: [inventoryId], references: [id])
-  /// Ссылка на видеофайл в оперативном хранилище
-  operatingStorageUrl    String?
-  /// Дата сохранения видеофайла в оперативнмо хранилище
-  operatingStorageSaveAt DateTime?
-  /// Ссылка на видеофайл в архивном хранилище
-  archiveStorageUrl      String?
-  /// Дата сохранения видеофайла в архивном хранилище
-  archiveStorageSaveAt   DateTime?
-  /// Дата и время по истечению которого необходимо перенести файл из оперативного хранилища в архивное (operatingStorageSaveAt + период хранения - конфигурируемый)
-  transferAt             DateTime?
-}
-
 model Inventory {
   /// Внешний Идентификаторр описи из Soi
   id                  String            @id
@@ -214,7 +196,7 @@ model Inventory {
   /// Список участников
   participants        Participant[]
   /// Список файлов хранящийся в оперативном хранилище или архивном хранилище 
-  videoFiles          File[]
+  videoFilesUrls      String[]
   /// Cтатус описи
   status              InventoryStatus   @default(AVAILABLE)
   /// Идентификатор комплексной описи, если текущая опись является индивидуальной, в ином случае всегда = null

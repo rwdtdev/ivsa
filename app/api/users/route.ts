@@ -1,18 +1,11 @@
-/**
- * @TODO Delete that route after integration testing
- */
-
 import { NextRequest, NextResponse } from 'next/server';
 import { getErrorResponse } from '@/lib/helpers';
-
-import { ParticipantService } from '@/core/participant/ParticipantService';
-
 import { UserManager } from '@/core/user/UserManager';
 import { IvaService } from '@/core/iva/IvaService';
 import { UserService } from '@/core/user/UserService';
 import { DepartmentService } from '@/core/department/DepartmentService';
+import { ParticipantService } from '@/core/participant/ParticipantService';
 import { OrganisationService } from '@/core/organisation/OrganisationService';
-import { assertAPICallIsAuthorized } from '@/lib/api/helpers';
 
 export async function POST(request: NextRequest) {
   const userManager = new UserManager(
@@ -24,8 +17,6 @@ export async function POST(request: NextRequest) {
   );
 
   try {
-    assertAPICallIsAuthorized(request);
-    
     const requestBody = await request.json();
 
     const user = await userManager.createUser(requestBody);
@@ -36,7 +27,7 @@ export async function POST(request: NextRequest) {
   }
 }
 
-export async function GET(request: NextRequest) {
+export async function GET() {
   const userManager = new UserManager(
     new IvaService(),
     new UserService(),
@@ -46,8 +37,6 @@ export async function GET(request: NextRequest) {
   );
 
   try {
-    assertAPICallIsAuthorized(request);
-
     const users = await userManager.getAll();
 
     return NextResponse.json(users, { status: 200 });

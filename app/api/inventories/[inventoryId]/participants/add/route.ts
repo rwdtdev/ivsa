@@ -3,7 +3,6 @@ import { NextRequest, NextResponse } from 'next/server';
 import { PathParamsSchema, UpdateInventorySchema } from './validation';
 import { InventoryService } from '@/core/inventory/InventoryService';
 import { ParticipantService } from '@/core/participant/ParticipantService';
-import { assertAPICallIsAuthorized } from '@/lib/api/helpers';
 import { ParticipantManager } from '@/core/participant/ParticipantManager';
 import { EventService } from '@/core/event/EventService';
 
@@ -19,8 +18,6 @@ export async function PUT(request: NextRequest, context: IContext) {
   );
 
   try {
-    assertAPICallIsAuthorized(request);
-
     const { inventoryId } = PathParamsSchema.parse(context.params);
 
     const response = await participantManager.createInventoryParticipants(

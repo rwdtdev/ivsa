@@ -246,7 +246,17 @@ export default function EventPage() {
                               </div>
                             </AccordionTrigger>
                             <AccordionContent>
-                              <CarouselSize />
+                              {inventory.videoFilesUrls.length > 0 && (
+                                <CarouselSize
+                                  items={inventory.videoFilesUrls[0]
+                                    .split(',')
+                                    .map((url) => ({
+                                      title: `Опись ${inventory.number} `,
+                                      url,
+                                      date: inventory.date
+                                    }))}
+                                />
+                              )}
                               {event.inventories.some(
                                 (child) => child.parentId === inventory.id
                               ) && (

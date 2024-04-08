@@ -3,7 +3,6 @@ import { getErrorResponse } from '@/lib/helpers';
 import { PathParamsSchema, QueryParamsSchema } from './validation';
 import { ParticipantService } from '@/core/participant/ParticipantService';
 import { InventoryService } from '@/core/inventory/InventoryService';
-import { assertAPICallIsAuthorized } from '@/lib/api/helpers';
 
 interface IContext {
   params: { inventoryId: string };
@@ -14,16 +13,10 @@ export async function PUT(request: NextRequest, context: IContext) {
   const inventoryService = new InventoryService();
 
   try {
-    assertAPICallIsAuthorized(request);
-
     const { inventoryId } = PathParamsSchema.parse(context.params);
     const { searchParams } = new URL(request.url);
 
     const { eventId } = QueryParamsSchema.parse({
-      /**
-       * TODO: Некорректно намеренно передавать undefined
-       * но непонятно как инициировать ошибку Required вместо сравнения типов без refine
-       */
       eventId: searchParams.get('eventId') ?? undefined
     });
 

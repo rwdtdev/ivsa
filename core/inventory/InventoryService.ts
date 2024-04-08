@@ -103,7 +103,7 @@ export class InventoryService {
     return updatedInventory;
   }
 
-  async findBy(query: Partial<Inventory>): Promise<Inventory[]> {
+  async findBy(query: Partial<Omit<Inventory, 'videoFilesUrls'>>): Promise<Inventory[]> {
     const inventories = await this.prisma.inventory.findMany({
       where: query
     });

@@ -1,22 +1,31 @@
-import pino from 'pino';
-
-const logger = pino({ name: 'HTTP' });
-
-import { withAuth } from 'next-auth/middleware';
+import { isAuthorized } from './lib/auth';
+import { Logger } from './lib/logger';
 import { NextResponse, NextRequest } from 'next/server';
 
-function yourOwnMiddleware(request: NextRequest) {
-  logger.info(`${request.method} [${request.url}]`);
+const logger = new Logger({ name: 'HTTP' });
 
-  // return NextResponse.redirect(new URL('/admin/users', request.url));
+export function middleware(request: NextRequest) {
+  if (request.nextUrl.pathname.startsWith('/api')) {
+    const requestId = request.headers.get('RequestId');
+
+    logger.info(`${requestId ? `[${requestId}] ` : ''}${request.method} ${request.url}`);
+
+    if (!isAuthorized(request)) {
+      return NextResponse.json(
+        {
+          type: 'urn:problem-type:unauthorized-error',
+          title: 'Произошла ошибка',
+          detail: 'Для доступа к запрашиваемому ресурсу требуется авторизация',
+          status: 401
+        },
+        { status: 401 }
+      );
+    }
+
+    return NextResponse.next();
+  }
 }
 
-export default withAuth(yourOwnMiddleware, {
-  callbacks: {
-    async authorized({ token, req }) {
-      return !!token;
-    }
-  }
-});
-
-export const config = { matcher: ['/admin/:path*', '/protected/:path*'] };
+export const config = {
+  matcher: ['/api/:path*']
+};

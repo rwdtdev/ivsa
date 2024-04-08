@@ -5,7 +5,6 @@ import { CreateBriefingRoomBodySchema } from './validation';
 import { IvaService } from '@/core/iva/IvaService';
 import { EventService } from '@/core/event/EventService';
 import { BriefingRoomManager } from '@/core/briefing-room/BriefingRoomManager';
-import { assertAPICallIsAuthorized } from '@/lib/api/helpers';
 
 export async function POST(request: NextRequest) {
   let conferenceSessionId;
@@ -16,8 +15,6 @@ export async function POST(request: NextRequest) {
   );
 
   try {
-    assertAPICallIsAuthorized(request);
-    
     const response = await briefingRoomManager.createRoom(
       CreateBriefingRoomBodySchema.parse(await request.json())
     );

@@ -5,7 +5,6 @@ import { CloseBriefingRoomBodySchema } from './validation';
 import { IvaService } from '@/core/iva/IvaService';
 import { EventService } from '@/core/event/EventService';
 import { BriefingRoomManager } from '@/core/briefing-room/BriefingRoomManager';
-import { assertAPICallIsAuthorized } from '@/lib/api/helpers';
 
 export async function PUT(request: NextRequest) {
   const briefingRoomManager = new BriefingRoomManager(
@@ -14,8 +13,6 @@ export async function PUT(request: NextRequest) {
   );
 
   try {
-    assertAPICallIsAuthorized(request);
-
     await briefingRoomManager.closeRoom(
       CloseBriefingRoomBodySchema.parse(await request.json())
     );

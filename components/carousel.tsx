@@ -20,78 +20,9 @@ import {
 import { DATE_FORMAT } from '@/constants/date';
 import Image from 'next/image';
 
-// @TODO: Заглушка
-const items = [
-  {
-    title: 'Опись №1',
-    url: '/test.mp4',
-    date: new Date()
-  },
-  {
-    title: 'Опись №2',
-    url: '/test.mp4',
-    date: new Date()
-  },
-  {
-    title: 'Опись №3',
-    url: '/test.mp4',
-    date: new Date()
-  },
-  {
-    title: 'Опись №4',
-    url: '/test.mp4',
-    date: new Date()
-  },
-  {
-    title: 'Опись №5',
-    url: '/test.mp4',
-    date: new Date()
-  },
-  {
-    title: 'Опись №6',
-    url: '/test.mp4',
-    date: new Date()
-  },
-  {
-    title: 'Опись №7',
-    url: '/test.mp4',
-    date: new Date()
-  },
-  {
-    title: 'Опись №8',
-    url: '/test.mp4',
-    date: new Date()
-  },
-  {
-    title: 'Опись №9',
-    url: '/test.mp4',
-    date: new Date()
-  },
-  {
-    title: 'Опись №10',
-    url: '/test.mp4',
-    date: new Date()
-  },
-  {
-    title: 'Опись №11',
-    url: '/test.mp4',
-    date: new Date()
-  },
-  {
-    title: 'Опись №12',
-    url: '/test.mp4',
-    date: new Date()
-  }
-];
-
-export function CarouselSize() {
+export function CarouselSize({ items }: { items: any[] }) {
   return (
-    <Carousel
-      opts={{
-        align: 'start'
-      }}
-      className='grid grid-flow-col'
-    >
+    <Carousel opts={{ align: 'start' }} className='grid grid-flow-col'>
       <div className='m-auto flex justify-start'>
         <CarouselPrevious />
       </div>
@@ -127,7 +58,13 @@ export function CarouselSize() {
                       <DialogDescription>
                         {moment(item.date).format(DATE_FORMAT)}
                       </DialogDescription>
-                      <video src={item.url} width='100%' autoPlay controls></video>
+                      <video
+                        src={item.url}
+                        width='100%'
+                        itemType='video/mp4'
+                        autoPlay
+                        controls
+                      ></video>
                     </DialogHeader>
                   </DialogContent>
                 </Dialog>

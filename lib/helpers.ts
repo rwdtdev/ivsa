@@ -46,8 +46,6 @@ export function getErrorResponse(
 ) {
   const requestId = request.headers.get('RequestId');
 
-  console.log(requestId);
-
   const err = map(
     originalErr,
     allowedErrors,

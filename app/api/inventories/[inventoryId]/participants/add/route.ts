@@ -10,7 +10,7 @@ interface IContext {
   params: { inventoryId: string };
 }
 
-export async function PUT(request: NextRequest, context: IContext) {
+export async function PUT(req: NextRequest, context: IContext) {
   const participantManager = new ParticipantManager(
     new EventService(),
     new InventoryService(),
@@ -22,11 +22,11 @@ export async function PUT(request: NextRequest, context: IContext) {
 
     const response = await participantManager.createInventoryParticipants(
       inventoryId,
-      UpdateInventorySchema.parse(await request.json())
+      UpdateInventorySchema.parse(await req.json())
     );
 
     return NextResponse.json(response, { status: 200 });
   } catch (error) {
-    return getErrorResponse(error);
+    return getErrorResponse(error, req);
   }
 }

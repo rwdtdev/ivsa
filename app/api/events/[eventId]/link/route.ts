@@ -7,7 +7,7 @@ interface IContext {
   params: { eventId: string };
 }
 
-export async function GET(request: NextRequest, context: IContext) {
+export async function GET(req: NextRequest, context: IContext) {
   const eventService = new EventService();
 
   try {
@@ -20,6 +20,6 @@ export async function GET(request: NextRequest, context: IContext) {
       { status: 200, statusText: 'OK' }
     );
   } catch (error) {
-    return getErrorResponse(error);
+    return getErrorResponse(error, req);
   }
 }

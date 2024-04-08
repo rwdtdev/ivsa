@@ -10,7 +10,7 @@ interface IContext {
   };
 }
 
-export async function GET(_: NextRequest, context: IContext) {
+export async function GET(req: NextRequest, context: IContext) {
   const inventoryService = new InventoryService();
 
   try {
@@ -25,6 +25,6 @@ export async function GET(_: NextRequest, context: IContext) {
       { status: 200, statusText: 'OK' }
     );
   } catch (error) {
-    return getErrorResponse(error);
+    return getErrorResponse(error, req);
   }
 }

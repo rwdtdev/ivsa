@@ -16,7 +16,8 @@ export function middleware(request: NextRequest) {
           type: 'urn:problem-type:unauthorized-error',
           title: 'Произошла ошибка',
           detail: 'Для доступа к запрашиваемому ресурсу требуется авторизация',
-          status: 401
+          status: 401,
+          ...(requestId && { requestId })
         },
         { status: 401 }
       );

@@ -20,6 +20,6 @@ export async function POST(req: NextRequest) {
 
     return NextResponse.json(response, { status: 201 });
   } catch (error) {
-    return getErrorResponse(error);
+    return getErrorResponse(error, req);
   }
 }

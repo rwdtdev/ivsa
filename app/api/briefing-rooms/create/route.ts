@@ -6,7 +6,7 @@ import { IvaService } from '@/core/iva/IvaService';
 import { EventService } from '@/core/event/EventService';
 import { BriefingRoomManager } from '@/core/briefing-room/BriefingRoomManager';
 
-export async function POST(request: NextRequest) {
+export async function POST(req: NextRequest) {
   let conferenceSessionId;
 
   const briefingRoomManager = new BriefingRoomManager(
@@ -16,7 +16,7 @@ export async function POST(request: NextRequest) {
 
   try {
     const response = await briefingRoomManager.createRoom(
-      CreateBriefingRoomBodySchema.parse(await request.json())
+      CreateBriefingRoomBodySchema.parse(await req.json())
     );
 
     conferenceSessionId = response.briefingId;
@@ -27,6 +27,6 @@ export async function POST(request: NextRequest) {
       await briefingRoomManager.closeConference(conferenceSessionId);
     }
 
-    return getErrorResponse(error);
+    return getErrorResponse(error, req);
   }
 }

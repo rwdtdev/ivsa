@@ -15,7 +15,7 @@ interface IContext {
   params: { eventId: string };
 }
 
-export async function PUT(request: NextRequest, context: IContext) {
+export async function PUT(req: NextRequest, context: IContext) {
   const eventManager = new EventManager(
     new EventService(),
     new ParticipantService(),
@@ -27,16 +27,16 @@ export async function PUT(request: NextRequest, context: IContext) {
 
     const response = await eventManager.updateEvent(
       eventId,
-      UpdateEventSchema.parse(await request.json())
+      UpdateEventSchema.parse(await req.json())
     );
 
     return NextResponse.json(response, { status: 200, statusText: 'OK' });
   } catch (error) {
-    return getErrorResponse(error);
+    return getErrorResponse(error, req);
   }
 }
 
-export async function DELETE(_: NextRequest, context: IContext) {
+export async function DELETE(req: NextRequest, context: IContext) {
   const eventManager = new EventManager(
     new EventService(),
     new ParticipantService(),
@@ -50,6 +50,6 @@ export async function DELETE(_: NextRequest, context: IContext) {
 
     return new Response(null, { status: 204 });
   } catch (error) {
-    return getErrorResponse(error);
+    return getErrorResponse(error, req);
   }
 }

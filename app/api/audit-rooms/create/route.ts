@@ -8,7 +8,7 @@ import { InventoryService } from '@/core/inventory/InventoryService';
 import { InventoryObjectService } from '@/core/inventory-object/InventoryObjectService';
 import { AuditRoomManager } from '@/core/audit-room/AuditRoomManager';
 
-export async function POST(request: NextRequest) {
+export async function POST(req: NextRequest) {
   let conferenceSessionId;
 
   const auditRoomManager = new AuditRoomManager(
@@ -20,7 +20,7 @@ export async function POST(request: NextRequest) {
 
   try {
     const response = await auditRoomManager.createRoom(
-      CreateInventorySchema.parse(await request.json())
+      CreateInventorySchema.parse(await req.json())
     );
 
     conferenceSessionId = response.auditId;
@@ -31,6 +31,6 @@ export async function POST(request: NextRequest) {
       await auditRoomManager.closeConference(conferenceSessionId);
     }
 
-    return getErrorResponse(error);
+    return getErrorResponse(error, req);
   }
 }

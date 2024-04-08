@@ -9,7 +9,7 @@ import { InventoryService } from '@/core/inventory/InventoryService';
 import { AuditRoomManager } from '@/core/audit-room/AuditRoomManager';
 import { InventoryObjectService } from '@/core/inventory-object/InventoryObjectService';
 
-export async function PUT(request: NextRequest) {
+export async function PUT(req: NextRequest) {
   const auditRoomManager = new AuditRoomManager(
     new IvaService(),
     new EventService(),
@@ -18,12 +18,10 @@ export async function PUT(request: NextRequest) {
   );
 
   try {
-    await auditRoomManager.closeRoom(
-      CloseAuditRoomBodySchema.parse(await request.json())
-    );
+    await auditRoomManager.closeRoom(CloseAuditRoomBodySchema.parse(await req.json()));
 
     return new Response(null, { status: 204 });
   } catch (error) {
-    return getErrorResponse(error);
+    return getErrorResponse(error, req);
   }
 }

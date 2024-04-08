@@ -11,7 +11,7 @@ interface IContext {
   params: { eventId: string };
 }
 
-export async function PUT(request: NextRequest, context: IContext) {
+export async function PUT(req: NextRequest, context: IContext) {
   const eventManager = new EventManager(
     new EventService(),
     new ParticipantService(),
@@ -23,11 +23,11 @@ export async function PUT(request: NextRequest, context: IContext) {
 
     await eventManager.updateEventParticipants(
       eventId,
-      ParticipantsSchema.parse(await request.json())
+      ParticipantsSchema.parse(await req.json())
     );
 
     return new Response(null, { status: 204 });
   } catch (error) {
-    return getErrorResponse(error);
+    return getErrorResponse(error, req);
   }
 }

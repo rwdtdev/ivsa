@@ -1,4 +1,4 @@
-import { NextResponse } from 'next/server';
+import { NextRequest, NextResponse } from 'next/server';
 import { IvaService } from '@/core/iva/IvaService';
 import { getErrorResponse } from '@/lib/helpers';
 
@@ -16,10 +16,9 @@ type IvaHealthcheck = {
   };
 };
 
-export async function GET() {
+export async function GET(req: NextRequest) {
   const ivaService = new IvaService();
 
-  // Добавление деталей переменных окружения
   const env = {
     IVA_API_URL: process.env.IVA_API_URL,
     IVA_APP_ID: process.env.IVA_APP_ID,
@@ -42,10 +41,10 @@ export async function GET() {
 
     iva.apiVersion = status.apiVersion;
     iva.env = env;
-  } catch (err) {
-    console.log(err);
+  } catch (error) {
+    console.log(error);
     iva.status = 'NOT OK';
-    iva.error = getErrorResponse(err);
+    iva.error = getErrorResponse(error, req);
   }
 
   return NextResponse.json({ iva }, { status: 201 });

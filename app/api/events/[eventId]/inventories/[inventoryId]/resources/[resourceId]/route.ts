@@ -8,7 +8,7 @@ interface IContext {
   params: { eventId: string; inventoryId: string; resourceId: string };
 }
 
-export async function GET(request: NextRequest, context: IContext) {
+export async function GET(req: NextRequest, context: IContext) {
   try {
     const { eventId, inventoryId, resourceId } = context.params;
 
@@ -33,6 +33,6 @@ export async function GET(request: NextRequest, context: IContext) {
     // @ts-expect-error stream types
     return new Response(stream);
   } catch (error) {
-    return getErrorResponse(error);
+    return getErrorResponse(error, req);
   }
 }

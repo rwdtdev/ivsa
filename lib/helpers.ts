@@ -1,6 +1,6 @@
 import _ from 'underscore';
 import { z } from 'zod';
-import { NextResponse } from 'next/server';
+import { NextRequest, NextResponse } from 'next/server';
 import { ServerError, ValidationError } from './problem-json';
 import ProblemJson from './problem-json/ProblemJson';
 import { createLogger } from './logger';
@@ -38,11 +38,16 @@ function map(
 
 export function getErrorResponse(
   originalErr: ProblemJson | Error | z.ZodError | any,
+  request: NextRequest | Request,
   allowedErrors = [ProblemJson],
   UnknownProductionError = ServerError,
   UnknownDevelopmentError = ServerError,
   env = process.env.NODE_ENV
 ) {
+  const requestId = request.headers.get('RequestId');
+
+  console.log(requestId);
+
   const err = map(
     originalErr,
     allowedErrors,
@@ -59,9 +64,10 @@ export function getErrorResponse(
           detail: err.detail,
           status: err.status,
           instance: err.instance,
-          ...(err.invalidParams && { invalidParams: err.invalidParams })
+          ...(err.invalidParams && { invalidParams: err.invalidParams }),
+          ...(requestId && { requestId })
         }
-      : err;
+      : { ...err, ...(requestId && { requestId }) };
 
   logger.error(err);
 

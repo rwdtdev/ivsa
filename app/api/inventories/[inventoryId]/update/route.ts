@@ -9,20 +9,20 @@ interface IContext {
   params: { inventoryId: string };
 }
 
-export async function POST(request: NextRequest, context: IContext) {
+export async function POST(req: NextRequest, context: IContext) {
   const inventoryManager = new InventoryManager(
     new InventoryService(),
     new InventoryObjectService()
   );
 
   try {
-    const data = UpdateInventorySchema.parse(await request.json());
+    const data = UpdateInventorySchema.parse(await req.json());
     const { inventoryId } = UpdateInventoryPathParamsSchema.parse(context.params);
 
     await inventoryManager.updateInventory(inventoryId, data);
 
     return new Response(null, { status: 204 });
   } catch (error) {
-    return getErrorResponse(error);
+    return getErrorResponse(error, req);
   }
 }

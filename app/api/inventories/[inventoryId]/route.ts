@@ -7,12 +7,12 @@ interface IContext {
   params: { inventoryId: string };
 }
 
-export async function DELETE(request: NextRequest, context: IContext) {
+export async function DELETE(req: NextRequest, context: IContext) {
   const inventoryService = new InventoryService();
 
   try {
     const { inventoryId } = PathParamsSchema.parse(context.params);
-    const { searchParams } = new URL(request.url);
+    const { searchParams } = new URL(req.url);
     const { eventId } = QueryParamsSchema.parse({
       eventId: searchParams.get('eventId') ?? undefined
     });
@@ -22,6 +22,6 @@ export async function DELETE(request: NextRequest, context: IContext) {
 
     return new Response(null, { status: 204 });
   } catch (error) {
-    return getErrorResponse(error);
+    return getErrorResponse(error, req);
   }
 }

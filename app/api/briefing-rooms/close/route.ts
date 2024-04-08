@@ -6,7 +6,7 @@ import { IvaService } from '@/core/iva/IvaService';
 import { EventService } from '@/core/event/EventService';
 import { BriefingRoomManager } from '@/core/briefing-room/BriefingRoomManager';
 
-export async function PUT(request: NextRequest) {
+export async function PUT(req: NextRequest) {
   const briefingRoomManager = new BriefingRoomManager(
     new IvaService(),
     new EventService()
@@ -14,11 +14,11 @@ export async function PUT(request: NextRequest) {
 
   try {
     await briefingRoomManager.closeRoom(
-      CloseBriefingRoomBodySchema.parse(await request.json())
+      CloseBriefingRoomBodySchema.parse(await req.json())
     );
 
     return new Response(null, { status: 204 });
   } catch (error) {
-    return getErrorResponse(error);
+    return getErrorResponse(error, req);
   }
 }

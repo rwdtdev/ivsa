@@ -21,7 +21,7 @@ interface IContext {
   };
 }
 
-export async function DELETE(request: NextRequest, context: IContext) {
+export async function DELETE(req: NextRequest, context: IContext) {
   const inventoryManager = new InventoryManager(
     new InventoryService(),
     new InventoryObjectService()
@@ -32,7 +32,7 @@ export async function DELETE(request: NextRequest, context: IContext) {
       context.params
     );
 
-    const { searchParams } = new URL(request.url);
+    const { searchParams } = new URL(req.url);
 
     const { eventId, complexInventoryId } =
       RemoveIndividualInvenoryQueryParamsSchema.parse({
@@ -44,11 +44,11 @@ export async function DELETE(request: NextRequest, context: IContext) {
 
     return new Response(null, { status: 204 });
   } catch (error) {
-    return getErrorResponse(error);
+    return getErrorResponse(error, req);
   }
 }
 
-export async function POST(request: NextRequest, context: IContext) {
+export async function POST(req: NextRequest, context: IContext) {
   const inventoryManager = new InventoryManager(
     new InventoryService(),
     new InventoryObjectService()
@@ -58,12 +58,12 @@ export async function POST(request: NextRequest, context: IContext) {
     const { inventoryId } = PathParamsSchema.parse(context.params);
 
     await inventoryManager.createIndividual({
-      ...CreateIndividualInventorySchema.parse(await request.json()),
+      ...CreateIndividualInventorySchema.parse(await req.json()),
       id: inventoryId
     });
 
     return new Response(null, { status: 201 });
   } catch (error) {
-    return getErrorResponse(error);
+    return getErrorResponse(error, req);
   }
 }

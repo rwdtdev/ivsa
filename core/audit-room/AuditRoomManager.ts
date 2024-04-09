@@ -61,9 +61,27 @@ export class AuditRoomManager {
       const inventoryObjectService = this.inventoryObjectService.withSession(session);
 
       await eventService.assertExist(eventId);
-      await inventoryService.assertNotExist(inventoryId, eventId);
 
       const event = await eventService.getById(eventId);
+
+      const existInventory = await inventoryService.getByIdAndEventId(
+        inventoryId,
+        eventId
+      );
+
+      if (
+        existInventory &&
+        existInventory.status === InventoryStatus.AVAILABLE &&
+        existInventory.auditSessionId
+      ) {
+        const link = await this.getAuditJoinLink(existInventory.auditSessionId);
+
+        return {
+          auditId: existInventory.auditSessionId,
+          auditLink: link,
+          users: getRegisteredParticipants(event.participants)
+        };
+      }
 
       if (event.briefingStatus === BriefingStatus.IN_PROGRESS) {
         throw new BriefingRoomIsStillOpenError();

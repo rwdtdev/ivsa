@@ -1,6 +1,7 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { IvaService } from '@/core/iva/IvaService';
 import { getErrorResponse } from '@/lib/helpers';
+import { S3ClientProvider } from '@/utils/s3-client/s3-client-provider';
 
 type IvaHealthcheck = {
   status: string;
@@ -16,8 +17,24 @@ type IvaHealthcheck = {
   };
 };
 
+type S3Healthcheck = {
+  status: string;
+  error?: unknown;
+};
+
 export async function GET(req: NextRequest) {
   const ivaService = new IvaService();
+
+  const s3Client = S3ClientProvider.createClient({
+    client: 'minio',
+    url: 'http://127.0.0.1:9000',
+    accessKey: 'admin',
+    secretKey: 'admin123',
+    timeout: 6000,
+    region: 'us-east-1',
+    bucket: { asvi: 'asvi' },
+    'auto-create-bucket': true
+  });
 
   const env = {
     IVA_API_URL: process.env.IVA_API_URL,
@@ -27,6 +44,7 @@ export async function GET(req: NextRequest) {
   };
 
   const iva: IvaHealthcheck = { status: 'OK' };
+  const s3: S3Healthcheck = { status: 'OK' };
 
   try {
     const users = await ivaService.findUsers('');
@@ -45,6 +63,17 @@ export async function GET(req: NextRequest) {
     console.log(error);
     iva.status = 'NOT OK';
     iva.error = getErrorResponse(error, req);
+  }
+
+  try {
+    const isInit = await s3Client.init();
+
+    if (!isInit) {
+      s3.status = 'NOT OK';
+    }
+  } catch (error) {
+    s3.status = 'NOT OK';
+    s3.error = getErrorResponse(error, req);
   }
 
   return NextResponse.json({ iva }, { status: 201 });

@@ -76,5 +76,5 @@ export async function GET(req: NextRequest) {
     s3.error = getErrorResponse(error, req);
   }
 
-  return NextResponse.json({ iva }, { status: 201 });
+  return NextResponse.json({ iva, s3 }, { status: 201 });
 }

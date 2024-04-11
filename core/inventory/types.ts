@@ -1,4 +1,4 @@
-import { Inventory } from '@prisma/client';
+import { Inventory, InventoryObject } from '@prisma/client';
 
 export type Inv1Form = {
   account: string;
@@ -258,4 +258,8 @@ export const InventoryCodes = {
     fields: Fnu55Fields,
     fieldsRequired: Fnu55FieldsRequired
   }
+};
+
+export type InventoryWithObjects = Inventory & {
+  objects: InventoryObject[];
 };

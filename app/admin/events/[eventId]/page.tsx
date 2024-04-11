@@ -227,7 +227,7 @@ export default function EventPage() {
                               <div className='flex flex-col'>
                                 <div className='flex justify-start'>
                                   <Link
-                                    href={`/admin/inventories/${inventory.id}`}
+                                    href={`/admin/events/${inventory.eventId}/inventories/${inventory.id}`}
                                     className='text-sm hover:underline'
                                   >
                                     Комплексная опись № {inventory.number} от{' '}
@@ -293,7 +293,7 @@ export default function EventPage() {
                                           </TableCell>
                                           <TableCell>
                                             <Link
-                                              href={`/admin/inventories/${child.id}`}
+                                              href={`/admin/events/${child.eventId}/inventories/${child.id}`}
                                               className='flex'
                                             >
                                               {

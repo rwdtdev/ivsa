@@ -1,5 +1,5 @@
-export const getEntityId = (pathname: string) => {
+export const getEntityId = (pathname: string, offset: number = 1) => {
   const pathnameChunks = pathname.split('/');
 
-  return pathnameChunks[pathnameChunks.length - 1] || null;
+  return pathnameChunks[pathnameChunks.length - offset] || null;
 };

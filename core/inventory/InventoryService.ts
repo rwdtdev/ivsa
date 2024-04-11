@@ -1,5 +1,5 @@
 import prisma from '@/core/prisma';
-import { InventoryCreateData } from '@/core/inventory/types';
+import { InventoryCreateData, InventoryWithObjects } from '@/core/inventory/types';
 import { TransactionSession } from '@/types/prisma';
 import { Inventory, InventoryStatus, PrismaClient } from '@prisma/client';
 import {
@@ -27,12 +27,10 @@ export class InventoryService {
     }
   }
 
-  async assertNotExistWithEvent(id: string, eventId: string) {
+  async isAlreadyExistForEvent(id: string, eventId: string) {
     const count = await this.prisma.inventory.count({ where: { id, eventId } });
 
-    if (count && count > 0) {
-      throw new InventoryAlreadyExistError();
-    }
+    return count && count > 0;
   }
 
   async assertExist(id: string) {
@@ -76,14 +74,29 @@ export class InventoryService {
     }
   }
 
-  async getByIdAndEventId(id: string, eventId: string): Promise<Inventory> {
-    const inventory = await this.prisma.inventory.findFirst({ where: { id, eventId } });
+  async getByIdAndEventId(id: string, eventId: string): Promise<InventoryWithObjects> {
+    const inventory = await this.prisma.inventory.findFirst({
+      where: { id, eventId },
+      include: { objects: true }
+    });
 
     if (!inventory) {
       throw new InventoryNotExistError();
     }
 
     return inventory;
+  }
+
+  async getByIdAndEvent(
+    id: string,
+    eventId: string
+  ): Promise<InventoryWithObjects | null> {
+    const inventory = await this.prisma.inventory.findFirst({
+      where: { id, eventId },
+      include: { objects: true }
+    });
+
+    return inventory || null;
   }
 
   async create(data: InventoryCreateData): Promise<Inventory> {

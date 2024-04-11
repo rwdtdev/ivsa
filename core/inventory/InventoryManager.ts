@@ -30,16 +30,28 @@ export class InventoryManager {
     this.inventoryObjectService = inventoryObjectService;
   }
 
-  async createIndividual({ inventoryObjects, ...data }: CreateIndividualInventoryData) {
-    await doTransaction(async (session: TransactionSession) => {
+  async createIndividual({
+    inventoryObjects,
+    ...data
+  }: CreateIndividualInventoryData): Promise<any> {
+    return await doTransaction(async (session: TransactionSession) => {
       const inventoryService = this.inventoryService.withSession(session);
       const inventoryObjectService = this.inventoryObjectService.withSession(session);
 
       await inventoryService.assertExistAndBelongEvent(data.id, data.eventId);
-      await inventoryService.assertNotExistWithEvent(
+
+      const isAlreadyExist = await inventoryService.isAlreadyExistForEvent(
         data.individualInventoryId,
         data.eventId
       );
+
+      if (isAlreadyExist) {
+        return {
+          eventId: data.eventId,
+          complexInventoryId: data.id,
+          individualInventoryId: data.individualInventoryId
+        };
+      }
 
       const inventory = await inventoryService.create({
         eventId: data.eventId,

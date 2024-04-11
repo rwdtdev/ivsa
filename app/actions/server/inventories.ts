@@ -1,12 +1,12 @@
 'use server';
 
 import { InventoryService } from '@/core/inventory/InventoryService';
-import { Inventory } from '@prisma/client';
+import { InventoryWithObjects } from '@/core/inventory/types';
 
 export const getInventoryByIdAction = async (
   id: string,
   eventId: string
-): Promise<Inventory | null> => {
+): Promise<InventoryWithObjects | null> => {
   try {
     const inventoryService = new InventoryService();
 

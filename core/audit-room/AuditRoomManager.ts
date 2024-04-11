@@ -63,11 +63,7 @@ export class AuditRoomManager {
       await eventService.assertExist(eventId);
 
       const event = await eventService.getById(eventId);
-
-      const existInventory = await inventoryService.getByIdAndEventId(
-        inventoryId,
-        eventId
-      );
+      const existInventory = await inventoryService.getByIdAndEvent(inventoryId, eventId);
 
       if (
         existInventory &&

@@ -1,4 +1,4 @@
-import { NextRequest } from 'next/server';
+import { NextRequest, NextResponse } from 'next/server';
 import { getErrorResponse } from '@/lib/helpers';
 import {
   CreateIndividualInventorySchema,
@@ -57,12 +57,18 @@ export async function POST(req: NextRequest, context: IContext) {
   try {
     const { inventoryId } = PathParamsSchema.parse(context.params);
 
-    await inventoryManager.createIndividual({
+    const response = await inventoryManager.createIndividual({
       ...CreateIndividualInventorySchema.parse(await req.json()),
       id: inventoryId
     });
 
-    return new Response(null, { status: 201 });
+    console.log(response);
+
+    if (response) {
+      return NextResponse.json(response, { status: 200 });
+    }
+
+    return new Response(null, { status: 200 });
   } catch (error) {
     return getErrorResponse(error, req);
   }

@@ -1,10 +1,7 @@
 import _ from 'underscore';
 import { doTransaction } from '@/lib/prisma-transaction';
 import { TransactionSession } from '@/types/prisma';
-import {
-  BriefingRoomAlreadyExistError,
-  EventParticipantsMustBeNotEmptyError
-} from './errors';
+import { EventParticipantsMustBeNotEmptyError } from './errors';
 import { BriefingStatus, UserStatus } from '@prisma/client';
 
 import { IvaService } from '../iva/IvaService';
@@ -38,8 +35,18 @@ export class BriefingRoomManager {
       const eventService = this.eventService.withSession(session);
       const event = await eventService.getById(eventId);
 
-      if (event.briefingStatus === BriefingStatus.IN_PROGRESS) {
-        throw new BriefingRoomAlreadyExistError();
+      if (
+        event &&
+        event.briefingStatus === BriefingStatus.IN_PROGRESS &&
+        event.briefingSessionId
+      ) {
+        const link = await this.getBriefingJoinLink(event.briefingSessionId);
+
+        return {
+          briefingId: event.briefingSessionId,
+          briefingLink: link,
+          users: getRegisteredParticipants(event.participants)
+        };
       }
 
       if (_.isEmpty(event.participants)) {

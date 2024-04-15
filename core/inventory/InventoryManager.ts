@@ -41,7 +41,7 @@ export class InventoryManager {
 
       await inventoryService.assertExistAndBelongEvent(data.id, data.eventId);
 
-      const existIndividualInventory = await inventoryService.findOneBy({
+      const existIndividualInventory = await inventoryService.findOneIndividualBy({
         id: data.individualInventoryId,
         eventId: data.eventId
       });

@@ -47,6 +47,16 @@ export class ParticipantService {
     inventoryId?: string
   ) {
     const participantPromises = participants.map(async (participant) => {
+      const existParticipant = await this.prisma.participant.findFirst({
+        where: {
+          tabelNumber: participant.tabelNumber,
+          eventId,
+          inventoryId
+        }
+      });
+
+      if (existParticipant) return;
+
       const user = await this.prisma.user.findFirst({
         where: { tabelNumber: participant.tabelNumber }
       });
@@ -62,8 +72,11 @@ export class ParticipantService {
       };
     });
 
+    const newParticipants = await Promise.all(participantPromises);
+
     await this.prisma.participant.createMany({
-      data: await Promise.all(participantPromises)
+      // @ts-expect-error not have empty items
+      data: newParticipants.filter(_.identity)
     });
   }
 

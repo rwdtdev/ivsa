@@ -37,7 +37,7 @@ export async function DELETE(req: NextRequest, context: IContext) {
     const { eventId, complexInventoryId } =
       RemoveIndividualInvenoryQueryParamsSchema.parse({
         eventId: searchParams.get('eventId'),
-        inventoryId: searchParams.get('complexInventoryId')
+        complexInventoryId: searchParams.get('complexInventoryId')
       });
 
     await inventoryManager.removeIndividual(inventoryId, complexInventoryId, eventId);

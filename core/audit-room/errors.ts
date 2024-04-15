@@ -4,6 +4,7 @@ export const {
   BriefingRoomIsStillOpenError,
   EmptyPartisipantsListError,
   AuditRoomIsNotOpened,
+  AuditRoomAlreadyClosed,
   AuditRoomAlreadyOpenedOrEndedError
 } = makeErrorDictionary()({
   BriefingRoomIsStillOpenError: {
@@ -24,6 +25,11 @@ export const {
   AuditRoomAlreadyOpenedOrEndedError: {
     type: 'urn:problem-type:audit-room-already-opened-or-ended-error',
     title: 'Инвентаризации по описи уже начата или окончена',
+    status: 409
+  },
+  AuditRoomAlreadyClosed: {
+    type: 'urn:problem-type:audit-room-already-closed-error',
+    title: 'Комната инвентаризационной описи уже закрыта',
     status: 409
   }
 });

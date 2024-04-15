@@ -4,6 +4,7 @@ import { InventoryService } from '@/core/inventory/InventoryService';
 import { InventoryObjectService } from '@/core/inventory-object/InventoryObjectService';
 import { TransactionSession } from '@/types/prisma';
 import {
+  AuditRoomAlreadyClosed,
   AuditRoomIsNotOpened,
   BriefingRoomIsStillOpenError,
   EmptyPartisipantsListError
@@ -64,6 +65,14 @@ export class AuditRoomManager {
 
       const event = await eventService.getById(eventId);
       const existInventory = await inventoryService.getByIdAndEvent(inventoryId, eventId);
+
+      if (
+        existInventory &&
+        existInventory.status === InventoryStatus.CLOSED &&
+        existInventory.auditSessionId
+      ) {
+        throw new AuditRoomAlreadyClosed();
+      }
 
       if (
         existInventory &&

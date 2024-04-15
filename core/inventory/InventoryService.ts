@@ -7,7 +7,6 @@ import {
   InventoryNotExistError,
   ComplexAndIndividualInventoriesIsUnrelatedError
 } from './errors';
-import { QueryOptions } from '@prisma/client/runtime/library';
 
 export class InventoryService {
   private prisma: PrismaClient | TransactionSession;
@@ -126,7 +125,7 @@ export class InventoryService {
   }
 
   async findOneIndividualBy(
-    query: Partial<Omit<QueryOptions & Inventory, 'videoFilesUrls'>>
+    query: Partial<Omit<Inventory, 'videoFilesUrls'>>
   ): Promise<Inventory | null> {
     const inventory = await this.prisma.inventory.findFirst({
       where: {

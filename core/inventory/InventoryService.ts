@@ -123,4 +123,14 @@ export class InventoryService {
 
     return inventories;
   }
+
+  async findOneBy(
+    query: Partial<Omit<Inventory, 'videoFilesUrls'>>
+  ): Promise<Inventory | null> {
+    const inventory = await this.prisma.inventory.findFirst({
+      where: query
+    });
+
+    return inventory || null;
+  }
 }

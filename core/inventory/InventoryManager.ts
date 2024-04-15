@@ -7,6 +7,7 @@ import { doTransaction } from '@/lib/prisma-transaction';
 import { TransactionSession } from '@/types/prisma';
 import { UpdateInventoryData } from '@/app/api/inventories/[inventoryId]/update/validation';
 import { CreateIndividualInventoryData } from '@/app/api/inventories/[inventoryId]/individual_inventory/validation';
+import { CannotBindInventoryToAnotherComplexInventoryError } from './errors';
 
 export interface InventoryUpdateRequestBody {
   eventId: string;
@@ -40,17 +41,23 @@ export class InventoryManager {
 
       await inventoryService.assertExistAndBelongEvent(data.id, data.eventId);
 
-      const isAlreadyExist = await inventoryService.isAlreadyExistForEvent(
-        data.individualInventoryId,
-        data.eventId
-      );
+      const existIndividualInventory = await inventoryService.findOneBy({
+        id: data.individualInventoryId,
+        eventId: data.eventId
+      });
 
-      if (isAlreadyExist) {
-        return {
-          eventId: data.eventId,
-          complexInventoryId: data.id,
-          individualInventoryId: data.individualInventoryId
-        };
+      if (existIndividualInventory) {
+        if (existIndividualInventory.parentId === data.id) {
+          return {
+            eventId: data.eventId,
+            complexInventoryId: data.id,
+            individualInventoryId: data.individualInventoryId
+          };
+        } else {
+          throw new CannotBindInventoryToAnotherComplexInventoryError({
+            detail: `Не удалось привязать дополнительную опись к комплексной описи с номером ${existIndividualInventory.parentId}`
+          });
+        }
       }
 
       const inventory = await inventoryService.create({

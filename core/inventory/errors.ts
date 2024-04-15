@@ -4,7 +4,8 @@ export const {
   InventoryAlreadyExistError,
   InventoryNotExistError,
   InventoryNotBelongEventError,
-  ComplexAndIndividualInventoriesIsUnrelatedError
+  ComplexAndIndividualInventoriesIsUnrelatedError,
+  CannotBindInventoryToAnotherComplexInventoryError
 } = makeErrorDictionary()({
   InventoryAlreadyExistError: {
     type: 'urn:problem-type:inventory-already-exist-error',
@@ -25,5 +26,10 @@ export const {
     type: 'urn:problem-type:complex-and-individual-inventories-is-unrelated-error',
     title: 'Комплексная и индивидуальная описи не имеют связи',
     status: 404
+  },
+  CannotBindInventoryToAnotherComplexInventoryError: {
+    type: 'urn:problem-type:cannot-bind-inventory-to-another-complex-inventory-error',
+    title: 'Произошла ошибка в процессе привязки дополнительной описи',
+    status: 400
   }
 });

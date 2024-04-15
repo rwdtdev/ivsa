@@ -62,8 +62,6 @@ export async function POST(req: NextRequest, context: IContext) {
       id: inventoryId
     });
 
-    console.log(response);
-
     if (response) {
       return NextResponse.json(response, { status: 200 });
     }

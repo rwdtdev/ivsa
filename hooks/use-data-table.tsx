@@ -42,6 +42,12 @@ interface UseDataTableProps<TData, TValue> {
   pageCount: number;
 
   /**
+   * The number of items per page in the table
+   * @type number
+   */
+  perPage?: number;
+
+  /**
    * The searchable columns of the table
    * @default []
    * @type {id: keyof TData, title: string}[]
@@ -62,6 +68,7 @@ export function useDataTable<TData, TValue>({
   data,
   columns,
   pageCount,
+  perPage,
   searchableColumns = [],
   filterableColumns = []
 }: UseDataTableProps<TData, TValue>) {
@@ -73,7 +80,7 @@ export function useDataTable<TData, TValue>({
   const page = searchParams?.get('page') ?? '1';
   const pageAsNumber = Number(page);
   const fallbackPage = isNaN(pageAsNumber) || pageAsNumber < 1 ? 1 : pageAsNumber;
-  const per_page = searchParams?.get('per_page') ?? '10';
+  const per_page = searchParams?.get('per_page') || perPage || '10';
   const perPageAsNumber = Number(per_page);
   const fallbackPerPage = isNaN(perPageAsNumber) ? 10 : perPageAsNumber;
   const sort = searchParams?.get('sort');
@@ -224,7 +231,7 @@ export function useDataTable<TData, TValue>({
     }
 
     // Remove deleted values
-    // @ts-ignore
+    // @ts-expect-error keys
     for (const key of searchParams.keys()) {
       if (
         (searchableColumns.find((column) => column.id === key) &&

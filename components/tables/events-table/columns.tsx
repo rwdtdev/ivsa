@@ -1,6 +1,6 @@
 'use client';
 
-import { ColumnDef } from '@tanstack/react-table';
+import { ColumnDef, HeaderContext } from '@tanstack/react-table';
 import { DataTableColumnHeader } from '@/components/ui/data-table/data-table-column-header';
 import { EventView } from '@/core/event/types';
 import Link from 'next/link';
@@ -13,17 +13,25 @@ import {
 import { BriefingStatusBadge, EventStatusBadge } from '@/components/event-status-badge';
 import { DataTableFilterableColumn } from '@/types';
 import { REGION_CODES } from '@/constants/mappings/region-codes';
+import {
+  EventsTableColumnNames,
+  makeColumnsNames
+} from '@/constants/mappings/tables-column-names';
 
 const padding = 9;
+
+const getColumnNameById = makeColumnsNames(EventsTableColumnNames);
+
+const defaultHeader = ({ column }: HeaderContext<EventView, unknown>) => (
+  <DataTableColumnHeader column={column} title={getColumnNameById(column.id)} />
+);
 
 export function fetchEventsTableColumnDefs(): ColumnDef<EventView, unknown>[] {
   return [
     {
       id: 'startAt',
       accessorKey: 'startAt',
-      header: ({ column }) => (
-        <DataTableColumnHeader column={column} title='Дата начала' />
-      ),
+      header: defaultHeader,
       cell: ({ row }) => {
         return (
           <Link href={`/admin/events/${row.original.id}`}>
@@ -35,9 +43,7 @@ export function fetchEventsTableColumnDefs(): ColumnDef<EventView, unknown>[] {
     {
       id: 'endAt',
       accessorKey: 'endAt',
-      header: ({ column }) => (
-        <DataTableColumnHeader column={column} title='Дата окончания' />
-      ),
+      header: defaultHeader,
       cell: ({ row }) => {
         return (
           <Link href={`/admin/events/${row.original.id}`}>
@@ -49,7 +55,7 @@ export function fetchEventsTableColumnDefs(): ColumnDef<EventView, unknown>[] {
     {
       id: 'status',
       accessorKey: 'status',
-      header: ({ column }) => <DataTableColumnHeader column={column} title='Статус' />,
+      header: defaultHeader,
       cell: ({ row }) => {
         return (
           <Link href={`/admin/events/${row.original.id}`}>
@@ -61,7 +67,7 @@ export function fetchEventsTableColumnDefs(): ColumnDef<EventView, unknown>[] {
     {
       id: 'briefingStatus',
       accessorKey: 'briefingStatus',
-      header: ({ column }) => <DataTableColumnHeader column={column} title='Иструктаж' />,
+      header: defaultHeader,
       cell: ({ row }) => {
         return (
           <Link href={`/admin/events/${row.original.id}`}>
@@ -73,9 +79,7 @@ export function fetchEventsTableColumnDefs(): ColumnDef<EventView, unknown>[] {
     {
       id: 'balanceUnit',
       accessorKey: 'balanceUnit',
-      header: ({ column }) => (
-        <DataTableColumnHeader column={column} title='Балансовая единица' />
-      ),
+      header: defaultHeader,
       cell: ({ row }) => {
         return (
           <Link href={`/admin/events/${row.original.id}`}>
@@ -87,9 +91,7 @@ export function fetchEventsTableColumnDefs(): ColumnDef<EventView, unknown>[] {
     {
       id: 'balanceUnitRegionCode',
       accessorKey: 'balanceUnitRegionCode',
-      header: ({ column }) => (
-        <DataTableColumnHeader column={column} title='Код региона' />
-      ),
+      header: defaultHeader,
       cell: ({ row }) => {
         return (
           <Link href={`/admin/events/${row.original.id}`}>
@@ -107,9 +109,7 @@ export function fetchEventsTableColumnDefs(): ColumnDef<EventView, unknown>[] {
     {
       id: 'commandNumber',
       accessorKey: 'commandNumber',
-      header: ({ column }) => (
-        <DataTableColumnHeader column={column} title='Номер распоряжения' />
-      ),
+      header: defaultHeader,
       cell: ({ row }) => {
         return (
           <Link href={`/admin/events/${row.original.id}`}>
@@ -121,9 +121,7 @@ export function fetchEventsTableColumnDefs(): ColumnDef<EventView, unknown>[] {
     {
       id: 'commandDate',
       accessorKey: 'commandDate',
-      header: ({ column }) => (
-        <DataTableColumnHeader column={column} title='Дата распоряжения' />
-      ),
+      header: defaultHeader,
       cell: ({ row }) => {
         return (
           <Link href={`/admin/events/${row.original.id}`}>
@@ -135,9 +133,7 @@ export function fetchEventsTableColumnDefs(): ColumnDef<EventView, unknown>[] {
     {
       id: 'orderNumber',
       accessorKey: 'orderNumber',
-      header: ({ column }) => (
-        <DataTableColumnHeader column={column} title='Номер приказа' />
-      ),
+      header: defaultHeader,
       cell: ({ row }) => {
         return (
           <Link href={`/admin/events/${row.original.id}`}>
@@ -149,9 +145,7 @@ export function fetchEventsTableColumnDefs(): ColumnDef<EventView, unknown>[] {
     {
       id: 'orderDate',
       accessorKey: 'orderDate',
-      header: ({ column }) => (
-        <DataTableColumnHeader column={column} title='Дата составления приказа' />
-      ),
+      header: defaultHeader,
       cell: ({ row }) => {
         return (
           <Link href={`/admin/events/${row.original.id}`}>
@@ -163,7 +157,7 @@ export function fetchEventsTableColumnDefs(): ColumnDef<EventView, unknown>[] {
     {
       id: 'participants',
       accessorKey: 'participants',
-      header: 'Участники',
+      header: defaultHeader,
       cell: ({ row }) => {
         const { participants } = row.original;
 

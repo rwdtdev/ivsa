@@ -37,6 +37,13 @@ export type EventsGetData = Partial<{
   };
 }>;
 
+export type InventoryObjectsGetData = Partial<{
+  page: number;
+  limit: number;
+  searchTerm: string;
+  sortDirection: SortOrder;
+}>;
+
 export type ParticipantWithUser = Participant & { user: User };
 
 export type RegisteredParticipant = Participant & {

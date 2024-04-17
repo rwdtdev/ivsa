@@ -25,3 +25,23 @@ export const EventsTableColumnNames = {
   balanceUnitRegionCode: 'Код региона',
   participants: 'Участники'
 };
+
+export const InventoryObjectsTableColumnNames = {
+  inventoryNumber: 'Инв. номер',
+  location: 'Локация',
+  serialNumber: 'Серийный номер',
+  networkNumber: 'Сетевой номер',
+  passportNumber: 'Номер паспорта',
+  quantity: 'Количество',
+  state: 'Состояние',
+  name: 'Наименование',
+  unitCode: 'Код ед. измерения',
+  unitName: 'Единица измерения',
+  batchNumber: 'Номер партии',
+  placement: 'Местоположение'
+};
+
+export const makeColumnsNames =
+  <T>(columnNames: T) =>
+  (columnId: string) =>
+    columnNames[columnId as keyof typeof columnNames];

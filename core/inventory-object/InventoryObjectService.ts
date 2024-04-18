@@ -43,16 +43,36 @@ export class InventoryObjectService {
     inventoryId: string,
     data: InventoryObjectsGetData
   ): Promise<PaginatedResponse<InventoryObject>> {
-    const { page = 1, limit = defaultLimit, sortDirection = SortOrder.Descending } = data;
+    const {
+      page = 1,
+      limit = defaultLimit,
+      searchTerm,
+      sortDirection = SortOrder.Descending
+    } = data;
+
+    const containsSearchTerm = { contains: searchTerm, mode: 'insensitive' };
 
     const where = {
       where: {
+        ...(searchTerm && {
+          OR: [
+            { name: containsSearchTerm },
+            { serialNumber: containsSearchTerm },
+            { inventoryNumber: containsSearchTerm },
+            { batchNumber: containsSearchTerm },
+            { placement: containsSearchTerm },
+            { networkNumber: containsSearchTerm },
+            { location: containsSearchTerm }
+          ]
+        }),
         inventoryId
       }
     };
 
+    // @ts-expect-error types
     const totalCount = await prisma.inventoryObject.count({ ...where });
 
+    // @ts-expect-error types
     const inventoryObjects = await this.prisma.inventoryObject.findMany({
       ...where,
       skip: (page - 1) * limit,

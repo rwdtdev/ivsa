@@ -54,8 +54,12 @@ export class InventoryManager {
             individualInventoryId: data.individualInventoryId
           };
         } else {
+          const parentInventory = await inventoryService.getByIdAndEventId(
+            existIndividualInventory.parentId as string,
+            existIndividualInventory.eventId
+          );
           throw new CannotBindInventoryToAnotherComplexInventoryError({
-            detail: `Не удалось привязать дополнительную опись к комплексной описи с номером ${existIndividualInventory.parentId}`
+            detail: `Указанная опись уже привязана к описи ${parentInventory.number} формы ${parentInventory.code}`
           });
         }
       }

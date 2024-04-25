@@ -1,3 +1,4 @@
+import { EventStatus } from '@prisma/client';
 import { z } from 'zod';
 
 const eventIdSchema = z.string().trim().min(1).cuid();
@@ -33,7 +34,8 @@ export const UpdateEventSchema = z
     auditEnd: z.string().trim().min(1).datetime(),
     balanceUnit: z.string().trim().min(1),
     balanceUnitRegionCode: z.string().trim().min(1),
-    participants: z.array(ParticipantSchema)
+    participants: z.array(ParticipantSchema),
+    status: z.nativeEnum(EventStatus)
   })
   .strict()
   .partial();

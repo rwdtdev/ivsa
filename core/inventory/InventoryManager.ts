@@ -58,8 +58,11 @@ export class InventoryManager {
             existIndividualInventory.parentId as string,
             existIndividualInventory.eventId
           );
+          const errorText = `Указанная опись уже привязана к описи ${parentInventory.number} формы ${parentInventory.code}`;
+
           throw new CannotBindInventoryToAnotherComplexInventoryError({
-            detail: `Указанная опись уже привязана к описи ${parentInventory.number} формы ${parentInventory.code}`
+            title: errorText,
+            detail: errorText
           });
         }
       }

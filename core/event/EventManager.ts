@@ -35,6 +35,13 @@ export class EventManager {
 
   async updateEvent(id: string, data: UpdateEventData) {
     await this.eventService.assertExist(id);
+
+    // TODO: Не совсем правильно, но от ОЦРВ обновленный статус не приходит
+    const existEvent = await this.eventService.getById(id);
+    if (existEvent && existEvent.status === EventStatus.REMOVED) {
+      data.status = EventStatus.OPEN;
+    }
+
     await this.eventService.update(id, _.omit(data, 'participants'));
 
     if (data.participants) {

@@ -26,7 +26,7 @@ export const CreateInventorySchema = z
     eventId: z.string().trim().min(1).cuid(),
     inventoryId: z.string().trim().min(1),
     inventoryCode: z.nativeEnum(InventoryCode),
-    inventoryDate: z.string().trim().datetime().min(1),
+    inventoryDate: z.string().trim().datetime().optional().nullable(),
     inventoryNumber: z.string().trim().min(1),
     inventoryObjects: z.array(inventoryObjectSchema)
   })

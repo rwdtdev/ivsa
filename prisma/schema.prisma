@@ -184,7 +184,7 @@ model Inventory {
   /// Полное наименование описи
   name                String
   /// Дата описи
-  date                DateTime
+  date                DateTime?
   /// Идентификатор конференции в IVA-R
   auditSessionId      String?
   /// Ссылка для подключения к открытой комнате видеоинвентаризации

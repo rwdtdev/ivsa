@@ -39,7 +39,9 @@ export function UserNav() {
             </div>
           </DropdownMenuLabel>
           <DropdownMenuSeparator />
-          <DropdownMenuItem onClick={() => signOut()}>Выйти</DropdownMenuItem>
+          <DropdownMenuItem onClick={() => signOut({ callbackUrl: '/login' })}>
+            Выйти
+          </DropdownMenuItem>
         </DropdownMenuContent>
       </DropdownMenu>
     );

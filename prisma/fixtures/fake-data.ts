@@ -67,7 +67,8 @@ export function fakeUser() {
     updatedAt: faker.date.anytime(),
     tabelNumber: faker.string.numeric(8),
     ivaProfileId: faker.string.uuid(),
-    refreshToken: null
+    refreshToken: null,
+    expiresAt: faker.date.future()
   };
 }
 

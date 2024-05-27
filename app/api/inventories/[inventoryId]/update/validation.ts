@@ -28,6 +28,7 @@ const inventoryObjectSchema = z
 
 const partialInventoryDataSchema = z
   .object({
+    inventoryAddress: z.string().trim().min(1),
     inventoryCode: z.nativeEnum(InventoryCode),
     inventoryDate: isoDatetimeSchema,
     inventoryNumber: z.string().trim().min(1),

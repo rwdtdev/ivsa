@@ -1,4 +1,3 @@
-import chalk from 'chalk';
 import { format } from 'util';
 
 export class Logger {
@@ -18,28 +17,28 @@ export class Logger {
   }
 
   // eslint-disable-next-line @typescript-eslint/ban-types
-  _format(color: Function, ...args: unknown[]) {
+  _format(...args: unknown[]) {
     return [
-      chalk.gray(`[${Logger.getDate()}]`),
-      chalk.magenta(`[${this.name}]`),
-      color(format(...args))
+      `[${Logger.getDate()}]`,
+      `[${this.name}]`,
+      format(...args)
     ].join(' ');
   }
 
   log(...args: unknown[]) {
-    console.log(this._format(chalk.reset, ...args));
+    console.log(this._format(...args));
   }
 
   info(...args: unknown[]) {
-    console.info(this._format(chalk.cyan, ...args));
+    console.info(this._format(...args));
   }
 
   warn(...args: unknown[]) {
-    console.warn(this._format(chalk.yellow, ...args));
+    console.warn(this._format(...args));
   }
 
   error(...args: unknown[]) {
-    console.error(this._format(chalk.red, ...args));
+    console.error(this._format(...args));
   }
   /* eslint-enable no-console */
 }

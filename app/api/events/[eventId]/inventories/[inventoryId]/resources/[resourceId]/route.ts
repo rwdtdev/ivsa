@@ -14,14 +14,14 @@ export async function GET(req: NextRequest, context: IContext) {
 
     const s3Client = S3ClientProvider.createClient(
       {
-        client: 'minio',
-        url: 'http://127.0.0.1:9000',
-        accessKey: 'admin',
-        secretKey: 'admin123',
+        client: process.env.S3_CLIENT_TYPE,
+        url: process.env.S3_CLIENT_URL,
+        accessKey: process.env.S3_ACCESS_KEY,
+        secretKey: process.env.S3_SECRET_KEY,
         timeout: 6000,
         region: 'us-east-1',
-        bucket: { asvi: 'asvi' },
-        'auto-create-bucket': true
+        bucket: { asvi: process.env.S3_BUCKET_NAME },
+        'auto-create-bucket': process.env.S3_AUTO_CREATE_BUCKET === 'true'
       },
       new Logger({ name: 's3-client' })
     );

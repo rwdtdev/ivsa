@@ -87,6 +87,30 @@ export class InventoryService {
     return inventory;
   }
 
+  async getByConferenceId(conferenceId: string) {
+    const inventory = await this.prisma.inventory.findFirst({
+      include: {
+        event: {
+          select: {
+            id: true,
+            orderId: true,
+            orderDate: true,
+            orderNumber: true
+          }
+        }
+      },
+      where: {
+        auditSessionId: conferenceId
+      }
+    });
+
+    if (!inventory) {
+      throw new InventoryNotExistError();
+    }
+
+    return inventory;
+  }
+
   async getByIdAndEvent(
     id: string,
     eventId: string

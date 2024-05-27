@@ -170,11 +170,11 @@ model Participant {
 
 model Inventory {
   /// Внешний Идентификаторр описи из Soi
-  id                  String            @id
+  id                  String              @id
   /// Идентификатор события к которому привязана опись
   eventId             String
   /// Объект с данными о событии, с которым связана опись
-  event               Event             @relation(fields: [eventId], references: [id])
+  event               Event               @relation(fields: [eventId], references: [id])
   /// Номер описи
   number              String
   /// Код описи
@@ -190,23 +190,52 @@ model Inventory {
   /// Ссылка для подключения к открытой комнате видеоинвентаризации
   auditRoomInviteLink String?
   /// Дата и время создания записи
-  createdAt           DateTime          @default(now())
+  createdAt           DateTime            @default(now())
   /// Дата и время модификации записи
-  updatedAt           DateTime          @updatedAt
+  updatedAt           DateTime            @updatedAt
   /// Список участников
   participants        Participant[]
   /// Список файлов хранящийся в оперативном хранилище или архивном хранилище 
   videoFilesUrls      String[]
   /// Cтатус описи
-  status              InventoryStatus   @default(AVAILABLE)
+  status              InventoryStatus     @default(AVAILABLE)
   /// Идентификатор комплексной описи, если текущая опись является индивидуальной, в ином случае всегда = null
   parentId            String?
   /// Список объектов описи
   objects             InventoryObject[]
   /// Признак того, что видеофайлы, связанные с описью успешно сохранены в оперативное хранилище
-  isFilesSaved        Boolean           @default(false)
+  isFilesSaved        Boolean             @default(false)
+  /// Список данных о геолокации в месте проведения описи
+  locations           InventoryLocation[]
+  /// URL файла, сохраненного в оперативном или архивном S3-like хранилище (Заполняется в сервисе iva-file-transporter)
+  metadataFileUrl     String?
+  /// Хэш-сумма (SHA-1), посчитанная в процессе формирования файла метаданных, перед его сохранением в S3 (Заполняется в сервисе iva-file-transporter)
+  metadataFileHash    String?
+  /// Адрес места проведения инвентаризации для текущей описи (указывается вручную в web-app asvi-locator)
+  address             String?
 
   @@map("inventories")
+}
+
+model InventoryLocation {
+  /// Идентификатор координаты
+  id          String    @id @default(uuid())
+  /// Широта
+  latitude    Float
+  /// Долгота
+  longitude   Float
+  /// Временная метка
+  dateTime    DateTime
+  // Точность
+  accuracy    Float
+  /// Идентификатор описи, 
+  inventoryId String
+  /// Объект с данными об описи
+  inventory   Inventory @relation(fields: [inventoryId], references: [id])
+  /// Дата и время создания записи
+  createdAt   DateTime  @default(now())
+
+  @@map("inventory_locations")
 }
 
 model InventoryObject {
@@ -230,6 +259,8 @@ model InventoryObject {
   createdAt          DateTime  @default(now())
   /// Дата и время модификации записи
   updatedAt          DateTime  @updatedAt
+
+  @@map("inventory_objects")
 }
 
 enum UserStatus {

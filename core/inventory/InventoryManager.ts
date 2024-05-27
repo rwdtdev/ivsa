@@ -8,6 +8,8 @@ import { TransactionSession } from '@/types/prisma';
 import { UpdateInventoryData } from '@/app/api/inventories/[inventoryId]/update/validation';
 import { CreateIndividualInventoryData } from '@/app/api/inventories/[inventoryId]/individual_inventory/validation';
 import { CannotBindInventoryToAnotherComplexInventoryError } from './errors';
+import { InventoryLocationService } from '../inventory-location/InventoryLocationService';
+import { InventoryLocationCreateData } from '../inventory-location/types';
 
 export interface InventoryUpdateRequestBody {
   eventId: string;
@@ -22,13 +24,16 @@ export interface InventoryUpdateRequestBody {
 export class InventoryManager {
   private inventoryService: InventoryService;
   private inventoryObjectService: InventoryObjectService;
+  private inventoryLocationService: InventoryLocationService;
 
   constructor(
     inventoryService: InventoryService,
-    inventoryObjectService: InventoryObjectService
+    inventoryObjectService: InventoryObjectService,
+    inventoryLocationService: InventoryLocationService
   ) {
     this.inventoryService = inventoryService;
     this.inventoryObjectService = inventoryObjectService;
+    this.inventoryLocationService = inventoryLocationService;
   }
 
   async createIndividual({
@@ -128,7 +133,8 @@ export class InventoryManager {
         ].name,
         date: newOrOld<Date>('inventoryDate', 'date'),
         status: newOrOld<InventoryStatus>('inventoryStatus', 'status'),
-        parentId: newOrOld<string>('inventoryParentId', 'parentId')
+        parentId: newOrOld<string>('inventoryParentId', 'parentId'),
+        address: newOrOld<string>('inventoryAddress', 'address')
       });
 
       if (!data.inventoryObjects) return;
@@ -141,6 +147,16 @@ export class InventoryManager {
       );
 
       await Promise.all(intentoryObjectPromises);
+    });
+  }
+
+  async createInventoryLocation(data: InventoryLocationCreateData) {
+    await doTransaction(async (session: TransactionSession) => {
+      const inventoryService = this.inventoryService.withSession(session);
+      const inventoryLocationService = this.inventoryLocationService.withSession(session);
+
+      await inventoryService.assertExist(data.inventoryId);
+      await inventoryLocationService.create(data);
     });
   }
 }

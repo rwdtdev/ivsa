@@ -110,6 +110,9 @@ export type InventoryCreateData = Omit<
   | 'status'
   | 'isFilesSaved'
   | 'videoFilesUrls'
+  | 'metadataFileUrl'
+  | 'metadataFileHash'
+  | 'address'
 > & {
   parentId?: string;
 };

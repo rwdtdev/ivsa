@@ -10,6 +10,7 @@ import {
 import { InventoryService } from '@/core/inventory/InventoryService';
 import { InventoryObjectService } from '@/core/inventory-object/InventoryObjectService';
 import { InventoryManager } from '@/core/inventory/InventoryManager';
+import { InventoryLocationService } from '@/core/inventory-location/InventoryLocationService';
 
 interface IContext {
   params: {
@@ -24,7 +25,8 @@ interface IContext {
 export async function DELETE(req: NextRequest, context: IContext) {
   const inventoryManager = new InventoryManager(
     new InventoryService(),
-    new InventoryObjectService()
+    new InventoryObjectService(),
+    new InventoryLocationService()
   );
 
   try {
@@ -51,7 +53,8 @@ export async function DELETE(req: NextRequest, context: IContext) {
 export async function POST(req: NextRequest, context: IContext) {
   const inventoryManager = new InventoryManager(
     new InventoryService(),
-    new InventoryObjectService()
+    new InventoryObjectService(),
+    new InventoryLocationService()
   );
 
   try {

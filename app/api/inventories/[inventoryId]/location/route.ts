@@ -1,9 +1,9 @@
-import { NextRequest } from 'next/server';
-import { InventoryService } from '@/core/inventory/InventoryService';
-import { InventoryObjectService } from '@/core/inventory-object/InventoryObjectService';
-import { InventoryManager } from '@/core/inventory/InventoryManager';
 import { getErrorResponse } from '@/lib/helpers';
-import { UpdateInventoryPathParamsSchema, UpdateInventorySchema } from './validation';
+import { NextRequest } from 'next/server';
+import { CreateInventoryLocationSchema, PathParamsSchema } from './validation';
+import { InventoryService } from '@/core/inventory/InventoryService';
+import { InventoryManager } from '@/core/inventory/InventoryManager';
+import { InventoryObjectService } from '@/core/inventory-object/InventoryObjectService';
 import { InventoryLocationService } from '@/core/inventory-location/InventoryLocationService';
 
 interface IContext {
@@ -18,12 +18,19 @@ export async function POST(req: NextRequest, context: IContext) {
   );
 
   try {
-    const data = UpdateInventorySchema.parse(await req.json());
-    const { inventoryId } = UpdateInventoryPathParamsSchema.parse(context.params);
+    const { inventoryId } = PathParamsSchema.parse(context.params);
 
-    await inventoryManager.updateInventory(inventoryId, data);
+    const data = CreateInventoryLocationSchema.parse(await req.json());
 
-    return new Response(null, { status: 204 });
+    await inventoryManager.createInventoryLocation({
+      inventoryId,
+      latitude: data.latitude,
+      longitude: data.longitude,
+      accuracy: data.accuracy,
+      dateTime: new Date(data.dateTime)
+    });
+
+    return new Response(null, { status: 201 });
   } catch (error) {
     return getErrorResponse(error, req);
   }

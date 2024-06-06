@@ -195,45 +195,42 @@ model Inventory {
   updatedAt           DateTime            @updatedAt
   /// Список участников
   participants        Participant[]
-  /// Список файлов хранящийся в оперативном хранилище или архивном хранилище 
-  videoFilesUrls      String[]
   /// Cтатус описи
   status              InventoryStatus     @default(AVAILABLE)
   /// Идентификатор комплексной описи, если текущая опись является индивидуальной, в ином случае всегда = null
   parentId            String?
   /// Список объектов описи
   objects             InventoryObject[]
-  /// Признак того, что видеофайлы, связанные с описью успешно сохранены в оперативное хранилище
-  isFilesSaved        Boolean             @default(false)
   /// Список данных о геолокации в месте проведения описи
   locations           InventoryLocation[]
-  /// URL файла, сохраненного в оперативном или архивном S3-like хранилище (Заполняется в сервисе iva-file-transporter)
-  metadataFileUrl     String?
-  /// Хэш-сумма (SHA-1), посчитанная в процессе формирования файла метаданных, перед его сохранением в S3 (Заполняется в сервисе iva-file-transporter)
-  metadataFileHash    String?
-  /// Адрес места проведения инвентаризации для текущей описи (указывается вручную в web-app asvi-locator)
-  address             String?
+  /// Список ресурсов инвентаризационной описи
+  resources           InventoryResource[]
 
   @@map("inventories")
 }
 
 model InventoryLocation {
   /// Идентификатор координаты
-  id          String    @id @default(uuid())
+  id          String             @id @default(uuid())
   /// Широта
   latitude    Float
   /// Долгота
   longitude   Float
   /// Временная метка
   dateTime    DateTime
-  // Точность
+  /// Точность
   accuracy    Float
+  /// Адрес добавленный вручную при начале записи метаданных
+  address     String?
   /// Идентификатор описи, 
   inventoryId String
   /// Объект с данными об описи
-  inventory   Inventory @relation(fields: [inventoryId], references: [id])
+  inventory   Inventory          @relation(fields: [inventoryId], references: [id])
+  /// Идентификатор ресурса к которому относятся метаданные
+  resourceId  String?
+  resource    InventoryResource? @relation(fields: [resourceId], references: [id])
   /// Дата и время создания записи
-  createdAt   DateTime  @default(now())
+  createdAt   DateTime           @default(now())
 
   @@map("inventory_locations")
 }
@@ -261,6 +258,33 @@ model InventoryObject {
   updatedAt          DateTime  @updatedAt
 
   @@map("inventory_objects")
+}
+
+model InventoryResource {
+  /// Уникальный идентификатор ресурса
+  id           String              @id @default(uuid())
+  /// Связь с инвентаризационной описью, которой пренадлежит ресурс
+  inventoryId  String
+  /// Ссылка в ASVI для получения этого ресурса через API (Опционально для разных типов ресусра)
+  url          String?
+  /// Ссылка в s3-хранилище. (Ссылка изменяется по мере переноса файла из ОП в АХ)
+  s3Url        String?
+  /// Хэш-сумма
+  hash         String?
+  /// Тип ресурса видео-файл или файл метаданных
+  type         ResourceType
+  /// Флаг успешной обработки ресурса в iva-file-transporter
+  isProccessed Boolean             @default(false)
+  /// Список геолокационных данных, которые связаны с этим ресурсом
+  locations    InventoryLocation[]
+  inventory    Inventory           @relation(fields: [inventoryId], references: [id])
+
+  @@map("inventory_resources")
+}
+
+enum ResourceType {
+  METADATA
+  VIDEO
 }
 
 enum UserStatus {

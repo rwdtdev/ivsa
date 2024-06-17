@@ -19,6 +19,8 @@ import { DataTableAdvancedToolbar } from './advanced/data-table-advanced-toolbar
 import { DataTableFloatingBar } from './data-table-floating-bar';
 import { DataTablePagination } from './data-table-pagination';
 import { DataTableToolbar } from './data-table-toolbar';
+import { ScrollArea, ScrollBar } from '../scroll-area';
+import { useRouter } from 'next/navigation';
 
 interface DataTableProps<TData, TValue> {
   /**
@@ -83,6 +85,8 @@ interface DataTableProps<TData, TValue> {
    * @example deleteRowsAction={(event) => deleteSelectedRows(dataTable, event)}
    */
   deleteRowsAction?: React.MouseEventHandler<HTMLButtonElement>;
+  isUsersTable?: boolean;
+  isEventsTable?: boolean;
 }
 
 export function DataTable<TData, TValue>({
@@ -96,30 +100,37 @@ export function DataTable<TData, TValue>({
   advancedFilter = false,
   floatingBarContent,
   withSelectedRows = false,
-  deleteRowsAction
+  deleteRowsAction,
+  isUsersTable,
+  isEventsTable
 }: DataTableProps<TData, TValue>) {
+  const router = useRouter();
   return (
-    <div className='w-full space-y-2.5 overflow-auto'>
-      {advancedFilter ? (
-        <DataTableAdvancedToolbar
-          dataTable={dataTable}
-          filterableColumns={filterableColumns}
-          searchableColumns={searchableColumns}
-        />
-      ) : (
-        <DataTableToolbar
-          table={dataTable}
-          withSearch={withSearch}
-          datePickers={datePickers}
-          columnNames={columnNames}
-          filterableColumns={filterableColumns}
-          searchableColumns={searchableColumns}
-          deleteRowsAction={deleteRowsAction}
-        />
-      )}
-      <div className='rounded-md border'>
-        <Table>
-          <TableHeader>
+    <>
+      <div className='mb-3'>
+        {advancedFilter ? (
+          <DataTableAdvancedToolbar
+            dataTable={dataTable}
+            filterableColumns={filterableColumns}
+            searchableColumns={searchableColumns}
+          />
+        ) : (
+          <DataTableToolbar
+            table={dataTable}
+            withSearch={withSearch}
+            datePickers={datePickers}
+            columnNames={columnNames}
+            filterableColumns={filterableColumns}
+            searchableColumns={searchableColumns}
+            newRowLink='/admin/users/new'
+            deleteRowsAction={deleteRowsAction}
+            isUsersTable={isUsersTable}
+          />
+        )}
+      </div>
+      <ScrollArea className='mb-auto rounded-md border shadow-mod-1 '>
+        <Table className=''>
+          <TableHeader className=''>
             {dataTable.getHeaderGroups().map((headerGroup) => (
               <TableRow key={headerGroup.id}>
                 {headerGroup.headers.map((header) => {
@@ -137,7 +148,16 @@ export function DataTable<TData, TValue>({
           <TableBody>
             {dataTable.getRowModel().rows?.length ? (
               dataTable.getRowModel().rows.map((row) => (
-                <TableRow key={row.id} data-state={row.getIsSelected() && 'selected'}>
+                <TableRow
+                  key={row.id}
+                  data-state={row.getIsSelected() && 'selected'}
+                  className={isEventsTable ? 'cursor-pointer' : ''}
+                  onClick={() => {
+                    if (isEventsTable) {
+                      router.push(`/events/${row.id}`);
+                    }
+                  }}
+                >
                   {row.getVisibleCells().map((cell) => (
                     <TableCell key={cell.id} style={{ padding: 0 }}>
                       {flexRender(cell.column.columnDef.cell, cell.getContext())}
@@ -154,15 +174,18 @@ export function DataTable<TData, TValue>({
             )}
           </TableBody>
         </Table>
+        <ScrollBar orientation='horizontal' />
+      </ScrollArea>
+      <div className='pt-3'>
+        <div className='bg-grey-700 rounded-md border p-1 shadow-mod-1'>
+          <DataTablePagination withSelectedRows={withSelectedRows} table={dataTable} />
+          {floatingBarContent ? (
+            <DataTableFloatingBar table={dataTable}>
+              {floatingBarContent}
+            </DataTableFloatingBar>
+          ) : null}
+        </div>
       </div>
-      <div className='space-y-2.5'>
-        <DataTablePagination withSelectedRows={withSelectedRows} table={dataTable} />
-        {floatingBarContent ? (
-          <DataTableFloatingBar table={dataTable}>
-            {floatingBarContent}
-          </DataTableFloatingBar>
-        ) : null}
-      </div>
-    </div>
+    </>
   );
 }

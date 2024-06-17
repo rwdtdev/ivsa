@@ -42,6 +42,7 @@ export function EventsTable({ events }: EventsTableProps) {
       datePickers={eventsDatePickers}
       columnNames={EventsTableColumnNames}
       filterableColumns={filterableColumns()}
+      isEventsTable={true}
     />
   );
 }

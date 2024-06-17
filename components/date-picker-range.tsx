@@ -12,13 +12,16 @@ import { Button } from '@/components/ui/button';
 import { Calendar } from '@/components/ui/calendar';
 import { Popover, PopoverContent, PopoverTrigger } from '@/components/ui/popover';
 import { usePathname, useRouter, useSearchParams } from 'next/navigation';
+import { useState } from 'react';
+import { dateTimeToGMT } from '@/lib/dateTimeToGMT';
 
 export function DatePickerWithRange({ className }: React.HTMLAttributes<HTMLDivElement>) {
   const searchParams = useSearchParams();
   const router = useRouter();
   const pathname = usePathname();
 
-  const [date, setDate] = React.useState<DateRange | undefined>();
+  const [date, setDate] = useState<DateRange | undefined>();
+  const [isCalendarOpen, setIsCalendarOpen] = useState(false);
 
   const createQueryString = React.useCallback(
     (params: Record<string, string | number | Date | null | undefined>) => {
@@ -37,42 +40,30 @@ export function DatePickerWithRange({ className }: React.HTMLAttributes<HTMLDivE
     [searchParams]
   );
 
-  let qs = '';
-  if (date && !_.isEmpty(date)) {
-    const dates = {};
-    if (date.from) {
-      // @ts-expect-error unspec type
-      dates.from = moment(date.from).toISOString();
+  function handleOkBtn() {
+    setIsCalendarOpen(false);
+    let qs = '';
+    if (date && !_.isEmpty(date)) {
+      const dates: { from?: string; to?: string } = {};
+      if (date.from) {
+        dates.from = date.from.toISOString();
+      }
+      if (date.to) {
+        dates.to = date.to.toISOString();
+      }
+      qs = createQueryString(dates);
+    } else {
+      qs = createQueryString({ from: null, to: null });
     }
-    if (date.to) {
-      // @ts-expect-error unspec type
-      dates.to = moment(date.to).toISOString();
+
+    if (qs.length > 0) {
+      router.push(`${pathname}?${qs}`, { scroll: false });
     }
-    qs = createQueryString(dates);
   }
-
-  if (qs.length > 0) {
-    router.push(`${pathname}?${qs}`, { scroll: false });
-  }
-
-  // React.useEffect(() => {
-  //   const dateObj = {};
-
-  //   if (date) {
-  //     if (date.from) dateObj.from = moment(date.from).toISOString();
-  //     if (date.to) dateObj.to = moment(date.to).toISOString();
-  //   }
-
-  //   const qs = !_.isEmpty(dateObj) ? createQueryString(dateObj) : '';
-
-  //   router.push(`${pathname}?${qs}`, { scroll: false });
-
-  //   // eslint-disable-next-line react-hooks/exhaustive-deps
-  // }, []);
 
   return (
     <div className={cn('grid gap-2', className)}>
-      <Popover>
+      <Popover open={isCalendarOpen} onOpenChange={setIsCalendarOpen}>
         <PopoverTrigger asChild>
           <Button
             id='date'
@@ -104,10 +95,23 @@ export function DatePickerWithRange({ className }: React.HTMLAttributes<HTMLDivE
             mode='range'
             defaultMonth={date?.from}
             selected={date}
-            onSelect={setDate}
+            onSelect={(e) => {
+              setDate({ from: dateTimeToGMT(e?.from), to: dateTimeToGMT(e?.to) });
+            }}
             numberOfMonths={2}
             locale={ru}
           />
+          <div className='flex justify-end p-5'>
+            <Button
+              className='mr-5'
+              onClick={() => {
+                setDate(undefined);
+              }}
+            >
+              Очистить
+            </Button>
+            <Button onClick={handleOkBtn}>Ок</Button>
+          </div>
         </PopoverContent>
       </Popover>
     </div>

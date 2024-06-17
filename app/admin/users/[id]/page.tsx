@@ -11,6 +11,7 @@ import { getDepartmentsAction } from '@/app/actions/server/departments';
 import { Department, Organisation } from '@prisma/client';
 import { UserView } from '@/types/user';
 import Loading from '@/app/loading';
+import Header from '@/components/layout/header';
 
 export default function UpdateUserPage() {
   const pathname = usePathname();
@@ -44,6 +45,7 @@ export default function UpdateUserPage() {
   useEffect(() => {
     setInitialState();
     // eslint-disable-next-line react-hooks/exhaustive-deps
+    document.title = 'Ред. пользователя';
   }, []);
 
   if (!userInitialData) {
@@ -56,16 +58,19 @@ export default function UpdateUserPage() {
   ];
 
   return (
-    <div className='flex-1 space-y-4 p-8'>
-      <main className='w-full pt-16'>
+    <>
+      <Header title='Редактирование пользователя' />
+      <main className='flex-1 space-y-4 px-8 pb-8 '>
         <BreadCrumb items={breadcrumbItems} />
-        <UserForm
-          userId={userId}
-          organisations={organisations}
-          departments={departments}
-          initialData={userInitialData}
-        />
+        <div className='shadow-mod-1 rounded-md border p-4 '>
+          <UserForm
+            userId={userId}
+            organisations={organisations}
+            departments={departments}
+            initialData={userInitialData}
+          />
+        </div>
       </main>
-    </div>
+    </>
   );
 }

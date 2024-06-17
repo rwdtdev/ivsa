@@ -191,8 +191,8 @@ export class EventService {
 
     const where = {
       where: {
-        ...(query && query.from && { startAt: { gte: query.from } }),
-        ...(query && query.to && { endAt: { lte: query?.to } }),
+        ...(query && query.from && { endAt: { gte: query.from } }),
+        ...(query && query.to && { startAt: { lte: query?.to } }),
         ...(conditions.length > 0 && { AND: conditions })
       }
     };

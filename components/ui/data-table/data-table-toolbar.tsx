@@ -5,7 +5,6 @@ import Link from 'next/link';
 import type { DataTableFilterableColumn, DataTableSearchableColumn } from '@/types';
 import { Cross2Icon, PlusCircledIcon, TrashIcon } from '@radix-ui/react-icons';
 import type { Table } from '@tanstack/react-table';
-
 import { cn } from '@/lib/utils';
 import { Button, buttonVariants } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
@@ -19,6 +18,10 @@ import {
   EventsTableColumnNames,
   UsersTableColumnNames
 } from '@/constants/mappings/tables-column-names';
+import { updateUsersStatus } from '@/app/actions/server/update-users-status';
+import { UserStatus } from '@prisma/client';
+import { ConfirmModalDialogToolbarBtn } from '@/components/modal/confirm-modal-dialog-toolbar-btn';
+import { DatePickerUsersExpiresAt } from '@/components/date-picker-users-expiresat';
 
 interface DataTableToolbarProps<TData> {
   table: Table<TData>;
@@ -29,6 +32,7 @@ interface DataTableToolbarProps<TData> {
   withSearch?: boolean;
   newRowLink?: string;
   deleteRowsAction?: React.MouseEventHandler<HTMLButtonElement>;
+  isUsersTable?: boolean;
 }
 
 export function DataTableToolbar<TData>({
@@ -38,7 +42,8 @@ export function DataTableToolbar<TData>({
   datePickers = [],
   withSearch = false,
   newRowLink,
-  deleteRowsAction
+  deleteRowsAction,
+  isUsersTable
 }: DataTableToolbarProps<TData>) {
   const [query, setQuery] = React.useState('');
   const [isFiltered, setFiltered] = React.useState(false);
@@ -66,6 +71,20 @@ export function DataTableToolbar<TData>({
     },
     [searchParams]
   );
+
+  function blockSelectedUsers() {
+    const selectedUsersObj = table.getState().rowSelection;
+    const usersIds: string[] = Object.keys(selectedUsersObj);
+    updateUsersStatus(usersIds, UserStatus.BLOCKED);
+    table.resetRowSelection();
+  }
+
+  function unblockSelectedUsers() {
+    const selectedUsersObj = table.getState().rowSelection;
+    const usersIds: string[] = Object.keys(selectedUsersObj);
+    updateUsersStatus(usersIds, UserStatus.ACTIVE);
+    table.resetRowSelection();
+  }
 
   React.useEffect(() => {
     if (debounceValue.length > 0) {
@@ -157,12 +176,42 @@ export function DataTableToolbar<TData>({
         )}
       </div>
       <div className='flex items-center space-x-2'>
+        {isUsersTable && table.getSelectedRowModel().rows.length > 0 && (
+          <DatePickerUsersExpiresAt table={table} />
+        )}
+
+        {isUsersTable && table.getSelectedRowModel().rows.length > 0 && (
+          <ConfirmModalDialogToolbarBtn
+            btnText='Заблокировать'
+            title='Хотите заблокировать выбранных пользователей?'
+            msg='У выбранных пользователей будет заблокирован доступ к реестру инвентаризаций.'
+            ariaLabel='Кнопка заблокировать пользователя'
+            variant='outline'
+            size='sm'
+            className='h-8  bg-gray-100 '
+            action={blockSelectedUsers}
+          />
+        )}
+
+        {isUsersTable && table.getSelectedRowModel().rows.length > 0 && (
+          <ConfirmModalDialogToolbarBtn
+            btnText='Разблокировать'
+            title='Хотите разблокировать выбранных пользователей?'
+            msg='Выбранным пользователям будет предоставлен доступ к реестру инвентаризаций.'
+            ariaLabel='Кнопка разблокировать пользователя'
+            variant='outline'
+            size='sm'
+            className='h-8  bg-gray-100 '
+            action={unblockSelectedUsers}
+          />
+        )}
+
         {deleteRowsAction && table.getSelectedRowModel().rows.length > 0 ? (
           <Button
             aria-label='Delete selected rows'
             variant='outline'
             size='sm'
-            className='h-8'
+            className='h-8  bg-gray-100 '
             onClick={(event) => {
               startTransition(() => {
                 table.toggleAllPageRowsSelected(false);
@@ -174,14 +223,14 @@ export function DataTableToolbar<TData>({
             <TrashIcon className='mr-2 size-4' aria-hidden='true' />
             Удалить
           </Button>
-        ) : newRowLink ? (
+        ) : newRowLink && isUsersTable ? (
           <Link aria-label='Create new row' href={newRowLink}>
             <div
               className={cn(
                 buttonVariants({
                   variant: 'outline',
                   size: 'sm',
-                  className: 'h-8'
+                  className: 'h-8  bg-gray-100 '
                 })
               )}
             >

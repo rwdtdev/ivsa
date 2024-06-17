@@ -7,7 +7,8 @@ export const UsersTableColumnNames = {
   status: 'Статус',
   tabelNumber: 'Табельный номер',
   organisation: 'Организация',
-  department: 'Отдел'
+  department: 'Отдел',
+  expiresAt: 'Действует до'
 };
 
 export const EventsTableColumnNames = {
@@ -18,9 +19,9 @@ export const EventsTableColumnNames = {
   status: 'Статус',
   briefingStatus: 'Инструктаж',
   orderNumber: 'Номер приказа',
-  orderDate: 'Дата составления приказа',
-  startAt: 'Дата начала Реестр инвентаризаций',
-  endAt: 'Дата окончания Реестр инвентаризаций',
+  orderDate: 'Дата приказа',
+  startAt: 'Дата начала инвентаризации',
+  endAt: 'Дата окончания инвентаризации',
   balanceUnit: 'Балансовая единица',
   balanceUnitRegionCode: 'Код региона',
   participants: 'Участники'

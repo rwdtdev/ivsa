@@ -1,7 +1,6 @@
 import type { Metadata } from 'next';
 import { ReactChildren } from '../types';
 import Header from '@/components/layout/header';
-import Sidebar from '@/components/layout/sidebar';
 
 export const metadata: Metadata = {
   title: 'Администрирование',
@@ -11,9 +10,7 @@ export const metadata: Metadata = {
 export default function AdminLayout({ children }: ReactChildren) {
   return (
     <>
-      <Header />
       <div className='flex h-full overflow-hidden'>
-        <Sidebar />
         <main className='w-full'>{children}</main>
       </div>
     </>

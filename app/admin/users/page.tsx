@@ -12,6 +12,11 @@ import { DataTableSkeleton } from '@/components/ui/data-table/data-table-skeleto
 import { UsersTable } from '@/components/tables/users-table';
 import { getDepartmentsAction } from '@/app/actions/server/departments';
 import { getOrganisationsAction } from '@/app/actions/server/organisations';
+import Header from '@/components/layout/header';
+
+export const metadata = {
+  title: 'Пользователи'
+};
 
 export interface IndexPageProps {
   searchParams: SearchParams;
@@ -28,33 +33,19 @@ export default async function UsersPage({ searchParams }: IndexPageProps) {
   const organisations = await getOrganisationsAction();
 
   return (
-    <div className='flex h-screen overflow-hidden'>
-      <main className='w-full pt-16'>
-        <div className='flex-1 space-y-4 p-4 pt-6 md:p-8'>
-          <MemoizedBreadCrumb items={breadcrumbItems} />
-          <div className='flex items-start justify-between'>
-            <MemoizedHeading
-              title='Пользователи'
-              description='Управление пользователями'
-            />
-            <Button asChild>
-              <Link href='/admin/users/new' className='text-xs md:text-sm'>
-                <Plus className='mr-2 h-4 w-4' /> Добавить
-              </Link>
-            </Button>
-          </div>
-          <Separator />
-          <React.Suspense
-            fallback={<DataTableSkeleton columnCount={4} filterableColumnCount={2} />}
-          >
-            <UsersTable
-              users={users}
-              departments={departments}
-              organisations={organisations}
-            />
-          </React.Suspense>
-        </div>
-      </main>
+    <div className='flex h-screen flex-col'>
+      <Header title='Пользователи' />
+      <div className='flex h-full flex-col overflow-hidden px-8 py-3'>
+        <React.Suspense
+          fallback={<DataTableSkeleton columnCount={4} filterableColumnCount={2} />}
+        >
+          <UsersTable
+            users={users}
+            departments={departments}
+            organisations={organisations}
+          />
+        </React.Suspense>
+      </div>
     </div>
   );
 }

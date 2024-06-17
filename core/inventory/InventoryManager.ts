@@ -133,8 +133,7 @@ export class InventoryManager {
         ].name,
         date: newOrOld<Date>('inventoryDate', 'date'),
         status: newOrOld<InventoryStatus>('inventoryStatus', 'status'),
-        parentId: newOrOld<string>('inventoryParentId', 'parentId'),
-        address: newOrOld<string>('inventoryAddress', 'address')
+        parentId: newOrOld<string>('inventoryParentId', 'parentId')
       });
 
       if (!data.inventoryObjects) return;

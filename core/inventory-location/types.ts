@@ -1,3 +1,3 @@
 import { InventoryLocation } from '@prisma/client';
 
-export type InventoryLocationCreateData = Omit<InventoryLocation, 'id' | 'createdAt'>;
+export type InventoryLocationCreateData = Omit<InventoryLocation, 'id' | 'createdAt' | 'resourceId'>;

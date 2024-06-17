@@ -3,7 +3,6 @@
 import moment from 'moment';
 import { getEventByIdAction } from '@/app/actions/server/events';
 import BreadCrumb from '@/components/breadcrumb';
-import { Heading } from '@/components/ui/heading';
 import { getEntityId } from '@/lib/get-entity-id';
 import { EventView } from '@/core/event/types';
 import { usePathname } from 'next/navigation';
@@ -38,7 +37,6 @@ import {
   TableHeader,
   TableRow
 } from '@/components/ui/table';
-import { CarouselSize } from '@/components/carousel';
 import { useRouter } from 'next/navigation';
 import Header from '@/components/layout/header';
 

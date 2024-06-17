@@ -1,13 +1,6 @@
 import React from 'react';
-import Link from 'next/link';
 import { SearchParams } from '@/types';
-import { Plus } from 'lucide-react';
 import { getUsersAction } from '@/app/actions/server/users';
-
-import BreadCrumb from '@/components/breadcrumb';
-import { Button } from '@/components/ui/button';
-import { Heading } from '@/components/ui/heading';
-import { Separator } from '@/components/ui/separator';
 import { DataTableSkeleton } from '@/components/ui/data-table/data-table-skeleton';
 import { UsersTable } from '@/components/tables/users-table';
 import { getDepartmentsAction } from '@/app/actions/server/departments';
@@ -21,11 +14,6 @@ export const metadata = {
 export interface IndexPageProps {
   searchParams: SearchParams;
 }
-
-const breadcrumbItems = [{ title: 'Пользователи', link: '/admin/users' }];
-
-const MemoizedBreadCrumb = React.memo(BreadCrumb);
-const MemoizedHeading = React.memo(Heading);
 
 export default async function UsersPage({ searchParams }: IndexPageProps) {
   const users = await getUsersAction(searchParams);

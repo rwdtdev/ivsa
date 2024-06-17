@@ -13,8 +13,6 @@ import {
   FormLabel,
   FormMessage
 } from '@/components/ui/form';
-import { Separator } from '@/components/ui/separator';
-import { Heading } from '@/components/ui/heading';
 import {
   Select,
   SelectContent,
@@ -50,11 +48,6 @@ export const UserForm: React.FC<UserFormProps> = ({
   const [loading, setLoading] = useState(false);
 
   const action = initialData ? 'Сохранить' : 'Добавить';
-  const title = initialData ? 'Редактирование пользователя' : 'Добавление пользователя';
-
-  const description = initialData
-    ? 'Изменить данные пользователя.'
-    : 'Добавить нового пользователя в систему';
 
   const successToastMessage = initialData
     ? 'Информация о пользователе успешно обновлена.'
@@ -107,10 +100,6 @@ export const UserForm: React.FC<UserFormProps> = ({
 
   return (
     <>
-      {/* <div className='flex items-center justify-between'>
-        <Heading title={title} description={description} />
-      </div> */}
-      {/* <Separator /> */}
       <Form {...form}>
         <form onSubmit={form.handleSubmit(onSubmit)} className='w-full space-y-8'>
           <div className='gap-8 md:grid md:grid-cols-3'>

@@ -1,11 +1,7 @@
-import { NextRequest, NextResponse } from 'next/server';
+import { NextRequest } from 'next/server';
 import { getErrorResponse } from '@/lib/helpers';
-
 import { S3ClientProvider } from '@/utils/s3-client/s3-client-provider';
 import { Logger } from '@/lib/logger';
-import { getServerSession } from 'next-auth/next';
-import { authConfig } from '@/lib/auth-options';
-import { UserStatus } from '@prisma/client';
 
 interface IContext {
   params: { eventId: string; inventoryId: string; resourceId: string };

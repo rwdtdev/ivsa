@@ -5,7 +5,6 @@ import {
 import BreadCrumb from '@/components/breadcrumb';
 import Header from '@/components/layout/header';
 import { InventoryObjectsTable } from '@/components/tables/inventory-objects-table';
-import { Button } from '@/components/ui/button';
 import {
   Card,
   CardContent,

@@ -17,6 +17,7 @@ import {
   EventsTableColumnNames,
   makeColumnsNames
 } from '@/constants/mappings/tables-column-names';
+import { format, parseISO } from 'date-fns';
 
 const padding = 9;
 
@@ -32,127 +33,81 @@ export function fetchEventsTableColumnDefs(): ColumnDef<EventView, unknown>[] {
       id: 'startAt',
       accessorKey: 'startAt',
       header: defaultHeader,
-      cell: ({ row }) => {
-        return (
-          <Link href={`/admin/events/${row.original.id}`}>
-            <div style={{ padding }}>{row.original.startAt}</div>
-          </Link>
-        );
-      }
+      cell: ({ row }) => (
+        <div style={{ padding }}>
+          {format(parseISO(row.original.startAt.slice(0, 10)), 'dd.MM.yyyy')}
+        </div>
+      )
     },
     {
       id: 'endAt',
       accessorKey: 'endAt',
       header: defaultHeader,
-      cell: ({ row }) => {
-        return (
-          <Link href={`/admin/events/${row.original.id}`}>
-            <div style={{ padding }}>{row.original.endAt}</div>
-          </Link>
-        );
-      }
+      cell: ({ row }) => (
+        <div style={{ padding }}>
+          {format(parseISO(row.original.endAt.slice(0, 10)), 'dd.MM.yyyy')}
+        </div>
+      )
     },
     {
       id: 'status',
       accessorKey: 'status',
       header: defaultHeader,
-      cell: ({ row }) => {
-        return (
-          <Link href={`/admin/events/${row.original.id}`}>
-            <EventStatusBadge status={row.original.status} />
-          </Link>
-        );
-      }
+      cell: ({ row }) => <EventStatusBadge status={row.original.status} />
     },
     {
       id: 'briefingStatus',
       accessorKey: 'briefingStatus',
       header: defaultHeader,
-      cell: ({ row }) => {
-        return (
-          <Link href={`/admin/events/${row.original.id}`}>
-            <BriefingStatusBadge status={row.original.briefingStatus} />
-          </Link>
-        );
-      }
+      cell: ({ row }) => <BriefingStatusBadge status={row.original.briefingStatus} />
     },
     {
       id: 'balanceUnit',
       accessorKey: 'balanceUnit',
       header: defaultHeader,
-      cell: ({ row }) => {
-        return (
-          <Link href={`/admin/events/${row.original.id}`}>
-            <div style={{ padding }}>{row.original.balanceUnit}</div>
-          </Link>
-        );
-      }
+      cell: ({ row }) => <div style={{ padding }}>{row.original.balanceUnit}</div>
     },
     {
       id: 'balanceUnitRegionCode',
       accessorKey: 'balanceUnitRegionCode',
       header: defaultHeader,
-      cell: ({ row }) => {
-        return (
-          <Link href={`/admin/events/${row.original.id}`}>
-            <div style={{ padding }}>
-              {
-                REGION_CODES[
-                  row.original.balanceUnitRegionCode as keyof typeof REGION_CODES
-                ]
-              }
-            </div>
-          </Link>
-        );
-      }
+      cell: ({ row }) => (
+        <div style={{ padding }}>
+          {REGION_CODES[row.original.balanceUnitRegionCode as keyof typeof REGION_CODES]}
+        </div>
+      )
     },
     {
       id: 'commandNumber',
       accessorKey: 'commandNumber',
       header: defaultHeader,
-      cell: ({ row }) => {
-        return (
-          <Link href={`/admin/events/${row.original.id}`}>
-            <div style={{ padding }}>{row.original.commandNumber}</div>
-          </Link>
-        );
-      }
+      cell: ({ row }) => <div style={{ padding }}>{row.original.commandNumber}</div>
     },
     {
       id: 'commandDate',
       accessorKey: 'commandDate',
       header: defaultHeader,
-      cell: ({ row }) => {
-        return (
-          <Link href={`/admin/events/${row.original.id}`}>
-            <div style={{ padding }}>{row.original.commandDate}</div>
-          </Link>
-        );
-      }
+      cell: ({ row }) => (
+        <div style={{ padding }}>
+          {format(parseISO(row.original.commandDate.slice(0, 10)), 'dd.MM.yyyy')}
+        </div>
+      )
     },
     {
       id: 'orderNumber',
       accessorKey: 'orderNumber',
       header: defaultHeader,
-      cell: ({ row }) => {
-        return (
-          <Link href={`/admin/events/${row.original.id}`}>
-            <div style={{ padding }}>{row.original.orderNumber}</div>
-          </Link>
-        );
-      }
+      cell: ({ row }) => <div style={{ padding }}>{row.original.orderNumber}</div>
     },
     {
       id: 'orderDate',
       accessorKey: 'orderDate',
       header: defaultHeader,
-      cell: ({ row }) => {
-        return (
-          <Link href={`/admin/events/${row.original.id}`}>
-            <div style={{ padding }}>{row.original.orderDate}</div>
-          </Link>
-        );
-      }
+      cell: ({ row }) => (
+        <div style={{ padding }}>
+          {format(parseISO(row.original.orderDate.slice(0, 10)), 'dd.MM.yyyy')}
+        </div>
+      )
     },
     {
       id: 'participants',
@@ -163,15 +118,13 @@ export function fetchEventsTableColumnDefs(): ColumnDef<EventView, unknown>[] {
 
         if (participants && participants.length > 0) {
           return (
-            <Link href={`/admin/events/${row.original.id}`}>
-              <div style={{ padding }}>
-                <ul>
-                  {participants.map(({ role }: { role: UserRole }, idx) => (
-                    <li key={idx}>{UserRoles[role]}</li>
-                  ))}
-                </ul>
-              </div>
-            </Link>
+            <div style={{ padding }}>
+              <ul>
+                {participants.map(({ role }: { role: UserRole }, idx) => (
+                  <li key={idx}>{UserRoles[role]}</li>
+                ))}
+              </ul>
+            </div>
           );
         } else {
           return <div style={{ padding }}></div>;

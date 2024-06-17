@@ -39,11 +39,13 @@ import {
   TableRow
 } from '@/components/ui/table';
 import { CarouselSize } from '@/components/carousel';
+import { useRouter } from 'next/navigation';
+import Header from '@/components/layout/header';
 
 const breadcrumbItems = [
   {
     title: 'Реестр инвентаризаций',
-    link: '/admin/events'
+    link: '/'
   },
   {
     title: 'Инвентаризация',
@@ -55,7 +57,7 @@ export default function EventPage() {
   const [event, setEvent] = useState<EventView>();
   const pathname = usePathname();
   const [isLoadingEvent, setIsLoadingEvent] = useState(true);
-
+  const router = useRouter();
   const id = getEntityId(pathname);
 
   const fetchEventById = async (id: string) => {
@@ -70,6 +72,7 @@ export default function EventPage() {
     if (id) {
       fetchEventById(id);
     }
+    document.title = 'Инвентаризация';
   }, [id]);
 
   if (!event || isLoadingEvent) {
@@ -77,14 +80,16 @@ export default function EventPage() {
   }
 
   return (
-    <div className='space-y-4 p-8'>
-      <main className='w-full pt-16'>
+    <>
+      <Header title={'Инвентаризация'} />
+      {/* <div className='space-y-4 p-8'> */}
+      <main className='w-full px-8 pb-8'>
         <BreadCrumb items={breadcrumbItems} />
-        <div className='flex items-center justify-between'>
-          <Heading title='Инвентаризация' description={`ID: ${id}`} />
-        </div>
-        <div className='grid h-full gap-4 pt-5 lg:md:sm:grid-cols-1 xl:grid-cols-2 2xl:grid-cols-4'>
-          <Card className='col-span-1'>
+        {/* <div className='flex items-center justify-between'>
+            <Heading title='Инвентаризация' description={`ID: ${id}`} />
+          </div> */}
+        <div className='grid h-full grid-cols-1 gap-4 lg:grid-cols-2 2xl:grid-cols-4'>
+          <Card>
             <CardContent>
               <div className='my-4'>
                 <div className='grid text-sm'>
@@ -140,7 +145,7 @@ export default function EventPage() {
               </div>
             </CardContent>
           </Card>
-          <Card className='xl:lg:col-span-2 2xl:col-span-1'>
+          <Card>
             <CardHeader>
               <CardTitle>Участники</CardTitle>
             </CardHeader>
@@ -210,7 +215,7 @@ export default function EventPage() {
               </ScrollArea>
             </CardContent>
           </Card>
-          <Card className='h-full xl:col-span-3 2xl:col-span-2'>
+          <Card className='2xl:col-span-2'>
             <CardHeader>
               <CardTitle>Описи</CardTitle>
             </CardHeader>
@@ -227,7 +232,7 @@ export default function EventPage() {
                               <div className='flex flex-col'>
                                 <div className='flex justify-start'>
                                   <Link
-                                    href={`/admin/events/${inventory.eventId}/inventories/${inventory.id}`}
+                                    href={`/events/${inventory.eventId}/inventories/${inventory.id}`}
                                     className='text-sm hover:underline'
                                   >
                                     Комплексная опись № {inventory.number} от{' '}
@@ -246,7 +251,7 @@ export default function EventPage() {
                               </div>
                             </AccordionTrigger>
                             <AccordionContent>
-                              {inventory.videoFilesUrls.length > 0 && (
+                              {/* {inventory.videoFilesUrls.length > 0 && (
                                 <CarouselSize
                                   items={inventory.videoFilesUrls[0]
                                     .split(',')
@@ -256,7 +261,8 @@ export default function EventPage() {
                                       date: inventory.date
                                     }))}
                                 />
-                              )}
+                              )} */}
+                              AccordionContent
                               {event.inventories.some(
                                 (child) => child.parentId === inventory.id
                               ) && (
@@ -282,51 +288,28 @@ export default function EventPage() {
                                     {event.inventories
                                       .filter(({ parentId }) => parentId === inventory.id)
                                       .map((child, index) => (
-                                        <TableRow key={child.id}>
+                                        <TableRow
+                                          key={child.id}
+                                          onClick={() => {
+                                            router.push(
+                                              `/events/${child.eventId}/inventories/${child.id}`
+                                            );
+                                          }}
+                                          className='cursor-pointer'
+                                        >
+                                          <TableCell>{index + 1}</TableCell>
                                           <TableCell>
-                                            <Link
-                                              href={`/admin/inventories/${child.id}`}
-                                              className='flex text-muted-foreground'
-                                            >
-                                              {index + 1}
-                                            </Link>
+                                            {
+                                              InventoryCodes[
+                                                child.code as keyof typeof InventoryCodes
+                                              ].shortName
+                                            }
                                           </TableCell>
+                                          <TableCell>{child.code}</TableCell>
                                           <TableCell>
-                                            <Link
-                                              href={`/admin/events/${child.eventId}/inventories/${child.id}`}
-                                              className='flex'
-                                            >
-                                              {
-                                                InventoryCodes[
-                                                  child.code as keyof typeof InventoryCodes
-                                                ].shortName
-                                              }
-                                            </Link>
+                                            {moment(child.date).format(DATE_FORMAT)}
                                           </TableCell>
-                                          <TableCell>
-                                            <Link
-                                              href={`/admin/inventories/${child.id}`}
-                                              className='flex'
-                                            >
-                                              {child.code}
-                                            </Link>
-                                          </TableCell>
-                                          <TableCell>
-                                            <Link
-                                              href={`/admin/inventories/${child.id}`}
-                                              className='flex'
-                                            >
-                                              {moment(child.date).format(DATE_FORMAT)}
-                                            </Link>
-                                          </TableCell>
-                                          <TableCell>
-                                            <Link
-                                              href={`/admin/inventories/${child.id}`}
-                                              className='flex'
-                                            >
-                                              {child.number}
-                                            </Link>
-                                          </TableCell>
+                                          <TableCell>{child.number}</TableCell>
                                         </TableRow>
                                       ))}
                                   </TableBody>
@@ -342,6 +325,7 @@ export default function EventPage() {
           </Card>
         </div>
       </main>
-    </div>
+      {/* </div> */}
+    </>
   );
 }

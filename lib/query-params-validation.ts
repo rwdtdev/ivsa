@@ -1,4 +1,3 @@
-import { BriefingStatus, EventStatus, UserRole } from '@prisma/client';
 import * as z from 'zod';
 
 export const searchParamsSchema = z.object({
@@ -8,13 +7,13 @@ export const searchParamsSchema = z.object({
   name: z.string().optional(),
   title: z.string().optional(),
   store: z.string().optional(),
-  status: z.nativeEnum(EventStatus).optional(),
-  role: z.nativeEnum(UserRole).optional(),
+  status: z.string().optional(),
+  role: z.string().optional(),
   operator: z.string().optional(),
   search: z.string().optional(),
   department: z.string().optional(),
   organisation: z.string().optional(),
   from: z.string().optional(),
   to: z.string().optional(),
-  briefingStatus: z.nativeEnum(BriefingStatus).optional()
+  briefingStatus: z.string().optional()
 });

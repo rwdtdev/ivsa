@@ -172,12 +172,16 @@ export function useDataTable<TData, TValue>({
   }, [pageIndex, pageSize]);
 
   // Handle server-side sorting
-  const [sorting, setSorting] = React.useState<SortingState>([
-    {
-      id: column ?? 'name',
-      desc: order === 'desc'
-    }
-  ]);
+  const [sorting, setSorting] = React.useState<SortingState>(
+    columns.find((column) => column.id === 'name')
+      ? [
+          {
+            id: column ?? 'name',
+            desc: order === 'desc'
+          }
+        ]
+      : []
+  );
 
   React.useEffect(() => {
     router.push(
@@ -210,9 +214,7 @@ export function useDataTable<TData, TValue>({
 
   React.useEffect(() => {
     // Initialize new params
-    const newParamsObject = {
-      page: 1
-    };
+    const newParamsObject = {};
 
     // Handle debounced searchable column filters
     for (const column of debouncedSearchableColumnFilters) {
@@ -266,6 +268,8 @@ export function useDataTable<TData, TValue>({
       columnFilters
     },
     enableRowSelection: true,
+    //@ts-expect-error
+    getRowId: (row) => row.id,
     onRowSelectionChange: setRowSelection,
     onPaginationChange: setPagination,
     onSortingChange: setSorting,

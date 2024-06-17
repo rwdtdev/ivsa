@@ -32,7 +32,11 @@ import {
 import { PasswordInput } from '../password-input';
 import { IsBlocked } from '@/app/actions/server/users';
 
-const LoginForm = () => {
+export default function LoginForm({
+  revalidateMainLayout
+}: {
+  revalidateMainLayout: () => void;
+}) {
   const router = useRouter();
   const { toast } = useToast();
   const searchParams = useSearchParams();
@@ -78,6 +82,7 @@ const LoginForm = () => {
           )
         });
       } else {
+        revalidateMainLayout();
         router.push(redirectPath);
       }
     }
@@ -133,6 +138,4 @@ const LoginForm = () => {
       </CardFooter>
     </Card>
   );
-};
-
-export default LoginForm;
+}

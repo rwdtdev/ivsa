@@ -204,6 +204,31 @@ export class UserService {
     return newUser;
   }
 
+  async updateManyByUsersIds(usersIds: string[], data: UserUpdateData) {
+    await Promise.all(usersIds.map((id) => this.assertExist(id)));
+
+    const updateData: Partial<Omit<User, 'id' | 'createdAt'>> = {
+      updatedAt: new Date()
+    };
+
+    if (data.status) {
+      updateData.status = data.status;
+    }
+
+    if (data.expiresAt) {
+      updateData.expiresAt = data.expiresAt;
+    }
+
+    const updatedUsers = await prisma.user.updateMany({
+      where: { id: { in: usersIds } },
+      data: updateData
+    });
+
+    if (!updatedUsers) throw new BadRequestError();
+
+    return updatedUsers;
+  }
+
   async update(id: string, data: UserUpdateData): Promise<ClientUser> {
     await this.assertExist(id);
 

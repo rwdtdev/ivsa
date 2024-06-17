@@ -297,6 +297,9 @@ export class S3Client {
   }
 
   statObject(bucket, filename) {
-    throw new Error('Method "statObject" must be implemented');
+    // Закоммитил для работы просмотра видео инвентаризации
+    // Раскомитить после имплементации
+    // throw new Error('Method "statObject" must be implemented');
+    console.log('Method "statObject" must be implemented');
   }
 }

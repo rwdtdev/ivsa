@@ -42,6 +42,8 @@ export function UsersTable({ users, departments, organisations }: UsersTableProp
       filterableColumns={filterableColumns(departments, organisations)}
       // floatingBarContent={TasksTableFloatingBarContent(dataTable)}
       // deleteRowsAction={(event) => deleteSelectedRows(dataTable, event)}
+      deleteRowsAction={(event) => console.log('deleteRowsAction', dataTable, event)}
+      isUsersTable={true}
     />
   );
 }

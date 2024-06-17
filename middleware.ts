@@ -1,6 +1,8 @@
 import { Logger } from './lib/logger';
 import { isAuthorized } from './lib/auth';
 import { NextResponse, NextRequest } from 'next/server';
+import { getToken } from 'next-auth/jwt';
+import { UserRole, UserStatus } from '@prisma/client';
 
 const logger = new Logger({ name: 'HTTP' });
 
@@ -12,7 +14,8 @@ const corsOptions = {
 // Move to config or env
 const allowedOrigins = ['http://127.0.0.1:3001', 'http://localhost:3001'];
 
-export function middleware(request: NextRequest) {
+export async function middleware(request: NextRequest) {
+  const jwt = await getToken({ req: request });
   const { pathname } = request.nextUrl;
   const isPreflight = request.method === 'OPTIONS';
 
@@ -21,6 +24,8 @@ export function middleware(request: NextRequest) {
 
   const isApiEndpoint = pathname.startsWith('/api');
   const isAuthEndpoint = pathname.startsWith('/api/auth');
+  const isLoginPath = pathname.startsWith('/login');
+  const isAdminPath = pathname.startsWith('/admin');
 
   if (isPreflight) {
     const preflightHeaders = {
@@ -43,25 +48,53 @@ export function middleware(request: NextRequest) {
   if (isApiEndpoint) {
     const requestId = request.headers.get('RequestId');
 
-    if (!isAuthEndpoint && !isAuthorized(request)) {
+    if (!isAuthEndpoint && !jwt?.user && !isAuthorized(request)) {
       /**
        * Can't use error constructor because:
        *  Dynamic code evaluation is not available in Middleware (underscore.js using in ProblemJson module)
        *
        * @see https://nextjs.org/docs/messages/edge-dynamic-code-evaluation
        **/
-      return NextResponse.json({
-        type: 'urn:problem-type:unauthorized-error',
-        title: 'Для доступа к запрашиваемому ресурсу требуется аутентификация',
-        status: 401,
-        ...(requestId && { requestId })
-      }, {status: 401});
+      return NextResponse.json(
+        {
+          type: 'urn:problem-type:unauthorized-error',
+          title: 'Для доступа к запрашиваемому ресурсу требуется аутентификация',
+          status: 401,
+          ...(requestId && { requestId })
+        },
+        { status: 401 }
+      );
+    } else if (!isAuthEndpoint && jwt?.user) {
+      if (jwt.user.status === UserStatus.BLOCKED) {
+        return NextResponse.json(
+          {
+            type: 'urn:problem-type:unauthorized-error',
+            title: 'Доступ запрещен',
+            status: 403,
+            ...(requestId && { requestId })
+          },
+          { status: 403 }
+        );
+      }
     }
-
     return response;
   }
+
+  if (!jwt?.user && !isLoginPath) {
+    return NextResponse.redirect(new URL('/login', request.url));
+  }
+
+  if (pathname === '/events') {
+    return NextResponse.redirect(new URL('/', request.url));
+  }
+
+  if (isAdminPath && jwt?.user.role !== UserRole.ADMIN) {
+    return NextResponse.redirect(new URL('/', request.url));
+  }
+
+  return response;
 }
 
 export const config = {
-  matcher: ['/api/:path*']
+  matcher: ['/', '/api/:path*', '/admin/:path*', '/login/:path*', '/events']
 };

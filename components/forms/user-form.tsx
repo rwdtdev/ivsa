@@ -107,10 +107,10 @@ export const UserForm: React.FC<UserFormProps> = ({
 
   return (
     <>
-      <div className='flex items-center justify-between'>
+      {/* <div className='flex items-center justify-between'>
         <Heading title={title} description={description} />
-      </div>
-      <Separator />
+      </div> */}
+      {/* <Separator /> */}
       <Form {...form}>
         <form onSubmit={form.handleSubmit(onSubmit)} className='w-full space-y-8'>
           <div className='gap-8 md:grid md:grid-cols-3'>

@@ -18,6 +18,7 @@ import {
 import { DataTableColumnHeader } from '@/components/ui/data-table/data-table-column-header';
 import { UserView } from '@/types/user';
 import { DataTableFilterableColumn } from '@/types';
+import { format } from 'date-fns';
 
 const emptyCell = '';
 
@@ -26,11 +27,19 @@ export function fetchUsersTableColumnDefs(): ColumnDef<UserView, unknown>[] {
   // startTransition: React.TransitionStartFunction
   return [
     {
+      id: 'id',
+      accessorKey: 'id',
+      enableHiding: false
+    },
+    {
       id: 'select',
       accessorKey: 'select',
       header: ({ table }) => (
         <Checkbox
-          checked={table.getIsAllPageRowsSelected()}
+          checked={
+            table.getIsAllPageRowsSelected() ||
+            (table.getIsSomePageRowsSelected() && 'indeterminate')
+          }
           onCheckedChange={(value) => table.toggleAllPageRowsSelected(!!value)}
           aria-label='Select all'
         />
@@ -39,7 +48,9 @@ export function fetchUsersTableColumnDefs(): ColumnDef<UserView, unknown>[] {
         <Checkbox
           style={{ marginLeft: 8 }}
           checked={row.getIsSelected()}
-          onCheckedChange={(value) => row.toggleSelected(!!value)}
+          onCheckedChange={(value) => {
+            row.toggleSelected(!!value);
+          }}
           aria-label='Select row'
         />
       ),
@@ -49,7 +60,9 @@ export function fetchUsersTableColumnDefs(): ColumnDef<UserView, unknown>[] {
     {
       id: 'name',
       accessorKey: 'name',
-      header: ({ column }) => <DataTableColumnHeader column={column} title='ФИО' />,
+      header: ({ column }) => (
+        <DataTableColumnHeader column={column} title='ФИО' className='min-w-36' />
+      ),
       cell: ({ row }) => {
         return <div style={{ padding: 10 }}>{row.original.name}</div>;
       }
@@ -62,12 +75,17 @@ export function fetchUsersTableColumnDefs(): ColumnDef<UserView, unknown>[] {
     {
       id: 'email',
       accessorKey: 'email',
-      header: ({ column }) => <DataTableColumnHeader column={column} title='Эл. почта' />
+      header: ({ column }) => <DataTableColumnHeader column={column} title='Эл. почта' />,
+      cell: ({ row }) => {
+        return <div style={{ padding: 10 }}>{row.original.email}</div>;
+      }
     },
     {
       id: 'phone',
       accessorKey: 'phone',
-      header: ({ column }) => <DataTableColumnHeader column={column} title='Телефон' />
+      header: ({ column }) => (
+        <DataTableColumnHeader column={column} title='Телефон' className='min-w-32' />
+      )
     },
     {
       id: 'role',
@@ -76,7 +94,7 @@ export function fetchUsersTableColumnDefs(): ColumnDef<UserView, unknown>[] {
       cell: ({ row }) => {
         const role = row.getValue('role') as UserRole;
 
-        return UserRoles[role] || emptyCell;
+        return <div style={{ padding: 10 }}>{UserRoles[role]}</div> || emptyCell;
       }
     },
     {
@@ -155,12 +173,22 @@ export function fetchUsersTableColumnDefs(): ColumnDef<UserView, unknown>[] {
       }
     },
     {
+      id: 'expiresAt',
+      accessorKey: 'expiresAt',
+      header: ({ column }) => (
+        <DataTableColumnHeader column={column} title='Действует до' />
+      ),
+      cell: ({ row }) => (
+        <div style={{ padding: 10 }}>{format(row.original.expiresAt, 'dd.MM.yyyy')}</div>
+      )
+    },
+    {
       id: 'tabelNumber',
       accessorKey: 'tabelNumber',
       header: ({ column }) => (
         <DataTableColumnHeader column={column} title='Табельный номер' />
       ),
-      cell: ({ row }) => row.getValue('tabelNumber')
+      cell: ({ row }) => <div style={{ padding: 10 }}>{row.getValue('tabelNumber')}</div>
     },
     {
       id: 'organisation',

@@ -59,7 +59,6 @@ export class S3Client {
     this.config = config;
     this.logger = logger;
     this.eventEmitter = eventEmitter;
-    this.logger.log(`${this.constructor.name} created`);
   }
 
   emit(event, opts) {
@@ -190,7 +189,7 @@ export class S3Client {
     let result;
     if (!this.config.autoCreateBucket) {
       this.emit(S3_EVENTS.S3_INIT_SUCCESS);
-      this.logger.log(`${this.constructor.name} was successfuly initialised`);
+      this.logger.log('was successfuly initialised');
       return;
     }
 
@@ -204,10 +203,10 @@ export class S3Client {
         })
       );
       this.emit(S3_EVENTS.S3_INIT_SUCCESS);
-      this.logger.log(`${this.constructor.name} was successfuly initialised`);
+      this.logger.log('was successfuly initialised');
     } catch (err) {
       this.emit(S3_EVENTS.S3_INIT_ERROR);
-      this.logger.log(`${this.constructor.name} initialisation failed`);
+      this.logger.log('initialisation failed');
     }
 
     return result;

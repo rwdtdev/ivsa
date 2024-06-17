@@ -15,7 +15,7 @@ export default function Header({ title }: { title: string }) {
   //// @ts-expect-error
   // const session = await getServerSession(authConfig);
   const session = useSession();
-  console.log(session);
+  // console.log(session);
   const isAdmin = session?.data?.user.role === UserRole.ADMIN;
   // const isAdmin = true;
 

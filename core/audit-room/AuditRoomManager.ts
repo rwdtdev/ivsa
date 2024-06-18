@@ -117,7 +117,8 @@ export class AuditRoomManager {
         code: inventoryCode,
         number: inventoryNumber,
         shortName: InventoryCodes[inventoryCode].shortName,
-        date: inventoryDate ? getDateFromString(inventoryDate) : null
+        date: inventoryDate ? getDateFromString(inventoryDate) : null,
+        isProcessed: false
       });
 
       const intentoryObjectPromises = inventoryObjects.map(async (object: any) =>

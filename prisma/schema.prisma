@@ -205,6 +205,8 @@ model Inventory {
   locations           InventoryLocation[]
   /// Список ресурсов инвентаризационной описи
   resources           InventoryResource[]
+  /// Признак того, что инвентаризация по описи окончена, все ресурсы были обработаны, сохранены и т.д.
+  isProcessed         Boolean             @default(false)
 
   @@map("inventories")
 }

@@ -264,36 +264,37 @@ model InventoryObject {
 
 model InventoryResource {
   /// Уникальный идентификатор ресурса
-  id          String              @id @default(uuid())
-  /// Название файла, являющее идентификаторов в IVA R
-  name        String
+  id            String              @id @default(uuid())
+  /// Идентификатоор файла в IVA R
+  ivaId         String
+  /// Название файла
+  name          String
   /// Дата-время начала видео. Применимо только для ресурсов типа VIDEO
-  startAt     DateTime?
+  startAt       DateTime?
   /// Дата-время конца видео. Применимо только для ресурсов типа VIDEO
-  endAt       DateTime?
+  endAt         DateTime?
   /// Связь с инвентаризационной описью, которой пренадлежит ресурс
-  inventoryId String
+  inventoryId   String
   /// Ссылка в ASVI для получения этого ресурса через API (Опционально для разных типов ресусра)
-  url         String?
-  /// Ссылка в s3-хранилище. (Ссылка изменяется по мере переноса файла из ОП в АХ)
-  s3Url       String?
-  /// Хэш-сумма
-  hash        String?
-  /// Тип ресурса видео-файл или файл метаданных
-  type        ResourceType
+  url           String?
+  /// Ссылка на видео файл s3-хранилище. (Ссылка изменяется по мере переноса файла из ОП в АХ)
+  s3Url         String?
+  /// Ссылка на файл метаданных в s3-хранилище. (Ссылка изменяется по мере переноса файла из ОП в АХ)
+  s3MetadataUrl String?
+  /// Путь временного хранения сгенерированного файла метаданных
+  metadataPath  String?
+  /// Хэш-сумма видеофайла
+  videoHash     String?
+  /// Хэш-сумма файла метаданных к видео
+  metadataHash  String?
   /// Флаг успешной обработки ресурса в iva-file-transporter
-  isProcessed Boolean             @default(false)
+  isProcessed   Boolean             @default(false)
   /// Список геолокационных данных, которые связаны с этим ресурсом
-  locations   InventoryLocation[]
-  inventory   Inventory           @relation(fields: [inventoryId], references: [id])
+  locations     InventoryLocation[]
+  inventory     Inventory           @relation(fields: [inventoryId], references: [id])
 
-  @@unique([name, inventoryId, type])
+  @@unique([name, inventoryId, ivaId])
   @@map("inventory_resources")
-}
-
-enum ResourceType {
-  METADATA
-  VIDEO
 }
 
 enum UserStatus {

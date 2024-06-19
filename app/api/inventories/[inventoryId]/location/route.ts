@@ -1,3 +1,4 @@
+import moment from 'moment-timezone';
 import { getErrorResponse } from '@/lib/helpers';
 import { NextRequest } from 'next/server';
 import { CreateInventoryLocationSchema, PathParamsSchema } from './validation';
@@ -28,7 +29,7 @@ export async function POST(req: NextRequest, context: IContext) {
       latitude: data.latitude,
       longitude: data.longitude,
       accuracy: data.accuracy,
-      dateTime: new Date(data.dateTime)
+      dateTime: moment(data.dateTime).utc().toDate()
     });
 
     return new Response(null, { status: 201 });

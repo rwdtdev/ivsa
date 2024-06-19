@@ -1,5 +1,7 @@
 ## ASVI
 
+- just a test change for CI/CD
+
 [![pipeline status](https://rwdt1.gitlab.yandexcloud.net/labeling/asvi/badges/main/pipeline.svg)](https://rwdt1.gitlab.yandexcloud.net/labeling/asvi/-/commits/main)
 
 Сервис автоматизации видеинвентаризаций с приминением программного обеспечения IVA R (АС

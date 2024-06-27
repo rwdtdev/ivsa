@@ -9,7 +9,7 @@ export const CreateInventoryLocationSchema = z.object({
   longitude: z.number(),
   accuracy: z.number(),
   address: z.string().trim().min(1),
-  dateTime: z.string().trim().datetime()
+  dateTime: z.number()
 });
 
 export type CreateInventoryLocationData = z.infer<typeof CreateInventoryLocationSchema>;

@@ -111,6 +111,14 @@ export class InventoryService {
     return inventory;
   }
 
+  async getById(id: string) {
+    const inventory = await this.prisma.inventory.findFirst({
+      where: {id}
+    })
+
+    return inventory || null;
+  }
+
   async getByIdAndEvent(
     id: string,
     eventId: string

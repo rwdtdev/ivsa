@@ -1,7 +1,6 @@
-import { getInventoryByIdAction } from '@/app/actions/server/inventories';
+// import { getInventoryByIdAction } from '@/app/actions/server/inventories';
 import { VideosTable } from '@/components/tables/videos-table';
-import { SearchParams } from '@/types';
-import { $Enums } from '@prisma/client';
+// import { SearchParams } from '@/types';
 
 export interface VideoResourcesTest {
   id: string;
@@ -40,18 +39,16 @@ const videoList: VideoResourcesTest[] = [
   }
 ];
 
-interface Props {
-  params: {
-    eventId: string;
-    inventoryId: string;
-  };
-  searchParams: SearchParams;
-}
-export default async function VideoList({
-  params: { eventId, inventoryId },
-  searchParams
-}: Props) {
-  const inventory = await getInventoryByIdAction(inventoryId, eventId);
+// interface Props {
+//   params: {
+//     eventId: string;
+//     inventoryId: string;
+//   };
+//   searchParams: SearchParams;
+// }
+export default async function VideoList() {
+  // { params: { eventId, inventoryId } }: Props
+  // const inventory = await getInventoryByIdAction(inventoryId, eventId);
   // if (!inventory) return <div>Нет видеозаписей</div>;
   return (
     <div className='flex grow flex-col overflow-hidden'>

@@ -1,5 +1,4 @@
 import { getInventoryById } from '@/app/actions/server/getInventoryById';
-import { getInventoryByIdAction } from '@/app/actions/server/inventories';
 import { getInventoryObjectsByInventoryIdAction } from '@/app/actions/server/inventoryObjects';
 import { InventoryObjectsTable } from '@/components/tables/inventory-objects-table';
 import { InventoryCode } from '@/core/inventory/types';
@@ -13,7 +12,7 @@ interface Props {
   searchParams: SearchParams;
 }
 export default async function InventoryItemsList({
-  params: { eventId, inventoryId },
+  params: { inventoryId },
   searchParams
 }: Props) {
   const inventory = await getInventoryById(inventoryId);

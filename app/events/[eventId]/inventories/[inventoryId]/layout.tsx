@@ -1,6 +1,3 @@
-import { SearchParams } from '@/types';
-import TabsCover from './tabs-wrapper';
-import { getInventoryByIdAction } from '@/app/actions/server/inventories';
 import Header from '@/components/layout/header';
 import BreadCrumb from '@/components/breadcrumb';
 import TabsWrapper from './tabs-wrapper';

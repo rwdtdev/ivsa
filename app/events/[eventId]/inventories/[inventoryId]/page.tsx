@@ -8,7 +8,6 @@ import {
   CardHeader,
   CardTitle
 } from '@/components/ui/card';
-
 import { Input } from '@/components/ui/input';
 import { P } from '@/components/ui/typography/p';
 import { DATE_FORMAT } from '@/constants/date';
@@ -28,10 +27,7 @@ interface Props {
   searchParams: SearchParams;
 }
 
-export default async function InventoryPage({
-  params: { eventId, inventoryId },
-  searchParams
-}: Props) {
+export default async function InventoryPage({ params: { inventoryId } }: Props) {
   const ua = headers().get('user-agent');
   const isAndroid = /android/i.test(ua || '');
   console.log('🚀 ~ device:', ua, isAndroid, process.env.MOBILE_BASE_URL);

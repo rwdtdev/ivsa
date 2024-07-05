@@ -50,7 +50,7 @@ export async function GET(req: NextRequest, context: IContext) {
         throw new Error('error in s3Client.getObjectStats(filePath)');
       }
 
-      let videoSize = stats.size;
+      const videoSize = stats.size;
       const start = Number(range?.replace(/\D/g, ''));
       const end = Math.min(start + 1000_000, videoSize - 1);
 
@@ -58,7 +58,7 @@ export async function GET(req: NextRequest, context: IContext) {
       if (!stream) {
         throw new Error('error in s3Client.getAsStreamWithRange(filePath, start, end)');
       }
-      let contentLength = String(end - start + 1);
+      const contentLength = String(end - start + 1);
       return new Response(stream, {
         status: 206,
         headers: {

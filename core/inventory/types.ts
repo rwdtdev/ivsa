@@ -1,4 +1,4 @@
-import { Inventory, InventoryObject } from '@prisma/client';
+import { Inventory, InventoryObject, InventoryResource } from '@prisma/client';
 
 export type Inv1Form = {
   account: string;
@@ -265,4 +265,5 @@ export const InventoryCodes = {
 
 export type InventoryWithObjects = Inventory & {
   objects: InventoryObject[];
+  resources: InventoryResource[];
 };

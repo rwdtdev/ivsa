@@ -14,7 +14,7 @@ type BreadCrumbPropsType = {
 
 export default function BreadCrumb({ items }: BreadCrumbPropsType) {
   return (
-    <div className='flex items-center space-x-1 py-2 text-sm text-muted-foreground'>
+    <div className='hidden items-center space-x-1 py-2 text-sm text-muted-foreground md:visible md:flex'>
       {items.length > 1
         ? items?.map((item: BreadCrumbType, index: number) => (
             <React.Fragment key={item.title}>

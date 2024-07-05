@@ -26,14 +26,14 @@ export async function GET(req: NextRequest, context: IContext) {
     );
 
     const stream = await s3Client.getAsStream(
-      s3Client.makeFilePath(`asvi/${eventId}/${inventoryId}/${resourceId}.vtt`)
+      s3Client.makeFilePath(`asvi/${eventId}/${inventoryId}/${resourceId}.mp4`)
     );
 
     // @ts-expect-error stream types
     return new Response(stream, {
       status: 200,
       headers: {
-        'Content-Type': 'text/plain'
+        'Content-Type': 'video/mp4'
       }
     });
   } catch (error) {

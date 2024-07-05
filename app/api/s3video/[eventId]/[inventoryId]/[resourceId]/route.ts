@@ -2,12 +2,26 @@ import { NextRequest } from 'next/server';
 import { getErrorResponse } from '@/lib/helpers';
 import { S3ClientProvider } from '@/utils/s3-client/s3-client-provider';
 import { Logger } from '@/lib/logger';
+import { S3ClientMinio } from '@/utils/s3-client/providers/minio';
+import { S3ClientSbercloud } from '@/utils/s3-client/providers/sbercloud';
 
 interface IContext {
   params: { eventId: string; inventoryId: string; resourceId: string };
 }
 
+function isS3ClientMinio(
+  s3client: S3ClientMinio | S3ClientSbercloud
+): s3client is S3ClientMinio {
+  if (process.env.S3_CLIENT_TYPE?.toLowerCase() === 'sbercloud') {
+    return false;
+  }
+  return true;
+}
+
 export async function GET(req: NextRequest, context: IContext) {
+  const requestHeaders = new Headers(req.headers);
+  const range = requestHeaders.get('range');
+
   try {
     const { eventId, inventoryId, resourceId } = context.params;
 
@@ -25,17 +39,40 @@ export async function GET(req: NextRequest, context: IContext) {
       new Logger({ name: 's3-client' })
     );
 
-    const stream = await s3Client.getAsStream(
-      s3Client.makeFilePath(`asvi/${eventId}/${inventoryId}/${resourceId}.mp4`)
-    );
+    if (isS3ClientMinio(s3Client)) {
+      const filePath = s3Client.makeFilePath(
+        `asvi/${eventId}/${inventoryId}/${resourceId}.mp4`
+      );
 
-    // @ts-expect-error stream types
-    return new Response(stream, {
-      status: 200,
-      headers: {
-        'Content-Type': 'video/mp4'
+      const stats = await s3Client.getObjectStats(filePath);
+
+      if (!stats) {
+        throw new Error('error in s3Client.getObjectStats(filePath)');
       }
-    });
+
+      let videoSize = stats.size;
+      const start = Number(range?.replace(/\D/g, ''));
+      const end = Math.min(start + 1000_000, videoSize - 1);
+
+      const stream = await s3Client.getAsStreamWithRange(filePath, start, end);
+      if (!stream) {
+        throw new Error('error in s3Client.getAsStreamWithRange(filePath, start, end)');
+      }
+      let contentLength = String(end - start + 1);
+      return new Response(stream, {
+        status: 206,
+        headers: {
+          'Content-Range': `bytes ${start}-${end}/${videoSize}`,
+          'Accept-Ranges': 'bytes',
+          'Content-Length': contentLength,
+          'Content-Type': 'video/mp4'
+        }
+      });
+    } else {
+      throw new Error(
+        'getAsStremWithRange & getObjectStats methods for S3ClientSbercloud must be implemented'
+      );
+    }
   } catch (error) {
     return getErrorResponse(error, req);
   }

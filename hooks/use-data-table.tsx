@@ -78,6 +78,7 @@ export function useDataTable<TData, TValue>({
 
   // Search params
   const page = searchParams?.get('page') ?? '1';
+  const search = searchParams?.get('search') ;
   const pageAsNumber = Number(page);
   const fallbackPage = isNaN(pageAsNumber) || pageAsNumber < 1 ? 1 : pageAsNumber;
   const per_page = searchParams?.get('per_page') || perPage || '10';
@@ -170,6 +171,19 @@ export function useDataTable<TData, TValue>({
 
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [pageIndex, pageSize]);
+
+  // if use search filter => go to page=1
+  React.useEffect(() => {
+    router.push(
+      `${pathname}?${createQueryString({
+        page: 1,
+        per_page: pageSize
+      })}`,
+      {
+        scroll: false
+      }
+    );
+  }, [search]);
 
   // Handle server-side sorting
   const [sorting, setSorting] = React.useState<SortingState>(

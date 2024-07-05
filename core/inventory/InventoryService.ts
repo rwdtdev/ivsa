@@ -125,7 +125,7 @@ export class InventoryService {
   ): Promise<InventoryWithObjects | null> {
     const inventory = await this.prisma.inventory.findFirst({
       where: { id, eventId },
-      include: { objects: true }
+      include: { objects: true, resources: true }
     });
 
     return inventory || null;
@@ -150,7 +150,7 @@ export class InventoryService {
 
   async findBy(query: Partial<Omit<Inventory, 'videoFilesUrls'>>): Promise<Inventory[]> {
     const inventories = await this.prisma.inventory.findMany({
-      where: query,
+      where: query
     });
 
     return inventories;

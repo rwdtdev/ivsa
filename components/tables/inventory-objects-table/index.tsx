@@ -29,7 +29,7 @@ export function InventoryObjectsTable({
   const { dataTable } = useDataTable({
     data: items,
     columns,
-    perPage: 20,
+    // perPage: 10,
     pageCount: pagination.pagesCount
     // filterableColumns: filterableColumns()
   });

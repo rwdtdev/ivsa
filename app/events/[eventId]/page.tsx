@@ -187,7 +187,7 @@ export default function EventPage() {
                                     {(user && user.name) || tabelNumber}{' '}
                                   </p>
                                   {user && user.status === UserStatus.BLOCKED && (
-                                    <p className='text-sm text-red-500 '>Заблокирован</p>
+                                    <p className='text-sm text-red-500'>Заблокирован</p>
                                   )}
                                   {user && user.status === UserStatus.RECUSED && (
                                     <p className='text-sm text-orange-500'>
@@ -242,7 +242,7 @@ export default function EventPage() {
                                     {
                                       InventoryCodes[
                                         inventory.code as keyof typeof InventoryCodes
-                                      ].shortName
+                                      ]?.shortName
                                     }
                                   </p>
                                 </div>

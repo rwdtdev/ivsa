@@ -1,7 +1,5 @@
 ## ASVI
 
-- just a test change for CI/CD
-
 [![pipeline status](https://rwdt1.gitlab.yandexcloud.net/rwdt/services/asvi/badges/main/pipeline.svg)](https://rwdt1.gitlab.yandexcloud.net/rwdt/services/asvi/-/commits/main)
 [![version](https://rwdt1.gitlab.yandexcloud.net/rwdt/services/asvi/-/badges/release.svg)](https://rwdt1.gitlab.yandexcloud.net/rwdt/services/asvi/-/releases)
 

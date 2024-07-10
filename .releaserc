@@ -27,4 +27,3 @@ plugins:
       message: 'docs(release): release ${nextRelease.version}'
   - - '@semantic-release/gitlab'
     - gitlabUrl: https://rwdt1.gitlab.yandexcloud.net
-  - - '@saithodev/semantic-release-backmerge'

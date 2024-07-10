@@ -25,6 +25,9 @@ stages:
   - push
   - release
 
+before_script:
+  - echo -n $TOKEN | docker login -u $DOCKER_USER --password-stdin cr.yandex
+
 docker-build:
   stage: build
   script:

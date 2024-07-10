@@ -12,7 +12,7 @@ RUN rm -f .env.sample && mv .env.mivc .env
 ENV NEXT_TELEMETRY_DISABLED=true
 
 # Install dependencies
-RUN npm install
+RUN npm ci
 
 # Build the Next.js application with lint disabled
 RUN npm run build

@@ -1,28 +1,66 @@
-image: docker:latest
-services:
-  - docker:dind
+include:
+  - project: rwdt/ci-tools/gitlab-ci-snippets
+    file: semver.gitlab-ci.yml
+
 variables:
   REGISTRY_URL: https://${DOCKER_REGISTRY}
-  IMAGE: ${DOCKER_REGISTRY}/${PROJECT_NAME}:${CI_COMMIT_SHORT_SHA}
-  RELEASE: ${DOCKER_REGISTRY}/${PROJECT_NAME}:latest
-  IMAGE_TAG: ${CI_COMMIT_SHORT_SHA}
-  
+  REGISTRY_IMAGE: ${DOCKER_REGISTRY}/${PROJECT_NAME}
+  SHORT_SHA_IMAGE: ${REGISTRY_IMAGE}:${CI_COMMIT_SHORT_SHA}
+  LATEST_IMAGE: ${REGISTRY_IMAGE}:latest
+  VERSION_IMAGE: ${REGISTRY_IMAGE}:${CI_COMMIT_REF_NAME}
+
+image: docker:latest
+
+default:
+  tags:
+    - docker
+
 cache:
+  key: ${CI_COMMIT_REF_SLUG}
   paths:
     - node_modules/
 
 stages:
-  - builds
-    
-build:
-  stage: builds
-  tags:
-    - docker
-  before_script:
-    - apk add --no-cache git # Install Git
-    - docker login --username ${DOCKER_USER} --password ${TOKEN} cr.yandex
+  - build
+  - push
+  - release
+
+docker-build:
+  stage: build
   script:
-    - docker build --pull -t $IMAGE .
-    - docker push ${DOCKER_REGISTRY}/${PROJECT_NAME}:${IMAGE_TAG}
+    - docker pull $LATEST_IMAGE || echo "Failed to find latest image in registry"
+    - >
+      docker build
+      --pull
+      --cache-from $LATEST_IMAGE
+      --tag $SHORT_SHA_IMAGE
+      .
+    - docker push $SHORT_SHA_IMAGE
+
+docker-push-latest:
+  variables:
+    GIT_STRATEGY: none
+  stage: push
+  only:
+    - main
+    - branches
+  script:
+    - docker pull $SHORT_SHA_IMAGE
+    - docker tag $SHORT_SHA_IMAGE $LATEST_IMAGE
+    - docker push $LATEST_IMAGE
+
+docker-push-tag:
+  variables:
+    GIT_STRATEGY: none
+  stage: push
+  only:
+    - tags
+  script:
+    - docker pull $SHORT_SHA_IMAGE
+    - docker tag $SHORT_SHA_IMAGE $VERSION_IMAGE
+    - docker push $VERSION_IMAGE
+
+release-version:
+  extends: .release-version
   rules:
-    - if: $CI_COMMIT_REF_NAME == $CI_DEFAULT_BRANCH
+    - when: on_success

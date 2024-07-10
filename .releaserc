@@ -1,0 +1,30 @@
+tagFormat: '${version}'
+branches:
+  - main
+  - name: develop
+    channel: beta
+    prerelease: beta
+plugins:
+  - - '@semantic-release/commit-analyzer'
+    - preset: angular
+      releaseRules:
+        - scope: no-release
+          release: false
+      parserOpts:
+        noteKeywords:
+          - BREAKING CHANGE
+          - BREAKING CHANGES
+  - - '@semantic-release/release-notes-generator'
+  - - '@semantic-release/changelog'
+  - - '@semantic-release/npm'
+    # Set true when Nexus publishing be available
+    - 'npmPublish': false
+  - - '@semantic-release/git'
+    - assets:
+        - CHANGELOG.md
+        - package.json
+        - package-lock.json
+      message: 'docs(release): release ${nextRelease.version}'
+  - - '@semantic-release/gitlab'
+    - gitlabUrl: https://rwdt1.gitlab.yandexcloud.net
+  - - '@saithodev/semantic-release-backmerge'

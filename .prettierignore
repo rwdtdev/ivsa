@@ -10,3 +10,4 @@ dist
 certs
 tsconfig.tsbuildinfo
 uploads
+.gitlab-ci.yml

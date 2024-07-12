@@ -1,6 +1,0 @@
--- AlterTable
-ALTER TABLE "inventory_locations" ALTER COLUMN "dateTime" SET DATA TYPE TIMESTAMPTZ(3);
-
--- AlterTable
-ALTER TABLE "inventory_resources" ALTER COLUMN "endAt" SET DATA TYPE TIMESTAMPTZ,
-ALTER COLUMN "startAt" SET DATA TYPE TIMESTAMPTZ;

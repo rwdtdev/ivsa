@@ -11,7 +11,7 @@ export interface VideoResourcesTest {
   s3Url: string | null;
   s3MetadataUrl: string | null;
   videoHash: string | null;
-  // type: $Enums.ResourceType;
+  // type: $Enums.ResourceType
 }
 
 // const videoList: VideoResourcesTest[] = [

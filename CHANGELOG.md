@@ -1,3 +1,10 @@
+# [1.1.0](https://rwdt1.gitlab.yandexcloud.net/rwdt/services/asvi/compare/1.0.1...1.1.0) (2024-07-12)
+
+
+### Features
+
+* pass address param to mobile app and refactor front ([8ce77aa](https://rwdt1.gitlab.yandexcloud.net/rwdt/services/asvi/commit/8ce77aa6be805e149d14cc202cd7694fbed8de80))
+
 ## [1.0.1](https://rwdt1.gitlab.yandexcloud.net/rwdt/services/asvi/compare/1.0.0...1.0.1) (2024-07-12)
 
 

@@ -81,7 +81,7 @@ export default function EventPage() {
     <>
       <Header title={'Инвентаризация'} />
       {/* <div className='space-y-4 p-8'> */}
-      <main className='w-full px-8 pb-8'>
+      <main className='w-full px-3 pb-8 sm:px-8'>
         <BreadCrumb items={breadcrumbItems} />
         {/* <div className='flex items-center justify-between'>
             <Heading title='Инвентаризация' description={`ID: ${id}`} />

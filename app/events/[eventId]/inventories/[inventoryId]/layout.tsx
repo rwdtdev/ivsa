@@ -35,7 +35,7 @@ export default async function InventoryLayout({
   return (
     <div className='flex h-screen flex-col'>
       <Header title={'Инвентаризационная опись'} />
-      <main className='flex grow flex-col overflow-hidden px-8 pb-3'>
+      <main className='flex grow flex-col overflow-hidden px-3 pb-3 sm:px-8'>
         <BreadCrumb items={breadcrumbItems} />
         <TabsWrapper eventId={eventId} inventoryId={inventoryId} />
         {children}

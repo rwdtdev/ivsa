@@ -27,16 +27,16 @@ export default function TabsWrapper({
   const pathname = usePathname();
   useEffect(() => {
     setSelectedTab(whichTabByPath(pathname.split('/')));
-  }, []);
+  }, [pathname]);
 
   return (
-    <Tabs value={selectedTab} className='my-2 md:mt-0' activationMode='manual'>
+    <Tabs value={selectedTab} className='mb-2' activationMode='manual'>
       <TabsList className='grid w-full grid-cols-3'>
         <TabsTrigger
           value='infoTab'
           onFocus={() => {
             router.push(`/events/${eventId}/inventories/${inventoryId}`);
-            setSelectedTab('infoTab');
+            // setSelectedTab('infoTab');
           }}
         >
           Информация
@@ -45,7 +45,7 @@ export default function TabsWrapper({
           value='inventoryListTab'
           onFocus={() => {
             router.push(`/events/${eventId}/inventories/${inventoryId}/itemslist`);
-            setSelectedTab('inventoryListTab');
+            // setSelectedTab('inventoryListTab');
           }}
           className='t'
         >
@@ -55,7 +55,7 @@ export default function TabsWrapper({
           value='videoTab'
           onFocus={() => {
             router.push(`/events/${eventId}/inventories/${inventoryId}/videoslist`);
-            setSelectedTab('videoTab');
+            // setSelectedTab('videoTab');
           }}
         >
           <span className='hidden sm:block'>Видеоматериалы</span>

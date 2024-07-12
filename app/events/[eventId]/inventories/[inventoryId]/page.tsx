@@ -1,14 +1,7 @@
 import { getInventoryById } from '@/app/actions/server/getInventoryById';
 import IvaLocatorBtn from '@/components/iva-locator-btn';
 import { Button } from '@/components/ui/button';
-import {
-  Card,
-  CardContent,
-  CardFooter,
-  CardHeader,
-  CardTitle
-} from '@/components/ui/card';
-import { Input } from '@/components/ui/input';
+import { Card, CardContent } from '@/components/ui/card';
 import { P } from '@/components/ui/typography/p';
 import { DATE_FORMAT } from '@/constants/date';
 import { SearchParams } from '@/types';
@@ -30,7 +23,6 @@ interface Props {
 export default async function InventoryPage({ params: { inventoryId } }: Props) {
   const ua = headers().get('user-agent');
   const isAndroid = /android/i.test(ua || '');
-  console.log('🚀 ~ device:', ua, isAndroid, process.env.MOBILE_BASE_URL);
   const inventory = await getInventoryById(inventoryId);
 
   if (!inventory) {
@@ -43,8 +35,8 @@ export default async function InventoryPage({ params: { inventoryId } }: Props) 
 
   return (
     <>
-      <Card className='mb-3 pt-3'>
-        <CardContent>
+      <Card className='mb-3 flex grow flex-col pb-4 pt-3 sm:grow-0'>
+        <CardContent className='flex grow flex-col'>
           <P className='text-sm'>
             <span className='font-semibold'>Название:</span> {inventory.name}
           </P>
@@ -61,35 +53,22 @@ export default async function InventoryPage({ params: { inventoryId } }: Props) 
           <P className='mb-6 text-sm'>
             <span className='font-semibold'>Код:</span> {inventory.code}
           </P>
-
-          {isAndroid && <IvaLocatorBtn locatorIvaLink={locatorIvaLink} />}
-
-          <Button className={isAndroid ? 'w-full' : ''}>
-            {inventory.auditRoomInviteLink ? (
-              <a href={inventory.auditRoomInviteLink} target='_blank'>
-                Открыть IVA
-              </a>
+          <div className='mt-auto sm:mt-0'>
+            {isAndroid ? (
+              <IvaLocatorBtn locatorIvaLink={locatorIvaLink} inventoryId={inventoryId} />
             ) : (
-              <span>ссылка на IVA отсутствует</span>
+              <Button className={isAndroid ? 'w-full' : ''}>
+                {inventory.auditRoomInviteLink ? (
+                  <a href={inventory.auditRoomInviteLink} target='_blank'>
+                    Перейти в видео-конференцию
+                  </a>
+                ) : (
+                  <span>ссылка на видео-конференцию отсутствует</span>
+                )}
+              </Button>
             )}
-          </Button>
+          </div>
         </CardContent>
-      </Card>
-      <Card className=''>
-        <CardHeader>
-          <CardTitle>Адрес</CardTitle>
-        </CardHeader>
-        <CardContent>
-          <form>
-            <Input id='name' placeholder='Укажите адрес объекта' />
-          </form>
-        </CardContent>
-        <CardFooter className='flex justify-between sm:justify-end'>
-          <Button variant='outline' className='mr-4'>
-            Отмена
-          </Button>
-          <Button>Сохранить</Button>
-        </CardFooter>
       </Card>
     </>
   );

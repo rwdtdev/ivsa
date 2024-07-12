@@ -1,3 +1,10 @@
+## [1.1.1](https://rwdt1.gitlab.yandexcloud.net/rwdt/services/asvi/compare/1.1.0...1.1.1) (2024-07-12)
+
+
+### Bug Fixes
+
+* try ci ([265ca73](https://rwdt1.gitlab.yandexcloud.net/rwdt/services/asvi/commit/265ca7302e7b09d8fd920f600ea1be019780ec34))
+
 # [1.1.0](https://rwdt1.gitlab.yandexcloud.net/rwdt/services/asvi/compare/1.0.1...1.1.0) (2024-07-12)
 
 

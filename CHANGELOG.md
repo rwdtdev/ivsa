@@ -1,3 +1,11 @@
+## [1.0.1](https://rwdt1.gitlab.yandexcloud.net/rwdt/services/asvi/compare/1.0.0...1.0.1) (2024-07-12)
+
+
+### Bug Fixes
+
+* migration ([ba46904](https://rwdt1.gitlab.yandexcloud.net/rwdt/services/asvi/commit/ba4690452b3bec2fb08a5743256b5424092f5773))
+* revert ([827f0a0](https://rwdt1.gitlab.yandexcloud.net/rwdt/services/asvi/commit/827f0a03e4f1f82e98c6df00fe8f854c05364ffd))
+
 # 1.0.0 (2024-07-10)
 
 

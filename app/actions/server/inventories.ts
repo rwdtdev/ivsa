@@ -1,7 +1,5 @@
 'use server';
 
-import { InventoryService } from '@/core/inventory/InventoryService';
-import { InventoryWithObjects } from '@/core/inventory/types';
 import prisma from '@/core/prisma';
 import { Inventory, InventoryResource } from '@prisma/client';
 

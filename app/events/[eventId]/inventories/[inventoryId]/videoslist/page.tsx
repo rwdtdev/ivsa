@@ -50,6 +50,8 @@ export default async function VideoList({
   params: { eventId, inventoryId },
   searchParams
 }: Props) {
+  console.log('🚀 ~ searchParams:', searchParams);
+  console.log('🚀 ~ eventId:', eventId);
   const inventoryWithRecourses = await getInventoryByIdAction(inventoryId);
   console.log('🚀 ~ inventory:', inventoryWithRecourses);
 

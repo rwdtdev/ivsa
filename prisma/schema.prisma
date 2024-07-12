@@ -219,7 +219,7 @@ model InventoryLocation {
   /// Долгота
   longitude   Float
   /// Временная метка
-  dateTime    DateTime
+  dateTime    DateTime           @db.Timestamptz(3)
   /// Точность
   accuracy    Float
   /// Адрес добавленный вручную при начале записи метаданных
@@ -270,9 +270,9 @@ model InventoryResource {
   /// Название файла
   name          String
   /// Дата-время начала видео. Применимо только для ресурсов типа VIDEO
-  startAt       DateTime?
+  startAt       DateTime?           @db.Timestamptz()
   /// Дата-время конца видео. Применимо только для ресурсов типа VIDEO
-  endAt         DateTime?
+  endAt         DateTime?           @db.Timestamptz()
   /// Связь с инвентаризационной описью, которой пренадлежит ресурс
   inventoryId   String
   /// Ссылка в ASVI для получения этого ресурса через API (Опционально для разных типов ресусра)

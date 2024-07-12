@@ -14,7 +14,7 @@ export default function Header({ title }: { title: string }) {
 
   return (
     <header className='supports-backdrop-blur:bg-background/60 sticky top-0 z-20 border-b bg-background/95 shadow-sm backdrop-blur'>
-      <div className='flex h-14 items-center justify-between px-8'>
+      <div className='flex h-14 items-center justify-between px-3 sm:px-8'>
         <div className='mr-auto flex'>
           <Link href={'/'} className='flex'>
             <Image
@@ -24,12 +24,12 @@ export default function Header({ title }: { title: string }) {
               height={50}
               style={{ width: 'auto', height: 'auto' }}
             />
-            <h1 className=' pl-4 text-xl font-semibold'>АСВИ</h1>
+            <h1 className='pl-4 text-xl font-semibold'>АСВИ</h1>
           </Link>
           <div className='hidden lg:block'>
             <Separator orientation='vertical' className='mx-4' />
           </div>
-          <h2 className=' hidden text-xl  font-semibold lg:block'>{title}</h2>
+          <h2 className='hidden text-xl font-semibold lg:block'>{title}</h2>
         </div>
         {isAdmin && <DashboardNav items={dictionaryItems} />}
         {session && (

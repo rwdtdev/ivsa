@@ -14,13 +14,12 @@ export interface IndexPageProps {
 }
 
 export default async function EventsPage({ searchParams }: IndexPageProps) {
-
   const events = await getEventsAction(searchParams);
 
   return (
-    <div className='flex h-screen flex-col '>
+    <div className='flex h-screen flex-col'>
       <Header title={'Реестр инвентаризаций'} />
-      <div className='flex h-full flex-col overflow-hidden px-8 py-3'>
+      <div className='flex h-full flex-col overflow-hidden px-3 py-3 sm:px-8'>
         <React.Suspense
           fallback={<DataTableSkeleton columnCount={4} filterableColumnCount={2} />}
         >

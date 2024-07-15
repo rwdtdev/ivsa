@@ -2,20 +2,10 @@ import { NextRequest } from 'next/server';
 import { getErrorResponse } from '@/lib/helpers';
 import { S3ClientProvider } from '@/utils/s3-client/s3-client-provider';
 import { Logger } from '@/lib/logger';
-import { S3ClientMinio } from '@/utils/s3-client/providers/minio';
-import { S3ClientSbercloud } from '@/utils/s3-client/providers/sbercloud';
+import { isS3ClientMinio } from '@/utils/s3-client/isS3ClientMinio';
 
 interface IContext {
   params: { eventId: string; inventoryId: string; resourceId: string };
-}
-
-function isS3ClientMinio(
-  s3client: S3ClientMinio | S3ClientSbercloud
-): s3client is S3ClientMinio {
-  if (process.env.S3_CLIENT_TYPE?.toLowerCase() === 'sbercloud') {
-    return false;
-  }
-  return true;
 }
 
 export async function GET(req: NextRequest, context: IContext) {

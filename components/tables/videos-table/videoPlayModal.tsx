@@ -43,7 +43,9 @@ export default function VideoPlay({ data }: Props) {
                 itemType='video/mp4'
                 autoPlay
                 controls
-              ></video>
+              >
+                <track src={'/api/s3subtitles/' + data.s3Url} default kind='subtitles' />
+              </video>
             ) : (
               <p>Видео отсутствует</p>
             )}

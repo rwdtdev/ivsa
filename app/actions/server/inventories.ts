@@ -18,7 +18,11 @@ export const getInventoryByIdAction = async (
 
     const inventoryResources = await prisma.inventory.findFirst({
       where: { id },
-      include: { resources: true }
+      include: {
+        resources: {
+          where: { isProcessed: true }
+        }
+      }
     });
 
     if (!inventoryResources) return null;
@@ -28,16 +32,10 @@ export const getInventoryByIdAction = async (
         const location = await prisma.inventoryLocation.findFirst({
           where: { resourceId: resource.id }
         });
-        console.log('🚀 ~ inventoryResources.resources.map ~ location:', location);
         const address = location?.address || 'адрес не указан';
         return { ...resource, address };
       })
     );
-
-    const locations = await prisma.inventoryLocation.findMany({
-      where: { resourceId: inventoryResources?.resources[0].id }
-    });
-    console.log('🚀 ~ locations:', locations);
 
     return { ...inventoryResources, resources: resourcesWithAddress };
   } catch (err) {

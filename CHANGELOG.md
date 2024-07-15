@@ -1,3 +1,10 @@
+## [1.1.3](https://rwdt1.gitlab.yandexcloud.net/rwdt/services/asvi/compare/1.1.2...1.1.3) (2024-07-15)
+
+
+### Bug Fixes
+
+* downloaded file name ([856171f](https://rwdt1.gitlab.yandexcloud.net/rwdt/services/asvi/commit/856171f3e9a036ea3f2623456f0aca8ff452a6cb))
+
 ## [1.1.2](https://rwdt1.gitlab.yandexcloud.net/rwdt/services/asvi/compare/1.1.1...1.1.2) (2024-07-15)
 
 

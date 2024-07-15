@@ -1,3 +1,10 @@
+## [1.1.2](https://rwdt1.gitlab.yandexcloud.net/rwdt/services/asvi/compare/1.1.1...1.1.2) (2024-07-15)
+
+
+### Bug Fixes
+
+* add subtitles & check resources isProcessed ([d57530f](https://rwdt1.gitlab.yandexcloud.net/rwdt/services/asvi/commit/d57530f4d9c92bb2385dc5c0bb95debb6269771e))
+
 ## [1.1.1](https://rwdt1.gitlab.yandexcloud.net/rwdt/services/asvi/compare/1.1.0...1.1.1) (2024-07-12)
 
 

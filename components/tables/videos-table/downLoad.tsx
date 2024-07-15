@@ -20,7 +20,7 @@ export default function DownloadFile({ data }: Props) {
           const blobUrl = window.URL.createObjectURL(newBlob);
           const link = document.createElement('a');
           link.href = blobUrl;
-          link.setAttribute('download', `${data.s3Url}.mp4`);
+          link.setAttribute('download', `${data.name}.mp4`);
           document.body.appendChild(link);
           link.click();
           document.body.removeChild(link);
@@ -37,7 +37,7 @@ export default function DownloadFile({ data }: Props) {
           'href',
           'data:text/plain;charset=utf-8,' + encodeURIComponent(data.videoHash || '')
         );
-        link2.setAttribute('download', data.s3Url || 'hash');
+        link2.setAttribute('download', data.name || 'hash');
         link2.style.display = 'none';
         document.body.appendChild(link2);
         link2.click();

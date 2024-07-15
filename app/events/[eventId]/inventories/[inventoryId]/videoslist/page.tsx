@@ -11,6 +11,7 @@ export interface VideoResourcesTest {
   s3Url: string | null;
   s3MetadataUrl: string | null;
   videoHash: string | null;
+  name: string;
 }
 
 interface Props {

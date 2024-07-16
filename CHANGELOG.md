@@ -1,3 +1,10 @@
+## [1.1.5](https://rwdt1.gitlab.yandexcloud.net/rwdt/services/asvi/compare/1.1.4...1.1.5) (2024-07-16)
+
+
+### Bug Fixes
+
+* getServerSession (that leaded to undefined user in header in prod) & redirects on login ([60391cc](https://rwdt1.gitlab.yandexcloud.net/rwdt/services/asvi/commit/60391cc1f1c94b25cdcea28b4a3fe8f7cf121117))
+
 ## [1.1.4](https://rwdt1.gitlab.yandexcloud.net/rwdt/services/asvi/compare/1.1.3...1.1.4) (2024-07-16)
 
 

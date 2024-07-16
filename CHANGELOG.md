@@ -1,3 +1,11 @@
+## [1.1.8](https://rwdt1.gitlab.yandexcloud.net/rwdt/services/asvi/compare/1.1.7...1.1.8) (2024-07-16)
+
+
+### Bug Fixes
+
+* redirect after login ([921d254](https://rwdt1.gitlab.yandexcloud.net/rwdt/services/asvi/commit/921d2540dc1b77dc480513e7db20950099ba1712))
+* rm unused code ([88e0bdd](https://rwdt1.gitlab.yandexcloud.net/rwdt/services/asvi/commit/88e0bdde2004c6ba7932c5351ce0bd74e9c2f9a4))
+
 ## [1.1.7](https://rwdt1.gitlab.yandexcloud.net/rwdt/services/asvi/compare/1.1.6...1.1.7) (2024-07-16)
 
 

@@ -33,12 +33,6 @@ import { PasswordInput } from '../password-input';
 import { IsBlocked } from '@/app/actions/server/users';
 
 export default function LoginForm() {
-  //   {
-  //   revalidateMainLayout
-  // }: {
-  //   revalidateMainLayout: () => void;
-  // }
-  // const router = useRouter();
   const { toast } = useToast();
   const searchParams = useSearchParams();
   const previousURL = searchParams.get('callbackUrl');

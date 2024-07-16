@@ -21,15 +21,6 @@ export const dictionaryItems: NavItem[] = [
   }
 ];
 
-// export const registryItems: NavItem[] = [
-//   {
-//     title: 'Реестр инвентаризаций',
-//     href: '/admin/events',
-//     icon: 'table',
-//     label: 'events'
-//   }
-// ];
-
 export const SortOrder = {
   Ascending: 'asc',
   Descending: 'desc'

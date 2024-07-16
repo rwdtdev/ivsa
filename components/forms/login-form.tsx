@@ -31,12 +31,14 @@ import {
 } from '@/lib/form-validation-schemas/login-form-schema';
 import { PasswordInput } from '../password-input';
 import { IsBlocked } from '@/app/actions/server/users';
+import { useState } from 'react';
 
 export default function LoginForm({
   revalidateMainLayout
 }: {
   revalidateMainLayout: () => void;
 }) {
+  const [isLoginProcess, setIsLoginProcess] = useState(false);
   const router = useRouter();
   const { toast } = useToast();
   const searchParams = useSearchParams();
@@ -83,13 +85,7 @@ export default function LoginForm({
           )
         });
       } else {
-        (async () => {
-          // иначе middleware не успевает ревалидироваться и редиректит на /login
-          await revalidateMainLayout();
-          setInterval(() => {
-            router.push('/');
-          }, 1500);
-        })();
+        window.location.replace('/');
       }
     }
   };
@@ -131,8 +127,8 @@ export default function LoginForm({
                 </FormItem>
               )}
             />
-            <Button className='w-full' type='submit'>
-              Войти
+            <Button className='w-full' type='submit' disabled={isLoginProcess}>
+              {isLoginProcess ? 'секундочку' : 'Войти'}
             </Button>
           </form>
         </Form>

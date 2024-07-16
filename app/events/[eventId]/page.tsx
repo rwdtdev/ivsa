@@ -260,7 +260,6 @@ export default function EventPage() {
                                     }))}
                                 />
                               )} */}
-                              AccordionContent
                               {event.inventories.some(
                                 (child) => child.parentId === inventory.id
                               ) && (

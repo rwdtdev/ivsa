@@ -29,8 +29,8 @@ export default async function InventoryPage({ params: { inventoryId } }: Props) 
     return <CardContent>Нет такой инвентаризации!!</CardContent>;
   }
   const locatorIvaLink = {
-    locatorIvaStart: `${process.env.MOBILE_BASE_URL}/start?inventoryId=${inventoryId}&appKey=kdKNJipzpskF8DhUchW43iocGdOQpszRQQdyRCMVMA=`,
-    locatorStop: `${process.env.MOBILE_BASE_URL}/stop?appKey=kdKNJipzpskF8DhUchW43iocGdOQpszRQQdyRCMVMA=`
+    locatorIvaStart: `${process.env.MOBILE_BASE_URL}/start?inventoryId=${inventoryId}&appKey=${process.env.LOCATION_RECORDER_APP_KEY}`,
+    locatorStop: `${process.env.MOBILE_BASE_URL}/stop?appKey=${process.env.LOCATION_RECORDER_APP_KEY}`
   };
 
   return (

@@ -153,7 +153,7 @@ export class AuditRoomManager {
           features: [
             { key: 'ACTIVE_SPEAKER_INDICATION', value: true },
             { key: 'MUTE_EXTERNAL_NOTIFICATIONS', value: true },
-            { key: 'ALWAYS_SHOW_PARTICIPANT_IN_STAGE', value: true }
+            { key: 'ALWAYS_SHOW_PARTICIPANT_IN_STAGE', value: false }
           ]
         },
         participants: registeredAndNotBlockedParticipants.map(({ user, role }) => ({

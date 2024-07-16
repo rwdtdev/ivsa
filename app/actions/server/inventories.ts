@@ -3,7 +3,7 @@
 import prisma from '@/core/prisma';
 import { Inventory, InventoryResource } from '@prisma/client';
 
-type InventoryResourceWithAddress = InventoryResource & { address: string };
+export type InventoryResourceWithAddress = InventoryResource & { address: string };
 type InventoryWithResources = Inventory & {
   resources: InventoryResourceWithAddress[];
 };

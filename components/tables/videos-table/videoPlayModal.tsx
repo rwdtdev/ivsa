@@ -9,11 +9,11 @@ import {
   DialogTrigger
 } from '@/components/ui/dialog';
 import { PlayIconCustom } from '@/components/ui/customIcons/PlayIconCustom';
-import { VideoResourcesTest } from '@/app/events/[eventId]/inventories/[inventoryId]/videoslist/page';
 import { format } from 'date-fns';
+import { InventoryResourceWithAddress } from '@/app/actions/server/inventories';
 
 interface Props {
-  data: VideoResourcesTest;
+  data: InventoryResourceWithAddress;
 }
 
 export default function VideoPlay({ data }: Props) {
@@ -32,7 +32,7 @@ export default function VideoPlay({ data }: Props) {
               {format(data.startAt || '', 'dd.MM.yyyy')}{' '}
               {format(data.startAt || '', 'HH:mm')}
               {'-'}
-              {format(data.endAt || '', 'HH:mm')}
+              {format(data.endAt || '', 'HH:mm')}. hash:{data.videoHash}
             </DialogDescription>
           </DialogHeader>
           <div className='py-2'>

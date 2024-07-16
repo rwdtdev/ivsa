@@ -6,16 +6,14 @@ import { useDataTable } from '@/hooks/use-data-table';
 import { DataTable } from '@/components/ui/data-table/data-table';
 import { ColumnDef } from '@tanstack/react-table';
 import { EventsTableColumnNames } from '@/constants/mappings/tables-column-names';
-import { VideoResourcesTest } from '@/app/events/[eventId]/inventories/[inventoryId]/videoslist/page';
+import { InventoryResourceWithAddress } from '@/app/actions/server/inventories';
 
 interface Props {
-  // resources: InventoryResource[];
-  resources: VideoResourcesTest[];
+  resources: InventoryResourceWithAddress[];
 }
 
 export function VideosTable({ resources }: Props) {
-  // const columns = React.useMemo<ColumnDef<InventoryResource, unknown>[]>(
-  const columns = React.useMemo<ColumnDef<VideoResourcesTest, unknown>[]>(
+  const columns = React.useMemo<ColumnDef<InventoryResourceWithAddress, unknown>[]>(
     () => fetchVideosTableColumnDefs(),
     []
   );

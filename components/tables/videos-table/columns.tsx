@@ -3,10 +3,10 @@
 import { ColumnDef } from '@tanstack/react-table';
 import { InventoryResource } from '@prisma/client';
 import { format } from 'date-fns';
-import { VideoResourcesTest } from '@/app/events/[eventId]/inventories/[inventoryId]/videoslist/page';
 import { Separator } from '@/components/ui/separator';
 import VideoPlayModal from './videoPlayModal';
 import DownLoad from './downLoad';
+import { InventoryResourceWithAddress } from '@/app/actions/server/inventories';
 
 export type VideoView = Omit<InventoryResource, 'startAt' | 'endAt'> & {
   startAt: string;
@@ -15,14 +15,10 @@ export type VideoView = Omit<InventoryResource, 'startAt' | 'endAt'> & {
 
 const padding = 9;
 
-// const getColumnNameById = makeColumnsNames(EventsTableColumnNames);
-
-// const defaultHeader = ({ column }: HeaderContext<VideoView, unknown>) => (
-//   <DataTableColumnHeader column={column} title={getColumnNameById(column.id)} />
-// );
-
-// export function fetchVideosTableColumnDefs(): ColumnDef<InventoryResource, unknown>[] {
-export function fetchVideosTableColumnDefs(): ColumnDef<VideoResourcesTest, unknown>[] {
+export function fetchVideosTableColumnDefs(): ColumnDef<
+  InventoryResourceWithAddress,
+  unknown
+>[] {
   return [
     {
       id: 'date',
@@ -87,38 +83,3 @@ export const eventsDatePickers = [
     title: 'Период'
   }
 ];
-
-// export const filterableColumns = (): DataTableFilterableColumn<EventView>[] => {
-//   return [
-//     {
-//       id: 'status',
-//       title: 'Статус',
-//       options: [EventStatus.OPEN, EventStatus.CLOSED, EventStatus.REMOVED].map(
-//         (status) => {
-//           const value = EventStatuses[status];
-
-//           return {
-//             label: value[0]?.toUpperCase() + value.slice(1),
-//             value: status
-//           };
-//         }
-//       )
-//     },
-//     {
-//       id: 'briefingStatus',
-//       title: 'Инструктаж',
-//       options: [
-//         BriefingStatus.NOT_STARTED,
-//         BriefingStatus.IN_PROGRESS,
-//         BriefingStatus.PASSED
-//       ].map((status) => {
-//         const value = BriefingStatuses[status];
-
-//         return {
-//           label: value[0]?.toUpperCase() + value.slice(1),
-//           value: status
-//         };
-//       })
-//     }
-//   ];
-// };

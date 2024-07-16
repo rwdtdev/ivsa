@@ -1,3 +1,10 @@
+## [1.1.4](https://rwdt1.gitlab.yandexcloud.net/rwdt/services/asvi/compare/1.1.3...1.1.4) (2024-07-16)
+
+
+### Bug Fixes
+
+* downLoad & VideosTable types ([1bdc73a](https://rwdt1.gitlab.yandexcloud.net/rwdt/services/asvi/commit/1bdc73aae4f0dd47c628992834c02ff8677be500))
+
 ## [1.1.3](https://rwdt1.gitlab.yandexcloud.net/rwdt/services/asvi/compare/1.1.2...1.1.3) (2024-07-15)
 
 

@@ -86,7 +86,9 @@ export default function LoginForm({
         (async () => {
           // иначе middleware не успевает ревалидироваться и редиректит на /login
           await revalidateMainLayout();
-          router.push('/');
+          setInterval(() => {
+            router.push('/');
+          }, 1500);
         })();
       }
     }

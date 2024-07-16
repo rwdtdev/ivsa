@@ -42,6 +42,7 @@ export default function LoginForm({
   const searchParams = useSearchParams();
   const previousURL = searchParams.get('callbackUrl');
   const redirectPath = (previousURL && new URL(previousURL).pathname) || '/';
+  console.log('🚀 ~ redirectPath:', redirectPath);
 
   /**
    * @TODO How to add debounce to form inputs for disabling instantly validation
@@ -82,8 +83,11 @@ export default function LoginForm({
           )
         });
       } else {
-        revalidateMainLayout();
-        router.push(redirectPath);
+        (async () => {
+          // иначе middleware не успевает ревалидироваться и редиректит на /login
+          await revalidateMainLayout();
+          router.push('/');
+        })();
       }
     }
   };

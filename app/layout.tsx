@@ -4,6 +4,7 @@ import Providers from '@/components/layout/providers';
 import { Toaster } from '@/components/ui/toaster';
 import { getServerSession } from 'next-auth';
 import '@/styles/globals.css';
+import { authConfig } from '@/lib/auth-options';
 
 const inter = Inter({ subsets: ['latin'] });
 
@@ -13,7 +14,8 @@ export const metadata = {
 };
 
 export default async function RootLayout({ children }: ReactChildren) {
-  const session = await getServerSession();
+  // @ts-expect-error change type for auth config
+  const session = await getServerSession(authConfig);
 
   return (
     <html lang='ru'>

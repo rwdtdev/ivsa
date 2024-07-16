@@ -1,7 +1,7 @@
 'use client';
 
 import { SubmitHandler, useForm } from 'react-hook-form';
-import { useRouter, useSearchParams } from 'next/navigation';
+import { useSearchParams } from 'next/navigation';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { useToast } from '@/components/ui/use-toast';
 import {
@@ -31,15 +31,14 @@ import {
 } from '@/lib/form-validation-schemas/login-form-schema';
 import { PasswordInput } from '../password-input';
 import { IsBlocked } from '@/app/actions/server/users';
-import { useState } from 'react';
 
-export default function LoginForm({
-  revalidateMainLayout
-}: {
-  revalidateMainLayout: () => void;
-}) {
-  const [isLoginProcess, setIsLoginProcess] = useState(false);
-  const router = useRouter();
+export default function LoginForm() {
+  //   {
+  //   revalidateMainLayout
+  // }: {
+  //   revalidateMainLayout: () => void;
+  // }
+  // const router = useRouter();
   const { toast } = useToast();
   const searchParams = useSearchParams();
   const previousURL = searchParams.get('callbackUrl');
@@ -127,8 +126,8 @@ export default function LoginForm({
                 </FormItem>
               )}
             />
-            <Button className='w-full' type='submit' disabled={isLoginProcess}>
-              {isLoginProcess ? 'секундочку' : 'Войти'}
+            <Button className='w-full' type='submit'>
+              Войти
             </Button>
           </form>
         </Form>

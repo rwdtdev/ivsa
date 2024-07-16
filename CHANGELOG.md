@@ -1,3 +1,10 @@
+## [1.1.6](https://rwdt1.gitlab.yandexcloud.net/rwdt/services/asvi/compare/1.1.5...1.1.6) (2024-07-16)
+
+
+### Bug Fixes
+
+* frontend, add app key ([60a76f4](https://rwdt1.gitlab.yandexcloud.net/rwdt/services/asvi/commit/60a76f411a5c8ef972af01afb169d319a41a89be))
+
 ## [1.1.5](https://rwdt1.gitlab.yandexcloud.net/rwdt/services/asvi/compare/1.1.4...1.1.5) (2024-07-16)
 
 

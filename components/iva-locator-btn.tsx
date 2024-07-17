@@ -27,7 +27,7 @@ export default function IvaLocatorBtn({ locatorIvaLink, inventoryId }: Props) {
   const { data, isLoading, isValidating } = useSWR(
     `/api/isinventorylocatorworking/${inventoryId}`,
     fetcher,
-    { revalidateOnFocus: true }
+    { revalidateOnFocus: true, refreshInterval: 2000 }
   );
 
   return (

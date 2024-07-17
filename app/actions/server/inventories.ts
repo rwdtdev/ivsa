@@ -1,7 +1,7 @@
 'use server';
 
 import prisma from '@/core/prisma';
-import { Inventory, InventoryResource } from '@prisma/client';
+import { Inventory, InventoryResource, ResourceProcessStatus } from '@prisma/client';
 
 export type InventoryResourceWithAddress = InventoryResource & { address: string };
 type InventoryWithResources = Inventory & {
@@ -20,7 +20,7 @@ export const getInventoryByIdAction = async (
       where: { id },
       include: {
         resources: {
-          where: { isProcessed: true }
+          where: { status: ResourceProcessStatus.PROCESSED }
         }
       }
     });

@@ -15,7 +15,7 @@ export async function GET(req: Request, { params }: { params: { inventoryId: str
 
     console.log('нужен(?) сервис получения lastInventoryLocation');
     const response = { isLocatorWorking: false };
-    if (lastInventoryLocation[0].createdAt.getTime() + 5000 > Date.now()) {
+    if (lastInventoryLocation[0].createdAt.getTime() + 65000 > Date.now()) {
       response.isLocatorWorking = true;
     }
     return new Response(JSON.stringify(response), { status: 200 });

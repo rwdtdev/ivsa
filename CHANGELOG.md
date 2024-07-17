@@ -1,3 +1,11 @@
+## [1.1.9](https://rwdt1.gitlab.yandexcloud.net/rwdt/services/asvi/compare/1.1.8...1.1.9) (2024-07-17)
+
+
+### Bug Fixes
+
+* resource process status migration ([2eecbdc](https://rwdt1.gitlab.yandexcloud.net/rwdt/services/asvi/commit/2eecbdcc3ac26a860aa8f2e30c8bdc1df749d107))
+* upd InventoryResource field, add refreshInterval to useSwr, upd interval lastInventoryLocation ([8a37ccf](https://rwdt1.gitlab.yandexcloud.net/rwdt/services/asvi/commit/8a37ccf589acc7534f579b4ce5e3b5b7b429bd60))
+
 ## [1.1.8](https://rwdt1.gitlab.yandexcloud.net/rwdt/services/asvi/compare/1.1.7...1.1.8) (2024-07-16)
 
 

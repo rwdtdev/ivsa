@@ -9,7 +9,8 @@ import { Event } from '@prisma/client';
 import { unstable_noStore as noStore } from 'next/cache';
 
 export async function getEventsAction(
-  searchParams: SearchParams
+  searchParams: SearchParams,
+  queryParams: {} = {}
 ): Promise<
   PaginatedResponse<EventView> | { items: []; pagination: { pagesCount: number } }
 > {
@@ -48,7 +49,8 @@ export async function getEventsAction(
         from,
         to,
         ...(statuses.length > 0 && { statuses }),
-        ...(briefingStatuses.length > 0 && { briefingStatuses })
+        ...(briefingStatuses.length > 0 && { briefingStatuses }),
+        ...queryParams
       }
     });
   } catch (err) {

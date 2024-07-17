@@ -264,15 +264,15 @@ model InventoryObject {
 
 model InventoryResource {
   /// Уникальный идентификатор ресурса
-  id            String              @id @default(uuid())
+  id            String                @id @default(uuid())
   /// Идентификатоор файла в IVA R
   ivaId         String
   /// Название файла
   name          String
   /// Дата-время начала видео. Применимо только для ресурсов типа VIDEO
-  startAt       DateTime?           @db.Timestamptz()
+  startAt       DateTime?             @db.Timestamptz()
   /// Дата-время конца видео. Применимо только для ресурсов типа VIDEO
-  endAt         DateTime?           @db.Timestamptz()
+  endAt         DateTime?             @db.Timestamptz()
   /// Связь с инвентаризационной описью, которой пренадлежит ресурс
   inventoryId   String
   /// Ссылка в ASVI для получения этого ресурса через API (Опционально для разных типов ресусра)
@@ -287,11 +287,11 @@ model InventoryResource {
   videoHash     String?
   /// Хэш-сумма файла метаданных к видео
   metadataHash  String?
-  /// Флаг успешной обработки ресурса в iva-file-transporter
-  isProcessed   Boolean             @default(false)
+  /// Статус процесса обработки ресурса в iva-file-transporter
+  status        ResourceProcessStatus @default(NOT_PROCESSED)
   /// Список геолокационных данных, которые связаны с этим ресурсом
   locations     InventoryLocation[]
-  inventory     Inventory           @relation(fields: [inventoryId], references: [id])
+  inventory     Inventory             @relation(fields: [inventoryId], references: [id])
 
   @@unique([name, inventoryId, ivaId])
   @@map("inventory_resources")
@@ -354,6 +354,15 @@ enum BriefingStatus {
   IN_PROGRESS
   /// Инструктаж пройден
   PASSED
+}
+
+enum ResourceProcessStatus {
+  /// Еще не началась обработка ресурса 
+  NOT_PROCESSED
+  /// Ресусрс в процессе обработки
+  IN_PROCESS
+  /// Ресурс успешно обработан
+  PROCESSED
 }
 
 enum ConferenseRole {

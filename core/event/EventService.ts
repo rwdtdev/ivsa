@@ -187,6 +187,10 @@ export class EventService {
       if (query.briefingStatuses) {
         conditions.push({ briefingStatus: { in: query.briefingStatuses } });
       }
+
+      if (query.userId) {
+        conditions.push({ participants: { some: { userId: query.userId } } });
+      }
     }
 
     const where = {

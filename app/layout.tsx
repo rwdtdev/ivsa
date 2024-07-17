@@ -14,7 +14,6 @@ export const metadata = {
 };
 
 export default async function RootLayout({ children }: ReactChildren) {
-  // @ts-expect-error change type for auth config
   const session = await getServerSession(authConfig);
 
   return (

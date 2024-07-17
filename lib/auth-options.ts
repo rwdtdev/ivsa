@@ -60,7 +60,6 @@ export const authConfig = {
         }
       }
     },
-    // @ts-expect-error types
     session: async ({ session, token }: SessionCallbackOptions) => {
       if (token) {
         session.user = token.user;

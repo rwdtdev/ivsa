@@ -1,6 +1,7 @@
 import NextAuth from 'next-auth';
 import { UserSession } from './user';
 import { JWT } from 'next-auth/jwt';
+import { User } from '@prisma/client';
 
 declare module 'next-auth' {
   /**
@@ -9,6 +10,7 @@ declare module 'next-auth' {
   interface Session {
     user: UserSession;
     accessToken: string;
+    error: string;
   }
 }
 
@@ -16,7 +18,8 @@ declare module 'next-auth/jwt' {
   /** Returned by the `jwt` callback and `getToken`, when using JWT sessions */
   interface JWT {
     accessToken: string;
-    user: Omit<UserSession, 'expiresAt' | 'tabelNumber' | 'ivaProfileId'>;
+    refreshToken: string;
+    user: User;
     iat: number;
     exp: number;
     jti: string;

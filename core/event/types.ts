@@ -32,6 +32,7 @@ export type EventsGetData = Partial<{
   query: {
     from?: string;
     to?: string;
+    userId?: string;
     statuses?: EventStatus[];
     briefingStatuses?: BriefingStatus[];
   };

@@ -10,7 +10,7 @@ import { unstable_noStore as noStore } from 'next/cache';
 
 export async function getEventsAction(
   searchParams: SearchParams,
-  queryParams: {} = {}
+  queryParams: { userId?: string } = {}
 ): Promise<
   PaginatedResponse<EventView> | { items: []; pagination: { pagesCount: number } }
 > {

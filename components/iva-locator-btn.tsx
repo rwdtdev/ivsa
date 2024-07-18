@@ -12,7 +12,6 @@ import {
 } from '@/components/ui/drawer';
 import { useState } from 'react';
 import useSWR from 'swr';
-import { Loader2 } from 'lucide-react';
 
 type Props = {
   locatorIvaLink: { locatorIvaStart: string; locatorStop: string };
@@ -21,30 +20,33 @@ type Props = {
 
 export default function IvaLocatorBtn({ locatorIvaLink, inventoryId }: Props) {
   const [isDrawerOpen, setIsDrawerOpen] = useState(false);
+  const [isStopBtnTaped, setIsStopBtnTaped] = useState(false);
   const { locatorIvaStart, locatorStop } = locatorIvaLink;
 
   const fetcher = (url: string) => fetch(url).then((res) => res.json());
-  const { data, isLoading, isValidating } = useSWR(
-    `/api/isinventorylocatorworking/${inventoryId}`,
-    fetcher,
-    { revalidateOnFocus: true, refreshInterval: 2000 }
-  );
+  const { data } = useSWR(`/api/isinventorylocatorworking/${inventoryId}`, fetcher, {
+    revalidateOnFocus: true,
+    refreshInterval: 2000
+  });
 
   return (
     <>
-      {isLoading || isValidating ? (
-        <Button disabled className='mb-4 w-full rounded-xl py-6'>
-          <Loader2 className='mr-2 h-4 w-4 animate-spin' />
-        </Button>
-      ) : data ? (
-        data.isLocatorWorking ? (
-          <Button className='mb-4 w-full rounded-xl py-6' variant='destructive'>
-            <a href={locatorStop}>Остановить сбор гео-данных</a>
+      {data &&
+        (data.isLocatorWorking === true ||
+          (data.isLocatorWorking === undefined && !isStopBtnTaped)) && (
+          // ? (
+          <Button
+            className='mb-4 h-12 w-full rounded-xl p-0'
+            variant='destructive'
+            onClick={() => {
+              setIsStopBtnTaped(true);
+            }}
+          >
+            <a href={locatorStop} className='w-full p-4'>
+              Остановить сбор гео-данных
+            </a>
           </Button>
-        ) : null
-      ) : (
-        <div>ошибка проверки работы сервиса сбора данных</div>
-      )}
+        )}
 
       <Drawer
         onClose={() => {

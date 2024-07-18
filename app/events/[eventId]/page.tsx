@@ -114,10 +114,6 @@ export default function EventPage() {
                     {moment(event.startAt).format(DATETIME_FORMAT)}
                   </P>
                   <P className='text-sm'>
-                    <span className='font-semibold'>Дата начала:</span>{' '}
-                    {moment(event.startAt).format(DATETIME_FORMAT)}
-                  </P>
-                  <P className='text-sm'>
                     <span className='font-semibold'>Дата окончания:</span>{' '}
                     {moment(event.endAt).format(DATETIME_FORMAT)}
                   </P>

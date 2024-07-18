@@ -5,8 +5,8 @@ import { InventoryResource } from '@prisma/client';
 import { format } from 'date-fns';
 import { Separator } from '@/components/ui/separator';
 import VideoPlayModal from './videoPlayModal';
-import DownLoad from './downLoad';
 import { InventoryResourceWithAddress } from '@/app/actions/server/inventories';
+import DownLoadFilesBtn from './downLoadFilesBtn';
 
 export type VideoView = Omit<InventoryResource, 'startAt' | 'endAt'> & {
   startAt: string;
@@ -69,7 +69,7 @@ export function fetchVideosTableColumnDefs(): ColumnDef<
           <div>
             <Separator orientation='vertical' className='mx-4' />
           </div>
-          <DownLoad data={row.original} />
+          <DownLoadFilesBtn data={row.original} />
         </div>
       )
     }

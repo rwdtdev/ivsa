@@ -16,7 +16,6 @@ export interface IndexPageProps {
 }
 
 export default async function EventsPage({ searchParams }: IndexPageProps) {
-  // @ts-expect-error change type for auth config
   const session = await getServerSession(authConfig);
 
   if (!session?.user) {
@@ -30,7 +29,7 @@ export default async function EventsPage({ searchParams }: IndexPageProps) {
     );
   }
 
-  const events = await getEventsAction(searchParams, {userId: session.user.id});
+  const events = await getEventsAction(searchParams, { userId: session.user.id });
 
   return (
     <div className='flex h-screen flex-col'>

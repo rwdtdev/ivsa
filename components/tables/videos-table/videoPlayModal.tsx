@@ -32,7 +32,7 @@ export default function VideoPlay({ data }: Props) {
               {format(data.startAt || '', 'dd.MM.yyyy')}{' '}
               {format(data.startAt || '', 'HH:mm')}
               {'-'}
-              {format(data.endAt || '', 'HH:mm')}. hash:{data.videoHash}
+              {format(data.endAt || '', 'HH:mm')}
             </DialogDescription>
           </DialogHeader>
           <div className='py-2'>
@@ -50,7 +50,10 @@ export default function VideoPlay({ data }: Props) {
               <p>Видео отсутствует</p>
             )}
           </div>
-          <DialogFooter></DialogFooter>
+          <DialogFooter className='flex-col justify-start sm:flex-col sm:space-x-0'>
+            <span>hash видео-файла: {data.videoHash}</span>
+            <span>hash файла метаданных: {data.metadataHash}</span>
+          </DialogFooter>
         </DialogContent>
       </Dialog>
     </div>

@@ -1,3 +1,16 @@
+# [1.2.0](https://rwdt1.gitlab.yandexcloud.net/rwdt/services/asvi/compare/1.1.9...1.2.0) (2024-07-17)
+
+
+### Bug Fixes
+
+* add count of participants by roles in event table ([fad9c52](https://rwdt1.gitlab.yandexcloud.net/rwdt/services/asvi/commit/fad9c52d3e9e603e5976a133a5e4d1b0ca03d696))
+* types ([53881e2](https://rwdt1.gitlab.yandexcloud.net/rwdt/services/asvi/commit/53881e257074780d548765e7b6226cd75a73e242))
+
+
+### Features
+
+* get events for user on start user page after login ([c1aec79](https://rwdt1.gitlab.yandexcloud.net/rwdt/services/asvi/commit/c1aec7911bee6b887711bae30a5e9e522ad6de04))
+
 ## [1.1.9](https://rwdt1.gitlab.yandexcloud.net/rwdt/services/asvi/compare/1.1.8...1.1.9) (2024-07-17)
 
 

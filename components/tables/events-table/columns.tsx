@@ -115,19 +115,30 @@ export function fetchEventsTableColumnDefs(): ColumnDef<EventView, unknown>[] {
       cell: ({ row }) => {
         const { participants } = row.original;
 
-        if (participants && participants.length > 0) {
-          return (
-            <div style={{ padding }}>
-              <ul>
-                {participants.map(({ role }: { role: UserRole }, idx) => (
-                  <li key={idx}>{UserRoles[role]}</li>
-                ))}
-              </ul>
-            </div>
-          );
-        } else {
+        if (!participants || participants.length === 0) {
           return <div style={{ padding }}></div>;
         }
+
+        const participantsRolesCounts = participants
+          .map(({ role }) => role)
+          .reduce(
+            (acc: Record<string, number>, cur: UserRole) => (
+              (acc[cur] = acc[cur] + 1 || 1), acc
+            ),
+            {}
+          );
+
+        return (
+          <div style={{ padding }}>
+            <ul>
+              {Object.entries(participantsRolesCounts).map(([key, value]) => (
+                <li key={key}>
+                  {UserRoles[key as UserRole]} ({value})
+                </li>
+              ))}
+            </ul>
+          </div>
+        );
       }
     }
   ];

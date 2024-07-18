@@ -1,3 +1,10 @@
+## [1.2.2](https://rwdt1.gitlab.yandexcloud.net/rwdt/services/asvi/compare/1.2.1...1.2.2) (2024-07-18)
+
+
+### Bug Fixes
+
+* stop-locator-btn ([a3f2a03](https://rwdt1.gitlab.yandexcloud.net/rwdt/services/asvi/commit/a3f2a033dcea4bf5135ba24d0cfc8bd336435b01))
+
 ## [1.2.1](https://rwdt1.gitlab.yandexcloud.net/rwdt/services/asvi/compare/1.2.0...1.2.1) (2024-07-18)
 
 

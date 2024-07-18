@@ -1,3 +1,11 @@
+## [1.2.1](https://rwdt1.gitlab.yandexcloud.net/rwdt/services/asvi/compare/1.2.0...1.2.1) (2024-07-18)
+
+
+### Bug Fixes
+
+* authConfig session callback type ([2c3bfa4](https://rwdt1.gitlab.yandexcloud.net/rwdt/services/asvi/commit/2c3bfa43befc18f35f07f242c23a5ab8552b9e58))
+* video hashes view & download ([8880086](https://rwdt1.gitlab.yandexcloud.net/rwdt/services/asvi/commit/8880086e780c38c5cc7575077593392f4e13e0fb))
+
 # [1.2.0](https://rwdt1.gitlab.yandexcloud.net/rwdt/services/asvi/compare/1.1.9...1.2.0) (2024-07-17)
 
 

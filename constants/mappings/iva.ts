@@ -7,7 +7,7 @@ export const IvaRoles = {
 };
 
 export const IvaRolesMapper: { [key in UserRole]: string } = {
-  [UserRole.CHAIRMAN]: IvaRoles.SPEAKER,
+  [UserRole.CHAIRMAN]: IvaRoles.MODERATOR,
   [UserRole.INSPECTOR]: IvaRoles.MODERATOR,
   [UserRole.ACCOUNTANT]: IvaRoles.ATTENDEE,
   [UserRole.ACCOUNTANT_ACCEPTOR]: IvaRoles.ATTENDEE,

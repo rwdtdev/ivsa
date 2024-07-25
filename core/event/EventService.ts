@@ -56,29 +56,6 @@ export class EventService {
     }
   }
 
-  validateSpeakerAndGetIvaProfileId(speaker?: ParticipantWithUser): string {
-    if (!speaker) {
-      throw new EventParticipantsMustContainSpeakerError();
-    }
-
-    if (!speaker.user) {
-      throw new SpeakerIsNotRegisteredInAsviError();
-    }
-
-    if (!speaker.user.ivaProfileId) {
-      throw new SpeakerIsNotRegisteredInIvaError();
-    }
-
-    if (
-      speaker.user.status === UserStatus.BLOCKED ||
-      speaker.user.status === UserStatus.RECUSED
-    ) {
-      throw new SpeakerIsBlockedOrRecusedError();
-    }
-
-    return speaker.user.ivaProfileId;
-  }
-
   async getById(id: string): Promise<EventView> {
     const event = await this.prisma.event.findFirst({
       where: { id },

@@ -1,32 +1,6 @@
 import { makeErrorDictionary } from '@/lib/problem-json';
 
-export const {
-  EventParticipantsMustContainSpeakerError,
-  SpeakerIsNotRegisteredInAsviError,
-  SpeakerIsNotRegisteredInIvaError,
-  SpeakerIsBlockedOrRecusedError,
-  EventNotFoundError
-} = makeErrorDictionary()({
-  EventParticipantsMustContainSpeakerError: {
-    type: 'urn:problem-type:event-participants-must-contain-speaker-error',
-    title: 'Событие должно содержать председателя в списке участников',
-    status: 409
-  },
-  SpeakerIsNotRegisteredInAsviError: {
-    type: 'urn:problem-type:speaker-is-not-registered-in-asvi-error',
-    title: 'Председателя события нет в списке зарегистрированных пользователей в AS VI',
-    status: 409
-  },
-  SpeakerIsNotRegisteredInIvaError: {
-    type: 'urn:problem-type:speaker-is-not-registered-in-iva-error',
-    title: 'Председателя события нет в списке зарегистрированных пользователей в IVA R',
-    status: 409
-  },
-  SpeakerIsBlockedOrRecusedError: {
-    type: 'urn:problem-type:speaker-is-blocked-or-recused-error',
-    title: 'Председатель события заблокирован или отстранен от должности',
-    status: 409
-  },
+export const { EventNotFoundError } = makeErrorDictionary()({
   EventNotFoundError: {
     type: 'urn-problem-type:event-not-found',
     title: 'Событие не найдено',

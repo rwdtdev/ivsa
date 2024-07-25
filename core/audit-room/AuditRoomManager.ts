@@ -15,11 +15,12 @@ import { CreateInventoryData } from '@/app/api/audit-rooms/create/validation';
 import { getDateFromString } from '@/utils';
 import { mapToInventoryObject } from '@/core/inventory/mappers/InventoryObjectsMapper';
 import { IvaService } from '../iva/IvaService';
-import { IvaRoles, IvaRolesMapper } from '@/constants/mappings/iva';
+import { IvaRolesMapper } from '@/constants/mappings/iva';
 import { CloseAuditRoomData } from '@/app/api/audit-rooms/close/validation';
 import { EventService } from '../event/EventService';
 import { ParticipantWithUser } from '../event/types';
 import { getRegisteredParticipants } from '@/lib/helpers/responses';
+import { generatePassword } from '@/utils/generate-password';
 
 export class AuditRoomManager {
   private ivaService: IvaService;
@@ -104,12 +105,6 @@ export class AuditRoomManager {
           user.status !== UserStatus.RECUSED
       );
 
-      const speaker = registeredAndNotBlockedParticipants.find(
-        ({ role }) => IvaRolesMapper[role] === IvaRoles.SPEAKER
-      );
-
-      const speakerIvaProfileId = eventService.validateSpeakerAndGetIvaProfileId(speaker);
-
       const createdInventory = await inventoryService.create({
         eventId,
         id: inventoryId,
@@ -133,14 +128,13 @@ export class AuditRoomManager {
       const conference = await this.ivaService.createConference({
         name: `Видеоинвентаризация по описи №${inventoryNumber}`,
         description: 'Видеоинвентаризация',
-        owner: { profileId: speakerIvaProfileId },
+        owner: { profileId: process.env.TECHNICAL_SPEAKER_IVA_PROFILE_ID as string },
         conferenceTemplateId: '471f7e4e-15b7-48fc-bf34-88488b4e14dc',
         settings: {
-          joinRestriction: 'INVITED_OR_REGISTERED',
+          joinRestriction: 'INVITED',
           attendeePermissions: [
             'SPEAKER_OTHER',
             'CHAT_SEND_WITHOUT_PREMODERATION',
-            'INVITING_PARTICIPANTS',
             'PUBLISH_MESSAGES_IN_CHAT',
             'RECEIVE_MEDIA',
             'RECORD_ACCESS',
@@ -160,7 +154,8 @@ export class AuditRoomManager {
           interlocutor: { profileId: user.ivaProfileId as string },
           roles: [IvaRolesMapper[role]],
           interpreterLanguagesPair: ['RUSSIAN']
-        }))
+        })),
+        guestPasscode: generatePassword(8)
       });
       const link = await this.getAuditJoinLink(conference.conferenceSessionId);
 

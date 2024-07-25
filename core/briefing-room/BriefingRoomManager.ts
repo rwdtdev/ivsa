@@ -61,16 +61,10 @@ export class BriefingRoomManager {
           user.status !== UserStatus.RECUSED
       );
 
-      const speaker = registeredAndNotBlockedParticipants.find(
-        ({ role }) => IvaRolesMapper[role] === IvaRoles.SPEAKER
-      );
-
-      const speakerIvaProfileId = eventService.validateSpeakerAndGetIvaProfileId(speaker);
-
       const conference = await this.ivaService.createConference({
         name: `Видеоинструктаж по событию инвентаризации`,
         description: 'Видеоинструктаж по событию инвентаризации',
-        owner: { profileId: speakerIvaProfileId },
+        owner: { profileId: process.env.TECHNICAL_SPEAKER_IVA_PROFILE_ID as string },
         conferenceTemplateId: '471f7e4e-15b7-48fc-bf34-88488b4e14dc',
         settings: {
           joinRestriction: 'INVITED_OR_REGISTERED',

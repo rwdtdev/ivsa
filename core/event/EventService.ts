@@ -2,23 +2,16 @@ import _ from 'underscore';
 import prisma from '@/core/prisma';
 import { SortOrder } from '@/constants/data';
 import { TransactionSession } from '@/types/prisma';
-import { PrismaClient, UserRole, UserStatus } from '@prisma/client';
+import { PrismaClient, UserRole } from '@prisma/client';
 import {
   EventView,
   EventWithIncludeFileds,
   EventsGetData,
-  ParticipantWithUser,
   UpdateEventDataExtended
 } from './types';
 import { PaginatedResponse } from '@/types';
 import moment from 'moment';
-import {
-  EventNotFoundError,
-  EventParticipantsMustContainSpeakerError,
-  SpeakerIsBlockedOrRecusedError,
-  SpeakerIsNotRegisteredInAsviError,
-  SpeakerIsNotRegisteredInIvaError
-} from './errors';
+import { EventNotFoundError } from './errors';
 import { SoiParticipantRoles } from '@/constants/mappings/soi';
 import { CreateEventData } from '@/app/api/events/validation';
 import { getDateFromString } from '@/utils';

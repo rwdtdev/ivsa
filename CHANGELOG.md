@@ -1,3 +1,11 @@
+## [1.2.3](https://rwdt1.gitlab.yandexcloud.net/rwdt/services/asvi/compare/1.2.2...1.2.3) (2024-07-25)
+
+
+### Bug Fixes
+
+* briefing room ([dfb602d](https://rwdt1.gitlab.yandexcloud.net/rwdt/services/asvi/commit/dfb602dc5263482347ba2fb0a0aaf14554bf11a6))
+* change iva role for chairman ([52fe747](https://rwdt1.gitlab.yandexcloud.net/rwdt/services/asvi/commit/52fe747d79acde783106189bc1df7b702a26109d))
+
 ## [1.2.2](https://rwdt1.gitlab.yandexcloud.net/rwdt/services/asvi/compare/1.2.1...1.2.2) (2024-07-18)
 
 

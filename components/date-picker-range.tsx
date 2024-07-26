@@ -58,6 +58,8 @@ export function DatePickerWithRange({ className }: React.HTMLAttributes<HTMLDivE
 
     if (qs.length > 0) {
       router.push(`${pathname}?${qs}`, { scroll: false });
+    } else {
+      router.push(pathname);
     }
   }
 
@@ -85,7 +87,7 @@ export function DatePickerWithRange({ className }: React.HTMLAttributes<HTMLDivE
                 moment(date.from).locale('ru').format('DD.MM.YYYY')
               )
             ) : (
-              <span>Выбрать</span>
+              <span>Выбрать период</span>
             )}
           </Button>
         </PopoverTrigger>

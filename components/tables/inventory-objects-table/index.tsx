@@ -6,18 +6,20 @@ import { useDataTable } from '@/hooks/use-data-table';
 import { DataTable } from '@/components/ui/data-table/data-table';
 import { ColumnDef } from '@tanstack/react-table';
 import { InventoryObjectsTableColumnNames } from '@/constants/mappings/tables-column-names';
-import { InventoryObject } from '@prisma/client';
+import { Inventory, InventoryObject } from '@prisma/client';
 import { PaginatedInventoryObject } from '@/app/actions/server/inventoryObjects';
 import { InventoryCode } from '@/core/inventory/types';
 
 interface InventoryObjectsTableProps {
   inventoryCode: InventoryCode;
   inventoryObjects: PaginatedInventoryObject;
+  inventories: Inventory[];
 }
 
 export function InventoryObjectsTable({
   inventoryObjects,
-  inventoryCode
+  inventoryCode,
+  inventories
 }: InventoryObjectsTableProps) {
   const { items, pagination } = inventoryObjects;
 
@@ -41,6 +43,8 @@ export function InventoryObjectsTable({
       columns={columns}
       columnNames={InventoryObjectsTableColumnNames}
       // filterableColumns={filterableColumns()}
+      tableType='inventoriesTable'
+      inventories={inventories}
     />
   );
 }

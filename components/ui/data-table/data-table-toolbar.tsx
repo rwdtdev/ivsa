@@ -19,9 +19,11 @@ import {
   UsersTableColumnNames
 } from '@/constants/mappings/tables-column-names';
 import { updateUsersStatus } from '@/app/actions/server/update-users-status';
-import { UserStatus } from '@prisma/client';
+import { Inventory, UserStatus } from '@prisma/client';
 import { ConfirmModalDialogToolbarBtn } from '@/components/modal/confirm-modal-dialog-toolbar-btn';
 import { DatePickerUsersExpiresAt } from '@/components/date-picker-users-expiresat';
+import { TableType } from './data-table';
+import InventorySelectMenu from '@/components/inventory-select-menu';
 
 interface DataTableToolbarProps<TData> {
   table: Table<TData>;
@@ -33,6 +35,8 @@ interface DataTableToolbarProps<TData> {
   newRowLink?: string;
   deleteRowsAction?: React.MouseEventHandler<HTMLButtonElement>;
   isUsersTable?: boolean;
+  tableType?: TableType;
+  inventories?: Inventory[];
 }
 
 export function DataTableToolbar<TData>({
@@ -43,18 +47,18 @@ export function DataTableToolbar<TData>({
   withSearch = false,
   newRowLink,
   deleteRowsAction,
-  isUsersTable
+  tableType,
+  inventories
 }: DataTableToolbarProps<TData>) {
   const [query, setQuery] = React.useState('');
   const [isFiltered, setFiltered] = React.useState(false);
   const debounceValue = useDebounce(query, 300);
-
   const router = useRouter();
   const searchParams = useSearchParams();
   const pathname = usePathname();
-
   const [isPending, startTransition] = React.useTransition();
-
+  const isUsersTable = tableType === 'usersTable';
+  const isInventoriesTable = tableType === 'inventoriesTable';
   const createQueryString = React.useCallback(
     (params: Record<string, string | number | null>) => {
       const newSearchParams = new URLSearchParams(searchParams?.toString());
@@ -142,11 +146,11 @@ export function DataTableToolbar<TData>({
             (datepicker, idx) =>
               datepicker.type === 'range' && (
                 <div key={idx} className='flex flex-row items-center'>
-                  <P className='pr-2 text-sm font-normal'>{datepicker.title}:</P>
                   <DatePickerWithRange />
                 </div>
               )
           )}
+
         {filterableColumns.length > 0 &&
           filterableColumns.map(
             (column) =>
@@ -174,6 +178,7 @@ export function DataTableToolbar<TData>({
             <Cross2Icon className='ml-2 size-4' aria-hidden='true' />
           </Button>
         )}
+        {isInventoriesTable && <InventorySelectMenu inventories={inventories} />}
       </div>
       <div className='flex items-center space-x-2'>
         {isUsersTable && table.getSelectedRowModel().rows.length > 0 && (
@@ -188,7 +193,7 @@ export function DataTableToolbar<TData>({
             ariaLabel='Кнопка заблокировать пользователя'
             variant='outline'
             size='sm'
-            className='h-8  bg-gray-100 '
+            className='h-8 bg-gray-100'
             action={blockSelectedUsers}
           />
         )}
@@ -201,7 +206,7 @@ export function DataTableToolbar<TData>({
             ariaLabel='Кнопка разблокировать пользователя'
             variant='outline'
             size='sm'
-            className='h-8  bg-gray-100 '
+            className='h-8 bg-gray-100'
             action={unblockSelectedUsers}
           />
         )}
@@ -211,7 +216,7 @@ export function DataTableToolbar<TData>({
             aria-label='Delete selected rows'
             variant='outline'
             size='sm'
-            className='h-8  bg-gray-100 '
+            className='h-8 bg-gray-100'
             onClick={(event) => {
               startTransition(() => {
                 table.toggleAllPageRowsSelected(false);
@@ -230,7 +235,7 @@ export function DataTableToolbar<TData>({
                 buttonVariants({
                   variant: 'outline',
                   size: 'sm',
-                  className: 'h-8  bg-gray-100 '
+                  className: 'h-8 bg-gray-100'
                 })
               )}
             >

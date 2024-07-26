@@ -21,6 +21,9 @@ import { DataTablePagination } from './data-table-pagination';
 import { DataTableToolbar } from './data-table-toolbar';
 import { ScrollArea, ScrollBar } from '../scroll-area';
 import { useRouter } from 'next/navigation';
+import { Inventory } from '@prisma/client';
+
+export type TableType = 'usersTable' | 'eventsTable' | 'inventoriesTable';
 
 interface DataTableProps<TData, TValue> {
   /**
@@ -85,8 +88,9 @@ interface DataTableProps<TData, TValue> {
    * @example deleteRowsAction={(event) => deleteSelectedRows(dataTable, event)}
    */
   deleteRowsAction?: React.MouseEventHandler<HTMLButtonElement>;
-  isUsersTable?: boolean;
-  isEventsTable?: boolean;
+
+  tableType?: TableType;
+  inventories?: Inventory[];
 }
 
 export function DataTable<TData, TValue>({
@@ -101,10 +105,12 @@ export function DataTable<TData, TValue>({
   floatingBarContent,
   withSelectedRows = false,
   deleteRowsAction,
-  isUsersTable,
-  isEventsTable
+  tableType,
+  inventories
 }: DataTableProps<TData, TValue>) {
   const router = useRouter();
+  const isEventsTable = tableType === 'eventsTable';
+
   return (
     <>
       <div className='mb-3'>
@@ -124,11 +130,12 @@ export function DataTable<TData, TValue>({
             searchableColumns={searchableColumns}
             newRowLink='/admin/users/new'
             deleteRowsAction={deleteRowsAction}
-            isUsersTable={isUsersTable}
+            tableType={tableType}
+            inventories={inventories}
           />
         )}
       </div>
-      <ScrollArea className='mb-auto rounded-md border shadow-mod-1 '>
+      <ScrollArea className='mb-auto rounded-md border shadow-mod-1'>
         <Table className=''>
           <TableHeader className=''>
             {dataTable.getHeaderGroups().map((headerGroup) => (

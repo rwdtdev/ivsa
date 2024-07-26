@@ -27,7 +27,7 @@ export default async function InventoryLayout({
       link: `/events/${eventId}`
     },
     {
-      title: `Инвентаризационная опись ${inventory?.shortName}`,
+      title: `Комплексная опись ${inventory?.shortName}`,
       link: ''
     }
   ];

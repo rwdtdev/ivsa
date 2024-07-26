@@ -49,7 +49,7 @@ export default function TabsWrapper({
           }}
           className='t'
         >
-          Опись
+          Описи
         </TabsTrigger>
         <TabsTrigger
           value='videoTab'

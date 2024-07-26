@@ -1,3 +1,4 @@
+import { getEventByIdAction } from '@/app/actions/server/events';
 import { getInventoryById } from '@/app/actions/server/getInventoryById';
 import { getInventoryObjectsByInventoryIdAction } from '@/app/actions/server/inventoryObjects';
 import { InventoryObjectsTable } from '@/components/tables/inventory-objects-table';
@@ -12,23 +13,29 @@ interface Props {
   searchParams: SearchParams;
 }
 export default async function InventoryItemsList({
-  params: { inventoryId },
+  params: { inventoryId, eventId },
   searchParams
 }: Props) {
-  const inventory = await getInventoryById(inventoryId);
-
-  if (!inventory) return <div>Инвенторизация не найдена</div>;
-
+  const selectedInventoryId = searchParams.locinvid || inventoryId;
   const inventoryObjects = await getInventoryObjectsByInventoryIdAction(
-    inventory.id,
+    selectedInventoryId,
     searchParams
   );
+  const events = await getEventByIdAction(eventId);
+  const complexAndLocalInventories =
+    events?.inventories.filter(
+      (inventory) => inventory.id === inventoryId || inventory.parentId === inventoryId
+    ) || [];
+
+  const inventory = await getInventoryById(selectedInventoryId);
+  if (!inventory) return <div>Инвентаризация не найдена</div>;
   return (
     <div className='flex grow flex-col overflow-hidden'>
-      {inventoryObjects && (
+      {inventoryObjects && events && (
         <InventoryObjectsTable
           inventoryCode={inventory.code as InventoryCode}
           inventoryObjects={inventoryObjects}
+          inventories={complexAndLocalInventories}
         />
       )}
     </div>

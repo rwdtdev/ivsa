@@ -9,12 +9,10 @@ import { usePathname } from 'next/navigation';
 import { useEffect, useState } from 'react';
 import { Avatar, AvatarFallback } from '@/components/ui/avatar';
 import { P } from '@/components/ui/typography/p';
-
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { UserRoles } from '@/constants/mappings/prisma-enums';
 import { DATE_FORMAT } from '@/constants/date';
 import { BriefingStatusBadge, EventStatusBadge } from '@/components/event-status-badge';
-
 import { ScrollArea } from '@/components/ui/scroll-area';
 import Loading from '@/app/loading';
 import { REGION_CODES, RegionCode } from '@/constants/mappings/region-codes';
@@ -22,22 +20,6 @@ import Link from 'next/link';
 import { EnterIcon } from '@radix-ui/react-icons';
 import { BriefingStatus, UserStatus } from '@prisma/client';
 import { UserRoundXIcon } from 'lucide-react';
-import { InventoryCodes } from '@/core/inventory/types';
-import {
-  Accordion,
-  AccordionContent,
-  AccordionItem,
-  AccordionTrigger
-} from '@/components/ui/accordion';
-import {
-  Table,
-  TableBody,
-  TableCell,
-  TableHead,
-  TableHeader,
-  TableRow
-} from '@/components/ui/table';
-import { useRouter } from 'next/navigation';
 import Header from '@/components/layout/header';
 
 const breadcrumbItems = [
@@ -55,7 +37,7 @@ export default function EventPage() {
   const [event, setEvent] = useState<EventView>();
   const pathname = usePathname();
   const [isLoadingEvent, setIsLoadingEvent] = useState(true);
-  const router = useRouter();
+
   const id = getEntityId(pathname);
 
   const fetchEventById = async (id: string) => {
@@ -80,12 +62,8 @@ export default function EventPage() {
   return (
     <>
       <Header title={'Инвентаризация'} />
-      {/* <div className='space-y-4 p-8'> */}
       <main className='w-full px-3 pb-8 sm:px-8'>
         <BreadCrumb items={breadcrumbItems} />
-        {/* <div className='flex items-center justify-between'>
-            <Heading title='Инвентаризация' description={`ID: ${id}`} />
-          </div> */}
         <div className='grid h-full grid-cols-1 gap-4 lg:grid-cols-2 2xl:grid-cols-4'>
           <Card>
             <CardContent>
@@ -214,111 +192,28 @@ export default function EventPage() {
               <CardTitle>Описи</CardTitle>
             </CardHeader>
             <CardContent>
-              <ScrollArea className='h-4/5'>
-                <Accordion type='multiple'>
-                  {event.inventories &&
-                    event.inventories
-                      .filter((inventory) => !inventory.parentId)
-                      .map((inventory) => {
-                        return (
-                          <AccordionItem value={inventory.id} key={inventory.id}>
-                            <AccordionTrigger className='hover:no-underline'>
-                              <div className='flex flex-col'>
-                                <div className='flex justify-start'>
-                                  <Link
-                                    href={`/events/${inventory.eventId}/inventories/${inventory.id}`}
-                                    className='text-sm hover:underline'
-                                  >
-                                    Комплексная опись № {inventory.number} от{' '}
-                                    {moment(inventory.date).format(DATE_FORMAT)}
-                                  </Link>
-                                </div>
-                                <div className='flex justify-start'>
-                                  <p className='text-xs text-muted-foreground'>
-                                    {
-                                      InventoryCodes[
-                                        inventory.code as keyof typeof InventoryCodes
-                                      ]?.shortName
-                                    }
-                                  </p>
-                                </div>
-                              </div>
-                            </AccordionTrigger>
-                            <AccordionContent>
-                              {/* {inventory.videoFilesUrls.length > 0 && (
-                                <CarouselSize
-                                  items={inventory.videoFilesUrls[0]
-                                    .split(',')
-                                    .map((url) => ({
-                                      title: `Опись ${inventory.number} `,
-                                      url,
-                                      date: inventory.date
-                                    }))}
-                                />
-                              )} */}
-                              {event.inventories.some(
-                                (child) => child.parentId === inventory.id
-                              ) && (
-                                <Table key={inventory.id}>
-                                  <TableHeader>
-                                    <TableRow>
-                                      <TableHead className='min-w-[60px]'>№</TableHead>
-                                      <TableHead className='min-w-[140px] max-w-[300px]'>
-                                        Форма
-                                      </TableHead>
-                                      <TableHead className='min-2-[200px] max-w-[100px]'>
-                                        Код формы
-                                      </TableHead>
-                                      <TableHead className='max-w-[100px]'>
-                                        Дата
-                                      </TableHead>
-                                      <TableHead className='max-w-[100px]'>
-                                        Номер
-                                      </TableHead>
-                                    </TableRow>
-                                  </TableHeader>
-                                  <TableBody>
-                                    {event.inventories
-                                      .filter(({ parentId }) => parentId === inventory.id)
-                                      .map((child, index) => (
-                                        <TableRow
-                                          key={child.id}
-                                          onClick={() => {
-                                            router.push(
-                                              `/events/${child.eventId}/inventories/${child.id}`
-                                            );
-                                          }}
-                                          className='cursor-pointer'
-                                        >
-                                          <TableCell>{index + 1}</TableCell>
-                                          <TableCell>
-                                            {
-                                              InventoryCodes[
-                                                child.code as keyof typeof InventoryCodes
-                                              ].shortName
-                                            }
-                                          </TableCell>
-                                          <TableCell>{child.code}</TableCell>
-                                          <TableCell>
-                                            {moment(child.date).format(DATE_FORMAT)}
-                                          </TableCell>
-                                          <TableCell>{child.number}</TableCell>
-                                        </TableRow>
-                                      ))}
-                                  </TableBody>
-                                </Table>
-                              )}
-                            </AccordionContent>
-                          </AccordionItem>
-                        );
-                      })}
-                </Accordion>
-              </ScrollArea>
+              <ul className='border-t-[1px]'>
+                {event.inventories &&
+                  event.inventories
+                    .filter((inventory) => !inventory.parentId)
+                    .map((inventory) => {
+                      return (
+                        <li key={inventory.id} className='border-b-[1px]'>
+                          <Link
+                            href={`/events/${inventory.eventId}/inventories/${inventory.id}`}
+                            className='block px-2 text-sm leading-10 hover:bg-slate-100'
+                          >
+                            Комплексная опись № {inventory.number} от{' '}
+                            {moment(inventory.date).format(DATE_FORMAT)}
+                          </Link>
+                        </li>
+                      );
+                    })}
+              </ul>
             </CardContent>
           </Card>
         </div>
       </main>
-      {/* </div> */}
     </>
   );
 }

@@ -32,7 +32,7 @@ export function DataTableViewOptions<TData>({
           aria-label='Toggle columns'
           variant='outline'
           size='sm'
-          className='ml-auto hidden h-8 lg:flex'
+          className='ml-auto hidden h-8 select-none lg:flex'
         >
           <MixerHorizontalIcon className='mr-2 size-4' />
           Столбцы

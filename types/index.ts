@@ -33,6 +33,7 @@ export type SidebarNavItem = NavItemWithChildren;
 
 export interface SearchParams {
   [key: string]: string | string[] | undefined;
+  locinvid?: string;
 }
 
 export type Option = {

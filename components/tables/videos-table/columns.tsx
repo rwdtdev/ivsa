@@ -23,7 +23,7 @@ export function fetchVideosTableColumnDefs(): ColumnDef<
     {
       id: 'date',
       accessorKey: 'date',
-      header: 'дата',
+      header: 'Дата',
       cell: ({ row }) =>
         row.original.startAt ? (
           <div style={{ padding }}> {format(row.original.startAt, 'dd.MM.yyyy')}</div>
@@ -34,7 +34,7 @@ export function fetchVideosTableColumnDefs(): ColumnDef<
     {
       id: 'startAt',
       accessorKey: 'startAt',
-      header: 'время начала',
+      header: 'Время начала',
       cell: ({ row }) =>
         row.original.startAt ? (
           <div style={{ padding }}>{format(row.original.startAt, 'HH:mm')}</div>
@@ -45,7 +45,7 @@ export function fetchVideosTableColumnDefs(): ColumnDef<
     {
       id: 'endAt',
       accessorKey: 'endAt',
-      header: 'время окончания',
+      header: 'Время окончания',
       cell: ({ row }) =>
         row.original.endAt ? (
           <div style={{ padding }}>{format(row.original.endAt, 'HH:mm')}</div>
@@ -56,13 +56,13 @@ export function fetchVideosTableColumnDefs(): ColumnDef<
     {
       id: 'address',
       accessorKey: 'address',
-      header: 'адрес ',
+      header: 'Адрес ',
       cell: ({ row }) => <div>{row.original.address} </div>
     },
     {
       id: 'actions',
       accessorKey: 'actions',
-      header: 'действия',
+      header: 'Действия',
       cell: ({ row }) => (
         <div className='flex'>
           <VideoPlayModal data={row.original} />
@@ -75,11 +75,3 @@ export function fetchVideosTableColumnDefs(): ColumnDef<
     }
   ];
 }
-
-export const eventsDatePickers = [
-  {
-    ids: ['startAt', 'endAt'],
-    type: 'range',
-    title: 'Период'
-  }
-];

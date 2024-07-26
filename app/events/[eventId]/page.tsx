@@ -111,11 +111,11 @@ export default function EventPage() {
                   </div>
                   <P className='text-sm'>
                     <span className='font-semibold'>Дата начала:</span>{' '}
-                    {moment(event.startAt).format(DATETIME_FORMAT)}
+                    {moment(event.startAt).format(DATE_FORMAT)}
                   </P>
                   <P className='text-sm'>
                     <span className='font-semibold'>Дата окончания:</span>{' '}
-                    {moment(event.endAt).format(DATETIME_FORMAT)}
+                    {moment(event.endAt).format(DATE_FORMAT)}
                   </P>
                   <P className='text-sm'>
                     <span className='font-semibold'>Балансовая единица:</span>{' '}

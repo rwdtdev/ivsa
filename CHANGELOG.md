@@ -1,3 +1,11 @@
+## [1.2.4](https://rwdt1.gitlab.yandexcloud.net/rwdt/services/asvi/compare/1.2.3...1.2.4) (2024-07-26)
+
+
+### Bug Fixes
+
+* Inventories dateTime & as_vi ([761d9eb](https://rwdt1.gitlab.yandexcloud.net/rwdt/services/asvi/commit/761d9ebbfa0b87ddb9158f0a1e50a4674094e720))
+* Inventories dateTime & as_vi ([b68c26b](https://rwdt1.gitlab.yandexcloud.net/rwdt/services/asvi/commit/b68c26b3ca383a9463f12072755ad7dbaea408f2))
+
 ## [1.2.3](https://rwdt1.gitlab.yandexcloud.net/rwdt/services/asvi/compare/1.2.2...1.2.3) (2024-07-25)
 
 

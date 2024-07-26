@@ -15,7 +15,7 @@ import { format } from 'date-fns';
 type Props = {
   inventories?: Inventory[];
 };
-
+//
 export default function InventorySelectMenu({ inventories }: Props) {
   const router = useRouter();
   const pathname = usePathname();

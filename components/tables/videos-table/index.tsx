@@ -7,19 +7,20 @@ import { DataTable } from '@/components/ui/data-table/data-table';
 import { ColumnDef } from '@tanstack/react-table';
 import { EventsTableColumnNames } from '@/constants/mappings/tables-column-names';
 import { InventoryResourceWithAddress } from '@/app/actions/server/inventories';
+import { Inventory } from '@prisma/client';
 
-interface Props {
-  resources: InventoryResourceWithAddress[];
-}
+type Props = {
+  inventoryWithRecourses: Inventory & { resources: InventoryResourceWithAddress[] };
+};
 
-export function VideosTable({ resources }: Props) {
+export function VideosTable({ inventoryWithRecourses }: Props) {
   const columns = React.useMemo<ColumnDef<InventoryResourceWithAddress, unknown>[]>(
-    () => fetchVideosTableColumnDefs(),
+    () => fetchVideosTableColumnDefs(inventoryWithRecourses.number),
     []
   );
 
   const { dataTable } = useDataTable({
-    data: resources,
+    data: inventoryWithRecourses.resources,
     columns,
     pageCount: 1
     // filterableColumns: filterableColumns()

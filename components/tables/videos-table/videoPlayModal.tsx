@@ -14,9 +14,10 @@ import { InventoryResourceWithAddress } from '@/app/actions/server/inventories';
 
 interface Props {
   data: InventoryResourceWithAddress;
+  inventoryNumber: string;
 }
 
-export default function VideoPlay({ data }: Props) {
+export default function VideoPlay({ data, inventoryNumber }: Props) {
   return (
     <div>
       <Dialog>
@@ -29,10 +30,12 @@ export default function VideoPlay({ data }: Props) {
           <DialogHeader>
             <DialogTitle>{data.address}</DialogTitle>
             <DialogDescription>
-              {format(data.startAt || '', 'dd.MM.yyyy')}{' '}
-              {format(data.startAt || '', 'HH:mm')}
+              {data.startAt && format(data.startAt, 'dd.MM.yyyy')}{' '}
+              {data.startAt && format(data.startAt, 'HH:mm')}
               {'-'}
-              {format(data.endAt || '', 'HH:mm')}
+              {data.endAt && format(data.endAt, 'HH:mm')}
+              {'. '}
+              {`Комплексная опись №: ${inventoryNumber}`}
             </DialogDescription>
           </DialogHeader>
           <div className='py-2'>
@@ -50,7 +53,7 @@ export default function VideoPlay({ data }: Props) {
               <p>Видео отсутствует</p>
             )}
           </div>
-          <DialogFooter className='flex-col justify-start sm:flex-col sm:space-x-0'>
+          <DialogFooter className='flex-col justify-start text-sm text-gray-400 sm:flex-col sm:space-x-0'>
             <span>hash видео-файла: {data.videoHash}</span>
             <span>hash файла метаданных: {data.metadataHash}</span>
           </DialogFooter>

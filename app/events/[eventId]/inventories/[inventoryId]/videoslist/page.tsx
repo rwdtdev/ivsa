@@ -15,7 +15,7 @@ export default async function VideoList({ params: { inventoryId } }: Props) {
   if (!inventoryWithRecourses?.resources) return <div>Нет видеозаписей</div>;
   return (
     <div className='flex grow flex-col overflow-hidden'>
-      <VideosTable resources={inventoryWithRecourses.resources} />
+      <VideosTable inventoryWithRecourses={inventoryWithRecourses} />
     </div>
   );
 }

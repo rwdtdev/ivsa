@@ -1,11 +1,14 @@
 import { getInventoryById } from '@/app/actions/server/getInventoryById';
+import { IvaChairmanDialogBtn } from '@/components/iva-chairmen-dialog-btn';
 import IvaLocatorBtn from '@/components/iva-locator-btn';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent } from '@/components/ui/card';
 import { P } from '@/components/ui/typography/p';
 import { DATE_FORMAT } from '@/constants/date';
+import { authConfig } from '@/lib/auth-options';
 import { SearchParams } from '@/types';
 import moment from 'moment';
+import { getServerSession } from 'next-auth';
 import { headers } from 'next/headers';
 
 export const metadata = {
@@ -21,6 +24,8 @@ interface Props {
 }
 
 export default async function InventoryPage({ params: { inventoryId } }: Props) {
+  const session = await getServerSession(authConfig);
+  const isUserChairman = session?.user.role === 'CHAIRMAN';
   const ua = headers().get('user-agent');
   const isAndroid = /android/i.test(ua || '');
   const inventory = await getInventoryById(inventoryId);
@@ -55,16 +60,18 @@ export default async function InventoryPage({ params: { inventoryId } }: Props) 
           </P>
           <div className='mt-auto sm:mt-0'>
             {isAndroid ? (
-              <IvaLocatorBtn locatorIvaLink={locatorIvaLink} inventoryId={inventoryId} />
+              <IvaLocatorBtn locatorIvaLink={locatorIvaLink} />
+            ) : !inventory.auditRoomInviteLink ? (
+              <span className='border-grey-600 rounded-md border p-2'>
+                ссылка на видео-конференцию отсутствует
+              </span>
+            ) : isUserChairman ? (
+              <IvaChairmanDialogBtn auditRoomInviteLink={inventory.auditRoomInviteLink} />
             ) : (
-              <Button className={isAndroid ? 'w-full' : ''}>
-                {inventory.auditRoomInviteLink ? (
-                  <a href={inventory.auditRoomInviteLink} target='_blank'>
-                    Перейти в видео-конференцию
-                  </a>
-                ) : (
-                  <span>ссылка на видео-конференцию отсутствует</span>
-                )}
+              <Button>
+                <a href={inventory.auditRoomInviteLink} target='_blank'>
+                  Перейти в видео-конференцию
+                </a>
               </Button>
             )}
           </div>

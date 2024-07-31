@@ -1,24 +1,17 @@
 'use client';
 
 import { ColumnDef } from '@tanstack/react-table';
-import { InventoryResource } from '@prisma/client';
 import { format } from 'date-fns';
 import { Separator } from '@/components/ui/separator';
 import VideoPlayModal from './videoPlayModal';
 import { InventoryResourceWithAddress } from '@/app/actions/server/inventories';
 import DownLoadFilesBtn from './downLoadFilesBtn';
 
-export type VideoView = Omit<InventoryResource, 'startAt' | 'endAt'> & {
-  startAt: string;
-  endAt: string;
-};
-
 const padding = 9;
 
-export function fetchVideosTableColumnDefs(): ColumnDef<
-  InventoryResourceWithAddress,
-  unknown
->[] {
+export function fetchVideosTableColumnDefs(
+  inventoryNumber: string
+): ColumnDef<InventoryResourceWithAddress, unknown>[] {
   return [
     {
       id: 'date',
@@ -65,7 +58,7 @@ export function fetchVideosTableColumnDefs(): ColumnDef<
       header: 'Действия',
       cell: ({ row }) => (
         <div className='flex'>
-          <VideoPlayModal data={row.original} />
+          <VideoPlayModal data={row.original} inventoryNumber={inventoryNumber} />
           <div>
             <Separator orientation='vertical' className='mx-4' />
           </div>

@@ -53,23 +53,29 @@ export default function InventorySelectMenu({ inventories }: Props) {
       <SelectContent>
         <SelectGroup>
           <SelectLabel>Комплексная опись</SelectLabel>
-          {complexInventory?.map((inv) => (
-            <SelectItem value='complex' key={inv.id}>
-              {`Комплексная №  ${inv.number} от ${format(inv.date || '', 'dd.MM.yyyy')} форма ${inv.shortName}`}
-            </SelectItem>
-          ))}
+          {complexInventory?.map((inv) => {
+            const date = inv.date ? ` от ${format(inv.date, 'dd.MM.yyyy')}` : ' ';
+            return (
+              <SelectItem value='complex' key={inv.id}>
+                {`Комплексная № ${inv.number} ${date} форма ${inv.shortName}`}
+              </SelectItem>
+            );
+          })}
         </SelectGroup>
         <SelectGroup>
-          <SelectLabel>Локальные описи</SelectLabel>
+          <SelectLabel>Индивидуальные описи</SelectLabel>
           {localInventories && localInventories[0] ? (
-            localInventories.map((inv) => (
-              <SelectItem value={inv.id} key={inv.id}>
-                {`Локальная № ${inv.number} от ${format(inv.date || '', 'dd.MM.yyyy')} форма ${inv.shortName}`}
-              </SelectItem>
-            ))
+            localInventories.map((inv) => {
+              const date = inv.date ? `от ${format(inv.date, 'dd.MM.yyyy')}` : '';
+              return (
+                <SelectItem value={inv.id} key={inv.id}>
+                  {`Индивидуальная № ${inv.number} ${date} форма ${inv.shortName}`}
+                </SelectItem>
+              );
+            })
           ) : (
             <SelectItem disabled value='noLocalInventories'>
-              Нет локальных записей
+              Нет индивидуальных описей
             </SelectItem>
           )}
         </SelectGroup>

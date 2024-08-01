@@ -1,3 +1,10 @@
+## [1.2.7](https://rwdt1.gitlab.yandexcloud.net/rwdt/services/asvi/compare/1.2.6...1.2.7) (2024-08-01)
+
+
+### Bug Fixes
+
+* add user blocking in iva, fix array of participants for CHAIRMAN role ([ac43016](https://rwdt1.gitlab.yandexcloud.net/rwdt/services/asvi/commit/ac430164779f2094c0266f218aefab14dc083c28))
+
 ## [1.2.6](https://rwdt1.gitlab.yandexcloud.net/rwdt/services/asvi/compare/1.2.5...1.2.6) (2024-07-31)
 
 

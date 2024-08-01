@@ -1,11 +1,23 @@
 'use server';
 
+import { InventoryService } from '@/core/inventory/InventoryService';
 import prisma from '@/core/prisma';
 import { Inventory, InventoryResource, ResourceProcessStatus } from '@prisma/client';
 
 export type InventoryResourceWithAddress = InventoryResource & { address: string };
 type InventoryWithResources = Inventory & {
   resources: InventoryResourceWithAddress[];
+};
+
+export const updateInventoryAddress = async (id: string, address: string | null) => {
+  const inventoryService = new InventoryService();
+
+  try {
+    return await inventoryService.update(id, { address });
+  } catch (err) {
+    console.error(err);
+    return null;
+  }
 };
 
 export const getInventoryByIdAction = async (

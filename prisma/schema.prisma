@@ -207,6 +207,7 @@ model Inventory {
   resources           InventoryResource[]
   /// Признак того, что инвентаризация по описи окончена, все ресурсы были обработаны, сохранены и т.д.
   isProcessed         Boolean             @default(false)
+  address             String?
 
   @@map("inventories")
 }

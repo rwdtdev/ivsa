@@ -113,8 +113,8 @@ export class InventoryService {
 
   async getById(id: string) {
     const inventory = await this.prisma.inventory.findFirst({
-      where: {id}
-    })
+      where: { id }
+    });
 
     return inventory || null;
   }

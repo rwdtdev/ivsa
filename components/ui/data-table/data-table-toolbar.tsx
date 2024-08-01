@@ -13,17 +13,16 @@ import { DataTableViewOptions } from '@/components/ui/data-table/data-table-view
 import { useSearchParams, usePathname, useRouter } from 'next/navigation';
 import { useDebounce } from '@/hooks/use-debounce';
 import { DatePickerWithRange } from '../../date-picker-range';
-import { P } from '../typography/p';
 import {
   EventsTableColumnNames,
   UsersTableColumnNames
 } from '@/constants/mappings/tables-column-names';
-import { updateUsersStatus } from '@/app/actions/server/update-users-status';
-import { Inventory, UserStatus } from '@prisma/client';
+import { Inventory } from '@prisma/client';
 import { ConfirmModalDialogToolbarBtn } from '@/components/modal/confirm-modal-dialog-toolbar-btn';
 import { DatePickerUsersExpiresAt } from '@/components/date-picker-users-expiresat';
 import { TableType } from './data-table';
 import InventorySelectMenu from '@/components/inventory-select-menu';
+import { blockUserAction, unblockUserAction } from '@/app/actions/server/users';
 
 interface DataTableToolbarProps<TData> {
   table: Table<TData>;
@@ -76,17 +75,17 @@ export function DataTableToolbar<TData>({
     [searchParams]
   );
 
-  function blockSelectedUsers() {
+  async function blockSelectedUsers() {
     const selectedUsersObj = table.getState().rowSelection;
     const usersIds: string[] = Object.keys(selectedUsersObj);
-    updateUsersStatus(usersIds, UserStatus.BLOCKED);
+    await Promise.allSettled(usersIds.map((userId) => blockUserAction(userId)));
     table.resetRowSelection();
   }
 
-  function unblockSelectedUsers() {
+  async function unblockSelectedUsers() {
     const selectedUsersObj = table.getState().rowSelection;
     const usersIds: string[] = Object.keys(selectedUsersObj);
-    updateUsersStatus(usersIds, UserStatus.ACTIVE);
+    await Promise.allSettled(usersIds.map((userId) => unblockUserAction(userId)));
     table.resetRowSelection();
   }
 

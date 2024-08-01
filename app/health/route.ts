@@ -1,6 +1,5 @@
-import { NextRequest, NextResponse } from 'next/server';
+import { NextResponse } from 'next/server';
 import { IvaService } from '@/core/iva/IvaService';
-import { getErrorResponse } from '@/lib/helpers';
 import { S3ClientProvider } from '@/utils/s3-client/s3-client-provider';
 
 type IvaHealthcheck = {
@@ -22,7 +21,7 @@ type S3Healthcheck = {
   error?: unknown;
 };
 
-export async function GET(req: NextRequest) {
+export async function GET() {
   const ivaService = new IvaService();
 
   const env = {
@@ -32,7 +31,7 @@ export async function GET(req: NextRequest) {
     IVA_APP_DOMAIN_ID: process.env.IVA_APP_DOMAIN_ID
   };
 
-  const iva: IvaHealthcheck = { status: 'OK' };
+  const iva: IvaHealthcheck = { status: 'OK', env };
   const s3: S3Healthcheck = { status: 'OK' };
 
   try {
@@ -51,7 +50,7 @@ export async function GET(req: NextRequest) {
   } catch (error) {
     console.log(error);
     iva.status = 'NOT OK';
-    iva.error = getErrorResponse(error, req);
+    iva.error = error;
   }
 
   try {
@@ -73,7 +72,7 @@ export async function GET(req: NextRequest) {
     }
   } catch (error) {
     s3.status = 'NOT OK';
-    s3.error = getErrorResponse(error, req);
+    s3.error = error;
   }
 
   return NextResponse.json({ iva, s3 }, { status: 201 });

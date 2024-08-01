@@ -137,3 +137,37 @@ export async function IsBlocked(username: string) {
 
   return user.status === UserStatus.BLOCKED;
 }
+
+export async function blockUserAction(id: string) {
+  const userManager = new UserManager(
+    new IvaService(),
+    new UserService(),
+    new DepartmentService(),
+    new ParticipantService(),
+    new OrganisationService()
+  );
+
+  try {
+    await userManager.blockUser(id);
+  } catch (error) {
+    console.debug(error);
+    return { error: JSON.stringify(error, Object.getOwnPropertyNames(error)) };
+  }
+}
+
+export async function unblockUserAction(id: string) {
+  const userManager = new UserManager(
+    new IvaService(),
+    new UserService(),
+    new DepartmentService(),
+    new ParticipantService(),
+    new OrganisationService()
+  );
+
+  try {
+    await userManager.unblockUser(id);
+  } catch (error) {
+    console.debug(error);
+    return { error: JSON.stringify(error, Object.getOwnPropertyNames(error)) };
+  }
+}

@@ -1,3 +1,10 @@
+## [1.2.8](https://rwdt1.gitlab.yandexcloud.net/rwdt/services/asvi/compare/1.2.7...1.2.8) (2024-08-01)
+
+
+### Bug Fixes
+
+* Squashed commit of the following: ([8c4d1aa](https://rwdt1.gitlab.yandexcloud.net/rwdt/services/asvi/commit/8c4d1aaadae6fd893576ae98734380d77dfd1bc5))
+
 ## [1.2.7](https://rwdt1.gitlab.yandexcloud.net/rwdt/services/asvi/compare/1.2.6...1.2.7) (2024-08-01)
 
 

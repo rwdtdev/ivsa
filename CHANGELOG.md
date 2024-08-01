@@ -1,3 +1,10 @@
+## [1.2.9](https://rwdt1.gitlab.yandexcloud.net/rwdt/services/asvi/compare/1.2.8...1.2.9) (2024-08-01)
+
+
+### Bug Fixes
+
+* add inventory address ([56a178d](https://rwdt1.gitlab.yandexcloud.net/rwdt/services/asvi/commit/56a178df7150bcba607574a995412b41d6bc8780))
+
 ## [1.2.8](https://rwdt1.gitlab.yandexcloud.net/rwdt/services/asvi/compare/1.2.7...1.2.8) (2024-08-01)
 
 

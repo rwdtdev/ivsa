@@ -1,17 +1,38 @@
 import { makeErrorDictionary } from '@/lib/problem-json';
 
 export const {
+  BlockIvaUserError,
+  UnblockIvaUserError,
   UserNotFoundError,
   CreateIvaUserError,
+  UserNotRegisteredInIvaError,
   UserWithEmailAlreadyExistError,
   UserWithUsernameAlreadyExistError,
   UserWithTabelNumberAlreadyExistError
 } = makeErrorDictionary()({
+  UnblockIvaUserError: {
+    type: 'urn:problem-type:unblock-iva-user-error',
+    title: 'Произошла ошибка',
+    status: 400,
+    userMessage: 'Ошибка при снятии блокировки с пользователя в IVA R'
+  },
+  BlockIvaUserError: {
+    type: 'urn:problem-type:block-iva-user-error',
+    title: 'Произошла ошибка',
+    status: 400,
+    userMessage: 'Ошибка при блокировки пользователя в IVA R'
+  },
   CreateIvaUserError: {
     type: 'urn:problem-type:create-iva-user-error',
     title: 'Произошла ошибка',
     status: 400,
     userMessage: 'Ошибка при создании пользователя в IVA R'
+  },
+  UserNotRegisteredInIvaError: {
+    type: 'urn:problem-type:user-not-registered-error',
+    title: 'Произошла ошибка',
+    status: 400,
+    userMessage: 'Пользователя не зарегистрирован в IVA R'
   },
   UserNotFoundError: {
     type: 'urn:problem-type:user-not-found-error',

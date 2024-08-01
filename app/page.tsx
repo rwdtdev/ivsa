@@ -6,6 +6,7 @@ import { getEventsAction } from '@/app/actions/server/events';
 import { EventsTable } from '@/components/tables/events-table';
 import Header from '@/components/layout/header';
 import { authConfig } from '@/lib/auth-options';
+import { UserRole } from '@prisma/client';
 
 export const metadata = {
   title: 'Инвентаризации'
@@ -29,7 +30,9 @@ export default async function EventsPage({ searchParams }: IndexPageProps) {
     );
   }
 
-  const events = await getEventsAction(searchParams, { userId: session.user.id });
+  const events = session.user.role === UserRole.ADMIN ?
+    await getEventsAction(searchParams) :
+    await getEventsAction(searchParams, { userId: session.user.id });
 
   return (
     <div className='flex h-screen flex-col'>

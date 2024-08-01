@@ -9,7 +9,13 @@ import {
   BriefingRoomIsStillOpenError,
   EmptyPartisipantsListError
 } from './errors';
-import { BriefingStatus, EventStatus, InventoryStatus, UserStatus } from '@prisma/client';
+import {
+  BriefingStatus,
+  EventStatus,
+  InventoryStatus,
+  UserRole,
+  UserStatus
+} from '@prisma/client';
 import { InventoryCodes } from '@/core/inventory/types';
 import { CreateInventoryData } from '@/app/api/audit-rooms/create/validation';
 import { getDateFromString } from '@/utils';
@@ -123,6 +129,17 @@ export class AuditRoomManager {
         })
       );
 
+      const participants = _.values(
+        _.chain(registeredAndNotBlockedParticipants)
+          .groupBy('tabelNumber')
+          .mapObject((value: ParticipantWithUser[]) =>
+            value.length > 1
+              ? value.find((o) => o.role === UserRole.CHAIRMAN) || value[0]
+              : value[0]
+          )
+          .value()
+      );
+
       await Promise.all(intentoryObjectPromises);
 
       const conference = await this.ivaService.createConference({
@@ -150,7 +167,7 @@ export class AuditRoomManager {
             { key: 'ALWAYS_SHOW_PARTICIPANT_IN_STAGE', value: false }
           ]
         },
-        participants: registeredAndNotBlockedParticipants.map(({ user, role }) => ({
+        participants: participants.map(({ user, role }) => ({
           interlocutor: { profileId: user.ivaProfileId as string },
           roles: [IvaRolesMapper[role]],
           interpreterLanguagesPair: ['RUSSIAN']

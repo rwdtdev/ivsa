@@ -227,6 +227,14 @@ export class IvaService {
     });
   }
 
+  async blockUser(id: string): Promise<void> {
+    return await this.request(`/integration/users/${id}/block`, { method: 'POST' });
+  }
+
+  async unblockUser(id: string): Promise<void> {
+    return await this.request(`/integration/users/${id}/unblock`, { method: 'POST' });
+  }
+
   async removeUser(id: string): Promise<void> {
     await this.request(`/integration/users/${id}`, { method: 'DELETE' });
   }

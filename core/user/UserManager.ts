@@ -6,8 +6,13 @@ import { ParticipantService } from '../participant/ParticipantService';
 import { UserService } from './UserService';
 import { doTransaction } from '@/lib/prisma-transaction';
 import { TransactionSession } from '@/types/prisma';
-import { UserRole } from '@prisma/client';
-import { CreateIvaUserError } from './errors';
+import { UserRole, UserStatus } from '@prisma/client';
+import {
+  UnblockIvaUserError,
+  BlockIvaUserError,
+  CreateIvaUserError,
+  UserNotRegisteredInIvaError
+} from './errors';
 
 export class UserManager {
   private ivaService: IvaService;
@@ -103,6 +108,42 @@ export class UserManager {
         });
       }
     });
+  }
+
+  async blockUser(id: string) {
+    try {
+      await this.userService.assertExist(id);
+      const user = await this.userService.getById(id);
+
+      if (!user.ivaProfileId) {
+        throw new UserNotRegisteredInIvaError();
+      }
+
+      await this.ivaService.blockUser(user.ivaProfileId);
+      await this.userService.update(id, { status: UserStatus.BLOCKED });
+    } catch (error) {
+      throw new BlockIvaUserError({
+        detail: `Problems occurred during block user with id (${id}) in IVA R.`
+      });
+    }
+  }
+
+  async unblockUser(id: string) {
+    try {
+      await this.userService.assertExist(id);
+      const user = await this.userService.getById(id);
+
+      if (!user.ivaProfileId) {
+        throw new UserNotRegisteredInIvaError();
+      }
+
+      await this.ivaService.unblockUser(user.ivaProfileId);
+      await this.userService.update(id, { status: UserStatus.ACTIVE });
+    } catch (error) {
+      throw new UnblockIvaUserError({
+        detail: `Problems occurred during unblock user with id (${id}) in IVA R.`
+      });
+    }
   }
 
   async updateParticipantsUser(

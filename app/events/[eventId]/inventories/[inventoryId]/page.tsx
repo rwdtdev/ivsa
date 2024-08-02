@@ -1,4 +1,5 @@
 import { getInventoryById } from '@/app/actions/server/getInventoryById';
+import InventoryAddressForm from '@/components/forms/inventory-address-form';
 import { IvaChairmanDialogBtn } from '@/components/iva-chairmen-dialog-btn';
 import IvaLocatorBtn from '@/components/iva-locator-btn';
 import { Button } from '@/components/ui/button';
@@ -58,7 +59,15 @@ export default async function InventoryPage({ params: { inventoryId } }: Props) 
           <P className='mb-6 text-sm'>
             <span className='font-semibold'>Код:</span> {inventory.code}
           </P>
-          <div className='mt-auto sm:mt-0'>
+          {!isUserChairman ? (
+            <P className='mb-6 text-sm'>
+              <span className='font-semibold'>Адрес:</span>{' '}
+              {inventory.address ? inventory.address : 'не указан'}
+            </P>
+          ) : (
+            <InventoryAddressForm inventory={inventory} />
+          )}
+          <div className='mt-auto sm:mt-4'>
             {isAndroid ? (
               <IvaLocatorBtn locatorIvaLink={locatorIvaLink} />
             ) : !inventory.auditRoomInviteLink ? (

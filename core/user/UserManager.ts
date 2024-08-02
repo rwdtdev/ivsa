@@ -123,7 +123,8 @@ export class UserManager {
       await this.userService.update(id, { status: UserStatus.BLOCKED });
     } catch (error) {
       throw new BlockIvaUserError({
-        detail: `Problems occurred during block user with id (${id}) in IVA R.`
+        // detail: `Problems occurred during block user with id (${id}) in IVA R.`
+        detail: error
       });
     }
   }

@@ -19,7 +19,7 @@ export class IvaService {
   private async getJWTToken() {
     const appId = process.env.IVA_APP_ID;
     const appSecret = process.env.IVA_APP_SECRET;
-    const timestamp = Math.ceil(new Date().getTime() / 1000 - 1); // subtract 1 second to avoid token outdated error
+    const timestamp = Math.ceil(new Date().getTime() / 1000 - 10); // subtract 1 second to avoid token outdated error
 
     if (!appId || appId.trim() === '') {
       throw new Error('appId is null or empty');

@@ -41,10 +41,11 @@ export const getInventoryByIdAction = async (
 
     const resourcesWithAddress = await Promise.all(
       inventoryResources.resources.map(async (resource) => {
-        const location = await prisma.inventoryLocation.findFirst({
-          where: { resourceId: resource.id }
-        });
-        const address = location?.address || 'адрес не указан';
+        // const location = await prisma.inventoryLocation.findFirst({
+        //   where: { resourceId: resource.id }
+        // });
+        // const address = location?.address || 'адрес не указан';
+        const address = inventoryResources.address || 'адрес не указан';
         return { ...resource, address };
       })
     );

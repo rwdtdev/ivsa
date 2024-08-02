@@ -1,3 +1,12 @@
+## [1.2.10](https://rwdt1.gitlab.yandexcloud.net/rwdt/services/asvi/compare/1.2.9...1.2.10) (2024-08-02)
+
+
+### Bug Fixes
+
+* add edit-inventory-address form ([1feac7f](https://rwdt1.gitlab.yandexcloud.net/rwdt/services/asvi/commit/1feac7faabc7c817fcf21b94b78e6af09c4002c4))
+* add edit-inventory-address form ([de59faf](https://rwdt1.gitlab.yandexcloud.net/rwdt/services/asvi/commit/de59faf578cb75e80d34a03304a0832b6b6f5cde))
+* remove address from inventory location api ([8ec67e5](https://rwdt1.gitlab.yandexcloud.net/rwdt/services/asvi/commit/8ec67e57617b172a9feb693713bad1010a5c3cb4))
+
 ## [1.2.9](https://rwdt1.gitlab.yandexcloud.net/rwdt/services/asvi/compare/1.2.8...1.2.9) (2024-08-01)
 
 

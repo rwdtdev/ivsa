@@ -25,7 +25,6 @@ export async function POST(req: NextRequest, context: IContext) {
 
     await inventoryManager.createInventoryLocation({
       inventoryId,
-      address: data.address,
       latitude: data.latitude,
       longitude: data.longitude,
       accuracy: data.accuracy,

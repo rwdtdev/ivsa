@@ -8,7 +8,6 @@ export const CreateInventoryLocationSchema = z.object({
   latitude: z.number(),
   longitude: z.number(),
   accuracy: z.number(),
-  address: z.string().trim().min(1),
   dateTime: z.number()
 });
 

@@ -223,8 +223,6 @@ model InventoryLocation {
   dateTime    DateTime           @db.Timestamptz(3)
   /// Точность
   accuracy    Float
-  /// Адрес добавленный вручную при начале записи метаданных
-  address     String?
   /// Идентификатор описи, 
   inventoryId String
   /// Объект с данными об описи

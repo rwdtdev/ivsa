@@ -51,13 +51,13 @@ export function fetchEventsTableColumnDefs(): ColumnDef<EventView, unknown>[] {
     {
       id: 'status',
       accessorKey: 'status',
-      header: defaultHeader,
+      header: () => <div className='min-w-24'>Статус</div>,
       cell: ({ row }) => <EventStatusBadge status={row.original.status} />
     },
     {
       id: 'briefingStatus',
       accessorKey: 'briefingStatus',
-      header: defaultHeader,
+      header: () => <div className='min-w-28'>Инструктаж</div>,
       cell: ({ row }) => <BriefingStatusBadge status={row.original.briefingStatus} />
     },
     {
@@ -111,7 +111,8 @@ export function fetchEventsTableColumnDefs(): ColumnDef<EventView, unknown>[] {
     {
       id: 'participants',
       accessorKey: 'participants',
-      header: defaultHeader,
+      header: () => <div className='min-w-48'>Участники</div>,
+
       cell: ({ row }) => {
         const { participants } = row.original;
 

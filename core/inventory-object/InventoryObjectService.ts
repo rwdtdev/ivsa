@@ -3,7 +3,6 @@ import { TransactionSession } from '@/types/prisma';
 import { InventoryObject, PrismaClient } from '@prisma/client';
 import { InventoryObjectCreateData } from './types';
 import { InventoryObjectsGetData } from '../event/types';
-import { SortOrder } from '@/constants/data';
 import { PaginatedResponse } from '@/types';
 
 const defaultLimit = 100;
@@ -43,12 +42,7 @@ export class InventoryObjectService {
     inventoryId: string,
     data: InventoryObjectsGetData
   ): Promise<PaginatedResponse<InventoryObject>> {
-    const {
-      page = 1,
-      limit = defaultLimit,
-      searchTerm,
-      sortDirection = SortOrder.Descending
-    } = data;
+    const { page = 1, limit = defaultLimit, searchTerm, sort } = data;
 
     const containsSearchTerm = { contains: searchTerm, mode: 'insensitive' };
 
@@ -77,7 +71,7 @@ export class InventoryObjectService {
       ...where,
       skip: (page - 1) * limit,
       take: limit,
-      orderBy: { createdAt: sortDirection }
+      orderBy: { [sort.by]: sort.direction }
     });
 
     return {

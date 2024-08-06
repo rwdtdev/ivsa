@@ -14,7 +14,7 @@ export const UserRoles = {
 export const UserStatuses = {
   ACTIVE: 'Активен',
   BLOCKED: 'Заблокирован',
-  RECUSED: 'Освобожден от должности'
+  RECUSED: 'Освобожден от\u00A0должности'
 };
 
 export const UserStatus = {

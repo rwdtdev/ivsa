@@ -1,6 +1,5 @@
 import _ from 'underscore';
 import prisma from '@/core/prisma';
-import { SortOrder } from '@/constants/data';
 import { TransactionSession } from '@/types/prisma';
 import { PrismaClient, UserRole } from '@prisma/client';
 import {
@@ -137,36 +136,29 @@ export class EventService {
     return serializeToView(updatedEvent);
   }
 
-  async getEvents(
-    eventsGetData: EventsGetData = {}
-  ): Promise<PaginatedResponse<EventView>> {
-    const {
-      page = 1,
-      limit = defaultLimit,
-      sortDirection = SortOrder.Descending,
-      query
-    } = eventsGetData;
+  async getEvents(eventsGetData: EventsGetData): Promise<PaginatedResponse<EventView>> {
+    const { page = 1, limit = defaultLimit, filter, sort } = eventsGetData;
 
     const conditions = [];
 
-    if (query) {
-      if (query.statuses) {
-        conditions.push({ status: { in: query.statuses } });
+    if (filter) {
+      if (filter.statuses) {
+        conditions.push({ status: { in: filter.statuses } });
       }
 
-      if (query.briefingStatuses) {
-        conditions.push({ briefingStatus: { in: query.briefingStatuses } });
+      if (filter.briefingStatuses) {
+        conditions.push({ briefingStatus: { in: filter.briefingStatuses } });
       }
 
-      if (query.userId) {
-        conditions.push({ participants: { some: { userId: query.userId } } });
+      if (filter.userId) {
+        conditions.push({ participants: { some: { userId: filter.userId } } });
       }
     }
 
     const where = {
       where: {
-        ...(query && query.from && { endAt: { gte: query.from } }),
-        ...(query && query.to && { startAt: { lte: query?.to } }),
+        ...(filter && filter.from && { endAt: { gte: filter.from } }),
+        ...(filter && filter.to && { startAt: { lte: filter?.to } }),
         ...(conditions.length > 0 && { AND: conditions })
       }
     };
@@ -181,7 +173,7 @@ export class EventService {
       },
       skip: (page - 1) * limit,
       take: limit,
-      orderBy: { createdAt: sortDirection }
+      orderBy: { [sort.by]: sort.direction }
     });
 
     return {

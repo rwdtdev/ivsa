@@ -11,13 +11,14 @@ import { searchParamsSchema } from '@/lib/query-params-validation';
 import { UserService } from '@/core/user/UserService';
 import { UserView } from '@/types/user';
 import { PaginatedResponse } from '@/types';
-import { UserRole, UserStatus } from '@prisma/client';
+import { User, UserRole, UserStatus } from '@prisma/client';
 import { UserCreateData } from '@/core/user/types';
 import { UserManager } from '@/core/user/UserManager';
 import { IvaService } from '@/core/iva/IvaService';
 import { DepartmentService } from '@/core/department/DepartmentService';
 import { ParticipantService } from '@/core/participant/ParticipantService';
 import { OrganisationService } from '@/core/organisation/OrganisationService';
+import { SortOrder } from '@/constants/data';
 
 const cache = new Cache({ checkperiod: 120 });
 
@@ -84,7 +85,7 @@ export async function getUsersAction(
 > {
   noStore();
   try {
-    const { page, per_page, status, role, search, organisation, department } =
+    const { page, per_page, status, role, search, organisation, department, sort } =
       searchParamsSchema.parse(searchParams);
 
     // Fallback page for invalid page numbers
@@ -98,10 +99,10 @@ export async function getUsersAction(
     // Column and order to sort by
     // Spliting the sort string by "." to get the column and order
     // Example: "title.desc" => ["title", "desc"]
-    // const [column, order] = (sort?.split('.') as [
-    //   keyof UserView | undefined,
-    //   SortOrder
-    // ]) ?? ['title', 'asc'];
+    const [sortBy, sortDirection] = (sort?.split('.') as [keyof User, SortOrder]) ?? [
+      'name',
+      'asc'
+    ];
 
     const statuses = (status?.split('.') as UserStatus[]) ?? [];
     const roles = (role?.split('.') as UserRole[]) ?? [];
@@ -114,11 +115,15 @@ export async function getUsersAction(
       searchTerm: search,
       limit,
       page: fallbackPage,
-      query: {
+      filter: {
         ...(statuses.length > 0 && { statuses }),
         ...(roles.length > 0 && { roles }),
         ...(organisationsIds.length > 0 && { organisationsIds }),
         ...(departmentsIds.length > 0 && { departmentsIds })
+      },
+      sort: {
+        by: sortBy,
+        direction: sortDirection
       }
     });
   } catch (error) {

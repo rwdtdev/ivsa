@@ -30,9 +30,10 @@ export default async function EventsPage({ searchParams }: IndexPageProps) {
     );
   }
 
-  const events = session.user.role === UserRole.ADMIN ?
-    await getEventsAction(searchParams) :
-    await getEventsAction(searchParams, { userId: session.user.id });
+  const events =
+    session.user.role === UserRole.ADMIN
+      ? await getEventsAction(searchParams)
+      : await getEventsAction(searchParams, { userId: session.user.id });
 
   return (
     <div className='flex h-screen flex-col'>

@@ -7,7 +7,6 @@ import { PrismaClient, User, UserStatus } from '@prisma/client';
 import { exclude } from '@/utils/exclude';
 import { UserView } from '@/types/user';
 import { TransactionSession } from '@/types/prisma';
-import { SortOrder } from '@/constants/data';
 import {
   UserNotFoundError,
   UserWithEmailAlreadyExistError,
@@ -110,31 +109,27 @@ export class UserService {
     return user;
   }
 
-  async getAll(data: UsersGetData = {}): Promise<PaginatedResponse<UserView>> {
-    const {
-      page = 1,
-      limit = defaultLimit,
-      searchTerm,
-      sortDirection = SortOrder.Descending,
-      query
-    } = data;
+  async getAll(
+    data: UsersGetData = { sort: { by: 'name', direction: 'asc' } }
+  ): Promise<PaginatedResponse<UserView>> {
+    const { page = 1, limit = defaultLimit, searchTerm, filter, sort } = data;
 
     const containsSearchTerm = { contains: searchTerm, mode: 'insensitive' };
 
     const conditions = [];
 
-    if (query) {
-      if (query.roles) {
-        conditions.push({ role: { in: query.roles } });
+    if (filter) {
+      if (filter.roles) {
+        conditions.push({ role: { in: filter.roles } });
       }
-      if (query.statuses) {
-        conditions.push({ status: { in: query.statuses } });
+      if (filter.statuses) {
+        conditions.push({ status: { in: filter.statuses } });
       }
-      if (query.organisationsIds) {
-        conditions.push({ organisationId: { in: query.organisationsIds } });
+      if (filter.organisationsIds) {
+        conditions.push({ organisationId: { in: filter.organisationsIds } });
       }
-      if (query.departmentsIds) {
-        conditions.push({ departmentId: { in: query.departmentsIds } });
+      if (filter.departmentsIds) {
+        conditions.push({ departmentId: { in: filter.departmentsIds } });
       }
     }
 
@@ -165,7 +160,7 @@ export class UserService {
       },
       skip: (page - 1) * limit,
       take: limit,
-      orderBy: { createdAt: sortDirection }
+      orderBy: { [sort.by || 'name']: sort?.direction || 'asc' }
     });
 
     return {

@@ -32,14 +32,18 @@ export type UsersGetData = Partial<{
   page: number;
   limit: number;
   searchTerm: string;
-  sortDirection: SortOrder;
-  query: {
+  filter: {
     statuses?: UserStatus[];
     roles?: UserRole[];
     organisationsIds?: string[];
     departmentsIds?: string[];
   };
-}>;
+}> & {
+  sort: {
+    by: keyof User;
+    direction: SortOrder;
+  };
+};
 
 export type UserGetData = Partial<{
   id: string;

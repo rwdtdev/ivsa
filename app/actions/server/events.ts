@@ -7,6 +7,7 @@ import { PaginatedResponse } from '@/types';
 import { SearchParams } from '@/types';
 import { Event } from '@prisma/client';
 import { unstable_noStore as noStore } from 'next/cache';
+import { SortOrder } from '@/constants/data';
 
 export async function getEventsAction(
   searchParams: SearchParams,
@@ -16,7 +17,7 @@ export async function getEventsAction(
 > {
   noStore();
   try {
-    const { page, per_page, search, from, to, status, briefingStatus } =
+    const { page, per_page, search, from, to, status, briefingStatus, sort } =
       searchParamsSchema.parse(searchParams);
 
     // Fallback page for invalid page numbers
@@ -30,10 +31,10 @@ export async function getEventsAction(
     // Column and order to sort by
     // Spliting the sort string by "." to get the column and order
     // Example: "title.desc" => ["title", "desc"]
-    // const [column, order] = (sort?.split('.') as [
-    //   keyof Event | undefined,
-    //   SortOrder
-    // ]) ?? ['startAt', 'asc'];
+    const [sortBy, sortDirection] = (sort?.split('.') as [keyof Event, SortOrder]) ?? [
+      'startAt',
+      'asc'
+    ];
 
     const statuses = (status?.split('.') as Event['status'][]) ?? [];
     const briefingStatuses =
@@ -45,12 +46,16 @@ export async function getEventsAction(
       searchTerm: search,
       limit,
       page: fallbackPage,
-      query: {
+      filter: {
         from,
         to,
         ...(statuses.length > 0 && { statuses }),
         ...(briefingStatuses.length > 0 && { briefingStatuses }),
         ...queryParams
+      },
+      sort: {
+        by: sortBy,
+        direction: sortDirection
       }
     });
   } catch (err) {

@@ -23,7 +23,7 @@ export const EventsTableColumnNames = {
   startAt: 'Дата начала инвентаризации',
   endAt: 'Дата окончания инвентаризации',
   balanceUnit: 'Балансовая единица',
-  balanceUnitRegionCode: 'Код региона',
+  balanceUnitRegionCode: 'Регион',
   participants: 'Участники'
 };
 

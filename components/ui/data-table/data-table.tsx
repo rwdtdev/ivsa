@@ -137,7 +137,7 @@ export function DataTable<TData, TValue>({
       </div>
       <ScrollArea className='mb-auto rounded-md border shadow-mod-1'>
         <Table className=''>
-          <TableHeader className=''>
+          <TableHeader className='bg-slate-50'>
             {dataTable.getHeaderGroups().map((headerGroup) => (
               <TableRow key={headerGroup.id}>
                 {headerGroup.headers.map((header) => {
@@ -184,7 +184,7 @@ export function DataTable<TData, TValue>({
         <ScrollBar orientation='horizontal' />
       </ScrollArea>
       <div className='pt-3'>
-        <div className='bg-grey-700 rounded-md border p-1 shadow-mod-1'>
+        <div className='rounded-md border p-1 shadow-mod-1'>
           <DataTablePagination withSelectedRows={withSelectedRows} table={dataTable} />
           {floatingBarContent ? (
             <DataTableFloatingBar table={dataTable}>

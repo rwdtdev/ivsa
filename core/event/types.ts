@@ -3,6 +3,7 @@ import {
   Event,
   EventStatus,
   Inventory,
+  InventoryObject,
   Participant,
   User
 } from '@prisma/client';
@@ -28,22 +29,31 @@ export type EventsGetData = Partial<{
   page: number;
   limit: number;
   searchTerm: string;
-  sortDirection: SortOrder;
-  query: {
+  filter: {
     from?: string;
     to?: string;
     userId?: string;
     statuses?: EventStatus[];
     briefingStatuses?: BriefingStatus[];
   };
-}>;
+}> & {
+  sort: {
+    by: keyof Event;
+    direction: SortOrder;
+  };
+};
 
 export type InventoryObjectsGetData = Partial<{
   page: number;
   limit: number;
   searchTerm: string;
   sortDirection: SortOrder;
-}>;
+}> & {
+  sort: {
+    by: keyof InventoryObject;
+    direction: SortOrder;
+  };
+};
 
 export type ParticipantWithUser = Participant & { user: User };
 

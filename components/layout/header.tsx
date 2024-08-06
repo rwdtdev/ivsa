@@ -13,7 +13,7 @@ export default function Header({ title }: { title: string }) {
   const isAdmin = session?.data?.user.role === UserRole.ADMIN;
 
   return (
-    <header className='supports-backdrop-blur:bg-background/60 sticky top-0 z-20 border-b bg-background/95 shadow-sm backdrop-blur'>
+    <header className='supports-backdrop-blur:bg-background/60 sticky top-0 z-20 border-b bg-slate-50 shadow-sm backdrop-blur'>
       <div className='flex h-14 items-center justify-between px-3 sm:px-8'>
         <div className='mr-auto flex'>
           <Link href={'/'} className='flex'>

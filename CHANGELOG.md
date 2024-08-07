@@ -1,3 +1,10 @@
+## [1.2.13](https://rwdt1.gitlab.yandexcloud.net/rwdt/services/asvi/compare/1.2.12...1.2.13) (2024-08-07)
+
+
+### Bug Fixes
+
+* docker ([fd1c1a6](https://rwdt1.gitlab.yandexcloud.net/rwdt/services/asvi/commit/fd1c1a6615eec15bffdd20c1980d66fb005fe4a3))
+
 ## [1.2.12](https://rwdt1.gitlab.yandexcloud.net/rwdt/services/asvi/compare/1.2.11...1.2.12) (2024-08-07)
 
 

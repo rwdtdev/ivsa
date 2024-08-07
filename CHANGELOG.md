@@ -1,3 +1,10 @@
+## [1.2.14](https://rwdt1.gitlab.yandexcloud.net/rwdt/services/asvi/compare/1.2.13...1.2.14) (2024-08-07)
+
+
+### Bug Fixes
+
+* env ([37f574f](https://rwdt1.gitlab.yandexcloud.net/rwdt/services/asvi/commit/37f574f8dbe046ef99f22e5972a1e173cfe45b44))
+
 ## [1.2.13](https://rwdt1.gitlab.yandexcloud.net/rwdt/services/asvi/compare/1.2.12...1.2.13) (2024-08-07)
 
 

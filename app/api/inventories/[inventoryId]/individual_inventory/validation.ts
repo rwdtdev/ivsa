@@ -1,11 +1,6 @@
 import { z } from 'zod';
 import { InventoryCode, InventoryCodes } from '@/core/inventory/types';
 
-const isoDatetimeSchema = z
-  .string()
-  .min(1)
-  .transform((date) => new Date(date).toISOString());
-
 const inventoryObjectSchema = z
   .object({
     NAME: z.string().trim(),
@@ -31,7 +26,7 @@ export const CreateIndividualInventorySchema = z
     eventId: z.string().trim().min(1).cuid(),
     individualInventoryId: z.string().trim().min(1),
     inventoryCode: z.nativeEnum(InventoryCode),
-    inventoryDate: isoDatetimeSchema,
+    inventoryDate: z.string().trim().datetime().optional().nullable(),
     inventoryNumber: z.string().trim().min(1),
     inventoryObjects: z.array(inventoryObjectSchema)
   })

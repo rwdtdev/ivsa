@@ -1,3 +1,10 @@
+## [1.2.12](https://rwdt1.gitlab.yandexcloud.net/rwdt/services/asvi/compare/1.2.11...1.2.12) (2024-08-07)
+
+
+### Bug Fixes
+
+* date ([692d577](https://rwdt1.gitlab.yandexcloud.net/rwdt/services/asvi/commit/692d57777c6e62ee39e3cb6114c019970f61abbf))
+
 ## [1.2.11](https://rwdt1.gitlab.yandexcloud.net/rwdt/services/asvi/compare/1.2.10...1.2.11) (2024-08-06)
 
 

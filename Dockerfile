@@ -6,7 +6,7 @@ WORKDIR /app
 
 # Copy application dependencies
 COPY . .
-RUN rm -f .env.sample && mv .env.mivc .env
+RUN rm -f .env.sample .env.mivc
 
 # Disable Next.js telemetry
 ENV NEXT_TELEMETRY_DISABLED=true

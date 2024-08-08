@@ -42,6 +42,14 @@ export const InventoryObjectsTableColumnNames = {
   placement: 'Местоположение'
 };
 
+export const SystemEventsTableColumnNames = {
+  date: 'Дата',
+  time: 'Время',
+  actionType: 'Событие',
+  name: 'ФИО',
+  ip: 'IP'
+};
+
 export const makeColumnsNames =
   <T>(columnNames: T) =>
   (columnId: string) =>

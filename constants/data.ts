@@ -2,7 +2,7 @@ import { NavItem } from '@/types';
 
 export const dictionaryItems: NavItem[] = [
   {
-    title: 'Дашборд',
+    title: 'Журнал событий',
     href: '/admin',
     icon: 'dashboard',
     label: 'Dashboard'

@@ -18,7 +18,7 @@ import {
 } from '@/constants/mappings/tables-column-names';
 import { format, parseISO } from 'date-fns';
 
-const padding = 9;
+// const padding = 9;
 
 const getColumnNameById = makeColumnsNames(EventsTableColumnNames);
 
@@ -32,21 +32,21 @@ export function fetchEventsTableColumnDefs(): ColumnDef<EventView, unknown>[] {
       id: 'startAt',
       accessorKey: 'startAt',
       header: defaultHeader,
-      cell: ({ row }) => (
-        <div style={{ padding }}>
-          {format(parseISO(row.original.startAt.slice(0, 10)), 'dd.MM.yyyy')}
-        </div>
-      )
+      cell: ({ row }) =>
+        // <div style={{ padding }}>
+        //   {format(parseISO(row.original.startAt.slice(0, 10)), 'dd.MM.yyyy')}
+        // </div>
+        format(parseISO(row.original.startAt.slice(0, 10)), 'dd.MM.yyyy')
     },
     {
       id: 'endAt',
       accessorKey: 'endAt',
       header: defaultHeader,
-      cell: ({ row }) => (
-        <div style={{ padding }}>
-          {format(parseISO(row.original.endAt.slice(0, 10)), 'dd.MM.yyyy')}
-        </div>
-      )
+      cell: ({ row }) =>
+        // <div style={{ padding }}>
+        //   {format(parseISO(row.original.endAt.slice(0, 10)), 'dd.MM.yyyy')}
+        // </div>
+        format(parseISO(row.original.endAt.slice(0, 10)), 'dd.MM.yyyy')
     },
     {
       id: 'status',
@@ -63,50 +63,50 @@ export function fetchEventsTableColumnDefs(): ColumnDef<EventView, unknown>[] {
     {
       id: 'balanceUnit',
       accessorKey: 'balanceUnit',
-      header: defaultHeader,
-      cell: ({ row }) => <div style={{ padding }}>{row.original.balanceUnit}</div>
+      header: defaultHeader
+      // cell: ({ row }) => <div style={{ padding }}>{row.original.balanceUnit}</div>
     },
     {
       id: 'balanceUnitRegionCode',
       accessorKey: 'balanceUnitRegionCode',
       header: defaultHeader,
-      cell: ({ row }) => (
-        <div style={{ padding }}>
-          {REGION_CODES[row.original.balanceUnitRegionCode as keyof typeof REGION_CODES]}
-        </div>
-      )
+      cell: ({ row }) =>
+        // <div style={{ padding }}>
+        //   {REGION_CODES[row.original.balanceUnitRegionCode as keyof typeof REGION_CODES]}
+        // </div>
+        REGION_CODES[row.original.balanceUnitRegionCode as keyof typeof REGION_CODES]
     },
     {
       id: 'commandNumber',
       accessorKey: 'commandNumber',
-      header: defaultHeader,
-      cell: ({ row }) => <div style={{ padding }}>{row.original.commandNumber}</div>
+      header: defaultHeader
+      // cell: ({ row }) => <div style={{ padding }}>{row.original.commandNumber}</div>
     },
     {
       id: 'commandDate',
       accessorKey: 'commandDate',
       header: defaultHeader,
-      cell: ({ row }) => (
-        <div style={{ padding }}>
-          {format(parseISO(row.original.commandDate.slice(0, 10)), 'dd.MM.yyyy')}
-        </div>
-      )
+      cell: ({ row }) =>
+        // <div style={{ padding }}>
+        //   {format(parseISO(row.original.commandDate.slice(0, 10)), 'dd.MM.yyyy')}
+        // </div>
+        format(parseISO(row.original.commandDate.slice(0, 10)), 'dd.MM.yyyy')
     },
     {
       id: 'orderNumber',
       accessorKey: 'orderNumber',
-      header: defaultHeader,
-      cell: ({ row }) => <div style={{ padding }}>{row.original.orderNumber}</div>
+      header: defaultHeader
+      // cell: ({ row }) => <div style={{ padding }}>{row.original.orderNumber}</div>
     },
     {
       id: 'orderDate',
       accessorKey: 'orderDate',
       header: defaultHeader,
-      cell: ({ row }) => (
-        <div style={{ padding }}>
-          {format(parseISO(row.original.orderDate.slice(0, 10)), 'dd.MM.yyyy')}
-        </div>
-      )
+      cell: ({ row }) =>
+        // <div style={{ padding }}>
+        //   {format(parseISO(row.original.orderDate.slice(0, 10)), 'dd.MM.yyyy')}
+        // </div>
+        format(parseISO(row.original.orderDate.slice(0, 10)), 'dd.MM.yyyy')
     },
     {
       id: 'participants',
@@ -117,7 +117,7 @@ export function fetchEventsTableColumnDefs(): ColumnDef<EventView, unknown>[] {
         const { participants } = row.original;
 
         if (!participants || participants.length === 0) {
-          return <div style={{ padding }}></div>;
+          return <div style={{}}></div>;
         }
 
         const participantsRolesCounts = participants
@@ -130,15 +130,15 @@ export function fetchEventsTableColumnDefs(): ColumnDef<EventView, unknown>[] {
           );
 
         return (
-          <div style={{ padding }}>
-            <ul>
-              {Object.entries(participantsRolesCounts).map(([key, value]) => (
-                <li key={key}>
-                  {UserRoles[key as UserRole]} ({value})
-                </li>
-              ))}
-            </ul>
-          </div>
+          // <div style={{ padding }}>
+          <ul>
+            {Object.entries(participantsRolesCounts).map(([key, value]) => (
+              <li key={key}>
+                {UserRoles[key as UserRole]} ({value})
+              </li>
+            ))}
+          </ul>
+          // </div>
         );
       }
     }

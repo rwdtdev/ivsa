@@ -1,6 +1,6 @@
 import { UserRole } from '@prisma/client';
 
-export const systemEventItems = [
+export const fakeSystemEventItems = [
   {
     id: '0',
     actionAt: '2024-11-09 20:04:24.683',

@@ -46,7 +46,7 @@ export function fetchUsersTableColumnDefs(): ColumnDef<UserView, unknown>[] {
       ),
       cell: ({ row }) => (
         <Checkbox
-          style={{ marginLeft: 8 }}
+          // style={{ marginLeft: 8 }}
           checked={row.getIsSelected()}
           onCheckedChange={(value) => {
             row.toggleSelected(!!value);
@@ -62,10 +62,10 @@ export function fetchUsersTableColumnDefs(): ColumnDef<UserView, unknown>[] {
       accessorKey: 'name',
       header: ({ column }) => (
         <DataTableColumnHeader column={column} title='ФИО' className='min-w-36' />
-      ),
-      cell: ({ row }) => {
-        return <div style={{ padding: 10 }}>{row.original.name}</div>;
-      }
+      )
+      // cell: ({ row }) => {
+      //   return <div style={{ padding: 10 }}>{row.original.name}</div>;
+      // }
     },
     {
       id: 'username',
@@ -75,10 +75,10 @@ export function fetchUsersTableColumnDefs(): ColumnDef<UserView, unknown>[] {
     {
       id: 'email',
       accessorKey: 'email',
-      header: ({ column }) => <DataTableColumnHeader column={column} title='Эл. почта' />,
-      cell: ({ row }) => {
-        return <div style={{ padding: 10 }}>{row.original.email}</div>;
-      }
+      header: ({ column }) => <DataTableColumnHeader column={column} title='Эл. почта' />
+      // cell: ({ row }) => {
+      //   return <div style={{ padding: 10 }}>{row.original.email}</div>;
+      // }
     },
     {
       id: 'phone',
@@ -93,8 +93,8 @@ export function fetchUsersTableColumnDefs(): ColumnDef<UserView, unknown>[] {
       header: ({ column }) => <DataTableColumnHeader column={column} title='Роли' />,
       cell: ({ row }) => {
         const role = row.getValue('role') as UserRole;
-
-        return <div style={{ padding: 10 }}>{UserRoles[role]}</div> || emptyCell;
+        // return <div style={{ padding: 10 }}>{UserRoles[role]}</div> || emptyCell;
+        return UserRoles[role] || emptyCell;
       }
     },
     {
@@ -178,17 +178,17 @@ export function fetchUsersTableColumnDefs(): ColumnDef<UserView, unknown>[] {
       header: ({ column }) => (
         <DataTableColumnHeader column={column} title='Действует до' />
       ),
-      cell: ({ row }) => (
-        <div style={{ padding: 10 }}>{format(row.original.expiresAt, 'dd.MM.yyyy')}</div>
-      )
+      cell: ({ row }) =>
+        // <div style={{ padding: 10 }}>{format(row.original.expiresAt, 'dd.MM.yyyy')}</div>
+        format(row.original.expiresAt, 'dd.MM.yyyy')
     },
     {
       id: 'tabelNumber',
       accessorKey: 'tabelNumber',
       header: ({ column }) => (
         <DataTableColumnHeader column={column} title='Табельный номер' />
-      ),
-      cell: ({ row }) => <div style={{ padding: 10 }}>{row.getValue('tabelNumber')}</div>
+      )
+      // cell: ({ row }) => <div style={{ padding: 10 }}>{row.getValue('tabelNumber')}</div>
     },
     {
       id: 'organisation',

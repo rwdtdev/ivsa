@@ -23,7 +23,11 @@ import { ScrollArea, ScrollBar } from '../scroll-area';
 import { useRouter } from 'next/navigation';
 import { Inventory } from '@prisma/client';
 
-export type TableType = 'usersTable' | 'eventsTable' | 'inventoriesTable';
+export type TableType =
+  | 'usersTable'
+  | 'eventsTable'
+  | 'inventoriesTable'
+  | 'monitoringTable';
 
 interface DataTableProps<TData, TValue> {
   /**
@@ -166,7 +170,7 @@ export function DataTable<TData, TValue>({
                   }}
                 >
                   {row.getVisibleCells().map((cell) => (
-                    <TableCell key={cell.id} style={{ padding: 0 }}>
+                    <TableCell key={cell.id} style={{ paddingLeft: 9 }}>
                       {flexRender(cell.column.columnDef.cell, cell.getContext())}
                     </TableCell>
                   ))}

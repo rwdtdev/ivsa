@@ -4,9 +4,13 @@ import { SystemEventsTableColumnNames } from '@/constants/mappings/tables-column
 import { useDataTable } from '@/hooks/use-data-table';
 import { ColumnDef } from '@tanstack/react-table';
 import React from 'react';
-import { systemEventItems } from './monitoringFakeData';
+import { fakeSystemEventItems } from './monitoringFakeData';
 import { UserRole } from '@prisma/client';
-import { fetchSystemEventsTableColumns } from './columns';
+import {
+  fetchSystemEventsTableColumns,
+  filterableColumns,
+  monitoringDatePickers
+} from './columns';
 
 export type SystemEventObject = {
   id: string;
@@ -38,7 +42,7 @@ export type SystemEventObject = {
   };
 };
 
-export function SystemEventsTable() {
+export function MonitoringTable(/* { systemEvents }: Props */) {
   const columns = React.useMemo<ColumnDef<SystemEventObject, unknown>[]>(
     () => fetchSystemEventsTableColumns(),
 
@@ -46,10 +50,12 @@ export function SystemEventsTable() {
   );
 
   const { dataTable } = useDataTable({
-    data: systemEventItems,
+    // data: items,
+    data: fakeSystemEventItems,
     columns,
-    pageCount: 50
-    // filterableColumns: filterableColumns()
+    // pageCount: pagination.pagesCount,
+    pageCount: 50,
+    filterableColumns: filterableColumns()
   });
 
   return (
@@ -57,6 +63,10 @@ export function SystemEventsTable() {
       dataTable={dataTable}
       columns={columns}
       columnNames={SystemEventsTableColumnNames}
+      tableType='monitoringTable'
+      withSearch
+      datePickers={monitoringDatePickers}
+      filterableColumns={filterableColumns()}
     />
   );
 }

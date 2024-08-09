@@ -1,6 +1,6 @@
-export const systemEventType = {
-  addRecord: 'добавление записи',
-  editRecord: 'изменение записи',
+export const systemEventTypes = {
+  addRecord: 'добавление\u00A0записи',
+  editRecord: 'изменение\u00A0записи',
   authSuccess: 'успешная авторизация',
   authError: 'неуспешная попытка авторизации',
   logout: 'выход из учетной записи',

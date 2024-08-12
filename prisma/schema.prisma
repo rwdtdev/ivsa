@@ -296,6 +296,84 @@ model InventoryResource {
   @@map("inventory_resources")
 }
 
+model Action {
+  /// Идентификатор действия
+  id        String       @id @default(uuid())
+  requestId String?
+  actionAt  DateTime     @default(now())
+  type      ActionType
+  status    ActionStatus
+  initiator String
+  ip        String?
+  details   Json?
+
+  @@map("actions")
+}
+
+enum ActionType {
+  /// Пользовательские события
+  /// Создание пользователя в системе
+  USER_CREATE
+  /// Редактирование данных о пользователе. Не включает изменение роли
+  USER_EDIT
+  /// Изменение системной роли пользователя
+  USER_CHANGE_ROLE
+  /// Успешная авторизация на портале
+  USER_LOGIN
+  /// Выход пользователя из учетной записи
+  USER_LOGOUT
+  /// Скачивание файлов инвентаризации пользователем (метаданных или видео-ресурсов)
+  USER_DOWNLOAD_FILE
+  /// Пользователь зашел в конференцию для инструктажа (Кликнул на иконку входа в конференцию на портале)
+  USER_LOGGED_INTO_BRIEFING_CONFERENCE
+  /// Пользователь перешел на страницу входа в конференцию IVA R по описи (кликнул на кнопку входа в конференцию в карточке описи)
+  USER_LOGGED_INTO_AUDIT_CONFERENCE
+  /// Пользователь инициировал процесс восстановления пароля (по клику на кнопку с отправкой нового пароля на e-mail)
+  USER_REQUEST_PASSWORD_RESET
+  /// Пользователь был заблокирован из-за превышения попыток ввода пароля, входа в систему
+  USER_BLOCK_BY_LIMIT_LOGIN_ATTEMPTS
+  /// Администратор сбросил пользователю пароль
+  ADMIN_USER_PASSWORD_RESET
+  /// Блокировка пользователя администратором
+  ADMIN_USER_BLOCK
+
+  /// Системные события
+  /// Начало переноса обработанных видео-ресурсов и метаданных в Оперативное хранилище
+  SYSTEM_MOVE_RESOURCES_TO_OPERATIVE_STORAGE_START
+  /// Окончание переноса обработанных видео-ресурсов и метаданных в Оперативное хранилище
+  SYSTEM_MOVE_RESOURCES_TO_OPERATIVE_STORAGE_END
+  /// Начало процесса переноса ресурсов из Оперативного хранилища в Архивное
+  SYSTEM_MOVE_RESOURCES_FROM_OPERATIVE_TO_ARCHIVE_STORAGE_START
+  /// Окончание процесса переноса ресурсов из Оперативного хранилища в Архивное
+  SYSTEM_MOVE_RESOURCES_FROM_OPERATIVE_TO_ARCHIVE_STORAGE_END
+
+  /// Внешние события по запросам СБО СОИ. ЭДО. ИНВ. ВИ
+  /// Создание события инвентаризации
+  SOI_EVENT_CREATE
+  /// Создание инвентаризационной описи и конференции IVA R
+  SOI_AUDIT_OPEN
+  /// Закрытие инвентаризационной описи и конференции IVA R
+  SOI_AUDIT_CLOSE
+  /// Открытие конференции для инструктажа в IVA R 
+  SOI_BRIEFING_OPEN
+  /// Закрытие конференции для инструктажа в IVA R
+  SOI_BRIEFING_CLOSE
+  /// Изменение состава участников события инвентаризации по запросу СБО СОИ
+  SOI_EVENT_PARTICIPANTS_CHANGE
+  /// Проверка зарегистрированных в системе пользователей
+  SOI_CHECK_USERS
+}
+
+enum ActionStatus {
+  SUCCESS
+  ERROR
+}
+
+enum SystemActionType {
+  CREATE_EVENT
+  CREATE_INVENTORY
+}
+
 enum UserStatus {
   /// Активен
   ACTIVE
@@ -368,22 +446,4 @@ enum ConferenseRole {
   SPEAKER
   MODERATOR
   ATTENDEE
-}
-
-model SubSystems {
-  id          String @id @default(cuid())
-  name        String @unique
-  description String
-
-  @@map("subsystems")
-}
-
-model OperationRecord {
-  id          String   @id @default(cuid())
-  createdAt   DateTime @default(now()) @map("created_at")
-  userId      String   @map("user_id")
-  subsystemId String   @map("subsystem_id")
-  payload     Json
-
-  @@map("operations_records")
 }

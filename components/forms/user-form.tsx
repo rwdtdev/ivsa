@@ -8,6 +8,7 @@ import { Button } from '@/components/ui/button';
 import {
   Form,
   FormControl,
+  // FormDescription,
   FormField,
   FormItem,
   FormLabel,
@@ -26,22 +27,27 @@ import {
   UserFormData,
   UserFormSchema
 } from '@/lib/form-validation-schemas/user-form-schema';
-import { Department, Organisation, UserRole, UserStatus } from '@prisma/client';
+import { /* Department, Organisation, */ UserRole, UserStatus } from '@prisma/client';
 import { PasswordInput } from '../password-input';
 import { createUserAction, updateUserAction } from '@/app/actions/server/users';
 import _ from 'underscore';
+import { Popover, PopoverContent, PopoverTrigger } from '@radix-ui/react-popover';
+import { CalendarIcon } from 'lucide-react';
+import { Calendar } from '@/components/ui/calendar';
+import { cn } from '@/lib/utils';
+import { format } from 'date-fns';
 
 interface UserFormProps {
   userId?: string;
   initialData: any | null;
-  organisations: any;
-  departments: any;
+  // organisations: any;
+  // departments: any;
 }
 
 export const UserForm: React.FC<UserFormProps> = ({
   initialData,
-  organisations,
-  departments,
+  // organisations,
+  // departments,
   userId
 }) => {
   const { toast } = useToast();
@@ -63,7 +69,8 @@ export const UserForm: React.FC<UserFormProps> = ({
         email: '',
         tabelNumber: '',
         phone: '',
-        role: UserRole.USER
+        role: UserRole.USER,
+        expiresAt: new Date(Date.now() + 3 * 30 * 24 * 60 * 60 * 1000)
       };
 
   const form = useForm<UserFormData>({
@@ -226,7 +233,7 @@ export const UserForm: React.FC<UserFormProps> = ({
                 </FormItem>
               )}
             />
-            <FormField
+            {/* <FormField
               control={form.control}
               name='organisationId'
               render={({ field }) => (
@@ -283,7 +290,7 @@ export const UserForm: React.FC<UserFormProps> = ({
                   <FormMessage />
                 </FormItem>
               )}
-            />
+            /> */}
             <FormField
               control={form.control}
               name='status'
@@ -311,6 +318,67 @@ export const UserForm: React.FC<UserFormProps> = ({
                       )}
                     </SelectContent>
                   </Select>
+                  <FormMessage />
+                </FormItem>
+              )}
+            />
+            {/* <FormField
+              control={form.control}
+              name='expiresAt'
+              render={({ field }) => (
+                <FormItem>
+                  <FormLabel>Срок действия учетной записи</FormLabel>
+                  <FormControl>
+                    <Input disabled={loading} placeholder='Рабочий телефон' {...field} />
+                  </FormControl>
+                  <FormMessage />
+                </FormItem>
+              )}
+            /> */}
+
+            <FormField
+              control={form.control}
+              name='expiresAt'
+              render={({ field }) => (
+                <FormItem className=''>
+                  <FormLabel className='mb-2 block'>
+                    Срок действия учетной записи
+                  </FormLabel>
+                  <Popover>
+                    <PopoverTrigger asChild>
+                      <FormControl>
+                        <Button
+                          variant={'outline'}
+                          className={cn(
+                            'w-[240px] pl-3 text-left font-normal',
+                            !field.value && 'text-muted-foreground'
+                          )}
+                        >
+                          {field.value ? (
+                            format(field.value, 'dd.MM.yyyy')
+                          ) : (
+                            <span>Pick a date</span>
+                          )}
+                          <CalendarIcon className='ml-auto h-4 w-4 opacity-50' />
+                        </Button>
+                      </FormControl>
+                    </PopoverTrigger>
+                    <PopoverContent
+                      className='w-auto rounded-md border bg-white p-0'
+                      align='start'
+                    >
+                      <Calendar
+                        mode='single'
+                        selected={field.value}
+                        onSelect={field.onChange}
+                        disabled={(date) => date < new Date()}
+                        initialFocus
+                      />
+                    </PopoverContent>
+                  </Popover>
+                  {/* <FormDescription>
+                    Your date of birth is used to calculate your age.
+                  </FormDescription> */}
                   <FormMessage />
                 </FormItem>
               )}

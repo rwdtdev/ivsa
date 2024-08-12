@@ -6,9 +6,9 @@ import { UserForm } from '@/components/forms/user-form';
 import { usePathname } from 'next/navigation';
 import { useEffect, useState } from 'react';
 import { getUserByIdAction } from '@/app/actions/server/users';
-import { getOrganisationsAction } from '@/app/actions/server/organisations';
-import { getDepartmentsAction } from '@/app/actions/server/departments';
-import { Department, Organisation } from '@prisma/client';
+// import { getOrganisationsAction } from '@/app/actions/server/organisations';
+// import { getDepartmentsAction } from '@/app/actions/server/departments';
+// import { Department, Organisation } from '@prisma/client';
 import { UserView } from '@/types/user';
 import Loading from '@/app/loading';
 import Header from '@/components/layout/header';
@@ -17,8 +17,8 @@ export default function UpdateUserPage() {
   const pathname = usePathname();
 
   const [userInitialData, setUserInitialData] = useState<Partial<UserView>>();
-  const [departments, setDepartments] = useState<Department[]>([]);
-  const [organisations, setOrganisations] = useState<Organisation[]>([]);
+  // const [departments, setDepartments] = useState<Department[]>([]);
+  // const [organisations, setOrganisations] = useState<Organisation[]>([]);
 
   const pathnameChunks = pathname.split('/');
   const userId = pathnameChunks[pathnameChunks.length - 1].trim();
@@ -27,8 +27,8 @@ export default function UpdateUserPage() {
     const user = await getUserByIdAction(userId);
 
     if (user) {
-      const listOfDepartments = await getDepartmentsAction();
-      const listOfORganisations = await getOrganisationsAction();
+      // const listOfDepartments = await getDepartmentsAction();
+      // const listOfORganisations = await getOrganisationsAction();
 
       const omitKeys = ['password'];
 
@@ -37,8 +37,8 @@ export default function UpdateUserPage() {
       if (user.organisationId === null) omitKeys.push('organisationId');
 
       setUserInitialData(_.omit(user, omitKeys));
-      setDepartments(listOfDepartments);
-      setOrganisations(listOfORganisations);
+      // setDepartments(listOfDepartments);
+      // setOrganisations(listOfORganisations);
     }
   };
 
@@ -60,13 +60,13 @@ export default function UpdateUserPage() {
   return (
     <>
       <Header title='Редактирование пользователя' />
-      <main className='flex-1 space-y-4 px-8 pb-8 '>
+      <main className='flex-1 space-y-4 px-8 pb-8'>
         <BreadCrumb items={breadcrumbItems} />
-        <div className='shadow-mod-1 rounded-md border p-4 '>
+        <div className='rounded-md border p-4 shadow-mod-1'>
           <UserForm
             userId={userId}
-            organisations={organisations}
-            departments={departments}
+            // organisations={organisations}
+            // departments={departments}
             initialData={userInitialData}
           />
         </div>

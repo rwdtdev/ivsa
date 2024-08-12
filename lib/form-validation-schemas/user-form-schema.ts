@@ -23,7 +23,8 @@ export const UserFormSchema = z.object({
     errorMap: () => {
       return { message: 'Выберите роль' };
     }
-  })
+  }),
+  expiresAt: z.date()
 });
 
 export type UserFormData = z.infer<typeof UserFormSchema>;

@@ -14,6 +14,7 @@ import {
   UserWithUsernameAlreadyExistError
 } from './errors';
 import { BadRequestError, NotFoundError } from '@/lib/problem-json';
+import { dateTimeToGMT } from '@/lib/dateTimeToGMT';
 
 const defaultLimit = 100;
 
@@ -280,6 +281,9 @@ export class UserService {
     }
     if (data.departmentId) {
       updateData.departmentId = data.departmentId;
+    }
+    if (data.expiresAt) {
+      updateData.expiresAt = dateTimeToGMT(data.expiresAt);
     }
 
     const updatedUser = await prisma.user.update({

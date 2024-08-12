@@ -47,7 +47,14 @@ export async function updateUserAction(id: string, formData: UserFormData) {
   const userService = new UserService();
 
   try {
-    await userService.update(id, formData);
+    await userService.update(
+      id,
+      formData
+      //   {
+      //   ...formData,
+      //   expiresAt: new Date(formData.expiresAt || '')
+      // }
+    );
   } catch (error) {
     console.debug(error);
     return { error: JSON.stringify(error, Object.getOwnPropertyNames(error)) };

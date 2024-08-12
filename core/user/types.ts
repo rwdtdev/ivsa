@@ -15,6 +15,7 @@ export type UserCreateData = RequiredNotNull<
     | 'lastUpdatePasswordDate'
     | 'organisationId'
     | 'departmentId'
+    // | 'expiresAt'
   >
 > & {
   departmentId?: string;

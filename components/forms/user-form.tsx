@@ -341,9 +341,7 @@ export const UserForm: React.FC<UserFormProps> = ({
               name='expiresAt'
               render={({ field }) => (
                 <FormItem className=''>
-                  <FormLabel className='mb-2 block'>
-                    Срок действия учетной записи
-                  </FormLabel>
+                  <FormLabel className='mb-2 block'>Активен до</FormLabel>
                   <Popover>
                     <PopoverTrigger asChild>
                       <FormControl>

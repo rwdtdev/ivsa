@@ -11,7 +11,7 @@ import { searchParamsSchema } from '@/lib/query-params-validation';
 import { UserService } from '@/core/user/UserService';
 import { UserView } from '@/types/user';
 import { PaginatedResponse } from '@/types';
-import { User, UserRole, UserStatus } from '@prisma/client';
+import { ActionStatus, ActionType, User, UserRole, UserStatus } from '@prisma/client';
 import { UserCreateData } from '@/core/user/types';
 import { UserManager } from '@/core/user/UserManager';
 import { IvaService } from '@/core/iva/IvaService';
@@ -19,6 +19,8 @@ import { DepartmentService } from '@/core/department/DepartmentService';
 import { ParticipantService } from '@/core/participant/ParticipantService';
 import { OrganisationService } from '@/core/organisation/OrganisationService';
 import { SortOrder } from '@/constants/data';
+import { ActionService } from '@/core/action/ActionService';
+import { getUnknownErrorText } from '@/lib/helpers';
 
 const cache = new Cache({ checkperiod: 120 });
 
@@ -44,18 +46,37 @@ export async function createUserAction(formData: UserFormData): Promise<any> {
 }
 
 export async function updateUserAction(id: string, formData: UserFormData) {
+  const actionService = new ActionService();
   const userService = new UserService();
 
   try {
-    await userService.update(
-      id,
-      formData
-      //   {
-      //   ...formData,
-      //   expiresAt: new Date(formData.expiresAt || '')
-      // }
-    );
+    await userService.update(id, formData);
+    await actionService.add({
+      ip: '192.168.12.15',
+      status: ActionStatus.SUCCESS,
+      type: ActionType.USER_EDIT,
+      initiator: 'Иванов Сергей',
+      details: {
+        adminUsername: 'HaritonovFS',
+        adminDepartment: 'Отдел 168',
+        editedUserUserName: 'IvanovAD',
+        editedUserName: 'Иванов Александр Дмитриевич'
+      }
+    });
   } catch (error) {
+    await actionService.add({
+      ip: '192.168.12.15',
+      status: ActionStatus.ERROR,
+      type: ActionType.USER_EDIT,
+      initiator: 'Иванов Сергей',
+      details: {
+        error: getUnknownErrorText(error),
+        adminUsername: 'HaritonovFS',
+        adminDepartment: 'Отдел 168',
+        editedUserUserName: 'IvanovAD',
+        editedUserName: 'Иванов Александр Дмитриевич'
+      }
+    });
     console.debug(error);
     return { error: JSON.stringify(error, Object.getOwnPropertyNames(error)) };
   }

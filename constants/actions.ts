@@ -45,21 +45,88 @@ export const actionTypeSerializeSchema = {
     admin: {
       key: 'Администратор',
       subKeys: {
-        username: 'Пользователь',
-        department: 'Отдел'
+        adminUsername: 'Логин',
+        adminDepartment: 'Отдел'
+      }
+    },
+    createdUser: {
+      key: 'Созданный пользователь',
+      subKeys: {
+        createdUserName: 'Пользователь',
+        createdName: 'ФИО'
       }
     }
   },
   // Редактирование данных о пользователе. Не включает изменение роли
-  [ActionType.USER_EDIT]: {},
+  [ActionType.USER_EDIT]: {
+    admin: {
+      key: 'Администратор',
+      subKeys: {
+        adminUsername: 'Логин',
+        adminDepartment: 'Отдел'
+      }
+    },
+    createdUser: {
+      key: 'Отредактированный пользователь',
+      subKeys: {
+        editedUserUserName: 'Логин',
+        editedUserName: 'ФИО'
+      }
+    }
+  },
   // Изменение системной роли пользователя
-  [ActionType.USER_CHANGE_ROLE]: {},
+  [ActionType.USER_CHANGE_ROLE]: {
+    admin: {
+      key: 'Администратор',
+      subKeys: {
+        adminUsername: 'Логин',
+        adminDepartment: 'Отдел'
+      }
+    },
+    createdUser: {
+      key: 'Отредактированный пользователь',
+      subKeys: {
+        editedUserUsername: 'Логин',
+        editedUserName: 'ФИО',
+        roleBefore: 'Роль до',
+        roleAfter: 'Роль после'
+      }
+    }
+  },
   // Успешная авторизация на портале
-  [ActionType.USER_LOGIN]: {},
+  [ActionType.USER_LOGIN]: {
+    loggedinUser: {
+      key: 'Пользователь',
+      subKeys: {
+        username: 'Логин',
+        department: 'Отдел',
+        status: 'Статус'
+      }
+    }
+  },
   // Выход пользователя из учетной записи
-  [ActionType.USER_LOGOUT]: {},
+  [ActionType.USER_LOGOUT]: {
+    loggedoutUser: {
+      key: 'Пользователь',
+      subKeys: {
+        username: 'Логин',
+        department: 'Отдел'
+      }
+    }
+  },
   // Скачивание файлов инвентаризации пользователем (метаданных или видео-ресурсов)
-  [ActionType.USER_DOWNLOAD_FILE]: {},
+  [ActionType.USER_DOWNLOAD_FILE]: {
+    loggedinUser: {
+      key: 'Пользователь',
+      subKeys: {
+        username: 'Логин',
+        department: 'Отдел',
+        videoFileName: 'Название видео-файла', // возможно лучше идентификатор файла т.е. по названию сложно будет найти файл в хранилище
+        subtitlesFileName: 'Название файла мета-данных', // возможно лучше идентификатор файла т.е. по названию сложно будет найти файл в хранилище
+        videoFileSize: 'Размер видео-файла'
+      }
+    }
+  },
   // Пользователь зашел в конференцию для инструктажа (Кликнул на иконку входа в конференцию на портале)
   [ActionType.USER_LOGGED_INTO_BRIEFING_CONFERENCE]: {},
   // Пользователь перешел на страницу входа в конференцию IVA R по описи (кликнул на кнопку входа в конференцию в карточке описи)

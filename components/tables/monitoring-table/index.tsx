@@ -5,7 +5,7 @@ import { useDataTable } from '@/hooks/use-data-table';
 import { ColumnDef } from '@tanstack/react-table';
 import React from 'react';
 import { fakeSystemEventItems } from './monitoringFakeData';
-import { UserRole } from '@prisma/client';
+import { ActionType, UserRole } from '@prisma/client';
 import {
   fetchSystemEventsTableColumns,
   filterableColumns,
@@ -15,7 +15,7 @@ import {
 export type SystemEventObject = {
   id: string;
   actionAt: string;
-  actionType: string;
+  actionType: ActionType;
   name: string | null;
   ip: string | null;
   details: {

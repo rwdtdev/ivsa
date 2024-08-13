@@ -24,7 +24,8 @@ export const UserFormSchema = z.object({
       return { message: 'Выберите роль' };
     }
   }),
-  expiresAt: z.date()
+  expiresAt: z.date(),
+  ASOZSystemRequestNumber: z.string().max(200, { message: 'Не более 200 символов' })
 });
 
 export type UserFormData = z.infer<typeof UserFormSchema>;

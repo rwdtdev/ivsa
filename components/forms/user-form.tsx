@@ -335,7 +335,23 @@ export const UserForm: React.FC<UserFormProps> = ({
                 </FormItem>
               )}
             /> */}
-
+            <FormField
+              control={form.control}
+              name='ASOZSystemRequestNumber'
+              render={({ field }) => (
+                <FormItem>
+                  <FormLabel>Номер заявки АС ОЗ</FormLabel>
+                  <FormControl>
+                    <Input
+                      disabled={loading}
+                      placeholder='Номер заявки АС ОЗ'
+                      {...field}
+                    />
+                  </FormControl>
+                  <FormMessage />
+                </FormItem>
+              )}
+            />
             <FormField
               control={form.control}
               name='expiresAt'

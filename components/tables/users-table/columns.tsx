@@ -194,9 +194,11 @@ export function fetchUsersTableColumnDefs(): ColumnDef<UserView, unknown>[] {
       id: 'ASOZSystemRequestNumber',
       accessorKey: 'ASOZSystemRequestNumber',
       header: ({ column }) => (
-        <DataTableColumnHeader column={column} title='Номер заявки в АС ОЗ' />
+        <DataTableColumnHeader column={column} title='Номер&nbsp;заявки в&nbsp;АС ОЗ' />
       ),
-      cell: ({ row }) => <div style={{ padding: 10 }}>{row.getValue('ASOZSystemRequestNumber')}</div>
+      cell: ({ row }) => (
+        <div style={{ padding: 10 }}>{row.getValue('ASOZSystemRequestNumber')}</div>
+      )
     },
     // @TODO: disable while not exist data dictionaries with organisations and departments
     // {

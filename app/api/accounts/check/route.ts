@@ -8,7 +8,7 @@ import { ActionStatus } from '.prisma/client';
 import { getClientIP } from '@/lib/helpers/ip';
 
 export async function POST(req: NextRequest) {
-  const ip = getClientIP(req);
+  const ip = getClientIP(req.headers);
   const userService = new UserService();
   const accountManager = new AccountManager(userService);
   const actionService = new ActionService();

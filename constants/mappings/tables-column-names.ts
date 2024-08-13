@@ -8,7 +8,8 @@ export const UsersTableColumnNames = {
   tabelNumber: 'Табельный номер',
   organisation: 'Организация',
   department: 'Отдел',
-  expiresAt: 'Действует до'
+  expiresAt: 'Действует до',
+  ASOZSystemRequestNumber: 'Номер заявки в АС ОЗ'
 };
 
 export const EventsTableColumnNames = {

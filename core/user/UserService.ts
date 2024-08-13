@@ -193,7 +193,9 @@ export class UserService {
     data.createdAt = current.toDate();
     data.updatedAt = current.toDate();
     // Make configurable when needed
-    data.expiresAt = current.add(1, 'year').toDate();
+    if (!data.expiresAt) {
+      data.expiresAt = current.add(1, 'year').toDate();
+    }
 
     const newUser = await this.prisma.user.create({ data });
 
@@ -284,6 +286,9 @@ export class UserService {
     }
     if (data.expiresAt) {
       updateData.expiresAt = dateTimeToGMT(data.expiresAt);
+    }
+    if (data.ASOZSystemRequestNumber) {
+      updateData.ASOZSystemRequestNumber = data.ASOZSystemRequestNumber;
     }
 
     const updatedUser = await prisma.user.update({

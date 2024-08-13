@@ -7,7 +7,8 @@ import {
   AuditRoomAlreadyClosed,
   AuditRoomIsNotOpened,
   BriefingRoomIsStillOpenError,
-  EmptyPartisipantsListError
+  EmptyPartisipantsListError,
+  ParticipantsMustContainModeratorError
 } from './errors';
 import {
   BriefingStatus,
@@ -21,7 +22,7 @@ import { CreateInventoryData } from '@/app/api/audit-rooms/create/validation';
 import { getDateFromString } from '@/utils';
 import { mapToInventoryObject } from '@/core/inventory/mappers/InventoryObjectsMapper';
 import { IvaService } from '../iva/IvaService';
-import { IvaRolesMapper } from '@/constants/mappings/iva';
+import { IvaRoles, IvaRolesMapper } from '@/constants/mappings/iva';
 import { CloseAuditRoomData } from '@/app/api/audit-rooms/close/validation';
 import { EventService } from '../event/EventService';
 import { ParticipantWithUser } from '../event/types';
@@ -110,6 +111,8 @@ export class AuditRoomManager {
           user.status !== UserStatus.BLOCKED &&
           user.status !== UserStatus.RECUSED
       );
+
+      this.assertContaintModerator(registeredAndNotBlockedParticipants);
 
       const createdInventory = await inventoryService.create({
         eventId,
@@ -223,5 +226,15 @@ export class AuditRoomManager {
     const inventories = await inventoryService.findBy({ eventId });
 
     return inventories.every((inventory) => inventory.status === InventoryStatus.CLOSED);
+  }
+
+  private assertContaintModerator(participants: ParticipantWithUser[]) {
+    const isContainModerator = participants.some(
+      ({ role }) => IvaRolesMapper[role] === IvaRoles.MODERATOR
+    );
+
+    if (!isContainModerator) {
+      throw new ParticipantsMustContainModeratorError();
+    }
   }
 }

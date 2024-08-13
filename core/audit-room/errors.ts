@@ -5,8 +5,14 @@ export const {
   EmptyPartisipantsListError,
   AuditRoomIsNotOpened,
   AuditRoomAlreadyClosed,
-  AuditRoomAlreadyOpenedOrEndedError
+  AuditRoomAlreadyOpenedOrEndedError,
+  ParticipantsMustContainModeratorError
 } = makeErrorDictionary()({
+  ParticipantsMustContainModeratorError: {
+    type: 'urn:problem-type:participants-must-contain-moderator-error',
+    title: 'В списках участников должен быть модератор',
+    status: 409
+  },
   BriefingRoomIsStillOpenError: {
     type: 'urn:problem-type:briefing-room-is-still-open-error',
     title: 'Инструктаж еще не окончен',

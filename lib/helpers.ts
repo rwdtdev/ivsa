@@ -36,6 +36,14 @@ function map(
     : new UnknownDevelopmentError({ detail: err });
 }
 
+export function getUnknownErrorText(error: any) {
+  if (error instanceof ProblemJson) {
+    return error.title;
+  }
+
+  return error.message || null;
+}
+
 export function getErrorResponse(
   originalErr: ProblemJson | Error | z.ZodError | any,
   request: NextRequest | Request,

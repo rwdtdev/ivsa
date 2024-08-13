@@ -1,3 +1,20 @@
+# [1.3.0](https://rwdt1.gitlab.yandexcloud.net/rwdt/services/asvi/compare/1.2.14...1.3.0) (2024-08-13)
+
+
+### Bug Fixes
+
+* add get ip helper add action for check user ([f9c0d2a](https://rwdt1.gitlab.yandexcloud.net/rwdt/services/asvi/commit/f9c0d2af22a0b32024f74d550a57ec66ef11896b))
+* constants ([10680d6](https://rwdt1.gitlab.yandexcloud.net/rwdt/services/asvi/commit/10680d691c116ad595195b881d96924ee28d00cd))
+* remove env for deploy ([99476bf](https://rwdt1.gitlab.yandexcloud.net/rwdt/services/asvi/commit/99476bf70a9745bf77414a684126dc4d33b7899c))
+* remove qs ([52f5471](https://rwdt1.gitlab.yandexcloud.net/rwdt/services/asvi/commit/52f5471228c6e2df04bfb56087797b92815db261))
+* set moderator require ([220b817](https://rwdt1.gitlab.yandexcloud.net/rwdt/services/asvi/commit/220b81707b6e7b97075dc6cccd6b792158ae502e))
+
+
+### Features
+
+* add audit actions ([7dd63f8](https://rwdt1.gitlab.yandexcloud.net/rwdt/services/asvi/commit/7dd63f870f0c7bcd2e2d7cd78cf43e53f5f44bc2))
+* add soi requests to actions log ([1c5976f](https://rwdt1.gitlab.yandexcloud.net/rwdt/services/asvi/commit/1c5976fbfd60b33931ebfb36611333f8aad97ff2))
+
 ## [1.2.14](https://rwdt1.gitlab.yandexcloud.net/rwdt/services/asvi/compare/1.2.13...1.2.14) (2024-08-07)
 
 

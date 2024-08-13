@@ -15,7 +15,7 @@ interface IContext {
 }
 
 export async function PUT(req: NextRequest, context: IContext) {
-  const ip = getClientIP(req);
+  const ip = getClientIP(req.headers);
   const actionService = new ActionService();
   const eventManager = new EventManager(
     new EventService(),

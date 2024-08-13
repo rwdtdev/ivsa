@@ -10,7 +10,7 @@ import { ActionService } from '@/core/action/ActionService';
 import { ActionStatus } from '@prisma/client';
 
 export async function PUT(req: NextRequest) {
-  const ip = getClientIP(req);
+  const ip = getClientIP(req.headers);
   const actionService = new ActionService();
   const briefingRoomManager = new BriefingRoomManager(
     new IvaService(),

@@ -191,26 +191,35 @@ export function fetchUsersTableColumnDefs(): ColumnDef<UserView, unknown>[] {
       cell: ({ row }) => <div style={{ padding: 10 }}>{row.getValue('tabelNumber')}</div>
     },
     {
-      id: 'organisation',
-      accessorKey: 'organisation',
+      id: 'ASOZSystemRequestNumber',
+      accessorKey: 'ASOZSystemRequestNumber',
       header: ({ column }) => (
-        <DataTableColumnHeader column={column} title='Организация' />
+        <DataTableColumnHeader column={column} title='Номер заявки в АС ОЗ' />
       ),
-      cell: ({ row }) => {
-        const organisation = row.original.organisation;
+      cell: ({ row }) => <div style={{ padding: 10 }}>{row.getValue('ASOZSystemRequestNumber')}</div>
+    },
+    // @TODO: disable while not exist data dictionaries with organisations and departments
+    // {
+    //   id: 'organisation',
+    //   accessorKey: 'organisation',
+    //   header: ({ column }) => (
+    //     <DataTableColumnHeader column={column} title='Организация' />
+    //   ),
+    //   cell: ({ row }) => {
+    //     const organisation = row.original.organisation;
 
-        return organisation ? organisation.name : emptyCell;
-      }
-    },
-    {
-      id: 'department',
-      accessorKey: 'department',
-      header: ({ column }) => <DataTableColumnHeader column={column} title='Отдел' />,
-      cell: ({ row }) => {
-        const department = row.original.department;
-        return department ? department.name : emptyCell;
-      }
-    },
+    //     return organisation ? organisation.name : emptyCell;
+    //   }
+    // },
+    // {
+    //   id: 'department',
+    //   accessorKey: 'department',
+    //   header: ({ column }) => <DataTableColumnHeader column={column} title='Отдел' />,
+    //   cell: ({ row }) => {
+    //     const department = row.original.department;
+    //     return department ? department.name : emptyCell;
+    //   }
+    // },
     {
       id: 'actions',
       enableHiding: false,

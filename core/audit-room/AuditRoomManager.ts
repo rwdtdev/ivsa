@@ -48,12 +48,16 @@ export class AuditRoomManager {
   }
 
   async getAuditJoinLink(conferenceSessionId: string): Promise<string> {
-    const participants = await this.ivaService.findConferenceParticipants(
-      conferenceSessionId,
-      { requestedData: ['JOIN_LINK'] }
-    );
+    const { protocol, hostname, port } = new URL(process.env.IVA_API_URL as string);
 
-    return participants[0].joinLink;
+    return `${protocol}//${hostname}${port ? ':' + port : ''}/#join:s${conferenceSessionId}`;
+
+    // const participants = await this.ivaService.findConferenceParticipants(
+    //   conferenceSessionId,
+    //   { requestedData: ['JOIN_LINK'] }
+    // );
+
+    // return participants[0].joinLink;
   }
 
   async createRoom({

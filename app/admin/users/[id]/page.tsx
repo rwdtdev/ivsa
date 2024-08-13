@@ -1,56 +1,58 @@
-'use client';
+// 'use client';
 
 import _ from 'underscore';
 import BreadCrumb from '@/components/breadcrumb';
 import { UserForm } from '@/components/forms/user-form';
-import { usePathname } from 'next/navigation';
-import { useEffect, useState } from 'react';
+// import { usePathname } from 'next/navigation';
+// import { useEffect, useState } from 'react';
 import { getUserByIdAction } from '@/app/actions/server/users';
 // import { getOrganisationsAction } from '@/app/actions/server/organisations';
 // import { getDepartmentsAction } from '@/app/actions/server/departments';
 // import { Department, Organisation } from '@prisma/client';
-import { UserView } from '@/types/user';
-import Loading from '@/app/loading';
+// import { UserView } from '@/types/user';
+// import Loading from '@/app/loading';
 import Header from '@/components/layout/header';
+import { getClientIP } from '@/lib/helpers/ip';
+import { headers } from 'next/headers';
 
-export default function UpdateUserPage() {
-  const pathname = usePathname();
+export default async function UpdateUserPage({ params }: { params: { id: string } }) {
+  // console.log('🚀 ~ UpdateUserPage ~ session:', session);
+  const headersList = headers();
+  const ip = getClientIP(headersList);
+  console.log('🚀 ~ UpdateUserPage ~ ip2:', ip);
+  // const ip = getClientIP(req.headers);
+  // const pathname = usePathname();
 
-  const [userInitialData, setUserInitialData] = useState<Partial<UserView>>();
-  // const [departments, setDepartments] = useState<Department[]>([]);
-  // const [organisations, setOrganisations] = useState<Organisation[]>([]);
+  // const [userInitialData, setUserInitialData] = useState<Partial<UserView>>();
 
-  const pathnameChunks = pathname.split('/');
-  const userId = pathnameChunks[pathnameChunks.length - 1].trim();
+  // const pathnameChunks = pathname.split('/');
+  // const userId = pathnameChunks[pathnameChunks.length - 1].trim();
 
-  const setInitialState = async () => {
-    const user = await getUserByIdAction(userId);
+  // const setInitialState = async () => {
+  const userId = params.id;
+  const user = await getUserByIdAction(userId);
 
-    if (user) {
-      // const listOfDepartments = await getDepartmentsAction();
-      // const listOfORganisations = await getOrganisationsAction();
-
-      const omitKeys = ['password'];
-
-      // Hack for ShadCN forms, can't be pass default value as null only string or undefined (Have not resolved issue on git)
-      if (user.departmentId === null) omitKeys.push('departmentId');
-      if (user.organisationId === null) omitKeys.push('organisationId');
-
-      setUserInitialData(_.omit(user, omitKeys));
-      // setDepartments(listOfDepartments);
-      // setOrganisations(listOfORganisations);
-    }
-  };
-
-  useEffect(() => {
-    setInitialState();
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-    document.title = 'Ред. пользователя';
-  }, []);
-
-  if (!userInitialData) {
-    return <Loading />;
+  if (!user) {
+    return <div>нет такого пользователя</div>;
   }
+  const omitKeys = ['password'];
+
+  // Hack for ShadCN forms, can't be pass default value as null only string or undefined (Have not resolved issue on git)
+  if (user.departmentId === null) omitKeys.push('departmentId');
+  if (user.organisationId === null) omitKeys.push('organisationId');
+
+  const userInitialData = _.omit(user, omitKeys);
+  // };
+
+  // useEffect(() => {
+  //   setInitialState();
+  //   // eslint-disable-next-line react-hooks/exhaustive-deps
+  //   document.title = 'Ред. пользователя';
+  // }, []);
+
+  // if (!userInitialData) {
+  //   return <Loading />;
+  // }
 
   const breadcrumbItems = [
     { title: 'Пользователи', link: '/admin/users' },

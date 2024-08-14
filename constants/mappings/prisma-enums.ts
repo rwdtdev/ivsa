@@ -3,7 +3,7 @@ export const UserRoles = {
   USER: 'Пользователь',
   CHAIRMAN: 'Председатель',
   PARTICIPANT: 'Участник комиссии',
-  FINANCIALLY_RESPONSIBLE_PERSON: 'Материально-ответственное лицо',
+  FINANCIALLY_RESPONSIBLE_PERSON: 'МОЛ',
   ACCOUNTANT: 'Бухгалтер',
   INSPECTOR: 'Проверяющий',
   MANAGER: 'Руководитель',

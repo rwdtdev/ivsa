@@ -1,7 +1,7 @@
 import BreadCrumb from '@/components/breadcrumb';
 import { UserForm } from '@/components/forms/user-form';
-import { getDepartmentsAction } from '@/app/actions/server/departments';
-import { getOrganisationsAction } from '@/app/actions/server/organisations';
+// import { getDepartmentsAction } from '@/app/actions/server/departments';
+// import { getOrganisationsAction } from '@/app/actions/server/organisations';
 import Header from '@/components/layout/header';
 
 export const metadata = {
@@ -14,8 +14,8 @@ const breadcrumbItems = [
 ];
 
 export default async function NewUserPage() {
-  const departments = await getDepartmentsAction();
-  const organisations = await getOrganisationsAction();
+  // const departments = await getDepartmentsAction();
+  // const organisations = await getOrganisationsAction();
 
   return (
     <>
@@ -24,8 +24,8 @@ export default async function NewUserPage() {
         <BreadCrumb items={breadcrumbItems} />
         <div className='shadow-mod-1 rounded-md border p-4'>
           <UserForm
-            organisations={organisations}
-            departments={departments}
+            // organisations={organisations}
+            // departments={departments}
             initialData={null}
           />
         </div>

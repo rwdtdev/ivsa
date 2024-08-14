@@ -1,3 +1,10 @@
+## [1.4.1](https://rwdt1.gitlab.yandexcloud.net/rwdt/services/asvi/compare/1.4.0...1.4.1) (2024-08-14)
+
+
+### Bug Fixes
+
+* add monitoringData to users actions ([6ff8251](https://rwdt1.gitlab.yandexcloud.net/rwdt/services/asvi/commit/6ff8251c31e23b6ad1695f0ee4da9a9840c89d40))
+
 # [1.4.0](https://rwdt1.gitlab.yandexcloud.net/rwdt/services/asvi/compare/1.3.0...1.4.0) (2024-08-14)
 
 

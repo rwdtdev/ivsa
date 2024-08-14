@@ -1,3 +1,16 @@
+# [1.4.0](https://rwdt1.gitlab.yandexcloud.net/rwdt/services/asvi/compare/1.3.0...1.4.0) (2024-08-14)
+
+
+### Bug Fixes
+
+* audit links ([5b88407](https://rwdt1.gitlab.yandexcloud.net/rwdt/services/asvi/commit/5b8840738b61d98c96733d15699b700b11745feb))
+* comment organisation in user page component, rename mol ([60994f7](https://rwdt1.gitlab.yandexcloud.net/rwdt/services/asvi/commit/60994f79ca7dab34559a2a4db3fec2d5d7fecba1))
+
+
+### Features
+
+* add as oz request number user attribute ([f09fb55](https://rwdt1.gitlab.yandexcloud.net/rwdt/services/asvi/commit/f09fb5517b52d3bcdb0f7519c16b1d29a096a4b1))
+
 # [1.3.0](https://rwdt1.gitlab.yandexcloud.net/rwdt/services/asvi/compare/1.2.14...1.3.0) (2024-08-13)
 
 

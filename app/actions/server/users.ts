@@ -21,10 +21,14 @@ import { OrganisationService } from '@/core/organisation/OrganisationService';
 import { SortOrder } from '@/constants/data';
 import { ActionService } from '@/core/action/ActionService';
 import { getUnknownErrorText } from '@/lib/helpers';
+import { MonitoringData } from '@/components/forms/user-form';
 
 const cache = new Cache({ checkperiod: 120 });
 
-export async function createUserAction(formData: UserFormData): Promise<any> {
+export async function createUserAction(
+  formData: UserFormData,
+  monitoringData: MonitoringData
+): Promise<any> {
   const userManager = new UserManager(
     new IvaService(),
     new UserService(),
@@ -32,11 +36,33 @@ export async function createUserAction(formData: UserFormData): Promise<any> {
     new ParticipantService(),
     new OrganisationService()
   );
+  const actionService = new ActionService();
 
   try {
     // TODO Refactor type casting
     await userManager.createUser(formData as UserCreateData);
+    await actionService.add({
+      ...monitoringData,
+      type: ActionType.USER_CREATE,
+      status: ActionStatus.SUCCESS,
+      details: {
+        ...monitoringData.details,
+        createdUserName: formData.username,
+        createdName: formData.name
+      }
+    });
   } catch (error) {
+    await actionService.add({
+      type: ActionType.USER_CREATE,
+      status: ActionStatus.ERROR,
+      ...monitoringData,
+      details: {
+        ...monitoringData.details,
+        error: getUnknownErrorText(error),
+        createdUserName: formData.username,
+        createdName: formData.name
+      }
+    });
     console.debug(error);
     return { error: JSON.stringify(error, Object.getOwnPropertyNames(error)) };
   }
@@ -45,36 +71,29 @@ export async function createUserAction(formData: UserFormData): Promise<any> {
   redirect('/admin/users');
 }
 
-export async function updateUserAction(id: string, formData: UserFormData) {
+export async function updateUserAction(
+  id: string,
+  formData: UserFormData,
+  monitoringData: MonitoringData
+) {
   const actionService = new ActionService();
   const userService = new UserService();
 
   try {
     await userService.update(id, formData);
     await actionService.add({
-      ip: '192.168.12.15',
-      status: ActionStatus.SUCCESS,
       type: ActionType.USER_EDIT,
-      initiator: 'Иванов Сергей',
-      details: {
-        adminUsername: 'HaritonovFS',
-        adminDepartment: 'Отдел 168',
-        editedUserUserName: 'IvanovAD',
-        editedUserName: 'Иванов Александр Дмитриевич'
-      }
+      status: ActionStatus.SUCCESS,
+      ...monitoringData
     });
   } catch (error) {
     await actionService.add({
-      ip: '192.168.12.15',
-      status: ActionStatus.ERROR,
       type: ActionType.USER_EDIT,
-      initiator: 'Иванов Сергей',
+      status: ActionStatus.ERROR,
+      ...monitoringData,
       details: {
-        error: getUnknownErrorText(error),
-        adminUsername: 'HaritonovFS',
-        adminDepartment: 'Отдел 168',
-        editedUserUserName: 'IvanovAD',
-        editedUserName: 'Иванов Александр Дмитриевич'
+        ...monitoringData.details,
+        error: getUnknownErrorText(error)
       }
     });
     console.debug(error);

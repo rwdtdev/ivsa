@@ -2,6 +2,7 @@
 
 import { setActiveAndSendRecoveryLinkAction } from '@/app/actions/server/user-password';
 import { updateUserAction } from '@/app/actions/server/users';
+import { MonitoringData } from '@/components/forms/user-form';
 import { AlertModal } from '@/components/modal/alert-modal';
 import { Button } from '@/components/ui/button';
 import {
@@ -18,11 +19,12 @@ import { Edit, MoreHorizontal, Bell, UserRoundX } from 'lucide-react';
 import { useRouter } from 'next/navigation';
 import { useState } from 'react';
 
-interface CellActionProps {
+interface Props {
   data: UserView;
+  monitoringData: MonitoringData;
 }
 
-export const CellAction: React.FC<CellActionProps> = ({ data }) => {
+export function CellAction({ data, monitoringData }: Props) {
   const [loading, setLoading] = useState(false);
   const [openRecuseUser, setOpenRecuseUser] = useState(false);
   const [openResetPassword, setOpenResetPassword] = useState(false);
@@ -31,7 +33,14 @@ export const CellAction: React.FC<CellActionProps> = ({ data }) => {
 
   const onConfirmRecuseUser = async () => {
     setLoading(true);
-    await updateUserAction(data.id, { status: UserStatus.RECUSED } as UserFormData);
+    await updateUserAction(data.id, { status: UserStatus.RECUSED } as UserFormData, {
+      ...monitoringData,
+      details: {
+        ...monitoringData.details,
+        editedUserUserName: data.username,
+        editedUserName: data.name
+      }
+    });
     setLoading(false);
     setOpenRecuseUser(false);
   };
@@ -47,13 +56,17 @@ export const CellAction: React.FC<CellActionProps> = ({ data }) => {
     <>
       <AlertModal
         isOpen={openRecuseUser}
-        onClose={() => setOpenRecuseUser(false)}
+        onClose={() => {
+          setOpenRecuseUser(false);
+        }}
         onConfirm={onConfirmRecuseUser}
         loading={loading}
       />
       <AlertModal
         isOpen={openResetPassword}
-        onClose={() => setOpenResetPassword(false)}
+        onClose={() => {
+          setOpenResetPassword(false);
+        }}
         onConfirm={onConfirmResetPassword}
         loading={loading}
       />
@@ -79,4 +92,4 @@ export const CellAction: React.FC<CellActionProps> = ({ data }) => {
       </DropdownMenu>
     </>
   );
-};
+}

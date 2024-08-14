@@ -62,8 +62,8 @@ export const actionTypeSerializeSchema = {
     admin: {
       key: 'Администратор',
       subKeys: {
-        adminUsername: 'Логин',
-        adminDepartment: 'Отдел'
+        adminUsername: 'Логин'
+        // adminDepartment: 'Отдел'
       }
     },
     createdUser: {
@@ -99,7 +99,8 @@ export const actionTypeSerializeSchema = {
       key: 'Пользователь',
       subKeys: {
         username: 'Логин',
-        department: 'Отдел',
+        name: 'ФИО',
+        // department: 'Отдел',
         status: 'Статус'
       }
     }

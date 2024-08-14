@@ -7,7 +7,7 @@ import { CellAction } from './row-actions';
 import { Badge } from '@/components/ui/badge';
 import { Checkbox } from '@/components/ui/checkbox';
 import { UserRoles, UserStatuses } from '@/constants/mappings/prisma-enums';
-import { Department, Organisation, UserRole, UserStatus } from '@prisma/client';
+import { /* Department, Organisation, */ UserRole, UserStatus } from '@prisma/client';
 import { AlertTriangleIcon } from 'lucide-react';
 import {
   Tooltip,
@@ -19,10 +19,13 @@ import { DataTableColumnHeader } from '@/components/ui/data-table/data-table-col
 import { UserView } from '@/types/user';
 import { DataTableFilterableColumn } from '@/types';
 import { format } from 'date-fns';
+import { MonitoringData } from '@/components/forms/user-form';
 
 const emptyCell = '';
 
-export function fetchUsersTableColumnDefs(): ColumnDef<UserView, unknown>[] {
+export function fetchUsersTableColumnDefs(
+  monitoringData: MonitoringData
+): ColumnDef<UserView, unknown>[] {
   // isPending: boolean,
   // startTransition: React.TransitionStartFunction
   return [
@@ -225,15 +228,16 @@ export function fetchUsersTableColumnDefs(): ColumnDef<UserView, unknown>[] {
     {
       id: 'actions',
       enableHiding: false,
-      cell: ({ row }) => <CellAction data={row.original} />
+      cell: ({ row }) => (
+        <CellAction data={row.original} monitoringData={monitoringData} />
+      )
     }
   ];
 }
 
-export const filterableColumns = (
-  departments: Department[],
-  organisations: Organisation[]
-): DataTableFilterableColumn<UserView>[] => [
+export const filterableColumns = () /*   departments: Department[],
+  organisations: Organisation[] */
+: DataTableFilterableColumn<UserView>[] => [
   {
     id: 'status',
     title: 'Статус',
@@ -257,21 +261,21 @@ export const filterableColumns = (
         value: key
       };
     })
-  },
-  {
-    id: 'department',
-    title: 'Отдел',
-    options: departments.map((department) => ({
-      label: department.name[0]?.toUpperCase() + department.name.slice(1),
-      value: department.id
-    }))
-  },
-  {
-    id: 'organisation',
-    title: 'Организация',
-    options: organisations.map((organisation) => ({
-      label: organisation.name[0]?.toUpperCase() + organisation.name.slice(1),
-      value: organisation.id
-    }))
   }
+  // {
+  //   id: 'department',
+  //   title: 'Отдел',
+  //   options: departments.map((department) => ({
+  //     label: department.name[0]?.toUpperCase() + department.name.slice(1),
+  //     value: department.id
+  //   }))
+  // },
+  // {
+  //   id: 'organisation',
+  //   title: 'Организация',
+  //   options: organisations.map((organisation) => ({
+  //     label: organisation.name[0]?.toUpperCase() + organisation.name.slice(1),
+  //     value: organisation.id
+  //   }))
+  // }
 ];

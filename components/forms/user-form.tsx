@@ -42,13 +42,25 @@ interface UserFormProps {
   initialData: any | null;
   // organisations: any;
   // departments: any;
+  monitoringData: MonitoringData;
+}
+
+export interface MonitoringData {
+  ip: string;
+  initiator: string;
+  details: {
+    adminUsername: string;
+    editedUserUserName?: string;
+    editedUserName?: string;
+  };
 }
 
 export const UserForm: React.FC<UserFormProps> = ({
   initialData,
   // organisations,
   // departments,
-  userId
+  userId,
+  monitoringData
 }) => {
   const { toast } = useToast();
   const [loading, setLoading] = useState(false);
@@ -84,8 +96,8 @@ export const UserForm: React.FC<UserFormProps> = ({
 
     const result =
       initialData && userId
-        ? await updateUserAction(userId, data)
-        : await createUserAction(data);
+        ? await updateUserAction(userId, data, monitoringData)
+        : await createUserAction(data, monitoringData);
 
     if (result && result.error) {
       const { title, userMessage } = JSON.parse(result.error);

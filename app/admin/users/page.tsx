@@ -3,9 +3,10 @@ import { SearchParams } from '@/types';
 import { getUsersAction } from '@/app/actions/server/users';
 import { DataTableSkeleton } from '@/components/ui/data-table/data-table-skeleton';
 import { UsersTable } from '@/components/tables/users-table';
-import { getDepartmentsAction } from '@/app/actions/server/departments';
-import { getOrganisationsAction } from '@/app/actions/server/organisations';
+// import { getDepartmentsAction } from '@/app/actions/server/departments';
+// import { getOrganisationsAction } from '@/app/actions/server/organisations';
 import Header from '@/components/layout/header';
+import { getServerSessionAndIP, ServerSessionAndIP } from '@/lib/getServerSessionAndIP';
 
 export const metadata = {
   title: 'Пользователи'
@@ -17,8 +18,17 @@ export interface IndexPageProps {
 
 export default async function UsersPage({ searchParams }: IndexPageProps) {
   const users = await getUsersAction(searchParams);
-  const departments = await getDepartmentsAction();
-  const organisations = await getOrganisationsAction();
+  // const departments = await getDepartmentsAction();
+  // const organisations = await getOrganisationsAction();
+  const { session, ip }: ServerSessionAndIP = await getServerSessionAndIP();
+
+  const monitoringData = {
+    ip: ip || 'нет данных',
+    initiator: session?.user.name || 'нет данных',
+    details: {
+      adminUsername: session?.user.name || 'нет данных'
+    }
+  };
 
   return (
     <div className='flex h-screen flex-col'>
@@ -29,8 +39,9 @@ export default async function UsersPage({ searchParams }: IndexPageProps) {
         >
           <UsersTable
             users={users}
-            departments={departments}
-            organisations={organisations}
+            // departments={departments}
+            // organisations={organisations}
+            monitoringData={monitoringData}
           />
         </React.Suspense>
       </div>

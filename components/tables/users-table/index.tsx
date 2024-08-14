@@ -7,20 +7,25 @@ import { PaginatedResponse } from '@/types';
 import { UserView } from '@/types/user';
 import { DataTable } from '@/components/ui/data-table/data-table';
 import { ColumnDef } from '@tanstack/react-table';
-import { Department, Organisation } from '@prisma/client';
+// import { Department, Organisation } from '@prisma/client';
 import { UsersTableColumnNames } from '@/constants/mappings/tables-column-names';
+import { MonitoringData } from '@/components/forms/user-form';
 
 interface UsersTableProps {
   users: PaginatedResponse<UserView> | { items: []; pagination: { pagesCount: number } };
-  departments: Department[];
-  organisations: Organisation[];
+  // departments: Department[];
+  // organisations: Organisation[];
+  monitoringData: MonitoringData;
 }
 
-export function UsersTable({ users, departments, organisations }: UsersTableProps) {
+export function UsersTable({
+  users,
+  monitoringData /* , departments, organisations  */
+}: UsersTableProps) {
   const { items, pagination } = users;
 
   const columns = React.useMemo<ColumnDef<UserView, unknown>[]>(
-    () => fetchUsersTableColumnDefs(),
+    () => fetchUsersTableColumnDefs(monitoringData),
     []
   );
 
@@ -29,7 +34,7 @@ export function UsersTable({ users, departments, organisations }: UsersTableProp
     columns,
     pageCount: pagination.pagesCount,
     // searchableColumns: searchableColumns
-    filterableColumns: filterableColumns(departments, organisations)
+    filterableColumns: filterableColumns(/* departments, organisations */)
   });
 
   return (
@@ -39,7 +44,7 @@ export function UsersTable({ users, departments, organisations }: UsersTableProp
       withSearch
       withSelectedRows
       columnNames={UsersTableColumnNames}
-      filterableColumns={filterableColumns(departments, organisations)}
+      filterableColumns={filterableColumns(/* departments, organisations */)}
       // floatingBarContent={TasksTableFloatingBarContent(dataTable)}
       // deleteRowsAction={(event) => deleteSelectedRows(dataTable, event)}
       deleteRowsAction={(event) => console.log('deleteRowsAction', dataTable, event)}

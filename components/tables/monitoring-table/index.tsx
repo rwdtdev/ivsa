@@ -79,8 +79,8 @@ export function MonitoringTable({ monitoringData }: Props) {
     // data: fakeSystemEventItems,
     data: monitoringData.items,
     columns,
-    // pageCount: pagination.pagesCount,
-    pageCount: 50,
+    pageCount: monitoringData.pagination.pagesCount || 10,
+    // pageCount: 50,
     filterableColumns: filterableColumns()
   });
 

@@ -5,13 +5,17 @@ import React from 'react';
 import { getMonitoringData } from '../actions/server/getMonitoringData';
 import { SearchParams } from '@/types';
 
+export const metadata = {
+  title: 'Журнал событий'
+};
+
 export default async function MonitoringPage({
   searchParams
 }: {
   searchParams: SearchParams;
 }) {
   const monitoringData = await getMonitoringData(searchParams);
-  console.log('🚀 ~ page ~ monitoringData:', JSON.stringify(monitoringData, null, 4));
+  // console.log('🚀 ~ page ~ monitoringData:', JSON.stringify(monitoringData, null, 4));
   return (
     <div className='flex h-screen flex-col'>
       <Header title={'Журнал событий'} />

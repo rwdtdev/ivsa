@@ -1,9 +1,7 @@
 'use client';
-
 import { setActiveAndSendRecoveryLinkAction } from '@/app/actions/server/user-password';
 import { updateUserAction } from '@/app/actions/server/users';
 import { MonitoringData } from '@/components/forms/user-form';
-import { AlertModal } from '@/components/modal/alert-modal';
 import { Button } from '@/components/ui/button';
 import {
   DropdownMenu,
@@ -18,6 +16,16 @@ import { UserStatus } from '@prisma/client';
 import { Edit, MoreHorizontal, Bell, UserRoundX } from 'lucide-react';
 import { useRouter } from 'next/navigation';
 import { useState } from 'react';
+import {
+  AlertDialog,
+  AlertDialogAction,
+  AlertDialogCancel,
+  AlertDialogContent,
+  AlertDialogDescription,
+  AlertDialogFooter,
+  AlertDialogHeader,
+  AlertDialogTitle
+} from '@/components/ui/alert-dialog';
 
 interface Props {
   data: UserView;
@@ -25,14 +33,14 @@ interface Props {
 }
 
 export function CellAction({ data, monitoringData }: Props) {
-  const [loading, setLoading] = useState(false);
+  // const [loading, setLoading] = useState(false);
   const [openRecuseUser, setOpenRecuseUser] = useState(false);
   const [openResetPassword, setOpenResetPassword] = useState(false);
 
   const router = useRouter();
 
   const onConfirmRecuseUser = async () => {
-    setLoading(true);
+    // setLoading(true);
     await updateUserAction(data.id, { status: UserStatus.RECUSED } as UserFormData, {
       ...monitoringData,
       details: {
@@ -41,35 +49,68 @@ export function CellAction({ data, monitoringData }: Props) {
         editedUserName: data.name
       }
     });
-    setLoading(false);
+    // setLoading(false);
     setOpenRecuseUser(false);
   };
 
   const onConfirmResetPassword = async () => {
-    setLoading(true);
+    // setLoading(true);
     await setActiveAndSendRecoveryLinkAction(data.id, data.email);
-    setLoading(false);
+    // setLoading(false);
     setOpenResetPassword(false);
   };
 
   return (
     <>
-      <AlertModal
-        isOpen={openRecuseUser}
-        onClose={() => {
-          setOpenRecuseUser(false);
-        }}
-        onConfirm={onConfirmRecuseUser}
-        loading={loading}
-      />
-      <AlertModal
-        isOpen={openResetPassword}
-        onClose={() => {
-          setOpenResetPassword(false);
-        }}
-        onConfirm={onConfirmResetPassword}
-        loading={loading}
-      />
+      <AlertDialog open={openResetPassword}>
+        <AlertDialogContent>
+          <AlertDialogHeader>
+            <AlertDialogTitle>Сбросить пароль для</AlertDialogTitle>
+            <AlertDialogTitle> {data.name}?</AlertDialogTitle>
+            <AlertDialogDescription>
+              Это действие нельзя будет отменить
+            </AlertDialogDescription>
+          </AlertDialogHeader>
+          <AlertDialogFooter>
+            <AlertDialogCancel onClick={() => setOpenResetPassword(false)}>
+              Отменить
+            </AlertDialogCancel>
+            <AlertDialogAction
+              className='bg-red-600'
+              onClick={() => {
+                onConfirmResetPassword();
+              }}
+            >
+              Продолжить
+            </AlertDialogAction>
+          </AlertDialogFooter>
+        </AlertDialogContent>
+      </AlertDialog>
+      <AlertDialog open={openRecuseUser}>
+        <AlertDialogContent>
+          <AlertDialogHeader>
+            <AlertDialogTitle>Освободить от должности </AlertDialogTitle>
+            <AlertDialogTitle> {data.name}?</AlertDialogTitle>
+            <AlertDialogDescription>
+              Это действие нельзя будет отменить
+            </AlertDialogDescription>
+          </AlertDialogHeader>
+          <AlertDialogFooter>
+            <AlertDialogCancel onClick={() => setOpenRecuseUser(false)}>
+              Отменить
+            </AlertDialogCancel>
+            <AlertDialogAction
+              className='bg-red-600'
+              onClick={() => {
+                onConfirmRecuseUser();
+              }}
+            >
+              Продолжить
+            </AlertDialogAction>
+          </AlertDialogFooter>
+        </AlertDialogContent>
+      </AlertDialog>
+      {/*  */}
       <DropdownMenu>
         <DropdownMenuTrigger asChild>
           <Button variant='ghost' className='h-8 w-8 p-0'>

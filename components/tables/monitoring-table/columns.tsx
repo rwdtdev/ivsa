@@ -1,14 +1,26 @@
 import { ColumnDef, HeaderContext } from '@tanstack/react-table';
-import { SystemEventObject } from './index';
-import { systemEventTypes } from '@/constants/mappings/system-event-table-names';
+// import { SystemEventObject } from './index';
+import {
+  systemEventDetailKeys /* ,
+  systemEventTypes */
+} from '@/constants/mappings/system-event-table-names';
 import { format } from 'date-fns';
 import { DataTableColumnHeader } from '@/components/ui/data-table/data-table-column-header';
 import { DataTableFilterableColumn } from '@/types';
 
-import { actionTypeSerializeSchema, actionTypesMapper } from '@/constants/actions';
-import { ActionType } from '@prisma/client';
+import {
+  actionStatusesMapper,
+  actionTypeSerializeSchema,
+  actionTypesMapper
+} from '@/constants/actions';
+import { Action, ActionStatus, ActionType } from '@prisma/client';
+import { JsonObject, JsonValue } from '@prisma/client/runtime/library';
 
-export function fetchSystemEventsTableColumns(): ColumnDef<SystemEventObject, unknown>[] {
+// type ObjectType = {
+//   [k: string]: string | ObjectType;
+// };
+
+export function fetchSystemEventsTableColumns(): ColumnDef<Action, unknown>[] {
   return [
     {
       id: 'id',
@@ -18,7 +30,7 @@ export function fetchSystemEventsTableColumns(): ColumnDef<SystemEventObject, un
     {
       id: 'actionAt',
       accessorKey: 'actionAt',
-      header: ({ column }: HeaderContext<SystemEventObject, unknown>) => (
+      header: ({ column }: HeaderContext<Action, unknown>) => (
         <DataTableColumnHeader column={column} title='Дата&nbsp;&nbsp;Время' />
       ),
       cell: ({ row }) =>
@@ -33,37 +45,57 @@ export function fetchSystemEventsTableColumns(): ColumnDef<SystemEventObject, un
       header: () => <div>IP</div>
     },
     {
-      id: 'name',
-      accessorKey: 'name',
-      header: () => <div>ФИО</div>
+      id: 'initiator',
+      accessorKey: 'initiator',
+      header: () => <div>Инициатор</div>
     },
     {
-      id: 'actionType',
-      accessorKey: 'actionType',
+      id: 'type',
+      accessorKey: 'type',
       header: () => <div>Событие</div>,
       cell: ({ row }) => {
-        const key = row.original.actionType;
+        const key = row.original.type;
         return actionTypesMapper[key];
       }
+    },
+    {
+      id: 'status',
+      accessorKey: 'status',
+      header: () => <div>Статус</div>,
+      cell: ({ row }) =>
+        row.original.status === 'SUCCESS' ? (
+          <span className='text-green-800'>Успешно</span>
+        ) : (
+          <span className='text-red-800'>Ошибка</span>
+        )
     },
     {
       id: 'details',
       accessorKey: 'details',
       header: () => <div className='pl-4'>Подробности</div>,
-      // cell: ({ row }) => objToHtml(row.original.details)
-      cell: ({ row }) =>
-        mapToTanstackDetailsCell(row.original.actionType, row.original.details)
+      cell: ({ row }) => objToHtml(row.original.details)
+
+      // cell: ({ row }) => mapToTanstackDetailsCell(row.original.type, row.original.details)
     }
   ];
 }
 
 export const mapToTanstackDetailsCell = (
   actionType: ActionType,
-  details: Record<string, any> | null = null
+  // details: Record<string, any> | null = null
+  details: JsonValue
 ) => {
   if (!details) return;
+  if (
+    typeof details === 'string' ||
+    typeof details === 'number' ||
+    typeof details === 'boolean'
+  )
+    return;
 
-  const detailsKeys = Object.keys(details);
+  const detailsModTypes = details as Record<string, any>;
+
+  const detailsKeys = Object.keys(detailsModTypes);
 
   if (detailsKeys.length === 0) return;
 
@@ -83,7 +115,7 @@ export const mapToTanstackDetailsCell = (
                 <span className='pl-2 font-semibold'>
                   {(value.subKeys as { [key: string]: string })[subKey]}
                 </span>
-                : {details[subKey]}
+                : {detailsModTypes[subKey]}
               </li>
             );
           })}
@@ -101,39 +133,51 @@ export const monitoringDatePickers = [
   }
 ];
 
-export const filterableColumns = (): DataTableFilterableColumn<SystemEventObject>[] => {
-  const keys = Object.keys(systemEventTypes) as Array<keyof typeof systemEventTypes>;
+export const filterableColumns = (): DataTableFilterableColumn<Action>[] => {
+  // const keys = Object.keys(systemEventTypes) as Array<keyof typeof systemEventTypes>;
+  // const actionStatuses = Object.values(ActionStatus);
   return [
     {
-      id: 'actionType',
+      id: 'type',
       title: 'Событие',
-      options: keys.map((eventType) => {
+      options: Object.values(ActionType).map((eventType) => {
         return {
-          label: systemEventTypes[eventType],
+          label: actionTypesMapper[eventType],
           value: eventType
+        };
+      })
+    },
+    {
+      id: 'status',
+      title: 'Статус',
+      options: Object.values(ActionStatus).map((actionStatus) => {
+        return {
+          label: actionStatusesMapper[actionStatus],
+          value: actionStatus
         };
       })
     }
   ];
 };
 
-// function objToHtml(obj: ObjectType) {
-//   const keys = Object.keys(obj) as Array<keyof typeof systemEventDetailKeys>;
-//   return keys.map((key, i) => {
-//     const objKey = obj[key];
-//     if (typeof objKey === 'object') {
-//       return (
-//         <div key={i} className='pl-4'>
-//           <span className='font-bold'>{systemEventDetailKeys[key]}</span>:{' '}
-//           {objToHtml(objKey)}
-//         </div>
-//       );
-//     } else {
-//       return (
-//         <div key={objKey} className='py-0.5 pl-4'>
-//           <span className='font-semibold'>{systemEventDetailKeys[key]}</span>: {objKey}
-//         </div>
-//       );
-//     }
-//   });
-// }
+function objToHtml(obj2: JsonValue) {
+  const obj = obj2 as JsonObject;
+  const keys = Object.keys(obj) as Array<keyof typeof systemEventDetailKeys>;
+  return keys.map((key, i) => {
+    const objKey = obj[key];
+    if (typeof objKey === 'object') {
+      return (
+        <div key={i} className='pl-4'>
+          <span className='font-bold'>{systemEventDetailKeys[key]}</span>:{' '}
+          {objToHtml(objKey)}
+        </div>
+      );
+    } else {
+      return (
+        <div key={i + String(objKey)} className='py-0.5 pl-4'>
+          <span className='font-semibold'>{systemEventDetailKeys[key]}</span>: {objKey}
+        </div>
+      );
+    }
+  });
+}

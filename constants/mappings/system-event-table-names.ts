@@ -11,12 +11,24 @@ export const systemEventTypes = {
 };
 
 export const systemEventDetailKeys = {
+  adminDepartment: 'Отдел администратора',
+  adminUsername: 'Логин администратора',
+  editedUserUserName: 'Логин редактируемого пользователя',
+  editedUserName: 'ФИО редактируемого пользователя',
+  createdUserName: 'ФИО созданного пользователя',
+  createdName: 'ФИО созданного пользователя',
+  error: 'Текст ошибки',
+  eventId: 'id инвентаризации',
+  orderId: 'id приказа',
+  orderDate: 'дата приказа',
+  orderNumber: '№ приказа',
+  inventoryId: 'id инвентаризационной описи',
+
+  // ------------
   loginInput: 'Введенный логин',
   addressBefore: 'Адрес до изменений',
   addressAfter: 'Адрес после изменений',
-  admin: 'Администратор',
   username: 'Пользователь',
-  name: 'ФИО',
   department: 'Отдел',
   createdUser: 'Созданный пользователь',
   editedUser: 'Редактируемый пользователь',

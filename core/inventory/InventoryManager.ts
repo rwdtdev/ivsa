@@ -159,4 +159,27 @@ export class InventoryManager {
       await inventoryLocationService.create(data);
     });
   }
+
+  async getInventoryLocationsStats(inventoryId: string) {
+    const total = await this.inventoryLocationService.getCountByPeriod({ inventoryId });
+
+    const perHour = await this.inventoryLocationService.getCountByPeriod({
+      inventoryId,
+      period: 'hour'
+    });
+
+    const perDay = await this.inventoryLocationService.getCountByPeriod({
+      inventoryId,
+      period: 'day'
+    });
+
+    const lastLocation = await this.inventoryLocationService.getLastBy({ inventoryId });
+
+    return {
+      total,
+      perHour,
+      perDay,
+      lastLocation: lastLocation || null
+    };
+  }
 }

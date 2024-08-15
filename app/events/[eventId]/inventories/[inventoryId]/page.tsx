@@ -1,7 +1,9 @@
 import { getInventoryById } from '@/app/actions/server/getInventoryById';
+import { getInventoryLocationsStatsAction } from '@/app/actions/server/inventory-locations';
 import InventoryAddressForm from '@/components/forms/inventory-address-form';
 import { IvaChairmanDialogBtn } from '@/components/iva-chairmen-dialog-btn';
 import IvaLocatorBtn from '@/components/iva-locator-btn';
+import MetadataStatistic from '@/components/metadata-statistic';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent } from '@/components/ui/card';
 import { P } from '@/components/ui/typography/p';
@@ -30,6 +32,7 @@ export default async function InventoryPage({ params: { inventoryId } }: Props) 
   const ua = headers().get('user-agent');
   const isAndroid = /android/i.test(ua || '');
   const inventory = await getInventoryById(inventoryId);
+  const locationsStatistics = await getInventoryLocationsStatsAction(inventoryId);
 
   if (!inventory) {
     return <CardContent>Нет такой инвентаризации!!</CardContent>;
@@ -40,8 +43,8 @@ export default async function InventoryPage({ params: { inventoryId } }: Props) 
   };
 
   return (
-    <>
-      <Card className='mb-3 flex grow flex-col pb-4 pt-3 sm:grow-0'>
+    <div className='grid grid-cols-1 gap-4 sm:grid-cols-4 md:grid-cols-2 lg:grid-cols-3 2xl:grid-cols-3'>
+      <Card className='flex grow flex-col pb-4 pt-3 sm:grow-0 col-span-1 sm:col-span-2 md:cols-span-1 lg:col-span-2 2xl:col-span-2'>
         <CardContent className='flex grow flex-col'>
           <P className='text-sm'>
             <span className='font-semibold'>Название:</span> {inventory.name}
@@ -56,7 +59,7 @@ export default async function InventoryPage({ params: { inventoryId } }: Props) 
           <P className='text-sm'>
             <span className='font-semibold'>Номер:</span> {inventory.number}
           </P>
-          <P className='mb-6 text-sm'>
+          <P className='text-sm'>
             <span className='font-semibold'>Код:</span> {inventory.code}
           </P>
           {!isUserChairman ? (
@@ -86,6 +89,11 @@ export default async function InventoryPage({ params: { inventoryId } }: Props) 
           </div>
         </CardContent>
       </Card>
-    </>
+      <Card className='flex grow flex-col pb-4 pt-3 sm:grow-0 col-span-1 sm:col-span-2 md:cols-span-1 lg:col-span-1 2xl:col-span-1'>
+        <CardContent className='flex grow flex-col'>
+          <MetadataStatistic data={locationsStatistics} />
+        </CardContent>
+      </Card>
+    </div>
   );
 }

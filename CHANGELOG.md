@@ -1,3 +1,10 @@
+# [1.5.0](https://rwdt1.gitlab.yandexcloud.net/rwdt/services/asvi/compare/1.4.1...1.5.0) (2024-08-15)
+
+
+### Features
+
+* add metadta statistic ([683bf41](https://rwdt1.gitlab.yandexcloud.net/rwdt/services/asvi/commit/683bf41ce252e380797b330a889a09ebd3e1f0d0))
+
 ## [1.4.1](https://rwdt1.gitlab.yandexcloud.net/rwdt/services/asvi/compare/1.4.0...1.4.1) (2024-08-14)
 
 

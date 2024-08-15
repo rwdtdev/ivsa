@@ -1,4 +1,4 @@
-import { ActionType } from '@prisma/client';
+import { ActionStatus, ActionType } from '@prisma/client';
 
 export const actionTypesMapper = {
   [ActionType.USER_CREATE]: 'Создание пользователя',
@@ -36,6 +36,11 @@ export const actionTypesMapper = {
   [ActionType.SOI_EVENT_PARTICIPANTS_CHANGE]:
     'Изменение состава участников события инвентаризации',
   [ActionType.SOI_CHECK_USERS]: 'Проверка зарегистрированных в системе пользователей'
+};
+
+export const actionStatusesMapper = {
+  [ActionStatus.SUCCESS]: 'Успешно',
+  [ActionStatus.ERROR]: 'Ошибка'
 };
 
 export const actionTypeSerializeSchema = {
@@ -153,9 +158,28 @@ export const actionTypeSerializeSchema = {
 
   /* ----Внешние события по запросам СБО СОИ. ЭДО. ИНВ. ВИ---- */
   // Создание события инвентаризации
-  [ActionType.SOI_EVENT_CREATE]: {},
+  [ActionType.SOI_EVENT_CREATE]: {
+    loggedinUser: {
+      key: 'SOI',
+      subKeys: {
+        eventId: 'id События',
+        orderId: 'id Приказа',
+        orderDate: 'Дата приказа',
+        orderNumber: '№ приказа'
+      }
+    }
+  },
   // Создание инвентаризационной описи и конференции IVA R
-  [ActionType.SOI_AUDIT_OPEN]: {},
+  [ActionType.SOI_AUDIT_OPEN]: {
+    loggedinUser: {
+      key: 'SOI',
+      subKeys: {
+        error: 'Ошибка',
+        eventId: 'id инвентаризации',
+        inventoryId: 'id инвентаризационной описи'
+      }
+    }
+  },
   // Закрытие инвентаризационной описи и конференции IVA R
   [ActionType.SOI_AUDIT_CLOSE]: {},
   // Открытие конференции для инструктажа в IVA R
@@ -169,19 +193,19 @@ export const actionTypeSerializeSchema = {
 };
 
 // @TODO: remove
-const test = {
-  loginInput: 'Введенный логин',
-  addressBefore: 'Адрес до изменений',
-  addressAfter: 'Адрес после изменений',
-  admin: 'Администратор',
-  username: 'Пользователь',
-  name: 'ФИО',
-  department: 'Отдел',
-  createdUser: 'Созданный пользователь',
-  editedUser: 'Редактируемый пользователь',
-  roleBefore: 'Роль до изменений',
-  roleAfter: 'Роль после изменений',
-  videoFileName: 'Название видео-файла',
-  subtitlesFileName: 'Название файла мета-данных',
-  videoFileSize: 'размер видео-файла'
-};
+// const test = {
+//   loginInput: 'Введенный логин',
+//   addressBefore: 'Адрес до изменений',
+//   addressAfter: 'Адрес после изменений',
+//   admin: 'Администратор',
+//   username: 'Пользователь',
+//   name: 'ФИО',
+//   department: 'Отдел',
+//   createdUser: 'Созданный пользователь',
+//   editedUser: 'Редактируемый пользователь',
+//   roleBefore: 'Роль до изменений',
+//   roleAfter: 'Роль после изменений',
+//   videoFileName: 'Название видео-файла',
+//   subtitlesFileName: 'Название файла мета-данных',
+//   videoFileSize: 'размер видео-файла'
+// };

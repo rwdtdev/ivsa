@@ -120,6 +120,7 @@ export class ActionService {
   }
 
   async getAll() {
-    return this.prisma.action.findMany();
+    const res = await this.prisma.action.findMany();
+    return res;
   }
 }

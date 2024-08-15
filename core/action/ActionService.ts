@@ -1,7 +1,7 @@
 import prisma from '@/core/prisma';
 import { TransactionSession } from '@/types/prisma';
 import { Action, ActionStatus, ActionType, PrismaClient } from '@prisma/client';
-import { ActionCreateData } from './types';
+import { ActionCreateData, ActionsReqParams } from './types';
 import { INITIATORS } from '@/constants';
 
 export class ActionService {
@@ -120,7 +120,65 @@ export class ActionService {
   }
 
   async getAll() {
-    const res = await this.prisma.action.findMany();
-    return res;
+    return await this.prisma.action.findMany();
+  }
+
+  async getActionsWithParams(
+    params: ActionsReqParams = { sort: { by: 'actionAt', direction: 'desc' } }
+  ) {
+    const { page = 1, limit = 10, searchTerm, filter, sort } = params;
+    console.log('🚀 ~ ActionService ~ getActionsWithParams ~ actions:', params);
+
+    const containsSearchTerm = { contains: searchTerm, mode: 'insensitive' };
+
+    const conditions = [];
+
+    if (filter) {
+      if (filter.types) {
+        conditions.push({ type: { in: filter.types } });
+      }
+      if (filter.statuses) {
+        conditions.push({ status: { in: filter.statuses } });
+      }
+    }
+
+    const where = {
+      where: {
+        ...(searchTerm && {
+          OR: [
+            { ip: containsSearchTerm },
+            { initiator: containsSearchTerm }
+            // { details: containsSearchTerm }
+          ]
+        }),
+        ...(filter && filter.from && { actionAt: { gte: filter.from } }),
+        ...(filter && filter.to && { actionAt: { lte: filter?.to } }),
+        ...(conditions.length > 0 && { AND: conditions })
+      }
+    };
+
+    // @ts-expect-error types
+    const totalCount = await prisma.action.count({ ...where });
+
+    console.log('🚀 ~ ActionService ~ pagesCount:', Math.ceil(totalCount / limit));
+    // @ts-expect-error types
+    const actions = await prisma.action.findMany({
+      ...where,
+      skip: (page - 1) * limit,
+      take: limit,
+      orderBy: { [sort.by || 'actionAt']: sort?.direction || 'desc' }
+    });
+    return {
+      items: actions,
+      pagination: {
+        total: totalCount,
+        pagesCount: Math.ceil(totalCount / limit),
+        currentPage: page,
+        perPage: limit,
+        from: (page - 1) * limit + 1,
+        to: (page - 1) * limit + actions.length,
+        hasMore: page < Math.ceil(totalCount / limit)
+      }
+    };
   }
 }

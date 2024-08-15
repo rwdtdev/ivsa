@@ -6,6 +6,7 @@ export const searchParamsSchema = z.object({
   sort: z.string().optional(),
   name: z.string().optional(),
   title: z.string().optional(),
+  type: z.string().optional(),
   store: z.string().optional(),
   status: z.string().optional(),
   role: z.string().optional(),

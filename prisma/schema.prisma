@@ -290,6 +290,8 @@ model InventoryResource {
   metadataHash  String?
   /// Статус процесса обработки ресурса в iva-file-transporter
   status        ResourceProcessStatus @default(NOT_PROCESSED)
+  /// Длительность видео-ресурса
+  duration      Float?
   /// Список геолокационных данных, которые связаны с этим ресурсом
   locations     InventoryLocation[]
   inventory     Inventory             @relation(fields: [inventoryId], references: [id])

@@ -161,6 +161,8 @@ export const filterableColumns = (): DataTableFilterableColumn<Action>[] => {
 };
 
 function objToHtml(obj2: JsonValue) {
+  if (!obj2) return;
+
   const obj = obj2 as JsonObject;
   const keys = Object.keys(obj) as Array<keyof typeof systemEventDetailKeys>;
   return keys.map((key, i) => {

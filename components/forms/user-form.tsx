@@ -50,6 +50,7 @@ export interface MonitoringData {
   initiator: string;
   details: {
     adminUsername: string;
+    error?: string;
     editedUserUserName?: string;
     editedUserName?: string;
   };

@@ -30,9 +30,10 @@ import {
   LoginFormSchema
 } from '@/lib/form-validation-schemas/login-form-schema';
 import { PasswordInput } from '../password-input';
-import { IsBlocked } from '@/app/actions/server/users';
+import { IsBlocked, loginAction } from '@/app/actions/server/users';
+import { ActionStatus } from '@prisma/client';
 
-export default function LoginForm() {
+export default function LoginForm({monitoringData}: {monitoringData: {ip: string}}) {
   const { toast } = useToast();
   const searchParams = useSearchParams();
   const previousURL = searchParams.get('callbackUrl');
@@ -53,6 +54,12 @@ export default function LoginForm() {
 
   const processForm: SubmitHandler<LoginFormData> = async (data) => {
     const isAuthenticated = await authenticate(data);
+    const isBlocked = await IsBlocked(data.username);
+
+    monitoringData = {
+      ...monitoringData,
+      ...data
+    };
 
     if (!isAuthenticated) {
       /** @TODO Add errors dict for toasts */
@@ -64,22 +71,29 @@ export default function LoginForm() {
           </pre>
         )
       });
+      await loginAction(
+        monitoringData,
+        ActionStatus.ERROR,
+        'Неверные логин или пароль'
+      );
+    } else if (isBlocked) {
+      toast({
+        title: 'Ошибка',
+        description: (
+          <pre className='mt-2 w-[340px] rounded-md bg-red-200 p-4'>
+            <p className='text-black'>Пользователь заблокирован.</p>
+            <p className='text-black'>Обратитесь к администратору системы.</p>
+          </pre>
+        )
+      });
+      await loginAction(
+        monitoringData,
+        ActionStatus.ERROR,
+        'Пользователь заблокирован'
+      );
     } else {
-      const isBlocked = await IsBlocked(data.username);
-
-      if (isBlocked) {
-        toast({
-          title: 'Ошибка',
-          description: (
-            <pre className='mt-2 w-[340px] rounded-md bg-red-200 p-4'>
-              <p className='text-black'>Пользователь заблокирован.</p>
-              <p className='text-black'>Обратитесь к администратору системы.</p>
-            </pre>
-          )
-        });
-      } else {
-        window.location.replace('/');
-      }
+      await loginAction(monitoringData, ActionStatus.SUCCESS);
+      window.location.replace('/');
     }
   };
 

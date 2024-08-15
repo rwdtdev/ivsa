@@ -11,6 +11,10 @@ export const systemEventTypes = {
 };
 
 export const systemEventDetailKeys = {
+  inventoryCode: 'Код формы описи',
+  inventoryNumber: 'Номер описи',
+  tabelNumbers: 'Проверяемые табельные номера',
+  conferenceId: 'ID конференции',
   adminDepartment: 'Отдел администратора',
   adminUsername: 'Логин администратора',
   editedUserUserName: 'Логин редактируемого пользователя',
@@ -18,11 +22,11 @@ export const systemEventDetailKeys = {
   createdUserName: 'ФИО созданного пользователя',
   createdName: 'ФИО созданного пользователя',
   error: 'Текст ошибки',
-  eventId: 'id инвентаризации',
-  orderId: 'id приказа',
-  orderDate: 'дата приказа',
-  orderNumber: '№ приказа',
-  inventoryId: 'id инвентаризационной описи',
+  eventId: 'ID инвентаризации',
+  orderId: 'ID приказа',
+  orderDate: 'Дата приказа',
+  orderNumber: 'Номер приказа',
+  inventoryId: 'ID инвентаризационной описи',
 
   // ------------
   loginInput: 'Введенный логин',

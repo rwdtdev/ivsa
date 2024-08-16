@@ -9,7 +9,7 @@ variables:
   LATEST_IMAGE: ${REGISTRY_IMAGE}:latest
   VERSION_IMAGE: ${REGISTRY_IMAGE}:${CI_COMMIT_REF_NAME}
 
-image: cr.yandex/crpv9i7iirujia326c8u/docker:27.1.2
+#image: docker:dind
 
 default:
   tags:

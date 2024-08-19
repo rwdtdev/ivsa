@@ -9,7 +9,7 @@ variables:
   LATEST_IMAGE: ${REGISTRY_IMAGE}:latest
   VERSION_IMAGE: ${REGISTRY_IMAGE}:${CI_COMMIT_REF_NAME}
 
-#image: docker:dind
+image: docker
 
 default:
   tags:

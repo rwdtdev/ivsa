@@ -44,12 +44,14 @@ export function DatePickerWithRange({ className }: React.HTMLAttributes<HTMLDivE
     setIsCalendarOpen(false);
     let qs = '';
     if (date && !_.isEmpty(date)) {
-      const dates: { from?: string; to?: string } = {};
+      const dates: { from?: string; to?: string | null } = {};
       if (date.from) {
         dates.from = date.from.toISOString();
       }
       if (date.to) {
         dates.to = date.to.toISOString();
+      } else {
+        dates.to = null;
       }
       qs = createQueryString(dates);
     } else {

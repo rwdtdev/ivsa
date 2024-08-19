@@ -142,6 +142,10 @@ export class ActionService {
       }
     }
 
+    const dateTo = filter?.to ? new Date(filter.to) : undefined;
+    if (dateTo) dateTo.setDate(dateTo.getDate() + 1);
+    const filterTo = dateTo?.toISOString();
+
     const where = {
       where: {
         ...(searchTerm && {
@@ -151,8 +155,10 @@ export class ActionService {
             // { details: containsSearchTerm }
           ]
         }),
-        ...(filter && filter.from && { actionAt: { gte: filter.from } }),
-        ...(filter && filter.to && { actionAt: { lte: filter?.to } }),
+        ...(filter?.from && { actionAt: { gte: filter.from } }),
+        ...(filter?.to && { actionAt: { lt: filterTo } }),
+        ...(filter?.from &&
+          filter?.to && { actionAt: { gte: filter.from, lt: filterTo } }),
         ...(conditions.length > 0 && { AND: conditions })
       }
     };

@@ -161,11 +161,21 @@ export const filterableColumns = (): DataTableFilterableColumn<Action>[] => {
 };
 
 function objToHtml(obj2: JsonValue) {
+  if (!obj2) return;
+
   const obj = obj2 as JsonObject;
   const keys = Object.keys(obj) as Array<keyof typeof systemEventDetailKeys>;
   return keys.map((key, i) => {
     const objKey = obj[key];
-    if (typeof objKey === 'object') {
+
+    if (Array.isArray(objKey)) {
+      return (
+        <div key={i} className='py-0.5 pl-4'>
+          <span className='font-semibold'>{systemEventDetailKeys[key]}</span>:
+          <p>{objKey.join(', ')}</p>
+        </div>
+      );
+    } else if (typeof objKey === 'object') {
       return (
         <div key={i} className='pl-4'>
           <span className='font-bold'>{systemEventDetailKeys[key]}</span>:{' '}

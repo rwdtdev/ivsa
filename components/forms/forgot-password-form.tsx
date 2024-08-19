@@ -29,8 +29,9 @@ import {
   ForgotPasswordFormData,
   ForgotPasswordFormSchema
 } from '@/lib/form-validation-schemas/forgot-password-schema';
+import { MonitoringData } from './user-form';
 
-const ForgotPasswordForm = () => {
+const ForgotPasswordForm = ({monitoringData}: {monitoringData: MonitoringData}) => {
   const [isSubmitted, setIsSubmitted] = useState(false);
   const router = useRouter();
   const emailInputRef = useRef(null);
@@ -42,7 +43,7 @@ const ForgotPasswordForm = () => {
   });
 
   const processForm: SubmitHandler<ForgotPasswordFormData> = async (data) => {
-    const sent = await sendRecoveryLinkAction(data);
+    const sent = await sendRecoveryLinkAction(data, monitoringData);
     if (!sent) {
       toast({
         title: 'Ошибка',

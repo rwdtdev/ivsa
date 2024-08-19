@@ -1,3 +1,10 @@
+## [1.5.1](https://rwdt1.gitlab.yandexcloud.net/rwdt/services/asvi/compare/1.5.0...1.5.1) (2024-08-15)
+
+
+### Bug Fixes
+
+* add getMonitoringData and fix AlertDialog in usersTable row-action Squashed commit of the following: ([daf8dd4](https://rwdt1.gitlab.yandexcloud.net/rwdt/services/asvi/commit/daf8dd4239f630a8a24ffa407cbc3757468b4bfb))
+
 # [1.5.0](https://rwdt1.gitlab.yandexcloud.net/rwdt/services/asvi/compare/1.4.1...1.5.0) (2024-08-15)
 
 

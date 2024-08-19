@@ -46,10 +46,11 @@ interface UserFormProps {
 }
 
 export interface MonitoringData {
-  ip: string;
+  ip: string | null;
   initiator: string;
-  details: {
+  details?: {
     adminUsername: string;
+    error?: string;
     editedUserUserName?: string;
     editedUserName?: string;
   };

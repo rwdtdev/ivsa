@@ -66,7 +66,7 @@ export default function InventoryAddressForm({ inventory }: Props) {
     <Form {...form}>
       <form
         id='inventory-address-form'
-        className='w-full space-y-6'
+        className='mt-6 w-full space-y-6'
         onSubmit={form.handleSubmit(processForm)}
       >
         <FormField

@@ -8,30 +8,79 @@ import {
 import { UserService } from '@/core/user/UserService';
 import { JwtSecret } from '@/constants/jwt';
 import { transporter } from '@/lib/smtp-transporter';
-import { UserStatus } from '@prisma/client';
+import { ActionStatus, ActionType, UserStatus } from '@prisma/client';
 import { doTransaction } from '@/lib/prisma-transaction';
 import { revalidatePath } from 'next/cache';
 import { TransactionSession } from '@/types/prisma';
+import { ActionService } from '@/core/action/ActionService';
+import { MonitoringData } from '@/components/forms/user-form';
+import { getUnknownErrorText } from '@/lib/helpers';
+import { unknownUser } from '@/constants/actions';
 
-export async function sendRecoveryLinkAction(data: ForgotPasswordFormData) {
+export async function sendRecoveryLinkAction(
+  data: ForgotPasswordFormData,
+  monitoringData: MonitoringData
+) {
   const result = ForgotPasswordFormSchema.safeParse(data);
   const userService = new UserService();
+  const actionService = new ActionService();
 
-  if (!result.success) return false;
+  if (!result.success) {
+    await actionService.add({
+      ...monitoringData,
+      type: ActionType.USER_REQUEST_PASSWORD_RESET,
+      status: ActionStatus.ERROR,
+      initiator: unknownUser,
+      details: {
+        ...monitoringData.details,
+        error: getUnknownErrorText(result.error)
+      }
+    });
 
-  const { email } = result.data;
-  const user = await userService.getBy({ email });
+    return false;
+  }
 
-  if (!user) return false;
+  try {
+    const { email } = result.data;
+    const user = await userService.getBy({ email });
+    const token = jwt.sign({ username: user.username }, JwtSecret, { expiresIn: '15m' });
 
-  const token = jwt.sign({ username: user.username }, JwtSecret, { expiresIn: '15m' });
+    await transporter.sendMail({
+      from: process.env.TRANSPORT_FROM,
+      to: user.email,
+      subject: 'Восстановление пароля',
+      text: `Ссылка для восстановления пароля: ${process.env.NEXTAUTH_URL}/forgot-password/${token}`
+    });
 
-  return await transporter.sendMail({
-    from: process.env.TRANSPORT_FROM,
-    to: user.email,
-    subject: 'Восстановление пароля',
-    text: `Ссылка для восстановления пароля: ${process.env.NEXTAUTH_URL}/forgot-password/${token}`
-  });
+    await actionService.add({
+      ...monitoringData,
+      type: ActionType.USER_REQUEST_PASSWORD_RESET,
+      status: ActionStatus.SUCCESS,
+      initiator: user.name || unknownUser,
+      details: {
+        ...monitoringData.details,
+        emailInput: user.email,
+        login: user.username,
+        username: user.name
+      }
+    });
+
+    return true;
+  } catch (err) {
+    await actionService.add({
+      ...monitoringData,
+      type: ActionType.USER_REQUEST_PASSWORD_RESET,
+      status: ActionStatus.ERROR,
+      initiator: unknownUser,
+      details: {
+        ...monitoringData.details,
+        emailInput: data.email,
+        error: getUnknownErrorText(err)
+      }
+    });
+
+    return false;
+  }
 }
 
 export async function setActiveAndSendRecoveryLinkAction(userId: string, email: string) {

@@ -7,6 +7,7 @@ import { UsersTable } from '@/components/tables/users-table';
 // import { getOrganisationsAction } from '@/app/actions/server/organisations';
 import Header from '@/components/layout/header';
 import { getServerSessionAndIP, ServerSessionAndIP } from '@/lib/getServerSessionAndIP';
+import { unknownUser } from '@/constants/actions';
 
 export const metadata = {
   title: 'Пользователи'
@@ -23,10 +24,10 @@ export default async function UsersPage({ searchParams }: IndexPageProps) {
   const { session, ip }: ServerSessionAndIP = await getServerSessionAndIP();
 
   const monitoringData = {
-    ip: ip || 'нет данных',
-    initiator: session?.user.name || 'нет данных',
+    ip,
+    initiator: session?.user.name || unknownUser,
     details: {
-      adminUsername: session?.user.name || 'нет данных'
+      adminUsername: session?.user.name || unknownUser
     }
   };
 

@@ -28,10 +28,14 @@ interface Props {
 
 export default async function InventoryPage({ params: { inventoryId } }: Props) {
   const session = await getServerSession(authConfig);
-  const isUserChairman = session?.user.role === 'CHAIRMAN';
   const ua = headers().get('user-agent');
   const isAndroid = /android/i.test(ua || '');
   const inventory = await getInventoryById(inventoryId);
+  const participant = inventory?.participants.find(
+    (participant) => participant.userId === session?.user.id
+  );
+  const isUserChairman = participant?.role === 'CHAIRMAN';
+
   const locationsStatistics = await getInventoryLocationsStatsAction(inventoryId);
 
   if (!inventory) {
@@ -44,7 +48,7 @@ export default async function InventoryPage({ params: { inventoryId } }: Props) 
 
   return (
     <div className='grid grid-cols-1 gap-4 sm:grid-cols-4 md:grid-cols-2 lg:grid-cols-3 2xl:grid-cols-3'>
-      <Card className='flex grow flex-col pb-4 pt-3 sm:grow-0 col-span-1 sm:col-span-2 md:cols-span-1 lg:col-span-2 2xl:col-span-2'>
+      <Card className='md:cols-span-1 col-span-1 flex grow flex-col pb-4 pt-3 sm:col-span-2 sm:grow-0 lg:col-span-2 2xl:col-span-2'>
         <CardContent className='flex grow flex-col'>
           <P className='text-sm'>
             <span className='font-semibold'>Название:</span> {inventory.name}
@@ -89,7 +93,7 @@ export default async function InventoryPage({ params: { inventoryId } }: Props) 
           </div>
         </CardContent>
       </Card>
-      <Card className='flex grow flex-col pb-4 pt-3 sm:grow-0 col-span-1 sm:col-span-2 md:cols-span-1 lg:col-span-1 2xl:col-span-1'>
+      <Card className='md:cols-span-1 col-span-1 flex grow flex-col pb-4 pt-3 sm:col-span-2 sm:grow-0 lg:col-span-1 2xl:col-span-1'>
         <CardContent className='flex grow flex-col'>
           <MetadataStatistic data={locationsStatistics} />
         </CardContent>

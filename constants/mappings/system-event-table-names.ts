@@ -29,7 +29,9 @@ export const systemEventDetailKeys = {
   inventoryId: 'ID инвентаризационной описи',
 
   // ------------
+  emailInput: 'Введенный адрес электронной почты',
   loginInput: 'Введенный логин',
+  login: 'Логин',
   addressBefore: 'Адрес до изменений',
   addressAfter: 'Адрес после изменений',
   username: 'Пользователь',

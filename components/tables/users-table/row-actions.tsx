@@ -43,11 +43,14 @@ export function CellAction({ data, monitoringData }: Props) {
     // setLoading(true);
     await updateUserAction(data.id, { status: UserStatus.RECUSED } as UserFormData, {
       ...monitoringData,
-      details: {
-        ...monitoringData.details,
-        editedUserUserName: data.username,
-        editedUserName: data.name
-      }
+      ...(monitoringData.details && {
+          details: {
+            ...monitoringData.details,
+            editedUserUserName: data.username,
+            editedUserName: data.name
+          }
+        }
+      )
     });
     // setLoading(false);
     setOpenRecuseUser(false);

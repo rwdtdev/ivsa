@@ -83,7 +83,7 @@ export const UserForm: React.FC<UserFormProps> = ({
         tabelNumber: '',
         phone: '',
         role: UserRole.USER,
-        expiresAt: new Date(Date.now() + 3 * 30 * 24 * 60 * 60 * 1000)
+        expiresAt: new Date(Date.now() + 365 * 24 * 60 * 60 * 1000)
       };
 
   const form = useForm<UserFormData>({

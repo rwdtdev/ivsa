@@ -232,12 +232,14 @@ export async function loginAction(
   const actionService = new ActionService();
   const userService = new UserService();
 
-  const user = await userService.getBy({ username: monitoringData.username });
+  const user = monitoringData.username
+    ? await userService.getBy({ username: monitoringData.username })
+    : undefined;
 
   if (status === ActionStatus.SUCCESS) {
     await actionService.add({
       type: ActionType.USER_LOGIN,
-      initiator: user.name || 'Неизвестный пользователь',
+      initiator: user?.name || 'Неизвестный пользователь',
       status,
       ip: monitoringData.ip
     });
@@ -247,7 +249,7 @@ export async function loginAction(
     await actionService.add({
       type: ActionType.USER_LOGIN,
       ip: monitoringData.ip,
-      initiator: user.name || 'Неизвестный пользователь',
+      initiator: user?.name || 'Неизвестный пользователь',
       status,
       details: { error }
     });

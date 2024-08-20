@@ -1,5 +1,4 @@
 'use client';
-
 import { SubmitHandler, useForm } from 'react-hook-form';
 import { useSearchParams } from 'next/navigation';
 import { zodResolver } from '@hookform/resolvers/zod';
@@ -33,7 +32,11 @@ import { PasswordInput } from '../password-input';
 import { IsBlocked, loginAction } from '@/app/actions/server/users';
 import { ActionStatus } from '@prisma/client';
 
-export default function LoginForm({monitoringData}: {monitoringData: {ip: string}}) {
+export default function LoginForm({
+  monitoringData
+}: {
+  monitoringData: { ip: string };
+}) {
   const { toast } = useToast();
   const searchParams = useSearchParams();
   const previousURL = searchParams.get('callbackUrl');
@@ -53,8 +56,7 @@ export default function LoginForm({monitoringData}: {monitoringData: {ip: string
   });
 
   const processForm: SubmitHandler<LoginFormData> = async (data) => {
-    const isAuthenticated = await authenticate(data);
-    const isBlocked = await IsBlocked(data.username);
+    const isAuthenticated = await authenticate(data, monitoringData);
 
     monitoringData = {
       ...monitoringData,
@@ -71,12 +73,12 @@ export default function LoginForm({monitoringData}: {monitoringData: {ip: string
           </pre>
         )
       });
-      await loginAction(
-        monitoringData,
-        ActionStatus.ERROR,
-        'Неверные логин или пароль'
-      );
-    } else if (isBlocked) {
+      return;
+    }
+
+    const isBlocked = await IsBlocked(data.username); // move isBlock check after IsAuthenticated otherwise throw error if no user
+
+    if (isBlocked) {
       toast({
         title: 'Ошибка',
         description: (
@@ -86,15 +88,11 @@ export default function LoginForm({monitoringData}: {monitoringData: {ip: string
           </pre>
         )
       });
-      await loginAction(
-        monitoringData,
-        ActionStatus.ERROR,
-        'Пользователь заблокирован'
-      );
-    } else {
-      await loginAction(monitoringData, ActionStatus.SUCCESS);
-      window.location.replace('/');
+      await loginAction(monitoringData, ActionStatus.ERROR, 'Пользователь заблокирован');
+      return;
     }
+
+    window.location.replace('/');
   };
 
   return (

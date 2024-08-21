@@ -1,3 +1,11 @@
+## [1.6.1](https://rwdt1.gitlab.yandexcloud.net/rwdt/services/asvi/compare/1.6.0...1.6.1) (2024-08-21)
+
+
+### Bug Fixes
+
+* add links 204 for start stop ([c85a310](https://rwdt1.gitlab.yandexcloud.net/rwdt/services/asvi/commit/c85a3103e669658836acc4ef4b01a7bc231dbcff))
+* types ([c166e37](https://rwdt1.gitlab.yandexcloud.net/rwdt/services/asvi/commit/c166e37c7928d51f33bbaf20f25240fbd0f5a5de))
+
 # [1.6.0](https://rwdt1.gitlab.yandexcloud.net/rwdt/services/asvi/compare/1.5.1...1.6.0) (2024-08-21)
 
 

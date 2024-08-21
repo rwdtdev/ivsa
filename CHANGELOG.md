@@ -1,3 +1,22 @@
+# [1.6.0](https://rwdt1.gitlab.yandexcloud.net/rwdt/services/asvi/compare/1.5.1...1.6.0) (2024-08-21)
+
+
+### Bug Fixes
+
+* add filters & pagination to MonitoringPage ([a5c0aef](https://rwdt1.gitlab.yandexcloud.net/rwdt/services/asvi/commit/a5c0aef6a07dc4b6b5836c8b365a1d004424fb91))
+* AlertDialog in userTable row-action ([9c8a9ae](https://rwdt1.gitlab.yandexcloud.net/rwdt/services/asvi/commit/9c8a9ae63bfe42561594ba4fa443b1dedf734915))
+* date filter for MonitoringPage ([5c17a91](https://rwdt1.gitlab.yandexcloud.net/rwdt/services/asvi/commit/5c17a91e41174b5dc68938c27be26c59856a6f77))
+* filters & pagination in MonitoringPage ([86b1df6](https://rwdt1.gitlab.yandexcloud.net/rwdt/services/asvi/commit/86b1df6d526890d74bdc9596140c6ba50b41e27f))
+* hotfix ([95d6c8e](https://rwdt1.gitlab.yandexcloud.net/rwdt/services/asvi/commit/95d6c8e44537d4289aa3c031a2296e0998f6070c))
+* isUserChairman check in InventoryPage ([4cecdc7](https://rwdt1.gitlab.yandexcloud.net/rwdt/services/asvi/commit/4cecdc7c808332200ed4c01934647a4daa6b4586))
+* login if no username in db ([df295be](https://rwdt1.gitlab.yandexcloud.net/rwdt/services/asvi/commit/df295be7f3c225984e15ac02ee66329c73fa858a))
+
+
+### Features
+
+* add action for login page ([7455d45](https://rwdt1.gitlab.yandexcloud.net/rwdt/services/asvi/commit/7455d453be87829f6c6124cdd8077d8fde5b6346))
+* add actions for user forgot password form ([750862c](https://rwdt1.gitlab.yandexcloud.net/rwdt/services/asvi/commit/750862c058ca713b4e58af7e322e6cbd63952e08))
+
 ## [1.5.1](https://rwdt1.gitlab.yandexcloud.net/rwdt/services/asvi/compare/1.5.0...1.5.1) (2024-08-15)
 
 

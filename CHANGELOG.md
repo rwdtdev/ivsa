@@ -1,3 +1,11 @@
+## [1.6.2](https://rwdt1.gitlab.yandexcloud.net/rwdt/services/asvi/compare/1.6.1...1.6.2) (2024-08-21)
+
+
+### Bug Fixes
+
+* ref ([5bbf0c1](https://rwdt1.gitlab.yandexcloud.net/rwdt/services/asvi/commit/5bbf0c1558462808ca186c10dcc7349917183ca7))
+* routes ([f1f09b2](https://rwdt1.gitlab.yandexcloud.net/rwdt/services/asvi/commit/f1f09b2195543f2a61bad628a44a3b370f973a43))
+
 ## [1.6.1](https://rwdt1.gitlab.yandexcloud.net/rwdt/services/asvi/compare/1.6.0...1.6.1) (2024-08-21)
 
 

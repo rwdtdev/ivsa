@@ -177,11 +177,7 @@ export function fakeEvent() {
       '99'
     ]),
     updatedAt: faker.date.anytime(),
-    status: faker.helpers.arrayElement([
-      EventStatus.OPEN,
-      EventStatus.CLOSED,
-      EventStatus.REMOVED
-    ]),
+    status: faker.helpers.arrayElement([EventStatus.OPEN, EventStatus.REMOVED]),
     briefingStatus: faker.helpers.arrayElement([
       BriefingStatus.IN_PROGRESS,
       BriefingStatus.NOT_STARTED,

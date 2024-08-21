@@ -22,11 +22,6 @@ export const EventStatusBadge = ({ status }: { status?: EventStatus }) => {
     classNames = 'bg-red-200 hover:bg-red-200';
   }
 
-  if (status === EventStatus.CLOSED) {
-    Icon = CheckCircledIcon;
-    classNames = 'bg-green-200 hover:bg-green-200';
-  }
-
   return (
     <Badge variant='secondary' className={cn('pointer-events-none py-1', classNames)}>
       {Icon && <Icon className='mr-1' />} {text}

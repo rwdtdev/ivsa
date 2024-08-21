@@ -19,7 +19,8 @@ type BreadCrumbPropsType = {
 };
 
 export default function BreadCrumb({ items }: BreadCrumbPropsType) {
-  const brCrList = structuredClone(items);
+  const brCrList = [...items];
+
   return (
     <>
       <div className='hidden items-center space-x-1 px-1 py-2 text-sm text-muted-foreground md:visible md:flex'>

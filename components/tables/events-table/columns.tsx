@@ -158,7 +158,7 @@ export const filterableColumns = (): DataTableFilterableColumn<EventView>[] => {
     {
       id: 'status',
       title: 'Статус',
-      options: [EventStatus.OPEN, EventStatus.CLOSED, EventStatus.REMOVED].map(
+      options: [EventStatus.ACTIVE, EventStatus.REMOVED].map(
         (status) => {
           const value = EventStatuses[status];
 

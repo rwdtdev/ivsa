@@ -23,8 +23,7 @@ export const UserStatus = {
 };
 
 export const EventStatuses = {
-  OPEN: 'Открыта',
-  CLOSED: 'Закрыта',
+  ACTIVE: 'Активна',
   REMOVED: 'Удалена'
 };
 

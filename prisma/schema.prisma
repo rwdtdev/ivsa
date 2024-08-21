@@ -130,7 +130,7 @@ model Event {
   /// Список описей
   inventories            Inventory[]
   /// Глобальный статус события инвентаризации
-  status                 EventStatus    @default(OPEN)
+  status                 EventStatus    @default(ACTIVE)
   /// Статус инструктужа, которые выставляется на основе
   briefingStatus         BriefingStatus @default(NOT_STARTED)
   /// Ссылка для подключения к открытой комнате видеоинструктажа
@@ -420,11 +420,9 @@ enum InventoryStatus {
 }
 
 enum EventStatus {
-  /// Событие открыто
-  OPEN
-  /// Событие закрыто
-  CLOSED
-  /// Событие удалено
+  /// Событие событие инвентаризации активно
+  ACTIVE
+  /// Событие событие инвентаризации помечено удаленным
   REMOVED
 }
 

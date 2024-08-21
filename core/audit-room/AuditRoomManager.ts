@@ -10,13 +10,7 @@ import {
   EmptyPartisipantsListError,
   ParticipantsMustContainModeratorError
 } from './errors';
-import {
-  BriefingStatus,
-  EventStatus,
-  InventoryStatus,
-  UserRole,
-  UserStatus
-} from '@prisma/client';
+import { BriefingStatus, InventoryStatus, UserRole, UserStatus } from '@prisma/client';
 import { InventoryCodes } from '@/core/inventory/types';
 import { CreateInventoryData } from '@/app/api/audit-rooms/create/validation';
 import { getDateFromString } from '@/utils';
@@ -51,13 +45,6 @@ export class AuditRoomManager {
     const { protocol, hostname, port } = new URL(process.env.IVA_API_URL as string);
 
     return `${protocol}//${hostname}${port ? ':' + port : ''}/#join:s${conferenceSessionId}`;
-
-    // const participants = await this.ivaService.findConferenceParticipants(
-    //   conferenceSessionId,
-    //   { requestedData: ['JOIN_LINK'] }
-    // );
-
-    // return participants[0].joinLink;
   }
 
   async createRoom({
@@ -214,22 +201,7 @@ export class AuditRoomManager {
           detail: `Audit room with id (${inventoryId}) is not opened`
         });
       }
-
-      await inventoryService.update(inventoryId, { status: InventoryStatus.CLOSED });
-
-      if (await this.isAllClosedInventories(eventId, inventoryService)) {
-        await eventService.update(eventId, { status: EventStatus.CLOSED });
-      }
     });
-  }
-
-  private async isAllClosedInventories(
-    eventId: string,
-    inventoryService: InventoryService
-  ) {
-    const inventories = await inventoryService.findBy({ eventId });
-
-    return inventories.every((inventory) => inventory.status === InventoryStatus.CLOSED);
   }
 
   private assertContaintModerator(participants: ParticipantWithUser[]) {

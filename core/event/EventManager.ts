@@ -39,7 +39,7 @@ export class EventManager {
     // TODO: Не совсем правильно, но от ОЦРВ обновленный статус не приходит
     const existEvent = await this.eventService.getById(id);
     if (existEvent && existEvent.status === EventStatus.REMOVED) {
-      data.status = EventStatus.OPEN;
+      data.status = EventStatus.ACTIVE;
     }
 
     await this.eventService.update(id, _.omit(data, 'participants'));

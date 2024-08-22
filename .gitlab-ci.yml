@@ -16,7 +16,7 @@ image: docker
 
 default:
   tags:
-    - rwdt_local
+    - rwdt
 
 cache:
   key: ${CI_COMMIT_REF_SLUG}

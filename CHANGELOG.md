@@ -1,3 +1,11 @@
+## [1.6.3](https://rwdt1.gitlab.yandexcloud.net/rwdt/services/asvi/compare/1.6.2...1.6.3) (2024-08-26)
+
+
+### Bug Fixes
+
+* adnroid routes ([a818e28](https://rwdt1.gitlab.yandexcloud.net/rwdt/services/asvi/commit/a818e281998de418dfdff530cde1d5dfc5688463))
+* routes ([f5810bd](https://rwdt1.gitlab.yandexcloud.net/rwdt/services/asvi/commit/f5810bda410100ea6a51a71699988d39c8fd674a))
+
 ## [1.6.2](https://rwdt1.gitlab.yandexcloud.net/rwdt/services/asvi/compare/1.6.1...1.6.2) (2024-08-21)
 
 

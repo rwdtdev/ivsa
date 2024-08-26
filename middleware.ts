@@ -108,7 +108,7 @@ export const config = {
     '/api/:path*',
     '/admin/:path*',
     '/login/:path*',
-    '/events',
+    '/events/:path*',
     '/start',
     '/stop'
   ]

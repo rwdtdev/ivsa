@@ -1,7 +1,6 @@
 'use client';
 import { setActiveAndSendRecoveryLinkAction } from '@/app/actions/server/user-password';
 import { updateUserAction } from '@/app/actions/server/users';
-import { MonitoringData } from '@/components/forms/user-form';
 import { Button } from '@/components/ui/button';
 import {
   DropdownMenu,
@@ -26,10 +25,11 @@ import {
   AlertDialogHeader,
   AlertDialogTitle
 } from '@/components/ui/alert-dialog';
+import { MonitoringUserData } from '@/core/user/types';
 
 interface Props {
   data: UserView;
-  monitoringData: MonitoringData;
+  monitoringData: MonitoringUserData;
 }
 
 export function CellAction({ data, monitoringData }: Props) {
@@ -44,13 +44,12 @@ export function CellAction({ data, monitoringData }: Props) {
     await updateUserAction(data.id, { status: UserStatus.RECUSED } as UserFormData, {
       ...monitoringData,
       ...(monitoringData.details && {
-          details: {
-            ...monitoringData.details,
-            editedUserUserName: data.username,
-            editedUserName: data.name
-          }
+        details: {
+          ...monitoringData.details,
+          editedUserUsername: data.username,
+          editedUserName: data.name
         }
-      )
+      })
     });
     // setLoading(false);
     setOpenRecuseUser(false);

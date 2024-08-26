@@ -35,8 +35,8 @@ export default async function UpdateUserPage({ params }: { params: { id: string 
     ip: ip || 'нет данных',
     initiator: session?.user.name || 'нет данных',
     details: {
-      adminUsername: session?.user.name || 'нет данных',
-      editedUserUserName: user.username,
+      adminUsername: session?.user.username || 'нет данных',
+      editedUserUsername: user.username,
       editedUserName: user.name
     }
   };

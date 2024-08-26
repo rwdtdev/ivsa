@@ -36,24 +36,15 @@ import { CalendarIcon } from 'lucide-react';
 import { Calendar } from '@/components/ui/calendar';
 import { cn } from '@/lib/utils';
 import { format } from 'date-fns';
+import { ru } from 'date-fns/locale';
+import { MonitoringUserData } from '@/core/user/types';
 
 interface UserFormProps {
   userId?: string;
   initialData: any | null;
   // organisations: any;
   // departments: any;
-  monitoringData: MonitoringData;
-}
-
-export interface MonitoringData {
-  ip: string | null;
-  initiator: string;
-  details?: {
-    adminUsername: string;
-    error?: string;
-    editedUserUserName?: string;
-    editedUserName?: string;
-  };
+  monitoringData: MonitoringUserData;
 }
 
 export const UserForm: React.FC<UserFormProps> = ({
@@ -384,7 +375,7 @@ export const UserForm: React.FC<UserFormProps> = ({
                           {field.value ? (
                             format(field.value, 'dd.MM.yyyy')
                           ) : (
-                            <span>Pick a date</span>
+                            <span>Выберите дату</span>
                           )}
                           <CalendarIcon className='ml-auto h-4 w-4 opacity-50' />
                         </Button>
@@ -400,6 +391,7 @@ export const UserForm: React.FC<UserFormProps> = ({
                         onSelect={field.onChange}
                         disabled={(date) => date < new Date()}
                         initialFocus
+                        locale={ru}
                       />
                     </PopoverContent>
                   </Popover>

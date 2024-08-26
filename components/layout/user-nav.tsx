@@ -1,5 +1,4 @@
 'use client';
-
 import { signOut, useSession } from 'next-auth/react';
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
 import { Button } from '@/components/ui/button';
@@ -11,6 +10,7 @@ import {
   DropdownMenuSeparator,
   DropdownMenuTrigger
 } from '@/components/ui/dropdown-menu';
+import { logoutAction } from '@/app/actions/server/users';
 
 export function UserNav() {
   const { data: session } = useSession();
@@ -39,7 +39,12 @@ export function UserNav() {
             </div>
           </DropdownMenuLabel>
           <DropdownMenuSeparator />
-          <DropdownMenuItem onClick={() => signOut({ callbackUrl: '/login' })}>
+          <DropdownMenuItem
+            onClick={() => {
+              signOut({ callbackUrl: '/login' });
+              logoutAction();
+            }}
+          >
             Выйти
           </DropdownMenuItem>
         </DropdownMenuContent>

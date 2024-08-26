@@ -19,12 +19,12 @@ import { DataTableColumnHeader } from '@/components/ui/data-table/data-table-col
 import { UserView } from '@/types/user';
 import { DataTableFilterableColumn } from '@/types';
 import { format } from 'date-fns';
-import { MonitoringData } from '@/components/forms/user-form';
+import { MonitoringUserData } from '@/core/user/types';
 
 const emptyCell = '';
 
 export function fetchUsersTableColumnDefs(
-  monitoringData: MonitoringData
+  monitoringData: MonitoringUserData
 ): ColumnDef<UserView, unknown>[] {
   // isPending: boolean,
   // startTransition: React.TransitionStartFunction

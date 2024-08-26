@@ -12,7 +12,7 @@ import { UserService } from '@/core/user/UserService';
 import { UserView } from '@/types/user';
 import { PaginatedResponse } from '@/types';
 import { ActionStatus, ActionType, User, UserRole, UserStatus } from '@prisma/client';
-import { UserCreateData } from '@/core/user/types';
+import { MonitoringUserData, UserCreateData } from '@/core/user/types';
 import { UserManager } from '@/core/user/UserManager';
 import { IvaService } from '@/core/iva/IvaService';
 import { DepartmentService } from '@/core/department/DepartmentService';
@@ -21,13 +21,16 @@ import { OrganisationService } from '@/core/organisation/OrganisationService';
 import { SortOrder } from '@/constants/data';
 import { ActionService } from '@/core/action/ActionService';
 import { getUnknownErrorText } from '@/lib/helpers';
-import { MonitoringData } from '@/components/forms/user-form';
+import { headers } from 'next/headers';
+import { getClientIP } from '@/lib/helpers/ip';
+import { getServerSession } from 'next-auth';
+import { authConfig } from '@/lib/auth-options';
 
 const cache = new Cache({ checkperiod: 120 });
 
 export async function createUserAction(
   formData: UserFormData,
-  monitoringData: MonitoringData
+  monitoringData: MonitoringUserData
 ): Promise<any> {
   const userManager = new UserManager(
     new IvaService(),
@@ -47,8 +50,8 @@ export async function createUserAction(
       status: ActionStatus.SUCCESS,
       details: {
         ...monitoringData.details,
-        createdUserName: formData.username,
-        createdName: formData.name
+        createdUserUsername: formData.username,
+        createdUserName: formData.name
       }
     });
   } catch (error) {
@@ -59,8 +62,8 @@ export async function createUserAction(
       details: {
         ...monitoringData.details,
         error: getUnknownErrorText(error),
-        createdUserName: formData.username,
-        createdName: formData.name
+        createdUserUsername: formData.username,
+        createdUserName: formData.name
       }
     });
     console.debug(error);
@@ -74,7 +77,7 @@ export async function createUserAction(
 export async function updateUserAction(
   id: string,
   formData: UserFormData,
-  monitoringData: MonitoringData
+  monitoringData: MonitoringUserData
 ) {
   const actionService = new ActionService();
   const userService = new UserService();
@@ -201,6 +204,7 @@ export async function blockUserAction(id: string) {
 
   try {
     await userManager.blockUser(id);
+    revalidatePath('/admin/users');
   } catch (error) {
     console.debug(error);
     return { error: JSON.stringify(error, Object.getOwnPropertyNames(error)) };
@@ -218,6 +222,7 @@ export async function unblockUserAction(id: string) {
 
   try {
     await userManager.unblockUser(id);
+    revalidatePath('/admin/users');
   } catch (error) {
     console.debug(error);
     return { error: JSON.stringify(error, Object.getOwnPropertyNames(error)) };
@@ -254,4 +259,20 @@ export async function loginAction(
       details: { error }
     });
   }
+}
+
+export async function logoutAction() {
+  const headersList = headers();
+  const ip = getClientIP(headersList);
+  const session = await getServerSession(authConfig);
+  const actionService = new ActionService();
+  actionService.add({
+    type: ActionType.USER_LOGOUT,
+    ip,
+    initiator: session?.user.name || 'Неизвестный пользователь',
+    status: ActionStatus.SUCCESS,
+    details: {
+      username: session?.user.username
+    }
+  });
 }

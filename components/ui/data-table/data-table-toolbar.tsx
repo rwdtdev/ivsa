@@ -23,7 +23,8 @@ import { DatePickerUsersExpiresAt } from '@/components/date-picker-users-expires
 import { TableType } from './data-table';
 import InventorySelectMenu from '@/components/inventory-select-menu';
 import { blockUserAction, unblockUserAction } from '@/app/actions/server/users';
-import { Printer, Upload } from 'lucide-react';
+import { PrintBtn } from '@/components/print-btn';
+import { ExportToXlsxBtn } from '@/components/export-to-xlsx-btn';
 
 interface DataTableToolbarProps<TData> {
   table: Table<TData>;
@@ -247,12 +248,19 @@ export function DataTableToolbar<TData>({
         ) : null}
         {isMonitoringTable && (
           <>
-            <Button variant='outline' size='sm' className='h-8'>
+            {/* <Button
+              variant='outline'
+              size='sm'
+              className='h-8'
+              onClick={async () => {
+                const res = await getAllMonitoringData();
+                console.log('🚀 ~ onClick={ ~ res:', res);
+              }}
+            >
               <Upload size={20} stroke='slategrey' />
-            </Button>
-            <Button variant='outline' size='sm' className='h-8'>
-              <Printer size={20} stroke='slategrey' />
-            </Button>
+            </Button> */}
+            <ExportToXlsxBtn />
+            <PrintBtn />
           </>
         )}
 

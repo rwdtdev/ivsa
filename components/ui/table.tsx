@@ -9,6 +9,7 @@ const Table = React.forwardRef<HTMLTableElement, React.HTMLAttributes<HTMLTableE
       className='relative'
     >
       <table
+        id='data-table'
         ref={ref}
         className={cn('w-full caption-bottom text-sm', className)}
         {...props}

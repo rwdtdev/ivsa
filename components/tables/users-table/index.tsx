@@ -9,13 +9,13 @@ import { DataTable } from '@/components/ui/data-table/data-table';
 import { ColumnDef } from '@tanstack/react-table';
 // import { Department, Organisation } from '@prisma/client';
 import { UsersTableColumnNames } from '@/constants/mappings/tables-column-names';
-import { MonitoringData } from '@/components/forms/user-form';
+import { MonitoringUserData } from '@/core/user/types';
 
 interface UsersTableProps {
   users: PaginatedResponse<UserView> | { items: []; pagination: { pagesCount: number } };
   // departments: Department[];
   // organisations: Organisation[];
-  monitoringData: MonitoringData;
+  monitoringData: MonitoringUserData;
 }
 
 export function UsersTable({

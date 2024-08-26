@@ -1,24 +1,12 @@
 import { ColumnDef, HeaderContext } from '@tanstack/react-table';
-// import { SystemEventObject } from './index';
-import {
-  systemEventDetailKeys /* ,
-  systemEventTypes */
-} from '@/constants/mappings/system-event-table-names';
+import { systemEventDetailKeys } from '@/constants/mappings/system-event-table-names';
 import { format } from 'date-fns';
 import { DataTableColumnHeader } from '@/components/ui/data-table/data-table-column-header';
 import { DataTableFilterableColumn } from '@/types';
 
-import {
-  actionStatusesMapper,
-  actionTypeSerializeSchema,
-  actionTypesMapper
-} from '@/constants/actions';
+import { actionStatusesMapper, actionTypesMapper } from '@/constants/actions';
 import { Action, ActionStatus, ActionType } from '@prisma/client';
 import { JsonObject, JsonValue } from '@prisma/client/runtime/library';
-
-// type ObjectType = {
-//   [k: string]: string | ObjectType;
-// };
 
 export function fetchSystemEventsTableColumns(): ColumnDef<Action, unknown>[] {
   return [
@@ -74,56 +62,9 @@ export function fetchSystemEventsTableColumns(): ColumnDef<Action, unknown>[] {
       accessorKey: 'details',
       header: () => <div className='pl-4'>Подробности</div>,
       cell: ({ row }) => objToHtml(row.original.details)
-
-      // cell: ({ row }) => mapToTanstackDetailsCell(row.original.type, row.original.details)
     }
   ];
 }
-
-export const mapToTanstackDetailsCell = (
-  actionType: ActionType,
-  // details: Record<string, any> | null = null
-  details: JsonValue
-) => {
-  if (!details) return;
-  if (
-    typeof details === 'string' ||
-    typeof details === 'number' ||
-    typeof details === 'boolean'
-  )
-    return;
-
-  const detailsModTypes = details as Record<string, any>;
-
-  const detailsKeys = Object.keys(detailsModTypes);
-
-  if (detailsKeys.length === 0) return;
-
-  const schema = actionTypeSerializeSchema[actionType];
-
-  if (!schema) return;
-
-  // return Object.entries(schema).map(([_, value]) => {
-  return Object.values(schema).map((value) => {
-    return (
-      <div key={value.key}>
-        <span className='font-bold'>{value.key}</span>
-        <ul>
-          {Object.keys(value.subKeys).map((subKey) => {
-            return (
-              <li key={subKey} className='text-nowrap'>
-                <span className='pl-2 font-semibold'>
-                  {(value.subKeys as { [key: string]: string })[subKey]}
-                </span>
-                : {detailsModTypes[subKey]}
-              </li>
-            );
-          })}
-        </ul>
-      </div>
-    );
-  });
-};
 
 export const monitoringDatePickers = [
   {
@@ -134,8 +75,6 @@ export const monitoringDatePickers = [
 ];
 
 export const filterableColumns = (): DataTableFilterableColumn<Action>[] => {
-  // const keys = Object.keys(systemEventTypes) as Array<keyof typeof systemEventTypes>;
-  // const actionStatuses = Object.values(ActionStatus);
   return [
     {
       id: 'type',

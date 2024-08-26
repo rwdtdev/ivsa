@@ -27,8 +27,8 @@ export const fakeSystemEventItems = [
     details: {
       adminUsername: 'HaritonovFS',
       adminDepartment: 'Отдел 168',
-      createdUsername: 'IvanovAD',
-      createdName: 'Иванов Александр Дмитриевич'
+      createdUserUsername: 'IvanovAD',
+      createdUserName: 'Иванов Александр Дмитриевич'
     }
   },
   {
@@ -40,7 +40,7 @@ export const fakeSystemEventItems = [
     details: {
       adminUsername: 'HaritonovFS',
       adminDepartment: 'Отдел 168',
-      editedUserUserName: 'IvanovAD',
+      editedUserUsername: 'IvanovAD',
       editedUserName: 'Иванов Александр Дмитриевич'
       // whatElse: 'указывать поля до и поля после редактирования'
       // доработать

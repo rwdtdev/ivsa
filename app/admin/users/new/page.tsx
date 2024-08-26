@@ -29,7 +29,7 @@ export default async function NewUserPage() {
     initiator: session?.user.name || 'нет данных',
     details: {
       adminUsername: session?.user.name || 'нет данных'
-      // editedUserUserName: user.username,
+      // editedUserUsername: user.username,
       // editedUserName: user.name
     }
   };

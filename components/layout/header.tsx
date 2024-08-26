@@ -16,7 +16,7 @@ export default function Header({ title }: { title: string }) {
     <header className='supports-backdrop-blur:bg-background/60 sticky top-0 z-20 border-b bg-slate-50 shadow-sm backdrop-blur'>
       <div className='flex h-14 items-center justify-between px-3 sm:px-8'>
         <div className='mr-auto flex'>
-          <Link href={'/'} className='flex'>
+          <Link href={'/'} className='flex min-w-32'>
             <Image
               src='/logo.png'
               alt='Логотип'

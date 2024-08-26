@@ -51,3 +51,14 @@ export type UserGetData = Partial<{
   username: string;
   email: string;
 }>;
+
+export type MonitoringUserData = {
+  ip: string | null;
+  initiator: string;
+  details?: {
+    adminUsername?: string;
+    error?: string;
+    editedUserUsername?: string;
+    editedUserName?: string;
+  };
+};

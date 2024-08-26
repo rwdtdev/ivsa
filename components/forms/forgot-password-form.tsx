@@ -29,9 +29,13 @@ import {
   ForgotPasswordFormData,
   ForgotPasswordFormSchema
 } from '@/lib/form-validation-schemas/forgot-password-schema';
-import { MonitoringData } from './user-form';
+import { MonitoringUserData } from '@/core/user/types';
 
-const ForgotPasswordForm = ({monitoringData}: {monitoringData: MonitoringData}) => {
+const ForgotPasswordForm = ({
+  monitoringData
+}: {
+  monitoringData: MonitoringUserData;
+}) => {
   const [isSubmitted, setIsSubmitted] = useState(false);
   const router = useRouter();
   const emailInputRef = useRef(null);

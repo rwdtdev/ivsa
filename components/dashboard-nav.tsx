@@ -16,7 +16,7 @@ export function DashboardNav({ items, setOpen }: DashboardNavProps) {
   }
 
   return (
-    <nav className='min-w-60 px-3 py-6'>
+    <nav className='hidden min-w-60 px-3 py-6 sm:block'>
       <ul className='flex space-x-1'>
         {items.map((item, index) => {
           return (

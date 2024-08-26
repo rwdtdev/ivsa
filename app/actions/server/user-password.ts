@@ -13,13 +13,13 @@ import { doTransaction } from '@/lib/prisma-transaction';
 import { revalidatePath } from 'next/cache';
 import { TransactionSession } from '@/types/prisma';
 import { ActionService } from '@/core/action/ActionService';
-import { MonitoringData } from '@/components/forms/user-form';
 import { getUnknownErrorText } from '@/lib/helpers';
 import { unknownUser } from '@/constants/actions';
+import { MonitoringUserData } from '@/core/user/types';
 
 export async function sendRecoveryLinkAction(
   data: ForgotPasswordFormData,
-  monitoringData: MonitoringData
+  monitoringData: MonitoringUserData
 ) {
   const result = ForgotPasswordFormSchema.safeParse(data);
   const userService = new UserService();
@@ -60,8 +60,8 @@ export async function sendRecoveryLinkAction(
       details: {
         ...monitoringData.details,
         emailInput: user.email,
-        login: user.username,
-        username: user.name
+        username: user.username,
+        name: user.name
       }
     });
 

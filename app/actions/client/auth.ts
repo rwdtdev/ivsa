@@ -21,7 +21,7 @@ export async function authenticate(
     });
 
     if (res?.error) {
-      loginAction(monitoringData, ActionStatus.ERROR, 'Неверные логин или пароль');
+      loginAction(monitoringData, ActionStatus.ERROR, 'Неверный логин или пароль');
       return false;
     }
     loginAction({ ...monitoringData, username }, ActionStatus.SUCCESS);

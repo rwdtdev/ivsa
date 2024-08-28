@@ -1,13 +1,12 @@
 'use client';
-
 import _ from 'underscore';
 import moment from 'moment';
 import { ColumnDef } from '@tanstack/react-table';
-import { CellAction } from './row-actions';
+import { UserTableRowMenu } from './user-table-row-menu';
 import { Badge } from '@/components/ui/badge';
 import { Checkbox } from '@/components/ui/checkbox';
 import { UserRoles, UserStatuses } from '@/constants/mappings/prisma-enums';
-import { /* Department, Organisation, */ UserRole, UserStatus } from '@prisma/client';
+import { UserRole, UserStatus } from '@prisma/client';
 import { AlertTriangleIcon } from 'lucide-react';
 import {
   Tooltip,
@@ -19,15 +18,10 @@ import { DataTableColumnHeader } from '@/components/ui/data-table/data-table-col
 import { UserView } from '@/types/user';
 import { DataTableFilterableColumn } from '@/types';
 import { format } from 'date-fns';
-import { MonitoringUserData } from '@/core/user/types';
 
 const emptyCell = '';
 
-export function fetchUsersTableColumnDefs(
-  monitoringData: MonitoringUserData
-): ColumnDef<UserView, unknown>[] {
-  // isPending: boolean,
-  // startTransition: React.TransitionStartFunction
+export function fetchUsersTableColumnDefs(): ColumnDef<UserView, unknown>[] {
   return [
     {
       id: 'id',
@@ -66,9 +60,6 @@ export function fetchUsersTableColumnDefs(
       header: ({ column }) => (
         <DataTableColumnHeader column={column} title='ФИО' className='min-w-36' />
       )
-      // cell: ({ row }) => {
-      //   return <div style={{ padding: 10 }}>{row.original.name}</div>;
-      // }
     },
     {
       id: 'username',
@@ -79,9 +70,6 @@ export function fetchUsersTableColumnDefs(
       id: 'email',
       accessorKey: 'email',
       header: ({ column }) => <DataTableColumnHeader column={column} title='Эл. почта' />
-      // cell: ({ row }) => {
-      //   return <div style={{ padding: 10 }}>{row.original.email}</div>;
-      // }
     },
     {
       id: 'phone',
@@ -228,9 +216,7 @@ export function fetchUsersTableColumnDefs(
     {
       id: 'actions',
       enableHiding: false,
-      cell: ({ row }) => (
-        <CellAction data={row.original} monitoringData={monitoringData} />
-      )
+      cell: ({ row }) => <UserTableRowMenu data={row.original} />
     }
   ];
 }

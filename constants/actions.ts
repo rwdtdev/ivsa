@@ -1,6 +1,7 @@
 import { ActionStatus, ActionType } from '@prisma/client';
 
 export const unknownUser = 'Неизвестный пользователь';
+export const unknownIP = 'IP не определен';
 
 export const actionTypesMapper = {
   [ActionType.USER_CREATE]: 'Создание пользователя',

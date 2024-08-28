@@ -1,8 +1,11 @@
 import { SortOrder } from '@/constants/data';
+import { monitoringDetailMapper } from '@/constants/mappings/monitoring-detail-mapper';
 import { Action, ActionStatus, ActionType } from '@prisma/client';
 
+export type MonitoringDetails = Partial<Record<keyof typeof monitoringDetailMapper, any>>;
+
 export type ActionCreateData = Pick<Action, 'type' | 'status' | 'initiator' | 'ip'> & {
-  details?: Record<string, any>;
+  details?: MonitoringDetails;
 };
 
 export type ActionsReqParams = Partial<{

@@ -6,13 +6,15 @@ import { ParticipantService } from '../participant/ParticipantService';
 import { UserService } from './UserService';
 import { doTransaction } from '@/lib/prisma-transaction';
 import { TransactionSession } from '@/types/prisma';
-import { UserRole, UserStatus } from '@prisma/client';
+import { ActionStatus, ActionType, UserRole, UserStatus } from '@prisma/client';
 import {
   UnblockIvaUserError,
   BlockIvaUserError,
   CreateIvaUserError,
   UserNotRegisteredInIvaError
 } from './errors';
+import { getMonitoringInitData } from '@/lib/getMonitoringInitData';
+import { ActionService } from '../action/ActionService';
 
 export class UserManager {
   private ivaService: IvaService;
@@ -111,6 +113,8 @@ export class UserManager {
   }
 
   async blockUser(id: string) {
+    const monitorInitData = await getMonitoringInitData();
+    const actionService = new ActionService();
     try {
       await this.userService.assertExist(id);
       const user = await this.userService.getById(id);
@@ -121,7 +125,28 @@ export class UserManager {
 
       await this.ivaService.blockUser(user.ivaProfileId);
       await this.userService.update(id, { status: UserStatus.BLOCKED });
+      actionService.add({
+        ip: monitorInitData.ip,
+        initiator: monitorInitData.initiator,
+        type: ActionType.ADMIN_USER_BLOCK,
+        status: ActionStatus.SUCCESS,
+        details: {
+          adminUsername: monitorInitData.initiator,
+          editedUserUsername: user.username,
+          editedUserName: user.name
+        }
+      });
     } catch (error) {
+      actionService.add({
+        ip: monitorInitData.ip,
+        initiator: monitorInitData.initiator,
+        type: ActionType.ADMIN_USER_BLOCK,
+        status: ActionStatus.ERROR,
+        details: {
+          editedUserId: id,
+          error: error
+        }
+      });
       throw new BlockIvaUserError({
         // detail: `Problems occurred during block user with id (${id}) in IVA R.`
         detail: error

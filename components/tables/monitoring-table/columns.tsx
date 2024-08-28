@@ -1,5 +1,5 @@
 import { ColumnDef, HeaderContext } from '@tanstack/react-table';
-import { systemEventDetailKeys } from '@/constants/mappings/system-event-table-names';
+import { monitoringDetailMapper } from '@/constants/mappings/monitoring-detail-mapper';
 import { format } from 'date-fns';
 import { DataTableColumnHeader } from '@/components/ui/data-table/data-table-column-header';
 import { DataTableFilterableColumn } from '@/types';
@@ -103,28 +103,28 @@ function objToHtml(obj2: JsonValue) {
   if (!obj2) return;
 
   const obj = obj2 as JsonObject;
-  const keys = Object.keys(obj) as Array<keyof typeof systemEventDetailKeys>;
+  const keys = Object.keys(obj) as Array<keyof typeof monitoringDetailMapper>;
   return keys.map((key, i) => {
     const objKey = obj[key];
 
     if (Array.isArray(objKey)) {
       return (
         <div key={i} className='py-0.5 pl-4'>
-          <span className='font-semibold'>{systemEventDetailKeys[key]}</span>:
+          <span className='font-semibold'>{monitoringDetailMapper[key]}</span>:
           <p>{objKey.join(', ')}</p>
         </div>
       );
     } else if (typeof objKey === 'object') {
       return (
         <div key={i} className='pl-4'>
-          <span className='font-bold'>{systemEventDetailKeys[key]}</span>:{' '}
+          <span className='font-bold'>{monitoringDetailMapper[key]}</span>:{' '}
           {objToHtml(objKey)}
         </div>
       );
     } else {
       return (
         <div key={i + String(objKey)} className='py-0.5 pl-4'>
-          <span className='font-semibold'>{systemEventDetailKeys[key]}</span>: {objKey}
+          <span className='font-semibold'>{monitoringDetailMapper[key]}</span>: {objKey}
         </div>
       );
     }

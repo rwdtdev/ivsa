@@ -25,15 +25,12 @@ import {
   AlertDialogHeader,
   AlertDialogTitle
 } from '@/components/ui/alert-dialog';
-import { MonitoringUserData } from '@/core/user/types';
 
 interface Props {
   data: UserView;
-  monitoringData: MonitoringUserData;
 }
 
-export function CellAction({ data, monitoringData }: Props) {
-  // const [loading, setLoading] = useState(false);
+export function UserTableRowMenu({ data }: Props) {
   const [openRecuseUser, setOpenRecuseUser] = useState(false);
   const [openResetPassword, setOpenResetPassword] = useState(false);
 
@@ -41,16 +38,8 @@ export function CellAction({ data, monitoringData }: Props) {
 
   const onConfirmRecuseUser = async () => {
     // setLoading(true);
-    await updateUserAction(data.id, { status: UserStatus.RECUSED } as UserFormData, {
-      ...monitoringData,
-      ...(monitoringData.details && {
-        details: {
-          ...monitoringData.details,
-          editedUserUsername: data.username,
-          editedUserName: data.name
-        }
-      })
-    });
+    await updateUserAction(data.id, { status: UserStatus.RECUSED } as UserFormData);
+    // };
     // setLoading(false);
     setOpenRecuseUser(false);
   };

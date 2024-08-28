@@ -1,5 +1,4 @@
 'use server';
-
 import jwt from 'jsonwebtoken';
 import {
   ForgotPasswordFormData,
@@ -14,25 +13,21 @@ import { revalidatePath } from 'next/cache';
 import { TransactionSession } from '@/types/prisma';
 import { ActionService } from '@/core/action/ActionService';
 import { getUnknownErrorText } from '@/lib/helpers';
-import { unknownUser } from '@/constants/actions';
-import { MonitoringUserData } from '@/core/user/types';
+import { getMonitoringInitData } from '@/lib/getMonitoringInitData';
 
-export async function sendRecoveryLinkAction(
-  data: ForgotPasswordFormData,
-  monitoringData: MonitoringUserData
-) {
+export async function sendRecoveryLinkAction(data: ForgotPasswordFormData) {
   const result = ForgotPasswordFormSchema.safeParse(data);
   const userService = new UserService();
   const actionService = new ActionService();
+  const { ip, initiator } = await getMonitoringInitData();
 
   if (!result.success) {
     await actionService.add({
-      ...monitoringData,
+      ip,
+      initiator: initiator,
       type: ActionType.USER_REQUEST_PASSWORD_RESET,
       status: ActionStatus.ERROR,
-      initiator: unknownUser,
       details: {
-        ...monitoringData.details,
         error: getUnknownErrorText(result.error)
       }
     });
@@ -53,12 +48,11 @@ export async function sendRecoveryLinkAction(
     });
 
     await actionService.add({
-      ...monitoringData,
+      ip,
+      initiator,
       type: ActionType.USER_REQUEST_PASSWORD_RESET,
       status: ActionStatus.SUCCESS,
-      initiator: user.name || unknownUser,
       details: {
-        ...monitoringData.details,
         emailInput: user.email,
         username: user.username,
         name: user.name
@@ -68,12 +62,11 @@ export async function sendRecoveryLinkAction(
     return true;
   } catch (err) {
     await actionService.add({
-      ...monitoringData,
+      ip,
+      initiator,
       type: ActionType.USER_REQUEST_PASSWORD_RESET,
       status: ActionStatus.ERROR,
-      initiator: unknownUser,
       details: {
-        ...monitoringData.details,
         emailInput: data.email,
         error: getUnknownErrorText(err)
       }

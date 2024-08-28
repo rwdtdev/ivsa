@@ -6,10 +6,7 @@ import { signIn } from 'next-auth/react';
 import { loginAction } from '../server/users';
 import { ActionStatus } from '@prisma/client';
 
-export async function authenticate(
-  data: LoginFormData,
-  monitoringData: { ip: string }
-): Promise<boolean> {
+export async function authenticate(data: LoginFormData): Promise<boolean> {
   const result = LoginFormSchema.safeParse(data);
 
   if (result.success) {
@@ -21,17 +18,15 @@ export async function authenticate(
     });
 
     if (res?.error) {
-      loginAction(monitoringData, ActionStatus.ERROR, 'Неверный логин или пароль');
       return false;
     }
-    loginAction({ ...monitoringData, username }, ActionStatus.SUCCESS);
+
     return true;
   }
 
-  loginAction(
-    monitoringData,
-    ActionStatus.ERROR,
-    'Логин или пароль не соответствуют LoginFormSchema'
-  );
+  loginAction({
+    status: ActionStatus.ERROR,
+    details: { error: 'Логин или пароль не соответствуют LoginFormSchema' }
+  });
   return false;
 }

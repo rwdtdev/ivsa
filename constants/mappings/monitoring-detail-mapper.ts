@@ -1,10 +1,11 @@
-export const systemEventDetailKeys = {
+export const monitoringDetailMapper = {
   inventoryId: 'ID инвентаризационной описи',
   inventoryCode: 'Код формы описи',
   inventoryNumber: 'Номер описи',
   tabelNumbers: 'Проверяемые табельные номера',
   conferenceId: 'ID конференции',
   username: 'Логин пользователя',
+  userStatus: 'Статус пользователя',
   name: 'ФИО',
   adminDepartment: 'Отдел администратора',
   adminUsername: 'Логин администратора',
@@ -26,7 +27,8 @@ export const systemEventDetailKeys = {
   orderNumber: 'Номер приказа',
   videoFileName: 'Название видео-файла',
   subtitlesFileName: 'Название файла мета-данных',
-  videoFileSize: 'размер видео-файла'
+  videoFileSize: 'размер видео-файла',
+  editedUserId: 'ID редактируемого пользователя'
   // ------------
   // createdUser: 'Созданный пользователь',
   // editedUser: 'Редактируемый пользователь',

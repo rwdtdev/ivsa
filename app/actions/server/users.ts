@@ -1,5 +1,4 @@
 'use server';
-
 import Cache from 'node-cache';
 import { unstable_noStore as noStore } from 'next/cache';
 import { UserFormData } from '@/lib/form-validation-schemas/user-form-schema';
@@ -7,12 +6,11 @@ import { SearchParams } from '@/types';
 import { revalidatePath } from 'next/cache';
 import { redirect } from 'next/navigation';
 import { searchParamsSchema } from '@/lib/query-params-validation';
-
 import { UserService } from '@/core/user/UserService';
 import { UserView } from '@/types/user';
 import { PaginatedResponse } from '@/types';
 import { ActionStatus, ActionType, User, UserRole, UserStatus } from '@prisma/client';
-import { MonitoringUserData, UserCreateData } from '@/core/user/types';
+import { UserCreateData } from '@/core/user/types';
 import { UserManager } from '@/core/user/UserManager';
 import { IvaService } from '@/core/iva/IvaService';
 import { DepartmentService } from '@/core/department/DepartmentService';
@@ -21,17 +19,12 @@ import { OrganisationService } from '@/core/organisation/OrganisationService';
 import { SortOrder } from '@/constants/data';
 import { ActionService } from '@/core/action/ActionService';
 import { getUnknownErrorText } from '@/lib/helpers';
-import { headers } from 'next/headers';
-import { getClientIP } from '@/lib/helpers/ip';
-import { getServerSession } from 'next-auth';
-import { authConfig } from '@/lib/auth-options';
+import { getMonitoringInitData } from '@/lib/getMonitoringInitData';
+import { MonitoringDetails } from '@/core/action/types';
 
 const cache = new Cache({ checkperiod: 120 });
 
-export async function createUserAction(
-  formData: UserFormData,
-  monitoringData: MonitoringUserData
-): Promise<any> {
+export async function createUserAction(formData: UserFormData): Promise<any> {
   const userManager = new UserManager(
     new IvaService(),
     new UserService(),
@@ -40,29 +33,31 @@ export async function createUserAction(
     new OrganisationService()
   );
   const actionService = new ActionService();
-
+  const { ip, initiator } = await getMonitoringInitData();
   try {
     // TODO Refactor type casting
     await userManager.createUser(formData as UserCreateData);
     await actionService.add({
-      ...monitoringData,
+      ip,
+      initiator,
       type: ActionType.USER_CREATE,
       status: ActionStatus.SUCCESS,
       details: {
-        ...monitoringData.details,
         createdUserUsername: formData.username,
         createdUserName: formData.name
       }
     });
   } catch (error) {
     await actionService.add({
+      ip,
+      initiator,
       type: ActionType.USER_CREATE,
       status: ActionStatus.ERROR,
-      ...monitoringData,
       details: {
-        ...monitoringData.details,
         error: getUnknownErrorText(error),
         createdUserUsername: formData.username,
+        // createdUserName: formData.name
+        // createdUserUsername: formData.username,
         createdUserName: formData.name
       }
     });
@@ -74,28 +69,31 @@ export async function createUserAction(
   redirect('/admin/users');
 }
 
-export async function updateUserAction(
-  id: string,
-  formData: UserFormData,
-  monitoringData: MonitoringUserData
-) {
+export async function updateUserAction(id: string, formData: UserFormData) {
   const actionService = new ActionService();
   const userService = new UserService();
+  const { ip, initiator } = await getMonitoringInitData();
 
   try {
-    await userService.update(id, formData);
+    const user = await userService.update(id, formData);
     await actionService.add({
+      ip,
+      initiator,
       type: ActionType.USER_EDIT,
       status: ActionStatus.SUCCESS,
-      ...monitoringData
+      details: {
+        editedUserUsername: user.username,
+        editedUserName: user.name
+      }
     });
   } catch (error) {
     await actionService.add({
+      ip,
+      initiator,
       type: ActionType.USER_EDIT,
       status: ActionStatus.ERROR,
-      ...monitoringData,
       details: {
-        ...monitoringData.details,
+        editedUserId: id,
         error: getUnknownErrorText(error)
       }
     });
@@ -110,14 +108,11 @@ export async function updateUserAction(
 export async function getUserByIdAction(id: string): Promise<UserView | null> {
   try {
     const cacheKey = `user_${id}`;
-
     let cachedUser = cache.get<UserView>(cacheKey) || null;
 
     if (!cachedUser) {
       const userService = new UserService();
-
       cachedUser = await userService.getById(id);
-
       cache.set(cacheKey, cachedUser);
     }
 
@@ -205,6 +200,7 @@ export async function blockUserAction(id: string) {
   try {
     await userManager.blockUser(id);
     revalidatePath('/admin/users');
+    revalidatePath('/admin/users');
   } catch (error) {
     console.debug(error);
     return { error: JSON.stringify(error, Object.getOwnPropertyNames(error)) };
@@ -223,56 +219,55 @@ export async function unblockUserAction(id: string) {
   try {
     await userManager.unblockUser(id);
     revalidatePath('/admin/users');
+    revalidatePath('/admin/users');
   } catch (error) {
     console.debug(error);
     return { error: JSON.stringify(error, Object.getOwnPropertyNames(error)) };
   }
 }
 
-export async function loginAction(
-  monitoringData: any,
-  status: ActionStatus,
-  error?: string
-) {
+export async function loginAction({
+  status,
+  details
+}: {
+  status: ActionStatus;
+  details?: MonitoringDetails;
+}) {
   const actionService = new ActionService();
-  const userService = new UserService();
 
-  const user = monitoringData.username
-    ? await userService.getBy({ username: monitoringData.username })
-    : undefined;
+  const { ip, initiator, session } = await getMonitoringInitData();
 
   if (status === ActionStatus.SUCCESS) {
     await actionService.add({
+      ip,
+      initiator,
       type: ActionType.USER_LOGIN,
-      initiator: user?.name || 'Неизвестный пользователь',
       status,
-      ip: monitoringData.ip
+      details: { ...details, name: session?.user.name }
     });
   }
 
   if (status === ActionStatus.ERROR) {
     await actionService.add({
+      ip,
+      initiator,
       type: ActionType.USER_LOGIN,
-      ip: monitoringData.ip,
-      initiator: user?.name || 'Неизвестный пользователь',
       status,
-      details: { error }
+      details
     });
   }
 }
 
 export async function logoutAction() {
-  const headersList = headers();
-  const ip = getClientIP(headersList);
-  const session = await getServerSession(authConfig);
+  const { ip, initiator, session } = await getMonitoringInitData();
   const actionService = new ActionService();
   actionService.add({
     type: ActionType.USER_LOGOUT,
     ip,
-    initiator: session?.user.name || 'Неизвестный пользователь',
+    initiator,
     status: ActionStatus.SUCCESS,
     details: {
-      username: session?.user.username
+      name: session?.user.name
     }
   });
 }

@@ -1,4 +1,4 @@
-import { systemEventDetailKeys } from '@/constants/mappings/system-event-table-names';
+import { monitoringDetailMapper } from '@/constants/mappings/monitoring-detail-mapper';
 import { ActionStatus, ActionType, Prisma } from '@prisma/client';
 import { JsonObject, JsonValue } from '@prisma/client/runtime/library';
 import { format } from 'date-fns';
@@ -66,18 +66,18 @@ export async function exportMonitoringToXlsx(data: Data) {
 function objToString(obj2: JsonValue) {
   if (!obj2) return;
   const obj = obj2 as JsonObject;
-  const keys = Object.keys(obj) as Array<keyof typeof systemEventDetailKeys>;
+  const keys = Object.keys(obj) as Array<keyof typeof monitoringDetailMapper>;
 
   const res: string[] = keys.map((key) => {
     const objKey = obj[key];
 
     if (Array.isArray(objKey)) {
-      return `${systemEventDetailKeys[key]}:
+      return `${monitoringDetailMapper[key]}:
           ${objKey.join(', ')}`;
     } else if (typeof objKey === 'object') {
-      return `${systemEventDetailKeys[key]}:` + objToString(objKey);
+      return `${monitoringDetailMapper[key]}:` + objToString(objKey);
     } else {
-      return `${systemEventDetailKeys[key]}: ${objKey}`;
+      return `${monitoringDetailMapper[key]}: ${objKey}`;
     }
   });
   return res.join(',\n');

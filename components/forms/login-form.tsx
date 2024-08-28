@@ -32,11 +32,7 @@ import { PasswordInput } from '../password-input';
 import { IsBlocked, loginAction } from '@/app/actions/server/users';
 import { ActionStatus } from '@prisma/client';
 
-export default function LoginForm({
-  monitoringData
-}: {
-  monitoringData: { ip: string };
-}) {
+export default function LoginForm() {
   const { toast } = useToast();
   const searchParams = useSearchParams();
   const previousURL = searchParams.get('callbackUrl');
@@ -56,12 +52,7 @@ export default function LoginForm({
   });
 
   const processForm: SubmitHandler<LoginFormData> = async (data) => {
-    const isAuthenticated = await authenticate(data, monitoringData);
-
-    monitoringData = {
-      ...monitoringData,
-      ...data
-    };
+    const isAuthenticated = await authenticate(data);
 
     if (!isAuthenticated) {
       /** @TODO Add errors dict for toasts */
@@ -72,6 +63,10 @@ export default function LoginForm({
             <p className='text-black'>Неверный логин или пароль</p>
           </pre>
         )
+      });
+      loginAction({
+        status: ActionStatus.ERROR,
+        details: { error: 'Неверный логин или пароль', loginInput: data.username }
       });
       return;
     }
@@ -88,10 +83,13 @@ export default function LoginForm({
           </pre>
         )
       });
-      await loginAction(monitoringData, ActionStatus.ERROR, 'Пользователь заблокирован');
+      await loginAction({
+        status: ActionStatus.ERROR,
+        details: { error: 'Пользователь заблокирован' }
+      });
       return;
     }
-
+    loginAction({ status: ActionStatus.SUCCESS });
     window.location.replace('/');
   };
 

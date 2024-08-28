@@ -1,5 +1,4 @@
 'use client';
-
 import { useState } from 'react';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { useForm } from 'react-hook-form';
@@ -8,7 +7,6 @@ import { Button } from '@/components/ui/button';
 import {
   Form,
   FormControl,
-  // FormDescription,
   FormField,
   FormItem,
   FormLabel,
@@ -37,23 +35,13 @@ import { Calendar } from '@/components/ui/calendar';
 import { cn } from '@/lib/utils';
 import { format } from 'date-fns';
 import { ru } from 'date-fns/locale';
-import { MonitoringUserData } from '@/core/user/types';
 
 interface UserFormProps {
   userId?: string;
   initialData: any | null;
-  // organisations: any;
-  // departments: any;
-  monitoringData: MonitoringUserData;
 }
 
-export const UserForm: React.FC<UserFormProps> = ({
-  initialData,
-  // organisations,
-  // departments,
-  userId,
-  monitoringData
-}) => {
+export const UserForm: React.FC<UserFormProps> = ({ initialData, userId }) => {
   const { toast } = useToast();
   const [loading, setLoading] = useState(false);
 
@@ -88,8 +76,8 @@ export const UserForm: React.FC<UserFormProps> = ({
 
     const result =
       initialData && userId
-        ? await updateUserAction(userId, data, monitoringData)
-        : await createUserAction(data, monitoringData);
+        ? await updateUserAction(userId, data)
+        : await createUserAction(data);
 
     if (result && result.error) {
       const { title, userMessage } = JSON.parse(result.error);

@@ -1,3 +1,10 @@
+# [1.7.0](https://rwdt1.gitlab.yandexcloud.net/rwdt/services/asvi/compare/1.6.4...1.7.0) (2024-08-28)
+
+
+### Features
+
+* Squashed commit of the following: ([d3e56f2](https://rwdt1.gitlab.yandexcloud.net/rwdt/services/asvi/commit/d3e56f24d0c7a131a1f20b76760d1a0a5c57a33f))
+
 ## [1.6.4](https://rwdt1.gitlab.yandexcloud.net/rwdt/services/asvi/compare/1.6.3...1.6.4) (2024-08-26)
 
 

@@ -1,3 +1,10 @@
+## [1.7.1](https://rwdt1.gitlab.yandexcloud.net/rwdt/services/asvi/compare/1.7.0...1.7.1) (2024-08-30)
+
+
+### Bug Fixes
+
+* change location recorder deep links ([bccfcab](https://rwdt1.gitlab.yandexcloud.net/rwdt/services/asvi/commit/bccfcab11073e857acb2eb6f109b1f08d98d813b))
+
 # [1.7.0](https://rwdt1.gitlab.yandexcloud.net/rwdt/services/asvi/compare/1.6.4...1.7.0) (2024-08-28)
 
 

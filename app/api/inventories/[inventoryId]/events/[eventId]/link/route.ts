@@ -21,7 +21,9 @@ export async function GET(req: NextRequest, context: IContext) {
     await inventoryService.assertExistAndBelongEvent(inventoryId, eventId);
 
     return NextResponse.json(
-      { portalLink: `${process.env.NEXTAUTH_URL}/admin/inventories/${inventoryId}` },
+      {
+        portalLink: `${process.env.NEXTAUTH_URL}/events/${eventId}/inventories/${inventoryId}`
+      },
       { status: 200, statusText: 'OK' }
     );
   } catch (error) {

@@ -27,6 +27,12 @@ export const EventStatuses = {
   REMOVED: 'Удалена'
 };
 
+export const InventoryStatuses = {
+  AVAILABLE: 'Доступна',
+  REMOVED: 'Удалена',
+  CLOSED: 'Закрыта'
+};
+
 export const BriefingStatuses = {
   NOT_STARTED: 'Не начат',
   IN_PROGRESS: 'В процессе',

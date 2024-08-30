@@ -1,5 +1,6 @@
 import { getInventoryById } from '@/app/actions/server/getInventoryById';
 import { getInventoryLocationsStatsAction } from '@/app/actions/server/inventory-locations';
+import { InventoryStatusBadge } from '@/components/event-status-badge';
 import InventoryAddressForm from '@/components/forms/inventory-address-form';
 import { IvaChairmanDialogBtn } from '@/components/iva-chairmen-dialog-btn';
 import IvaLocatorBtn from '@/components/iva-locator-btn';
@@ -53,6 +54,10 @@ export default async function InventoryPage({ params: { inventoryId } }: Props) 
       <div className='flex grow flex-col lg:flex-row'>
         <Card className='mb-5 flex grow pb-4 pt-3 lg:mb-0 lg:mr-5'>
           <CardContent className='flex grow flex-col'>
+            <div className='flex'>
+              <P className='mr-2 text-sm font-semibold'>Статус:</P>
+              <InventoryStatusBadge status={inventory.status} />
+            </div>
             <P className='text-sm'>
               <span className='font-semibold'>Название:</span> {inventory.name}
             </P>

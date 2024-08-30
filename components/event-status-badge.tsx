@@ -1,6 +1,6 @@
 import { cn } from '@/lib/utils';
-import { BriefingStatus, EventStatus } from '@prisma/client';
-import { BriefingStatuses, EventStatuses } from '@/constants/mappings/prisma-enums';
+import { BriefingStatus, EventStatus, InventoryStatus } from '@prisma/client';
+import { BriefingStatuses, EventStatuses, InventoryStatuses } from '@/constants/mappings/prisma-enums';
 import { Badge } from './ui/badge';
 import {
   CheckCircledIcon,
@@ -18,6 +18,26 @@ export const EventStatusBadge = ({ status }: { status?: EventStatus }) => {
   let classNames = 'bg-gray-200 hover:bg-gray-200';
 
   if (status === EventStatus.REMOVED) {
+    Icon = CrossCircledIcon;
+    classNames = 'bg-red-200 hover:bg-red-200';
+  }
+
+  return (
+    <Badge variant='secondary' className={cn('pointer-events-none py-1', classNames)}>
+      {Icon && <Icon className='mr-1' />} {text}
+    </Badge>
+  );
+};
+
+export const InventoryStatusBadge = ({ status }: { status?: InventoryStatus }) => {
+  if (!status) return null;
+
+  const text = InventoryStatuses[status];
+
+  let Icon = null;
+  let classNames = 'bg-gray-200 hover:bg-gray-200';
+
+  if (status === InventoryStatus.REMOVED) {
     Icon = CrossCircledIcon;
     classNames = 'bg-red-200 hover:bg-red-200';
   }

@@ -25,13 +25,6 @@ export class BriefingRoomManager {
     const { protocol, hostname, port } = new URL(process.env.IVA_API_URL as string);
 
     return `${protocol}//${hostname}${port ? ':' + port : ''}/#join:s${conferenceSessionId}`;
-
-    // const participants = await this.ivaService.findConferenceParticipants(
-    //   conferenceSessionId,
-    //   { requestedData: ['JOIN_LINK'] }
-    // );
-
-    // return participants[0].joinLink;
   }
 
   async createRoom({ eventId }: CreateBriefingRoomData) {
@@ -66,8 +59,8 @@ export class BriefingRoomManager {
       );
 
       const conference = await this.ivaService.createConference({
-        name: `Видеоинструктаж по событию инвентаризации`,
-        description: 'Видеоинструктаж по событию инвентаризации',
+        name: `Видеоинструктаж по инвентаризации для приказа №${event.orderNumber} от ${event.orderDate}`,
+        description: 'Видеоинструктаж по инвентаризации',
         owner: { profileId: process.env.TECHNICAL_SPEAKER_IVA_PROFILE_ID as string },
         conferenceTemplateId: '471f7e4e-15b7-48fc-bf34-88488b4e14dc',
         settings: {

@@ -27,13 +27,6 @@ export async function middleware(request: NextRequest) {
   const isLoginPath = pathname.startsWith('/login');
   const isAdminPath = pathname.startsWith('/admin');
 
-  const isAndroidAppStartPath = pathname.startsWith('/start');
-  const isAndroidAppStopPath = pathname.startsWith('/stop');
-
-  if (isAndroidAppStartPath || isAndroidAppStopPath) {
-    return new NextResponse(null, { status: 204 });
-  }
-
   if (isPreflight) {
     const preflightHeaders = {
       ...(isAllowedOrigin && { 'Access-Control-Allow-Origin': origin }),
@@ -103,13 +96,5 @@ export async function middleware(request: NextRequest) {
 }
 
 export const config = {
-  matcher: [
-    '/',
-    '/api/:path*',
-    '/admin/:path*',
-    '/login/:path*',
-    '/events/:path*',
-    '/start',
-    '/stop'
-  ]
+  matcher: ['/', '/api/:path*', '/admin/:path*', '/login/:path*', '/events']
 };

@@ -4,8 +4,10 @@ import { ActionService } from '@/core/action/ActionService';
 import { searchParamsSchema } from '@/lib/query-params-validation';
 import { SearchParams } from '@/types';
 import { ActionStatus, ActionType } from '@prisma/client';
+import { unstable_noStore as noStore } from 'next/cache';
 
 export async function getMonitoringData(searchParams: SearchParams) {
+  noStore();
   try {
     const { page, per_page, search, from, to, status, type, sort } =
       searchParamsSchema.parse(searchParams);

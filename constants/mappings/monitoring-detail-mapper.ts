@@ -6,7 +6,7 @@ export const monitoringDetailMapper = {
   conferenceId: 'ID конференции',
   username: 'Логин пользователя',
   userStatus: 'Статус пользователя',
-  name: 'ФИО',
+  name: 'ФИО пользователя',
   adminDepartment: 'Отдел администратора',
   adminUsername: 'Логин администратора',
   createdUserUsername: 'Логин созданного пользователя',
@@ -32,4 +32,4 @@ export const monitoringDetailMapper = {
   // ------------
   // createdUser: 'Созданный пользователь',
   // editedUser: 'Редактируемый пользователь',
-};
+} as const;

@@ -6,7 +6,6 @@ import { SearchParams } from '@/types';
 import { ActionStatus, ActionType } from '@prisma/client';
 
 export async function getMonitoringData(searchParams: SearchParams) {
-  console.log('🚀 ~ getMonitoringData ~ searchParams:', searchParams);
   try {
     const { page, per_page, search, from, to, status, type, sort } =
       searchParamsSchema.parse(searchParams);

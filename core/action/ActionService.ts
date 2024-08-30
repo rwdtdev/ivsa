@@ -127,7 +127,6 @@ export class ActionService {
     params: ActionsReqParams = { sort: { by: 'actionAt', direction: 'desc' } }
   ) {
     const { page = 1, limit = 10, searchTerm, filter, sort } = params;
-    console.log('🚀 ~ ActionService ~ getActionsWithParams ~ actions:', params);
 
     const containsSearchTerm = { contains: searchTerm, mode: 'insensitive' };
 
@@ -166,7 +165,6 @@ export class ActionService {
     // @ts-expect-error types
     const totalCount = await prisma.action.count({ ...where });
 
-    console.log('🚀 ~ ActionService ~ pagesCount:', Math.ceil(totalCount / limit));
     // @ts-expect-error types
     const actions = await prisma.action.findMany({
       ...where,

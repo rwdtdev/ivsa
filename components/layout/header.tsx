@@ -24,7 +24,7 @@ export default function Header({ title }: { title: string }) {
               height={50}
               style={{ width: 'auto', height: 'auto' }}
             />
-            <h1 className='pl-4 text-xl font-semibold'>АС ВИ</h1>
+            <h1 className='pl-4 text-xl font-semibold'>АС{'\u00A0'}ВИ</h1>
           </Link>
           <div className='hidden lg:block'>
             <Separator orientation='vertical' className='mx-4' />

@@ -7,6 +7,7 @@ import { UserService } from '@/core/user/UserService';
 import { getErrorResponse } from '@/lib/helpers';
 import { NextRequest } from 'next/server';
 import { PathParamsSchema } from './validation';
+import { ActionType } from '@prisma/client';
 
 interface IContext {
   params: { id: string };
@@ -23,7 +24,7 @@ export async function POST(req: NextRequest, context: IContext) {
 
   try {
     const { id } = PathParamsSchema.parse(context.params);
-    await userManager.blockUser(id);
+    await userManager.blockUser({ id, type: ActionType.ADMIN_USER_BLOCK });
 
     return new Response(null, { status: 204 });
   } catch (error) {

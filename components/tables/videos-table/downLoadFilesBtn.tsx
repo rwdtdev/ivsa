@@ -28,9 +28,10 @@ export default function DownLoadFilesBtn({ data }: Props) {
       const link = document.createElement('a');
       link.href = blobUrl;
       if (type === 'meta') {
-        link.setAttribute('download', `${data.name.slice(0, -4)}.txt`);
+        link.setAttribute('download', `${data.name}.txt`);
       } else {
-        link.setAttribute('download', `${data.name}`);
+        // link.setAttribute('download', `${data.name}`);
+        link.setAttribute('download', `${data.name}.mp4`);
       }
       document.body.appendChild(link);
       link.click();
@@ -43,11 +44,24 @@ export default function DownLoadFilesBtn({ data }: Props) {
       console.log(err);
     }
   }
+
+  async function downloadVideosHash(data: InventoryResourceWithAddress) {
+    const newBlob = new Blob([data.videoHash || ''], { type: 'text/plain' });
+    const blobUrl = window.URL.createObjectURL(newBlob);
+    const link = document.createElement('a');
+    link.href = blobUrl;
+    link.setAttribute('download', `${data.name}-videohash.txt`);
+    document.body.appendChild(link);
+    link.click();
+    document.body.removeChild(link);
+    window.URL.revokeObjectURL(blobUrl);
+  }
   return (
     <>
       <button
         onClick={() => {
-          downLoadFiles(data, 'meta');
+          downloadVideosHash(data);
+          // downLoadFiles(data, 'meta');
           downLoadFiles(data, 'video');
         }}
       >

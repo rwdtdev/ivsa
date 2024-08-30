@@ -1,5 +1,8 @@
+import { ActionService } from '@/core/action/ActionService';
+import { getMonitoringInitData } from '@/lib/getMonitoringInitData';
 import { Logger } from '@/lib/logger';
 import { S3ClientProvider } from '@/utils/s3-client/s3-client-provider';
+import { ActionStatus, ActionType } from '@prisma/client';
 
 export async function POST(req: Request) {
   const s3Client = S3ClientProvider.createClient(
@@ -16,32 +19,54 @@ export async function POST(req: Request) {
     new Logger({ name: 's3-client' })
   );
   const data = await req.json();
-  if (data.type === 'video') {
-    console.log(`asvi${data.s3Url}.mp4`);
+  const actionService = new ActionService();
+  const { ip, initiator } = await getMonitoringInitData();
 
-    const stream = await s3Client.getAsStream(
-      s3Client.makeFilePath(`asvi${data.s3Url}.mp4`)
-    );
+  try {
+    if (data.type === 'video') {
+      // console.log(`asvi/${data.s3Url}.mp4`);
 
-    // @ts-expect-error stream types
-    return new Response(stream, {
-      status: 200,
-      headers: {
-        'Content-Type': 'video/mp4'
+      const stream = await s3Client.getAsStream(
+        s3Client.makeFilePath(`asvi/${data.s3Url}.mp4`)
+      );
+
+      actionService.add({
+        ip,
+        initiator,
+        type: ActionType.USER_DOWNLOAD_FILE,
+        status: ActionStatus.SUCCESS
+      });
+      // @ts-expect-error stream types
+      return new Response(stream, {
+        status: 200,
+        headers: {
+          'Content-Type': 'video/mp4'
+        }
+      });
+    } else {
+      // console.log(`asvi/${data.s3Url}_subtitles.vtt`);
+      const stream = await s3Client.getAsStream(
+        s3Client.makeFilePath(`asvi/${data.s3Url}_subtitles.vtt`)
+      );
+
+      // @ts-expect-error stream types
+      return new Response(stream, {
+        status: 200,
+        headers: {
+          'Content-Type': 'text/plain'
+        }
+      });
+    }
+  } catch (err) {
+    actionService.add({
+      ip,
+      initiator,
+      type: ActionType.USER_DOWNLOAD_FILE,
+      status: ActionStatus.ERROR,
+      details: {
+        error: err
       }
     });
-  } else {
-    console.log(`asvi${data.s3Url}_subtitles.vtt`);
-    const stream = await s3Client.getAsStream(
-      s3Client.makeFilePath(`asvi${data.s3Url}_subtitles.vtt`)
-    );
-
-    // @ts-expect-error stream types
-    return new Response(stream, {
-      status: 200,
-      headers: {
-        'Content-Type': 'text/plain'
-      }
-    });
+    console.error(err);
   }
 }

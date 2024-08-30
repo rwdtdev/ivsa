@@ -20,12 +20,12 @@ import {
   SelectValue
 } from '@/components/ui/select';
 import { useToast } from '../ui/use-toast';
-import { UserRoles, UserStatuses } from '@/constants/mappings/prisma-enums';
+import { UserRoles } from '@/constants/mappings/prisma-enums';
 import {
   UserFormData,
   UserFormSchema
 } from '@/lib/form-validation-schemas/user-form-schema';
-import { /* Department, Organisation, */ UserRole, UserStatus } from '@prisma/client';
+import { UserRole, UserStatus } from '@prisma/client';
 import { PasswordInput } from '../password-input';
 import { createUserAction, updateUserAction } from '@/app/actions/server/users';
 import _ from 'underscore';
@@ -61,6 +61,7 @@ export const UserForm: React.FC<UserFormProps> = ({ initialData, userId }) => {
         email: '',
         tabelNumber: '',
         phone: '',
+        ASOZSystemRequestNumber: '',
         role: UserRole.USER,
         expiresAt: new Date(Date.now() + 365 * 24 * 60 * 60 * 1000)
       };
@@ -283,7 +284,7 @@ export const UserForm: React.FC<UserFormProps> = ({ initialData, userId }) => {
                 </FormItem>
               )}
             /> */}
-            <FormField
+            {/* <FormField
               control={form.control}
               name='status'
               render={({ field }) => (
@@ -313,19 +314,6 @@ export const UserForm: React.FC<UserFormProps> = ({ initialData, userId }) => {
                   <FormMessage />
                 </FormItem>
               )}
-            />
-            {/* <FormField
-              control={form.control}
-              name='expiresAt'
-              render={({ field }) => (
-                <FormItem>
-                  <FormLabel>Срок действия учетной записи</FormLabel>
-                  <FormControl>
-                    <Input disabled={loading} placeholder='Рабочий телефон' {...field} />
-                  </FormControl>
-                  <FormMessage />
-                </FormItem>
-              )}
             /> */}
             <FormField
               control={form.control}
@@ -348,7 +336,7 @@ export const UserForm: React.FC<UserFormProps> = ({ initialData, userId }) => {
               control={form.control}
               name='expiresAt'
               render={({ field }) => (
-                <FormItem className=''>
+                <FormItem className='flex flex-col'>
                   <FormLabel className='mb-2 block'>Активен до</FormLabel>
                   <Popover>
                     <PopoverTrigger asChild>
@@ -356,7 +344,7 @@ export const UserForm: React.FC<UserFormProps> = ({ initialData, userId }) => {
                         <Button
                           variant={'outline'}
                           className={cn(
-                            'w-[240px] pl-3 text-left font-normal',
+                            'flex-grow pl-3 text-left font-normal',
                             !field.value && 'text-muted-foreground'
                           )}
                         >

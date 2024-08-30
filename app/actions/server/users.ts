@@ -188,7 +188,7 @@ export async function IsBlocked(username: string) {
   return user.status === UserStatus.BLOCKED;
 }
 
-export async function blockUserAction(id: string) {
+export async function blockUserAction({ id, type }: { id: string; type: ActionType }) {
   const userManager = new UserManager(
     new IvaService(),
     new UserService(),
@@ -198,7 +198,8 @@ export async function blockUserAction(id: string) {
   );
 
   try {
-    await userManager.blockUser(id);
+    await userManager.blockUser({ id, type });
+    revalidatePath('/admin/users');
     revalidatePath('/admin/users');
     revalidatePath('/admin/users');
   } catch (error) {

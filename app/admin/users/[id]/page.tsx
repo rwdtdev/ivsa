@@ -25,7 +25,7 @@ export default async function UpdateUserPage({ params }: { params: { id: string 
 
   return (
     <>
-      <Header title='Редактирование пользователя' />
+      <Header title='Редактирование&nbsp;пользователя' />
       <main className='flex-1 space-y-4 px-8 pb-8'>
         <BreadCrumb items={breadcrumbItems} />
         <div className='rounded-md border p-4 shadow-mod-1'>

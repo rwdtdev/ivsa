@@ -63,7 +63,7 @@ export default function MetadataStatistic({ /* data, */ initialData, inventoryId
               Были получены{' '}
               {/* {minutesToHmsString(new Date().valueOf() - lastMetadata.dateTime.valueOf())}{' '} */}
               {/* {timeBefore} назад в {moment(lastMetadata.dateTime).format(TIMEDATE_FORMAT)} */}
-              {timeBefore} назад в {atTime}
+              {timeBefore} назад <br /> в {atTime}
             </P>
           </div>
           <p className='text-sm'>

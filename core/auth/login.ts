@@ -3,7 +3,8 @@ import prisma from '@/core/prisma';
 import { UserCredentials } from '@/app/types';
 import { UserSession } from '@/types/user';
 import { UnauthorizedError } from '@/lib/problem-json';
-import { UserStatus } from '@prisma/client';
+import { blockUserAction } from '@/app/actions/server/users';
+import { ActionType } from '@prisma/client';
 
 let globalCounter = 0;
 
@@ -11,7 +12,7 @@ export const login = async ({ username, password }: UserCredentials) => {
   if (!username || !password) {
     throw new UnauthorizedError({ detail: 'Missing username or password' });
   }
-  const user = await prisma.user.findFirst({ where: { username } });
+  const user = await prisma.user.findUnique({ where: { username } });
 
   if (!user) {
     throw new UnauthorizedError({ detail: 'Invalid username or password' });
@@ -40,9 +41,9 @@ export const login = async ({ username, password }: UserCredentials) => {
       return { ...session, accessToken, refreshToken };
     } else {
       if (globalCounter >= 4) {
-        await prisma.user.update({
-          data: { status: UserStatus.BLOCKED },
-          where: { username }
+        blockUserAction({
+          id: user.id,
+          type: ActionType.USER_BLOCK_BY_LIMIT_LOGIN_ATTEMPTS
         });
       } else {
         globalCounter++;

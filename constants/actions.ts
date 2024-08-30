@@ -14,7 +14,8 @@ export const actionTypesMapper = {
     'Переход в конференцию для инструктажа',
   [ActionType.USER_LOGGED_INTO_AUDIT_CONFERENCE]:
     'Переход в конференцию для видеоинвентаризации',
-  [ActionType.USER_REQUEST_PASSWORD_RESET]: 'Восстановление пароля пользователем',
+  [ActionType.USER_REQUEST_PASSWORD_RESET]:
+    'Запрос ссылки на восстановление пароля пользователем',
   [ActionType.USER_BLOCK_BY_LIMIT_LOGIN_ATTEMPTS]:
     'Блокировка пользователя из-за превышения попыток ввода пароля',
   [ActionType.ADMIN_USER_PASSWORD_RESET]: 'Сброс пароля пользователя администратором',

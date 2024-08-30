@@ -112,7 +112,7 @@ export class UserManager {
     });
   }
 
-  async blockUser(id: string) {
+  async blockUser({ id, type }: { id: string; type: ActionType }) {
     const monitorInitData = await getMonitoringInitData();
     const actionService = new ActionService();
     try {
@@ -128,7 +128,7 @@ export class UserManager {
       actionService.add({
         ip: monitorInitData.ip,
         initiator: monitorInitData.initiator,
-        type: ActionType.ADMIN_USER_BLOCK,
+        type,
         status: ActionStatus.SUCCESS,
         details: {
           adminUsername: monitorInitData.initiator,
@@ -140,7 +140,7 @@ export class UserManager {
       actionService.add({
         ip: monitorInitData.ip,
         initiator: monitorInitData.initiator,
-        type: ActionType.ADMIN_USER_BLOCK,
+        type,
         status: ActionStatus.ERROR,
         details: {
           editedUserId: id,

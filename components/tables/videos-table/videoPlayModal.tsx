@@ -11,6 +11,8 @@ import {
 import { PlayIconCustom } from '@/components/ui/customIcons/PlayIconCustom';
 import { format } from 'date-fns';
 import { InventoryResourceWithAddress } from '@/app/actions/server/inventories';
+import { Check, Copy } from 'lucide-react';
+import { useEffect, useState } from 'react';
 
 interface Props {
   data: InventoryResourceWithAddress;
@@ -18,6 +20,14 @@ interface Props {
 }
 
 export default function VideoPlay({ data, inventoryNumber }: Props) {
+  const [cbData, setCbData] = useState('');
+
+  useEffect(() => {
+    (async () => {
+      const text = await navigator.clipboard.readText();
+      setCbData(text);
+    })();
+  });
   return (
     <div>
       <Dialog>
@@ -53,9 +63,36 @@ export default function VideoPlay({ data, inventoryNumber }: Props) {
               <p>Видео отсутствует</p>
             )}
           </div>
-          <DialogFooter className='flex-col justify-start text-sm text-gray-400 sm:flex-col sm:space-x-0'>
-            <span>hash видео-файла: {data.videoHash}</span>
-            <span>hash файла метаданных: {data.metadataHash}</span>
+          <DialogFooter className='flex-col justify-start space-y-3 text-sm text-gray-600 sm:flex-col sm:space-x-0'>
+            <span className='flex'>
+              <span className='mr-1'>hash видео-файла: </span>
+              {data.videoHash}
+              {cbData === data.videoHash ? (
+                <Check className='h-5' />
+              ) : (
+                <Copy
+                  className='h-4'
+                  onClick={async () => {
+                    await navigator.clipboard.writeText(data.videoHash || '');
+                    setCbData(data.videoHash || '');
+                  }}
+                />
+              )}
+            </span>
+            <span className='flex items-center'>
+              hash файла метаданных: {data.metadataHash}{' '}
+              {cbData === data.metadataHash ? (
+                <Check className='h-5' />
+              ) : (
+                <Copy
+                  className='h-4'
+                  onClick={async () => {
+                    await navigator.clipboard.writeText(data.metadataHash || '');
+                    setCbData(data.metadataHash || '');
+                  }}
+                />
+              )}
+            </span>
           </DialogFooter>
         </DialogContent>
       </Dialog>

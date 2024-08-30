@@ -17,7 +17,7 @@ import {
   EventsTableColumnNames,
   UsersTableColumnNames
 } from '@/constants/mappings/tables-column-names';
-import { Inventory } from '@prisma/client';
+import { ActionType, Inventory } from '@prisma/client';
 import { ConfirmModalDialogToolbarBtn } from '@/components/modal/confirm-modal-dialog-toolbar-btn';
 import { DatePickerUsersExpiresAt } from '@/components/date-picker-users-expiresat';
 import { TableType } from './data-table';
@@ -81,7 +81,11 @@ export function DataTableToolbar<TData>({
   async function blockSelectedUsers() {
     const selectedUsersObj = table.getState().rowSelection;
     const usersIds: string[] = Object.keys(selectedUsersObj);
-    await Promise.allSettled(usersIds.map((userId) => blockUserAction(userId)));
+    await Promise.allSettled(
+      usersIds.map((userId) =>
+        blockUserAction({ id: userId, type: ActionType.ADMIN_USER_BLOCK })
+      )
+    );
     table.resetRowSelection();
   }
 

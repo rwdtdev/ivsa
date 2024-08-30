@@ -93,6 +93,20 @@ export async function setActiveAndSendRecoveryLinkAction(userId: string, email: 
       subject: 'Восстановление пароля',
       text: `Ссылка для восстановления пароля: ${process.env.NEXTAUTH_URL}/forgot-password/${token}`
     });
+
+    const { ip, initiator } = await getMonitoringInitData();
+    const user = await userService.getById(userId);
+    const actionService = new ActionService();
+    actionService.add({
+      ip,
+      initiator,
+      type: ActionType.ADMIN_USER_PASSWORD_RESET,
+      status: ActionStatus.SUCCESS,
+      details: {
+        username: user.username,
+        name: user.name
+      }
+    });
   });
 
   revalidatePath('/admin/users');

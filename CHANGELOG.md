@@ -1,3 +1,10 @@
+## [1.7.4](https://rwdt1.gitlab.yandexcloud.net/rwdt/services/asvi/compare/1.7.3...1.7.4) (2024-08-30)
+
+
+### Bug Fixes
+
+* add noStore() to getMonitoringData (elem build static pages error) ([4a34619](https://rwdt1.gitlab.yandexcloud.net/rwdt/services/asvi/commit/4a3461920d84c0fb4108bf99c65ae3f65459bad9))
+
 ## [1.7.3](https://rwdt1.gitlab.yandexcloud.net/rwdt/services/asvi/compare/1.7.2...1.7.3) (2024-08-30)
 
 

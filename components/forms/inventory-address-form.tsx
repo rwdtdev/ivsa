@@ -80,7 +80,7 @@ export default function InventoryAddressForm({ inventory }: Props) {
                   <Input
                     {...field}
                     ref={inputRef}
-                    placeholder={isFormEdit ? 'введите адрес' : 'адрес не указан'}
+                    placeholder={isFormEdit ? 'Введите адрес' : 'Адрес не указан'}
                     autoFocus
                     className='mr-2'
                     disabled={!isFormEdit}

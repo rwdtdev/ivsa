@@ -1,3 +1,4 @@
+import { getEventByIdAction } from '@/app/actions/server/events';
 import { getInventoryById } from '@/app/actions/server/getInventoryById';
 import { getInventoryLocationsStatsAction } from '@/app/actions/server/inventory-locations';
 import { InventoryStatusBadge } from '@/components/event-status-badge';
@@ -28,14 +29,17 @@ interface Props {
   searchParams: SearchParams;
 }
 
-export default async function InventoryPage({ params: { inventoryId } }: Props) {
+export default async function InventoryPage({ params: { inventoryId, eventId } }: Props) {
   const session = await getServerSession(authConfig);
   const ua = headers().get('user-agent');
   const isAndroid = /android/i.test(ua || '');
   const inventory = await getInventoryById(inventoryId);
-  const participant = inventory?.participants.find(
+  const event = await getEventByIdAction(eventId);
+
+  const participant = event?.participants.find(
     (participant) => participant.userId === session?.user.id
   );
+
   const isUserChairman = participant?.role === 'CHAIRMAN';
 
   const locationsStatistics = await getInventoryLocationsStatsAction(inventoryId);

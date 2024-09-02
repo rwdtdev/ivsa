@@ -1,3 +1,10 @@
+## [1.7.5](https://rwdt1.gitlab.yandexcloud.net/rwdt/services/asvi/compare/1.7.4...1.7.5) (2024-09-02)
+
+
+### Bug Fixes
+
+* chairman address ([ea3d50c](https://rwdt1.gitlab.yandexcloud.net/rwdt/services/asvi/commit/ea3d50c86f222c15048c377d48a163d88d3adb83))
+
 ## [1.7.4](https://rwdt1.gitlab.yandexcloud.net/rwdt/services/asvi/compare/1.7.3...1.7.4) (2024-08-30)
 
 

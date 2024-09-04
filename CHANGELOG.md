@@ -1,3 +1,11 @@
+## [1.7.6](https://rwdt1.gitlab.yandexcloud.net/rwdt/services/asvi/compare/1.7.5...1.7.6) (2024-09-04)
+
+
+### Bug Fixes
+
+* convert mills of jan to utc Date object ([60cae14](https://rwdt1.gitlab.yandexcloud.net/rwdt/services/asvi/commit/60cae148b2c306ed80084418bda3b1c8b810ded6))
+* dates ([01af258](https://rwdt1.gitlab.yandexcloud.net/rwdt/services/asvi/commit/01af258ba0fd712d582d2feff18ace8fc9a94441))
+
 ## [1.7.5](https://rwdt1.gitlab.yandexcloud.net/rwdt/services/asvi/compare/1.7.4...1.7.5) (2024-09-02)
 
 

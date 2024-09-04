@@ -28,7 +28,7 @@ export async function POST(req: NextRequest, context: IContext) {
       latitude: data.latitude,
       longitude: data.longitude,
       accuracy: data.accuracy,
-      dateTime: moment(data.dateTime).utc().toDate()
+      dateTime: new Date(data.dateTime)
     });
 
     return new Response(null, { status: 201 });

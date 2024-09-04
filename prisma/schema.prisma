@@ -222,7 +222,7 @@ model InventoryLocation {
   /// Долгота
   longitude   Float
   /// Временная метка
-  dateTime    DateTime           @db.Timestamptz(3)
+  dateTime    DateTime           @db.Timestamptz()
   /// Точность
   accuracy    Float
   /// Идентификатор описи, 
@@ -304,7 +304,7 @@ model Action {
   /// Идентификатор действия
   id        String       @id @default(uuid())
   requestId String?
-  actionAt  DateTime     @default(now())
+  actionAt  DateTime     @default(now()) @db.Timestamptz()
   type      ActionType
   status    ActionStatus
   initiator String

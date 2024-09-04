@@ -1,0 +1,2 @@
+-- AlterTable
+ALTER TABLE "actions" ALTER COLUMN "actionAt" SET DATA TYPE TIMESTAMPTZ;

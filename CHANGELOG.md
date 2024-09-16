@@ -1,3 +1,10 @@
+# [1.8.0](https://rwdt1.gitlab.yandexcloud.net/rwdt/services/asvi/compare/1.7.6...1.8.0) (2024-09-16)
+
+
+### Features
+
+* права на скачивание видео, указание снимающего видео ([cbe29bf](https://rwdt1.gitlab.yandexcloud.net/rwdt/services/asvi/commit/cbe29bf195c7aed4f786cac3b9107d82f5dfc1ab))
+
 ## [1.7.6](https://rwdt1.gitlab.yandexcloud.net/rwdt/services/asvi/compare/1.7.5...1.7.6) (2024-09-04)
 
 

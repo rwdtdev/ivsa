@@ -98,6 +98,7 @@ model User {
   department              Department?   @relation(fields: [departmentId], references: [id])
   /// Список описей и событий инвентаризаций, в которых пользователь является участником
   participants            Participant[]
+  Inventory               Inventory[]
 
   @@map("users")
 }
@@ -209,7 +210,11 @@ model Inventory {
   resources           InventoryResource[]
   /// Признак того, что инвентаризация по описи окончена, все ресурсы были обработаны, сохранены и т.д.
   isProcessed         Boolean             @default(false)
+  /// Указанный вручную адрес места проведения инвентаризации
   address             String?
+  /// Выбранный председателем участник конференции, который выполняет видеофиксацию с моб. устройства
+  videographer        User?               @relation(fields: [videographerId], references: [id])
+  videographerId      String?
 
   @@map("inventories")
 }
@@ -234,6 +239,8 @@ model InventoryLocation {
   resource    InventoryResource? @relation(fields: [resourceId], references: [id])
   /// Дата и время создания записи
   createdAt   DateTime           @default(now())
+  /// Идентификатор пользователя, от которого пришли метаданные
+  userId      String?
 
   @@map("inventory_locations")
 }

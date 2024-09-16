@@ -113,6 +113,7 @@ export type InventoryCreateData = Omit<
   | 'metadataFileUrl'
   | 'metadataFileHash'
   | 'address'
+  | 'videographerId'
 > & {
   parentId?: string;
 };

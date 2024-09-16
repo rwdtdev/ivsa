@@ -10,7 +10,8 @@ import DownLoadFilesBtn from './downLoadFilesBtn';
 const padding = 9;
 
 export function fetchVideosTableColumnDefs(
-  inventoryNumber: string
+  inventoryNumber: string,
+  isUserChairman: boolean
 ): ColumnDef<InventoryResourceWithAddress, unknown>[] {
   return [
     {
@@ -59,10 +60,14 @@ export function fetchVideosTableColumnDefs(
       cell: ({ row }) => (
         <div className='flex'>
           <VideoPlayModal data={row.original} inventoryNumber={inventoryNumber} />
-          <div>
-            <Separator orientation='vertical' className='mx-4' />
-          </div>
-          <DownLoadFilesBtn data={row.original} />
+          {isUserChairman && (
+            <>
+              <div>
+                <Separator orientation='vertical' className='mx-4' />
+              </div>
+              <DownLoadFilesBtn data={row.original} />
+            </>
+          )}
         </div>
       )
     }

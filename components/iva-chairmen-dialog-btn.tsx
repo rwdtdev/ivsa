@@ -13,13 +13,14 @@ import {
 
 type Props = {
   auditRoomInviteLink: string;
+  address: string | null;
 };
 
-export function IvaChairmanDialogBtn({ auditRoomInviteLink }: Props) {
+export function IvaChairmanDialogBtn({ auditRoomInviteLink, address }: Props) {
   return (
     <Dialog>
       <DialogTrigger asChild>
-        <Button>Перейти в видео-конференцию</Button>
+        <Button disabled={!address}>Перейти в видеоконференцию</Button>
       </DialogTrigger>
       <DialogContent className='sm:max-w-[450px]'>
         <DialogHeader>

@@ -67,6 +67,10 @@ export class S3ClientMinio extends S3Client {
     return stream;
   }
 
+  async statObject(bucket: string, filename: string) {
+    return this.s3.statObject(bucket, filename);
+  }
+
   async getObjectStats(file: string | FileObject): Promise<BucketItemStat | null> {
     const { fileName, bucketName } = this.makeFileObject(file);
     try {
@@ -76,7 +80,7 @@ export class S3ClientMinio extends S3Client {
         throw new Error('File not found!');
       }
 
-      const stat = await this.s3.statObject(found[0].bucket, found[0].fileName);
+      const stat = await this.statObject(found[0].bucket, found[0].fileName);
       return stat;
     } catch (err) {
       this.emit(S3_EVENTS.S3_RECEIVE_FILE_STREAM_ERROR, {

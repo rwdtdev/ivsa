@@ -12,7 +12,7 @@ import {
 import { UserFormData } from '@/lib/form-validation-schemas/user-form-schema';
 import { UserView } from '@/types/user';
 import { UserStatus } from '@prisma/client';
-import { Edit, MoreHorizontal, Bell, UserRoundX } from 'lucide-react';
+import { Edit, MoreHorizontal, Bell /* , UserRoundX */ } from 'lucide-react';
 import { useRouter } from 'next/navigation';
 import { useState } from 'react';
 import {
@@ -117,9 +117,9 @@ export function UserTableRowMenu({ data }: Props) {
           <DropdownMenuItem onClick={() => setOpenResetPassword(true)}>
             <Bell className='mr-2 h-4 w-4' /> Сбросить пароль
           </DropdownMenuItem>
-          <DropdownMenuItem onClick={() => setOpenRecuseUser(true)}>
+          {/* <DropdownMenuItem onClick={() => setOpenRecuseUser(true)}>
             <UserRoundX className='mr-2 h-4 w-4' /> Освободить от должности
-          </DropdownMenuItem>
+          </DropdownMenuItem> */}
         </DropdownMenuContent>
       </DropdownMenu>
     </>

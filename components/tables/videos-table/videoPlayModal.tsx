@@ -24,7 +24,7 @@ export default function VideoPlay({ data, inventoryNumber }: Props) {
 
   useEffect(() => {
     (async () => {
-      const text = await navigator.clipboard.readText();
+      const text = await navigator.clipboard?.readText();
       setCbData(text);
     })();
   });
@@ -63,36 +63,41 @@ export default function VideoPlay({ data, inventoryNumber }: Props) {
               <p>Видео отсутствует</p>
             )}
           </div>
-          <DialogFooter className='flex-col justify-start space-y-3 text-sm text-gray-600 sm:flex-col sm:space-x-0'>
-            <span className='flex'>
-              <span className='mr-1'>hash видео-файла: </span>
-              {data.videoHash}
-              {cbData === data.videoHash ? (
-                <Check className='h-5' />
-              ) : (
-                <Copy
-                  className='h-4'
-                  onClick={async () => {
-                    await navigator.clipboard.writeText(data.videoHash || '');
-                    setCbData(data.videoHash || '');
-                  }}
-                />
-              )}
-            </span>
-            <span className='flex items-center'>
-              hash файла метаданных: {data.metadataHash}{' '}
-              {cbData === data.metadataHash ? (
-                <Check className='h-5' />
-              ) : (
-                <Copy
-                  className='h-4'
-                  onClick={async () => {
-                    await navigator.clipboard.writeText(data.metadataHash || '');
-                    setCbData(data.metadataHash || '');
-                  }}
-                />
-              )}
-            </span>
+          <DialogFooter className='hidden justify-start space-y-3 text-sm text-gray-600 sm:flex sm:flex-col sm:space-x-0'>
+            <div className='flex flex-wrap'>
+              <span className='mr-1'>hash&nbsp;видео-файла: </span>
+              <span className='flex'>
+                {data.videoHash}
+                {cbData === data.videoHash ? (
+                  <Check className='h-5' />
+                ) : (
+                  <Copy
+                    className='h-4'
+                    onClick={async () => {
+                      await navigator.clipboard?.writeText(data.videoHash || '');
+                      setCbData(data.videoHash || '');
+                    }}
+                  />
+                )}
+              </span>
+            </div>
+            <div className='flex flex-wrap'>
+              <span className=''>hash файла метаданных: </span>
+              <span className='flex flex-nowrap'>
+                {data.metadataHash}
+                {cbData === data.metadataHash ? (
+                  <Check className='h-5' />
+                ) : (
+                  <Copy
+                    className='h-4'
+                    onClick={async () => {
+                      await navigator.clipboard?.writeText(data.metadataHash || '');
+                      setCbData(data.metadataHash || '');
+                    }}
+                  />
+                )}
+              </span>
+            </div>
           </DialogFooter>
         </DialogContent>
       </Dialog>

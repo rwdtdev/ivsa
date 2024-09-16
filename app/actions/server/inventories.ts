@@ -56,3 +56,9 @@ export const getInventoryByIdAction = async (
     return null;
   }
 };
+
+export const setInventoryVideographer = async (id: string, videographerId: string) => {
+  const inventoryService = new InventoryService();
+
+  return await inventoryService.update(id, { videographerId });
+};

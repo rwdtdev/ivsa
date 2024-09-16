@@ -7,10 +7,12 @@ import { dictionaryItems } from '@/constants/data';
 import { UserRole } from '@prisma/client';
 import { Separator } from '../ui/separator';
 import { useSession } from 'next-auth/react';
+import { usePathname } from 'next/navigation';
 
 export default function Header({ title }: { title: string }) {
   const session = useSession();
   const isAdmin = session?.data?.user.role === UserRole.ADMIN;
+  const pathname = usePathname();
 
   return (
     <header className='supports-backdrop-blur:bg-background/60 sticky top-0 z-20 border-b bg-slate-50 shadow-sm backdrop-blur'>
@@ -18,13 +20,20 @@ export default function Header({ title }: { title: string }) {
         <div className='mr-auto flex'>
           <Link href={'/'} className='flex min-w-32'>
             <Image
-              src='/logo.png'
+              // src='/logo.png'
+              src='/logorzd.svg'
               alt='Логотип'
               width={30}
               height={50}
-              style={{ width: 'auto', height: 'auto' }}
+              style={{ width: '50px', height: '30px' }}
             />
-            <h1 className='pl-4 text-xl font-semibold'>АС{'\u00A0'}ВИ</h1>
+            {pathname === '/login' ? (
+              <h1 className='pl-4 text-xl font-semibold'>
+                АС{'\u00A0'}видеоинвентаризации
+              </h1>
+            ) : (
+              <h1 className='pl-4 text-xl font-semibold'>АС{'\u00A0'}ВИ</h1>
+            )}
           </Link>
           <div className='hidden lg:block'>
             <Separator orientation='vertical' className='mx-4' />

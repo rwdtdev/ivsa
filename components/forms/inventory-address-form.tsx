@@ -1,6 +1,6 @@
 'use client';
 
-import { useRef, useState } from 'react';
+import { Dispatch, SetStateAction, useRef, useState } from 'react';
 import { SubmitHandler, useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { useToast } from '@/components/ui/use-toast';
@@ -20,15 +20,17 @@ import {
 import { Button } from '../ui/button';
 import { updateInventoryAddress } from '@/app/actions/server/inventories';
 import { Inventory } from '@prisma/client';
-import { Loader2 } from 'lucide-react';
+// import { Loader2 } from 'lucide-react';
 
 type Props = {
   inventory: Inventory;
+  address: string | null;
+  setAddress: Dispatch<SetStateAction<string | null>>;
 };
 
-export default function InventoryAddressForm({ inventory }: Props) {
+export default function InventoryAddressForm({ inventory, address, setAddress }: Props) {
   const [isFormEdit, setIsFormEdit] = useState(false);
-  const [isDataSending, setIsDataSending] = useState(false);
+  // const [isDataSending, setIsDataSending] = useState(false);
   const inputRef = useRef(null);
   const { toast } = useToast();
 
@@ -41,11 +43,11 @@ export default function InventoryAddressForm({ inventory }: Props) {
 
   const processForm: SubmitHandler<InventoryAddressFormData> = async (data) => {
     console.log('submit! data:', data);
-    setIsDataSending(true);
+    // setIsDataSending(true);
     try {
-      const sent = await updateInventoryAddress(inventory.id, data.address);
-      setIsDataSending(false);
-      if (!sent) {
+      const res = await updateInventoryAddress(inventory.id, data.address);
+      // setIsDataSending(false);
+      if (!res) {
         toast({
           title: 'Ошибка',
           description: (
@@ -55,6 +57,7 @@ export default function InventoryAddressForm({ inventory }: Props) {
           )
         });
       } else {
+        setAddress(res.address);
         setIsFormEdit(false);
       }
     } catch (err) {
@@ -74,22 +77,24 @@ export default function InventoryAddressForm({ inventory }: Props) {
           name='address'
           render={({ field }) => (
             <FormItem className=''>
-              <span className='text-sm font-semibold'>Адрес:</span>
+              <span className={`text-sm font-semibold ${address ? '' : 'text-red-600'}`}>
+                Адрес:{' '}
+              </span>
+
               <div className='sm:flex'>
-                <FormControl className='mb-2'>
+                <FormControl className={`mb-2 ${address ? '' : 'border-red-600'}`}>
                   <Input
                     {...field}
                     ref={inputRef}
-                    placeholder={isFormEdit ? 'Введите адрес' : 'Адрес не указан'}
+                    placeholder={isFormEdit ? 'Введите адрес' : 'Укажите адрес!'}
                     autoFocus
                     className='mr-2'
                     disabled={!isFormEdit}
                   />
                 </FormControl>
                 {isFormEdit ? (
-                  <Button type='submit' disabled={isDataSending} className=''>
+                  <Button type='submit' /* disabled={isDataSending} */ className=''>
                     Применить
-                    {isDataSending && <Loader2 className='mr-2 h-4 w-4 animate-spin' />}
                   </Button>
                 ) : (
                   <Button

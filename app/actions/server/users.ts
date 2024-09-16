@@ -75,7 +75,15 @@ export async function updateUserAction(id: string, formData: UserFormData) {
   const { ip, initiator } = await getMonitoringInitData();
 
   try {
+    const cacheKey = `user_${id}`;
+    const cachedUser = cache.get<UserView>(cacheKey) || null;
+
+    if (cachedUser) {
+      cache.del(cacheKey);
+    }
+
     const user = await userService.update(id, formData);
+
     await actionService.add({
       ip,
       initiator,
@@ -200,8 +208,6 @@ export async function blockUserAction({ id, type }: { id: string; type: ActionTy
   try {
     await userManager.blockUser({ id, type });
     revalidatePath('/admin/users');
-    revalidatePath('/admin/users');
-    revalidatePath('/admin/users');
   } catch (error) {
     console.debug(error);
     return { error: JSON.stringify(error, Object.getOwnPropertyNames(error)) };
@@ -219,7 +225,6 @@ export async function unblockUserAction(id: string) {
 
   try {
     await userManager.unblockUser(id);
-    revalidatePath('/admin/users');
     revalidatePath('/admin/users');
   } catch (error) {
     console.debug(error);

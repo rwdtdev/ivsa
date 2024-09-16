@@ -4,19 +4,20 @@ import { P } from './ui/typography/p';
 import { TIMEDATE_FORMAT } from '@/constants/date';
 import { useEffect, useState } from 'react';
 import { getInventoryLocationsStatsAction } from '@/app/actions/server/inventory-locations';
+import { InventoryLocation } from '@prisma/client';
 
 type LocationsStatistics = {
   total: number;
   perHour: number;
   perDay: number;
-  lastLocation: {
-    id: string;
-    inventoryId: string;
-    latitude: number;
-    longitude: number;
-    resourceId: string | null;
-  } | null;
+  lastLocation: InventoryLocation | null;
 } | null;
+
+type Props = {
+  initialData: LocationsStatistics;
+  inventoryId: string;
+  isInventoryProcessed: boolean;
+};
 
 function minutesToHmsString(ms: number) {
   const minutes = Math.floor(ms / 60000);
@@ -27,30 +28,36 @@ function minutesToHmsString(ms: number) {
   return `${hours}ч ${remainingMinutes}м ${seconds}с `;
 }
 
-export default function MetadataStatistic({ /* data, */ initialData, inventoryId }: any) {
-  // console.log('🚀 ~ MetadataStatistic ~ lastMetadata:', lastMetadata, data);
-  // const [dataAge, setDataAge] = useState('');
+export default function MetadataStatistic({
+  initialData,
+  inventoryId,
+  isInventoryProcessed
+}: Props) {
   const [timeBefore, setTimeBefore] = useState('');
   const [atTime, setAtTime] = useState('');
   const [data, setData] = useState<LocationsStatistics>(initialData);
   const lastMetadata = data ? data.lastLocation : null;
 
   useEffect(() => {
-    const timerId = setInterval(async () => {
-      const locationsStatistics = await getInventoryLocationsStatsAction(inventoryId);
-      setData(locationsStatistics);
-      setTimeBefore(
-        minutesToHmsString(
-          new Date().valueOf() -
-            (locationsStatistics?.lastLocation?.dateTime.valueOf() || 0)
-        )
-      );
-      setAtTime(
-        moment(locationsStatistics?.lastLocation?.dateTime).format(TIMEDATE_FORMAT)
-      );
-    }, 1000);
+    if (!isInventoryProcessed) {
+      const timerId = setInterval(async () => {
+        const locationsStatistics = await getInventoryLocationsStatsAction(inventoryId);
+        setData(locationsStatistics);
+        setTimeBefore(
+          minutesToHmsString(
+            new Date().valueOf() -
+              (locationsStatistics?.lastLocation?.dateTime.valueOf() || 0)
+          )
+        );
+        setAtTime(
+          moment(locationsStatistics?.lastLocation?.dateTime).format(TIMEDATE_FORMAT)
+        );
+      }, 1000);
 
-    return () => clearInterval(timerId);
+      return () => clearInterval(timerId);
+    } else {
+      setAtTime(moment(initialData?.lastLocation?.dateTime).format(TIMEDATE_FORMAT));
+    }
   }, []);
 
   return (
@@ -59,12 +66,13 @@ export default function MetadataStatistic({ /* data, */ initialData, inventoryId
       {data && data.lastLocation ? (
         <div className='mt-5 flex flex-col'>
           <div className='mb-4 flex flex-col text-xs text-muted-foreground'>
-            <P className='text-sm text-muted-foreground'>
-              Были получены{' '}
-              {/* {minutesToHmsString(new Date().valueOf() - lastMetadata.dateTime.valueOf())}{' '} */}
-              {/* {timeBefore} назад в {moment(lastMetadata.dateTime).format(TIMEDATE_FORMAT)} */}
-              {timeBefore} назад <br /> в {atTime}
-            </P>
+            {isInventoryProcessed ? (
+              <P className='text-sm text-muted-foreground'>Были получены в {atTime}</P>
+            ) : (
+              <P className='text-sm text-muted-foreground'>
+                Были получены {timeBefore} назад <br /> в {atTime}
+              </P>
+            )}
           </div>
           <p className='text-sm'>
             {lastMetadata?.latitude} ш., {lastMetadata?.longitude} д.

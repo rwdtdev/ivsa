@@ -1,3 +1,5 @@
+import { getDepartmentsAction } from '@/app/actions/server/departments';
+import { getOrganisationsAction } from '@/app/actions/server/organisations';
 import BreadCrumb from '@/components/breadcrumb';
 import { UserForm } from '@/components/forms/user-form';
 
@@ -13,13 +15,16 @@ const breadcrumbItems = [
 ];
 
 export default async function NewUserPage() {
+  const organisations = await getOrganisationsAction();
+  const departments = await getDepartmentsAction();
+
   return (
     <>
       <Header title='Добавление пользователя' />
       <main className='flex-1 space-y-4 px-8 pb-8'>
         <BreadCrumb items={breadcrumbItems} />
         <div className='rounded-md border p-4 shadow-mod-1'>
-          <UserForm initialData={null} />
+          <UserForm initialData={null} organisations={organisations} departments={departments} />
         </div>
       </main>
     </>

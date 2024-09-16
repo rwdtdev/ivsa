@@ -20,14 +20,19 @@ import {
   SelectValue
 } from '@/components/ui/select';
 import { useToast } from '../ui/use-toast';
-import { UserRoles } from '@/constants/mappings/prisma-enums';
+import { UserRoles, UserStatuses } from '@/constants/mappings/prisma-enums';
 import {
   UserFormData,
   UserFormSchema
 } from '@/lib/form-validation-schemas/user-form-schema';
-import { UserRole, UserStatus } from '@prisma/client';
+import { ActionType, Department, Organisation, UserRole, UserStatus } from '@prisma/client';
 import { PasswordInput } from '../password-input';
-import { createUserAction, updateUserAction } from '@/app/actions/server/users';
+import {
+  blockUserAction,
+  createUserAction,
+  unblockUserAction,
+  updateUserAction
+} from '@/app/actions/server/users';
 import _ from 'underscore';
 import { Popover, PopoverContent, PopoverTrigger } from '@radix-ui/react-popover';
 import { CalendarIcon } from 'lucide-react';
@@ -39,9 +44,11 @@ import { ru } from 'date-fns/locale';
 interface UserFormProps {
   userId?: string;
   initialData: any | null;
+  organisations: Organisation[];
+  departments: Department[];
 }
 
-export const UserForm: React.FC<UserFormProps> = ({ initialData, userId }) => {
+export const UserForm: React.FC<UserFormProps> = ({ initialData, userId, organisations, departments }) => {
   const { toast } = useToast();
   const [loading, setLoading] = useState(false);
 
@@ -63,6 +70,7 @@ export const UserForm: React.FC<UserFormProps> = ({ initialData, userId }) => {
         phone: '',
         ASOZSystemRequestNumber: '',
         role: UserRole.USER,
+        createdAt: new Date(),
         expiresAt: new Date(Date.now() + 365 * 24 * 60 * 60 * 1000)
       };
 
@@ -74,6 +82,14 @@ export const UserForm: React.FC<UserFormProps> = ({ initialData, userId }) => {
 
   const onSubmit = async (data: UserFormData) => {
     setLoading(true);
+
+    if (userId && defaultValues.status !== data.status) {
+      if (data.status === UserStatus.ACTIVE) {
+        unblockUserAction(userId);
+      } else {
+        blockUserAction({ id: userId, type: ActionType.ADMIN_USER_BLOCK });
+      }
+    }
 
     const result =
       initialData && userId
@@ -226,7 +242,7 @@ export const UserForm: React.FC<UserFormProps> = ({ initialData, userId }) => {
                 </FormItem>
               )}
             />
-            {/* <FormField
+            <FormField
               control={form.control}
               name='organisationId'
               render={({ field }) => (
@@ -240,7 +256,7 @@ export const UserForm: React.FC<UserFormProps> = ({ initialData, userId }) => {
                   >
                     <FormControl>
                       <SelectTrigger>
-                        <SelectValue defaultValue={field.value} />
+                        <SelectValue placeholder='Выберете организацию' defaultValue={field.value} />
                       </SelectTrigger>
                     </FormControl>
                     <SelectContent>
@@ -269,7 +285,7 @@ export const UserForm: React.FC<UserFormProps> = ({ initialData, userId }) => {
                   >
                     <FormControl>
                       <SelectTrigger>
-                        <SelectValue defaultValue={field.value} />
+                        <SelectValue placeholder='Выберете отдел' defaultValue={field.value} />
                       </SelectTrigger>
                     </FormControl>
                     <SelectContent>
@@ -283,8 +299,8 @@ export const UserForm: React.FC<UserFormProps> = ({ initialData, userId }) => {
                   <FormMessage />
                 </FormItem>
               )}
-            /> */}
-            {/* <FormField
+            />
+            <FormField
               control={form.control}
               name='status'
               render={({ field }) => (
@@ -302,19 +318,17 @@ export const UserForm: React.FC<UserFormProps> = ({ initialData, userId }) => {
                       </SelectTrigger>
                     </FormControl>
                     <SelectContent>
-                      {[UserStatus.ACTIVE, UserStatus.BLOCKED, UserStatus.RECUSED].map(
-                        (status, idx) => (
-                          <SelectItem key={idx} value={status}>
-                            {UserStatuses[status]}
-                          </SelectItem>
-                        )
-                      )}
+                      {[UserStatus.ACTIVE, UserStatus.BLOCKED].map((status, idx) => (
+                        <SelectItem key={idx} value={status}>
+                          {UserStatuses[status]}
+                        </SelectItem>
+                      ))}
                     </SelectContent>
                   </Select>
                   <FormMessage />
                 </FormItem>
               )}
-            /> */}
+            />
             <FormField
               control={form.control}
               name='ASOZSystemRequestNumber'
@@ -328,6 +342,29 @@ export const UserForm: React.FC<UserFormProps> = ({ initialData, userId }) => {
                       {...field}
                     />
                   </FormControl>
+                  <FormMessage />
+                </FormItem>
+              )}
+            />
+             <FormField
+              name='createdAt'
+              render={({ field }) => (
+                <FormItem className='flex flex-col disabled'>
+                  <FormLabel className='mb-2 block'>Активен с</FormLabel>
+                  <Popover>
+                    <PopoverTrigger asChild>
+                      <FormControl>
+                        <Button
+                          variant={'outline'}
+                          className='flex-grow pl-3 text-left font-normal'
+                          disabled
+                        >
+                          {format(field.value, 'dd.MM.yyyy')}
+                          <CalendarIcon className='ml-auto h-4 w-4 opacity-50' />
+                        </Button>
+                      </FormControl>
+                    </PopoverTrigger>
+                    </Popover>
                   <FormMessage />
                 </FormItem>
               )}

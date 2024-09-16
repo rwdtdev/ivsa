@@ -11,11 +11,12 @@ import { Inventory } from '@prisma/client';
 
 type Props = {
   inventoryWithRecourses: Inventory & { resources: InventoryResourceWithAddress[] };
+  isUserChairman: boolean;
 };
 
-export function VideosTable({ inventoryWithRecourses }: Props) {
+export function VideosTable({ inventoryWithRecourses, isUserChairman }: Props) {
   const columns = React.useMemo<ColumnDef<InventoryResourceWithAddress, unknown>[]>(
-    () => fetchVideosTableColumnDefs(inventoryWithRecourses.number),
+    () => fetchVideosTableColumnDefs(inventoryWithRecourses.number, isUserChairman),
     []
   );
 

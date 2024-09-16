@@ -7,7 +7,10 @@ import { doTransaction } from '@/lib/prisma-transaction';
 import { TransactionSession } from '@/types/prisma';
 import { UpdateInventoryData } from '@/app/api/inventories/[inventoryId]/update/validation';
 import { CreateIndividualInventoryData } from '@/app/api/inventories/[inventoryId]/individual_inventory/validation';
-import { CannotBindInventoryToAnotherComplexInventoryError } from './errors';
+import {
+  CannotBindInventoryToAnotherComplexInventoryError,
+  InventoryNotExistError
+} from './errors';
 import { InventoryLocationService } from '../inventory-location/InventoryLocationService';
 import { InventoryLocationCreateData } from '../inventory-location/types';
 
@@ -155,8 +158,19 @@ export class InventoryManager {
       const inventoryService = this.inventoryService.withSession(session);
       const inventoryLocationService = this.inventoryLocationService.withSession(session);
 
-      await inventoryService.assertExist(data.inventoryId);
-      await inventoryLocationService.create(data);
+      const inventory = await inventoryService.getById(data.inventoryId);
+
+      if (!inventory) {
+        throw new InventoryNotExistError();
+      }
+
+      if (
+        inventory.status === InventoryStatus.AVAILABLE &&
+        inventory.videographerId &&
+        inventory.videographerId === data.userId
+      ) {
+        await inventoryLocationService.create(data);
+      }
     });
   }
 

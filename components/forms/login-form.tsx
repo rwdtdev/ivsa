@@ -97,7 +97,10 @@ export default function LoginForm() {
     <Card className='w-[350px]'>
       <CardHeader>
         <CardTitle>Вход</CardTitle>
-        <CardDescription>Аутентификация в системе</CardDescription>
+        <CardDescription className='text-justify'>
+          Аутентификация в автоматизированной системе видеоинвентаризации на базе
+          ПО&nbsp;IVA&nbsp;R (АС ВИ)
+        </CardDescription>
       </CardHeader>
       <CardContent>
         <Form {...form}>

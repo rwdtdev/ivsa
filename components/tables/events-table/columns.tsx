@@ -51,7 +51,7 @@ export function fetchEventsTableColumnDefs(): ColumnDef<EventView, unknown>[] {
     {
       id: 'status',
       accessorKey: 'status',
-      header: () => <div className='min-w-24'>Статус</div>,
+      header: () => <div className='min-w-24 text-center'>Статус инвентаризации</div>,
       cell: ({ row }) => <EventStatusBadge status={row.original.status} />
     },
     {
@@ -158,16 +158,14 @@ export const filterableColumns = (): DataTableFilterableColumn<EventView>[] => {
     {
       id: 'status',
       title: 'Статус',
-      options: [EventStatus.ACTIVE, EventStatus.REMOVED].map(
-        (status) => {
-          const value = EventStatuses[status];
+      options: [EventStatus.ACTIVE, EventStatus.REMOVED].map((status) => {
+        const value = EventStatuses[status];
 
-          return {
-            label: value[0]?.toUpperCase() + value.slice(1),
-            value: status
-          };
-        }
-      )
+        return {
+          label: value[0]?.toUpperCase() + value.slice(1),
+          value: status
+        };
+      })
     },
     {
       id: 'briefingStatus',

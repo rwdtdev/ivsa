@@ -20,7 +20,7 @@ export async function POST(req: Request) {
   );
   const data = await req.json();
   const actionService = new ActionService();
-  const { ip, initiator } = await getMonitoringInitData();
+  const { ip, initiator, initiatorName } = await getMonitoringInitData();
 
   try {
     if (data.type === 'video') {
@@ -34,7 +34,8 @@ export async function POST(req: Request) {
         ip,
         initiator,
         type: ActionType.USER_DOWNLOAD_FILE,
-        status: ActionStatus.SUCCESS
+        status: ActionStatus.SUCCESS,
+        details: { name: initiatorName, videoFileName: data.videoFileName }
       });
       // @ts-expect-error stream types
       return new Response(stream, {
@@ -43,12 +44,18 @@ export async function POST(req: Request) {
           'Content-Type': 'video/mp4'
         }
       });
-    } else {
+    } else if (data.type === 'meta') {
       // console.log(`asvi/${data.s3Url}_subtitles.vtt`);
       const stream = await s3Client.getAsStream(
         s3Client.makeFilePath(`asvi/${data.s3Url}_subtitles.vtt`)
       );
-
+      actionService.add({
+        ip,
+        initiator,
+        type: ActionType.USER_DOWNLOAD_FILE,
+        status: ActionStatus.SUCCESS,
+        details: { name: initiatorName }
+      });
       // @ts-expect-error stream types
       return new Response(stream, {
         status: 200,

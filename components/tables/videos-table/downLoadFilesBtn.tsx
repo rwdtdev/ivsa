@@ -20,7 +20,7 @@ export default function DownLoadFilesBtn({ data }: Props) {
         headers: {
           'Content-Type': 'application/json'
         },
-        body: JSON.stringify({ s3Url: data.s3Url, type })
+        body: JSON.stringify({ s3Url: data.s3Url, type, videoFileName: data.name })
       });
       const blob = await res.blob();
       const newBlob = new Blob([blob]);
@@ -29,7 +29,7 @@ export default function DownLoadFilesBtn({ data }: Props) {
       link.href = blobUrl;
       if (type === 'meta') {
         link.setAttribute('download', `${data.name}.txt`);
-      } else {
+      } else if (type === 'video') {
         // link.setAttribute('download', `${data.name}`);
         link.setAttribute('download', `${data.name}.mp4`);
       }

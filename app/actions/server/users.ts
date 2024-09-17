@@ -33,7 +33,7 @@ export async function createUserAction(formData: UserFormData): Promise<any> {
     new OrganisationService()
   );
   const actionService = new ActionService();
-  const { ip, initiator } = await getMonitoringInitData();
+  const { ip, initiator, initiatorName } = await getMonitoringInitData();
   try {
     // TODO Refactor type casting
     await userManager.createUser(formData as UserCreateData);
@@ -44,7 +44,8 @@ export async function createUserAction(formData: UserFormData): Promise<any> {
       status: ActionStatus.SUCCESS,
       details: {
         createdUserUsername: formData.username,
-        createdUserName: formData.name
+        createdUserName: formData.name,
+        adminName: initiatorName
       }
     });
   } catch (error) {
@@ -58,7 +59,8 @@ export async function createUserAction(formData: UserFormData): Promise<any> {
         createdUserUsername: formData.username,
         // createdUserName: formData.name
         // createdUserUsername: formData.username,
-        createdUserName: formData.name
+        createdUserName: formData.name,
+        adminName: initiatorName
       }
     });
     console.debug(error);

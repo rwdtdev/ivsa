@@ -26,6 +26,7 @@ export const monitoringDetailMapper = {
   orderId: 'ID приказа',
   orderDate: 'Дата приказа',
   orderNumber: 'Номер приказа',
+  ASOZNumber: 'Номер заявки АС ОЗ',
   videoFileName: 'Название видео-файла',
   subtitlesFileName: 'Название файла мета-данных',
   videoFileSize: 'размер видео-файла',

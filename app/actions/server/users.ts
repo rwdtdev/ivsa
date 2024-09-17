@@ -21,6 +21,7 @@ import { ActionService } from '@/core/action/ActionService';
 import { getUnknownErrorText } from '@/lib/helpers';
 import { getMonitoringInitData } from '@/lib/getMonitoringInitData';
 import { MonitoringDetails } from '@/core/action/types';
+import { UserRoles } from '@/constants/mappings/prisma-enums';
 
 const cache = new Cache({ checkperiod: 120 });
 
@@ -71,7 +72,11 @@ export async function createUserAction(formData: UserFormData): Promise<any> {
   redirect('/admin/users');
 }
 
-export async function updateUserAction(id: string, formData: UserFormData) {
+export async function updateUserAction(
+  id: string,
+  formData: UserFormData,
+  type: ActionType
+) {
   const actionService = new ActionService();
   const userService = new UserService();
   const { ip, initiator } = await getMonitoringInitData();
@@ -89,18 +94,21 @@ export async function updateUserAction(id: string, formData: UserFormData) {
     await actionService.add({
       ip,
       initiator,
-      type: ActionType.USER_EDIT,
+      type,
       status: ActionStatus.SUCCESS,
       details: {
         editedUserUsername: user.username,
-        editedUserName: user.name
+        editedUserName: user.name,
+        ASOZNumber: formData.ASOZSystemRequestNumber,
+        roleAfter:
+          type === ActionType.USER_CHANGE_ROLE ? UserRoles[formData.role] : undefined
       }
     });
   } catch (error) {
     await actionService.add({
       ip,
       initiator,
-      type: ActionType.USER_EDIT,
+      type,
       status: ActionStatus.ERROR,
       details: {
         editedUserId: id,

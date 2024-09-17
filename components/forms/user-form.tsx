@@ -25,7 +25,13 @@ import {
   UserFormData,
   UserFormSchema
 } from '@/lib/form-validation-schemas/user-form-schema';
-import { ActionType, Department, Organisation, UserRole, UserStatus } from '@prisma/client';
+import {
+  ActionType,
+  Department,
+  Organisation,
+  UserRole,
+  UserStatus
+} from '@prisma/client';
 import { PasswordInput } from '../password-input';
 import {
   blockUserAction,
@@ -43,12 +49,17 @@ import { ru } from 'date-fns/locale';
 
 interface UserFormProps {
   userId?: string;
-  initialData: any | null;
+  initialData: (UserFormData & { createdAt: Date }) | undefined;
   organisations: Organisation[];
   departments: Department[];
 }
 
-export const UserForm: React.FC<UserFormProps> = ({ initialData, userId, organisations, departments }) => {
+export const UserForm: React.FC<UserFormProps> = ({
+  initialData,
+  userId,
+  organisations,
+  departments
+}) => {
   const { toast } = useToast();
   const [loading, setLoading] = useState(false);
 
@@ -91,9 +102,14 @@ export const UserForm: React.FC<UserFormProps> = ({ initialData, userId, organis
       }
     }
 
+    const actionType =
+      initialData?.role === data.role
+        ? ActionType.USER_EDIT
+        : ActionType.USER_CHANGE_ROLE;
+
     const result =
       initialData && userId
-        ? await updateUserAction(userId, data)
+        ? await updateUserAction(userId, data, actionType)
         : await createUserAction(data);
 
     if (result && result.error) {
@@ -256,7 +272,10 @@ export const UserForm: React.FC<UserFormProps> = ({ initialData, userId, organis
                   >
                     <FormControl>
                       <SelectTrigger>
-                        <SelectValue placeholder='Выберете организацию' defaultValue={field.value} />
+                        <SelectValue
+                          placeholder='Выберете организацию'
+                          defaultValue={field.value}
+                        />
                       </SelectTrigger>
                     </FormControl>
                     <SelectContent>
@@ -285,7 +304,10 @@ export const UserForm: React.FC<UserFormProps> = ({ initialData, userId, organis
                   >
                     <FormControl>
                       <SelectTrigger>
-                        <SelectValue placeholder='Выберете отдел' defaultValue={field.value} />
+                        <SelectValue
+                          placeholder='Выберете отдел'
+                          defaultValue={field.value}
+                        />
                       </SelectTrigger>
                     </FormControl>
                     <SelectContent>
@@ -346,10 +368,10 @@ export const UserForm: React.FC<UserFormProps> = ({ initialData, userId, organis
                 </FormItem>
               )}
             />
-             <FormField
+            <FormField
               name='createdAt'
               render={({ field }) => (
-                <FormItem className='flex flex-col disabled'>
+                <FormItem className='disabled flex flex-col'>
                   <FormLabel className='mb-2 block'>Активен с</FormLabel>
                   <Popover>
                     <PopoverTrigger asChild>
@@ -364,7 +386,7 @@ export const UserForm: React.FC<UserFormProps> = ({ initialData, userId, organis
                         </Button>
                       </FormControl>
                     </PopoverTrigger>
-                    </Popover>
+                  </Popover>
                   <FormMessage />
                 </FormItem>
               )}

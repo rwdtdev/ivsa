@@ -135,6 +135,7 @@ export function InventoryInfoCard({
             <IvaChairmanDialogBtn
               auditRoomInviteLink={inventory.auditRoomInviteLink}
               address={address}
+              videographerId={videographerId}
             />
           ) : (
             <Button>

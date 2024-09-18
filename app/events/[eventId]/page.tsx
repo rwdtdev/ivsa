@@ -163,11 +163,6 @@ export default function EventPage() {
                                   {user && user.status === UserStatus.BLOCKED && (
                                     <p className='text-sm text-red-500'>Заблокирован</p>
                                   )}
-                                  {user && user.status === UserStatus.RECUSED && (
-                                    <p className='text-sm text-orange-500'>
-                                      Отстранен от должности
-                                    </p>
-                                  )}
                                   <p className='text-sm text-muted-foreground'>
                                     {UserRoles[role]}
                                   </p>

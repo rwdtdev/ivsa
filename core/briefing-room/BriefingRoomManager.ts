@@ -52,10 +52,7 @@ export class BriefingRoomManager {
 
       const registeredAndNotBlockedParticipants = event.participants.filter(
         ({ user }: ParticipantWithUser) =>
-          user &&
-          user.ivaProfileId &&
-          user.status !== UserStatus.BLOCKED &&
-          user.status !== UserStatus.RECUSED
+          user && user.ivaProfileId && user.status !== UserStatus.BLOCKED
       );
 
       const conference = await this.ivaService.createConference({

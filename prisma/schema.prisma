@@ -390,8 +390,6 @@ enum UserStatus {
   ACTIVE
   /// Заблокирован
   BLOCKED
-  /// Освобожден от должности
-  RECUSED
 }
 
 enum UserRole {

@@ -4,8 +4,8 @@ import * as z from 'zod';
 export const UserFormSchema = z.object({
   username: z
     .string()
-    .min(1, { message: 'Не может быть пустым' })
-    .min(3, { message: 'Не менее 3 символов' }),
+    .min(8, { message: 'Не менее 8 символов' })
+    .max(15, { message: 'Не более 50 символов' }),
   password: z
     .string()
     .min(12, { message: 'Не менее 12 символов' })
@@ -18,7 +18,10 @@ export const UserFormSchema = z.object({
   organisationId: z.string().optional(),
   departmentId: z.string().optional(),
   email: z.string().min(1, { message: 'Не может быть пустым' }).email('Неверный формат'),
-  tabelNumber: z.string().length(8, { message: 'Должен содержать 8 символов' }),
+  tabelNumber: z
+    .string()
+    .min(8, { message: 'Не менее 8 символов' })
+    .max(50, { message: 'Не более 50 символов' }),
   phone: z
     .string()
     .min(1, { message: 'Не может быть пустым' })

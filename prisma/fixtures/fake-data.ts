@@ -59,11 +59,7 @@ export function fakeUser() {
       UserRole.ACCOUNTANT_ACCEPTOR,
       UserRole.ENGINEER
     ] as const),
-    status: faker.helpers.arrayElement([
-      UserStatus.ACTIVE,
-      UserStatus.BLOCKED,
-      UserStatus.RECUSED
-    ] as const),
+    status: faker.helpers.arrayElement([UserStatus.ACTIVE, UserStatus.BLOCKED] as const),
     updatedAt: faker.date.anytime(),
     tabelNumber: faker.string.numeric(8),
     ivaProfileId: faker.string.uuid(),

@@ -97,10 +97,7 @@ export class AuditRoomManager {
 
       const registeredAndNotBlockedParticipants = event.participants.filter(
         ({ user }: ParticipantWithUser) =>
-          user &&
-          user.ivaProfileId &&
-          user.status !== UserStatus.BLOCKED &&
-          user.status !== UserStatus.RECUSED
+          user && user.ivaProfileId && user.status !== UserStatus.BLOCKED
       );
 
       this.assertContaintModerator(registeredAndNotBlockedParticipants);

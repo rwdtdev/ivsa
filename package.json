@@ -15,7 +15,8 @@
     "prisma:fixtures-compile": "./node_modules/.bin/tsc ./prisma/fixtures/fake-data.ts",
     "prisma:seed": "npm run prisma:generate && npm run prisma:fixtures-compile && npx prisma db seed",
     "prisma:docs": "npm run prisma:generate && npx prisma-docs-generator serve",
-    "prisma:migrate:dev": "npm run generateModels && npx prisma migrate dev --skip-seed"
+    "prisma:migrate:dev": "npx prisma migrate dev --skip-seed",
+    "seed": "node prisma/seed.js"
   },
   "dependencies": {
     "@hookform/resolvers": "^3.3.3",

@@ -1,12 +1,12 @@
-import { UserRole } from '@prisma/client';
+import { ParticipantRole } from '@prisma/client';
 
 export const SoiParticipantRoles = {
-  '01': UserRole.CHAIRMAN,
-  '02': UserRole.PARTICIPANT,
-  '04': UserRole.FINANCIALLY_RESPONSIBLE_PERSON,
-  '05': UserRole.INSPECTOR,
-  '06': UserRole.ACCOUNTANT,
-  '07': UserRole.MANAGER
+  '01': ParticipantRole.CHAIRMAN,
+  '02': ParticipantRole.PARTICIPANT,
+  '04': ParticipantRole.FINANCIALLY_RESPONSIBLE_PERSON,
+  '05': ParticipantRole.INSPECTOR,
+  '06': ParticipantRole.ACCOUNTANT,
+  '07': ParticipantRole.MANAGER
 };
 
 export enum SoiParticipantRolesEnum {

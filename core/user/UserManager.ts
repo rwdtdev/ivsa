@@ -1,4 +1,5 @@
-import { ClientUser, UserCreateData } from './types';
+import _ from 'underscore';
+import { UserCreateData, UserView } from './types';
 import { DepartmentService } from '../department/DepartmentService';
 import { IvaService } from '../iva/IvaService';
 import { OrganisationService } from '../organisation/OrganisationService';
@@ -6,7 +7,7 @@ import { ParticipantService } from '../participant/ParticipantService';
 import { UserService } from './UserService';
 import { doTransaction } from '@/lib/prisma-transaction';
 import { TransactionSession } from '@/types/prisma';
-import { ActionStatus, ActionType, UserRole, UserStatus } from '@prisma/client';
+import { ActionStatus, ActionType, User, UserRole, UserStatus } from '@prisma/client';
 import {
   UnblockIvaUserError,
   BlockIvaUserError,
@@ -37,7 +38,7 @@ export class UserManager {
     this.organisationService = organisationService;
   }
 
-  async createUser(data: UserCreateData): Promise<ClientUser> {
+  async createUser(data: UserCreateData): Promise<UserView> {
     const {
       name,
       username,
@@ -48,7 +49,9 @@ export class UserManager {
       role,
       status,
       tabelNumber,
-      password
+      password,
+      expiresAt,
+      ASOZSystemRequestNumber
     } = data;
 
     return await doTransaction(async (session: TransactionSession) => {
@@ -91,17 +94,17 @@ export class UserManager {
           email,
           phone,
           status,
-          departmentId,
-          organisationId,
           role,
           tabelNumber,
           ivaProfileId: ivaResponse.profileId,
-          password
+          password,
+          ASOZSystemRequestNumber,
+          expiresAt
         });
 
         await this.updateParticipantsUser(user, participantService);
 
-        return user;
+        return _.omit(user, 'passwordHashes', 'password');
       } catch (error) {
         await this.ivaService.removeUser(ivaResponse.profileId);
 
@@ -148,8 +151,7 @@ export class UserManager {
         }
       });
       throw new BlockIvaUserError({
-        // detail: `Problems occurred during block user with id (${id}) in IVA R.`
-        detail: error
+        detail: `Problems occurred during block user with id (${id}) in IVA R. ${error}`
       });
     }
   }
@@ -167,13 +169,13 @@ export class UserManager {
       await this.userService.update(id, { status: UserStatus.ACTIVE });
     } catch (error) {
       throw new UnblockIvaUserError({
-        detail: `Problems occurred during unblock user with id (${id}) in IVA R.`
+        detail: `Problems occurred during unblock user with id (${id}) in IVA R. ${error}`
       });
     }
   }
 
   async updateParticipantsUser(
-    { id, tabelNumber }: ClientUser,
+    { id, tabelNumber }: Pick<User, 'id' | 'tabelNumber'>,
     participantService: ParticipantService
   ) {
     const isHaveNotRegistered = await participantService.isHaveNotRegistered(tabelNumber);

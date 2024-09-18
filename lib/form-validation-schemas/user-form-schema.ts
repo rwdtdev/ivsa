@@ -5,7 +5,9 @@ export const UserFormSchema = z.object({
   username: z
     .string()
     .min(8, { message: 'Не менее 8 символов' })
-    .max(15, { message: 'Не более 50 символов' }),
+    .max(15, { message: 'Не более 50 символов' })
+    .trim()
+    .toLowerCase(),
   password: z
     .string()
     .min(12, { message: 'Не менее 12 символов' })
@@ -14,18 +16,26 @@ export const UserFormSchema = z.object({
   name: z
     .string()
     .min(1, { message: 'Не может быть пустым' })
-    .min(10, { message: 'Не менее 10 символов' }),
+    .min(10, { message: 'Не менее 10 символов' })
+    .trim(),
   organisationId: z.string().optional(),
   departmentId: z.string().optional(),
-  email: z.string().min(1, { message: 'Не может быть пустым' }).email('Неверный формат'),
+  email: z
+    .string()
+    .min(1, { message: 'Не может быть пустым' })
+    .email('Неверный формат')
+    .trim()
+    .toLowerCase(),
   tabelNumber: z
     .string()
     .min(8, { message: 'Не менее 8 символов' })
-    .max(50, { message: 'Не более 50 символов' }),
+    .max(50, { message: 'Не более 50 символов' })
+    .trim(),
   phone: z
     .string()
     .min(1, { message: 'Не может быть пустым' })
-    .min(8, { message: 'Не менее 8 символов' }),
+    .min(8, { message: 'Не менее 8 символов' })
+    .trim(),
   status: z.nativeEnum(UserStatus, {
     errorMap: () => {
       return { message: 'Выберите статус пользователя' };
@@ -41,6 +51,7 @@ export const UserFormSchema = z.object({
     .string()
     .min(1, { message: 'Не может быть пустым' })
     .max(200, { message: 'Не более 200 символов' })
+    .trim()
 });
 
 export type UserFormData = z.infer<typeof UserFormSchema>;

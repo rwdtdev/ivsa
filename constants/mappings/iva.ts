@@ -1,4 +1,4 @@
-import { UserRole } from '@prisma/client';
+import { ParticipantRole } from '@prisma/client';
 
 export const IvaRoles = {
   SPEAKER: 'SPEAKER',
@@ -6,15 +6,13 @@ export const IvaRoles = {
   ATTENDEE: 'ATTENDEE'
 };
 
-export const IvaRolesMapper: { [key in UserRole]: string } = {
-  [UserRole.CHAIRMAN]: IvaRoles.MODERATOR,
-  [UserRole.INSPECTOR]: IvaRoles.MODERATOR,
-  [UserRole.ACCOUNTANT]: IvaRoles.ATTENDEE,
-  [UserRole.ACCOUNTANT_ACCEPTOR]: IvaRoles.ATTENDEE,
-  [UserRole.ENGINEER]: IvaRoles.ATTENDEE,
-  [UserRole.FINANCIALLY_RESPONSIBLE_PERSON]: IvaRoles.ATTENDEE,
-  [UserRole.MANAGER]: IvaRoles.ATTENDEE,
-  [UserRole.PARTICIPANT]: IvaRoles.ATTENDEE,
-  [UserRole.USER]: IvaRoles.ATTENDEE,
-  [UserRole.ADMIN]: IvaRoles.ATTENDEE
+export const IvaRolesMapper: { [key in ParticipantRole]: string } = {
+  [ParticipantRole.CHAIRMAN]: IvaRoles.MODERATOR,
+  [ParticipantRole.INSPECTOR]: IvaRoles.MODERATOR,
+  [ParticipantRole.ACCOUNTANT]: IvaRoles.ATTENDEE,
+  [ParticipantRole.ACCOUNTANT_ACCEPTOR]: IvaRoles.ATTENDEE,
+  [ParticipantRole.ENGINEER]: IvaRoles.ATTENDEE,
+  [ParticipantRole.FINANCIALLY_RESPONSIBLE_PERSON]: IvaRoles.ATTENDEE,
+  [ParticipantRole.MANAGER]: IvaRoles.ATTENDEE,
+  [ParticipantRole.PARTICIPANT]: IvaRoles.ATTENDEE
 };

@@ -10,7 +10,6 @@ import { useEffect, useState } from 'react';
 import { Avatar, AvatarFallback } from '@/components/ui/avatar';
 import { P } from '@/components/ui/typography/p';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
-import { UserRoles } from '@/constants/mappings/prisma-enums';
 import { DATE_FORMAT } from '@/constants/date';
 import { BriefingStatusBadge, EventStatusBadge } from '@/components/event-status-badge';
 import { ScrollArea } from '@/components/ui/scroll-area';
@@ -21,6 +20,7 @@ import { EnterIcon } from '@radix-ui/react-icons';
 import { BriefingStatus, UserStatus } from '@prisma/client';
 import { UserRoundXIcon } from 'lucide-react';
 import Header from '@/components/layout/header';
+import { ParticipantRoles } from '@/constants/mappings/prisma-enums';
 
 const breadcrumbItems = [
   {
@@ -164,7 +164,7 @@ export default function EventPage() {
                                     <p className='text-sm text-red-500'>Заблокирован</p>
                                   )}
                                   <p className='text-sm text-muted-foreground'>
-                                    {UserRoles[role]}
+                                    {ParticipantRoles[role]}
                                   </p>
                                   {user && (
                                     <p className='text-sm text-muted-foreground'>

@@ -10,7 +10,12 @@ import {
   EmptyPartisipantsListError,
   ParticipantsMustContainModeratorError
 } from './errors';
-import { BriefingStatus, InventoryStatus, UserRole, UserStatus } from '@prisma/client';
+import {
+  BriefingStatus,
+  InventoryStatus,
+  ParticipantRole,
+  UserStatus
+} from '@prisma/client';
 import { InventoryCodes } from '@/core/inventory/types';
 import { CreateInventoryData } from '@/app/api/audit-rooms/create/validation';
 import { getDateFromString } from '@/utils';
@@ -125,7 +130,7 @@ export class AuditRoomManager {
           .groupBy('tabelNumber')
           .mapObject((value: ParticipantWithUser[]) =>
             value.length > 1
-              ? value.find((o) => o.role === UserRole.CHAIRMAN) || value[0]
+              ? value.find((o) => o.role === ParticipantRole.CHAIRMAN) || value[0]
               : value[0]
           )
           .value()

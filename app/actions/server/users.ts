@@ -75,7 +75,7 @@ export async function createUserAction(formData: UserFormData): Promise<any> {
 export async function updateUserAction(
   id: string,
   formData: UserFormData,
-  type: ActionType
+  types: ActionType[]
 ) {
   const actionService = new ActionService();
   const userService = new UserService();
@@ -91,30 +91,38 @@ export async function updateUserAction(
 
     const user = await userService.update(id, formData);
 
-    await actionService.add({
-      ip,
-      initiator,
-      type,
-      status: ActionStatus.SUCCESS,
-      details: {
-        editedUserUsername: user.username,
-        editedUserName: user.name,
-        ASOZNumber: formData.ASOZSystemRequestNumber,
-        roleAfter:
-          type === ActionType.USER_CHANGE_ROLE ? UserRoles[formData.role] : undefined
-      }
-    });
+    await Promise.all(
+      types.map((type) => {
+        return actionService.add({
+          ip,
+          initiator,
+          type,
+          status: ActionStatus.SUCCESS,
+          details: {
+            editedUserUsername: user.username,
+            editedUserName: user.name,
+            ASOZNumber: formData.ASOZSystemRequestNumber,
+            roleAfter:
+              type === ActionType.USER_CHANGE_ROLE ? UserRoles[formData.role] : undefined
+          }
+        });
+      })
+    );
   } catch (error) {
-    await actionService.add({
-      ip,
-      initiator,
-      type,
-      status: ActionStatus.ERROR,
-      details: {
-        editedUserId: id,
-        error: getUnknownErrorText(error)
-      }
-    });
+    await Promise.all(
+      types.map((type) => {
+        actionService.add({
+          ip,
+          initiator,
+          type,
+          status: ActionStatus.ERROR,
+          details: {
+            editedUserId: id,
+            error: getUnknownErrorText(error)
+          }
+        });
+      })
+    );
     console.debug(error);
     return { error: JSON.stringify(error, Object.getOwnPropertyNames(error)) };
   }

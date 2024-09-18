@@ -54,14 +54,16 @@ interface UserFormProps {
   departments: Department[];
 }
 
-export const UserForm: React.FC<UserFormProps> = ({
+export function UserForm({
   initialData,
   userId,
   organisations,
   departments
-}) => {
+}: UserFormProps) {
   const { toast } = useToast();
   const [loading, setLoading] = useState(false);
+
+  if (initialData) initialData.ASOZSystemRequestNumber = '';
 
   const action = initialData ? 'Сохранить' : 'Добавить';
 
@@ -102,14 +104,42 @@ export const UserForm: React.FC<UserFormProps> = ({
       }
     }
 
-    const actionType =
-      initialData?.role === data.role
-        ? ActionType.USER_EDIT
-        : ActionType.USER_CHANGE_ROLE;
+    const actionTypes: ActionType[] = [];
+
+    if (initialData?.role !== data.role) {
+      actionTypes.push(ActionType.USER_CHANGE_ROLE);
+    }
+
+    if (
+      !_.isEqual(
+        _.pick(
+          initialData,
+          'name',
+          'username',
+          'email',
+          'phone',
+          'expiresAt',
+          'status',
+          'tabelNumber' //departmentId, organisationId
+        ),
+        _.pick(
+          data,
+          'name',
+          'username',
+          'email',
+          'phone',
+          'expiresAt',
+          'status',
+          'tabelNumber' //departmentId, organisationId
+        )
+      )
+    ) {
+      actionTypes.push(ActionType.USER_EDIT);
+    }
 
     const result =
       initialData && userId
-        ? await updateUserAction(userId, data, actionType)
+        ? await updateUserAction(userId, data, actionTypes)
         : await createUserAction(data);
 
     if (result && result.error) {
@@ -445,4 +475,4 @@ export const UserForm: React.FC<UserFormProps> = ({
       </Form>
     </>
   );
-};
+}

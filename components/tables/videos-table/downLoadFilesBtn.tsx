@@ -6,6 +6,12 @@ interface Props {
   data: InventoryResourceWithAddress;
 }
 
+export type DownloadFileData = {
+  s3Url: string | null;
+  type: 'meta' | 'video';
+  videoFileName: string;
+};
+
 export default function DownLoadFilesBtn({ data }: Props) {
   const [isDownloading, setIsDownloading] = useState(false);
 
@@ -14,29 +20,33 @@ export default function DownLoadFilesBtn({ data }: Props) {
     type: 'meta' | 'video'
   ) {
     setIsDownloading(true);
+    const downloadFileData = {
+      s3Url: data.s3Url,
+      type,
+      videoFileName: data.name
+    };
     try {
       const res = await fetch('/api/download-files', {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json'
         },
-        body: JSON.stringify({ s3Url: data.s3Url, type, videoFileName: data.name })
+        body: JSON.stringify(downloadFileData)
       });
       const blob = await res.blob();
       const newBlob = new Blob([blob]);
       const blobUrl = window.URL.createObjectURL(newBlob);
       const link = document.createElement('a');
       link.href = blobUrl;
-      if (type === 'meta') {
+      if (type === 'video') {
+        link.setAttribute('download', `${data.name}`);
+      } else if (type === 'meta') {
         link.setAttribute('download', `${data.name}.txt`);
-      } else if (type === 'video') {
-        // link.setAttribute('download', `${data.name}`);
-        link.setAttribute('download', `${data.name}.mp4`);
       }
       document.body.appendChild(link);
       link.click();
       document.body.removeChild(link);
-      // clean up Url
+
       window.URL.revokeObjectURL(blobUrl);
       if (type === 'video') setIsDownloading(false);
     } catch (err) {
@@ -50,7 +60,7 @@ export default function DownLoadFilesBtn({ data }: Props) {
     const blobUrl = window.URL.createObjectURL(newBlob);
     const link = document.createElement('a');
     link.href = blobUrl;
-    link.setAttribute('download', `${data.name}-videohash.txt`);
+    link.setAttribute('download', `${data.name.slice(0, -4)}-videohash.txt`);
     document.body.appendChild(link);
     link.click();
     document.body.removeChild(link);

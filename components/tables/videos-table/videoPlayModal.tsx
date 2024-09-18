@@ -12,7 +12,7 @@ import { PlayIconCustom } from '@/components/ui/customIcons/PlayIconCustom';
 import { format } from 'date-fns';
 import { InventoryResourceWithAddress } from '@/app/actions/server/inventories';
 import { Check, Copy } from 'lucide-react';
-import { useEffect, useState } from 'react';
+import { useState } from 'react';
 
 interface Props {
   data: InventoryResourceWithAddress;
@@ -22,16 +22,24 @@ interface Props {
 export default function VideoPlay({ data, inventoryNumber }: Props) {
   const [cbData, setCbData] = useState('');
 
-  useEffect(() => {
-    (async () => {
-      const text = await navigator.clipboard?.readText();
-      setCbData(text);
-    })();
-  });
+  // useEffect(() => {
+  //   (async () => {
+  //     const text = await navigator.clipboard?.readText();
+  //     setCbData(text);
+  //   })();
+  // });
   return (
     <div>
       <Dialog>
-        <DialogTrigger asChild>
+        <DialogTrigger
+          asChild
+          onClick={() => {
+            (async () => {
+              const text = await navigator.clipboard?.readText();
+              setCbData(text);
+            })();
+          }}
+        >
           <div>
             <PlayIconCustom />
           </div>

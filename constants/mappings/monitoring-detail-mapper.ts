@@ -28,8 +28,10 @@ export const monitoringDetailMapper = {
   orderNumber: 'Номер приказа',
   ASOZNumber: 'Номер заявки АС ОЗ',
   videoFileName: 'Название видео-файла',
+  hashFileName: 'Название hash-файла',
   subtitlesFileName: 'Название файла мета-данных',
   videoFileSize: 'размер видео-файла',
+  hashFileSize: 'размер hash-файла',
   editedUserId: 'ID редактируемого пользователя'
   // ------------
   // createdUser: 'Созданный пользователь',

@@ -1,3 +1,4 @@
+import { DownloadFileData } from '@/components/tables/videos-table/downLoadFilesBtn';
 import { ActionService } from '@/core/action/ActionService';
 import { getMonitoringInitData } from '@/lib/getMonitoringInitData';
 import { Logger } from '@/lib/logger';
@@ -18,24 +19,34 @@ export async function POST(req: Request) {
     },
     new Logger({ name: 's3-client' })
   );
-  const data = await req.json();
+  const data: DownloadFileData = await req.json();
   const actionService = new ActionService();
   const { ip, initiator, initiatorName } = await getMonitoringInitData();
 
   try {
     if (data.type === 'video') {
-      // console.log(`asvi/${data.s3Url}.mp4`);
-
       const stream = await s3Client.getAsStream(
         s3Client.makeFilePath(`asvi/${data.s3Url}.mp4`)
       );
+      const found = await s3Client.findFile(`asvi/${data.s3Url}.mp4`);
+      const stats = await s3Client.statObject(found[0].bucket, found[0].fileName);
+
+      if (!stream) {
+        throw new Error(`файл ${data.videoFileName} не найден`);
+      }
 
       actionService.add({
         ip,
         initiator,
         type: ActionType.USER_DOWNLOAD_FILE,
         status: ActionStatus.SUCCESS,
-        details: { name: initiatorName, videoFileName: data.videoFileName }
+        details: {
+          name: initiatorName,
+          videoFileName: data.videoFileName,
+          hashFileName: `${data.videoFileName.slice(0, -4)}-videohash.txt`,
+          hashFileSize: '64 байт',
+          videoFileSize: `${stats?.size} байт`
+        }
       });
       // @ts-expect-error stream types
       return new Response(stream, {
@@ -65,15 +76,17 @@ export async function POST(req: Request) {
       });
     }
   } catch (err) {
-    actionService.add({
-      ip,
-      initiator,
-      type: ActionType.USER_DOWNLOAD_FILE,
-      status: ActionStatus.ERROR,
-      details: {
-        error: err
-      }
-    });
+    if (err instanceof Error) {
+      actionService.add({
+        ip,
+        initiator,
+        type: ActionType.USER_DOWNLOAD_FILE,
+        status: ActionStatus.ERROR,
+        details: {
+          error: err.message
+        }
+      });
+    }
     console.error(err);
   }
 }

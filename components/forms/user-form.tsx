@@ -46,6 +46,7 @@ import { Calendar } from '@/components/ui/calendar';
 import { cn } from '@/lib/utils';
 import { format } from 'date-fns';
 import { ru } from 'date-fns/locale';
+import Link from 'next/link';
 
 interface UserFormProps {
   userId?: string;
@@ -468,9 +469,16 @@ export function UserForm({
               )}
             />
           </div>
-          <Button disabled={loading} className='ml-auto' type='submit'>
-            {action}
-          </Button>
+          <div className='flex justify-end'>
+            <Link href={'/admin/users'}>
+              <Button variant={'outline'} className='mr-4'>
+                Отмена
+              </Button>
+            </Link>
+            <Button disabled={loading} className='' type='submit'>
+              {action}
+            </Button>
+          </div>
         </form>
       </Form>
     </>

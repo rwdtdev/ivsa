@@ -53,13 +53,15 @@ interface UserFormProps {
   initialData: (UserFormData & { createdAt: Date }) | undefined;
   organisations: Organisation[];
   departments: Department[];
+  generatedPassword?: string;
 }
 
 export function UserForm({
   initialData,
   userId,
   organisations,
-  departments
+  departments,
+  generatedPassword
 }: UserFormProps) {
   const { toast } = useToast();
   const [loading, setLoading] = useState(false);
@@ -76,7 +78,7 @@ export function UserForm({
     ? initialData
     : {
         username: '',
-        password: '',
+        password: generatedPassword || '',
         name: '',
         status: UserStatus.ACTIVE,
         email: '',

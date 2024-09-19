@@ -61,6 +61,7 @@ export function DataTableToolbar<TData>({
   const isUsersTable = tableType === 'usersTable';
   const isInventoriesTable = tableType === 'inventoriesTable';
   const isMonitoringTable = tableType === 'monitoringTable';
+
   const createQueryString = React.useCallback(
     (params: Record<string, string | number | null>) => {
       const newSearchParams = new URLSearchParams(searchParams?.toString());

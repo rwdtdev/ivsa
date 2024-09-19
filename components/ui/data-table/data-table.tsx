@@ -27,6 +27,7 @@ export type TableType =
   | 'usersTable'
   | 'eventsTable'
   | 'inventoriesTable'
+  | 'videoListTable'
   | 'monitoringTable';
 
 interface DataTableProps<TData, TValue> {
@@ -114,31 +115,34 @@ export function DataTable<TData, TValue>({
 }: DataTableProps<TData, TValue>) {
   const router = useRouter();
   const isEventsTable = tableType === 'eventsTable';
+  const isVideoListTable = tableType === 'videoListTable';
 
   return (
     <>
-      <div className='mb-3'>
-        {advancedFilter ? (
-          <DataTableAdvancedToolbar
-            dataTable={dataTable}
-            filterableColumns={filterableColumns}
-            searchableColumns={searchableColumns}
-          />
-        ) : (
-          <DataTableToolbar
-            table={dataTable}
-            withSearch={withSearch}
-            datePickers={datePickers}
-            columnNames={columnNames}
-            filterableColumns={filterableColumns}
-            searchableColumns={searchableColumns}
-            newRowLink='/admin/users/new'
-            deleteRowsAction={deleteRowsAction}
-            tableType={tableType}
-            inventories={inventories}
-          />
-        )}
-      </div>
+      {!isVideoListTable && (
+        <div className='mb-3'>
+          {advancedFilter ? (
+            <DataTableAdvancedToolbar
+              dataTable={dataTable}
+              filterableColumns={filterableColumns}
+              searchableColumns={searchableColumns}
+            />
+          ) : (
+            <DataTableToolbar
+              table={dataTable}
+              withSearch={withSearch}
+              datePickers={datePickers}
+              columnNames={columnNames}
+              filterableColumns={filterableColumns}
+              searchableColumns={searchableColumns}
+              newRowLink='/admin/users/new'
+              deleteRowsAction={deleteRowsAction}
+              tableType={tableType}
+              inventories={inventories}
+            />
+          )}
+        </div>
+      )}
       <ScrollArea className='mb-auto rounded-md border shadow-mod-1'>
         <Table className=''>
           <TableHeader className='bg-slate-50'>

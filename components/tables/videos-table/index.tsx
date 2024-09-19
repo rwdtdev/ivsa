@@ -36,6 +36,7 @@ export function VideosTable({ inventoryWithRecourses, isUserChairman }: Props) {
       columnNames={EventsTableColumnNames}
       // filterableColumns={filterableColumns()}
       // isEventsTable={true}
+      tableType='videoListTable'
     />
   );
 }

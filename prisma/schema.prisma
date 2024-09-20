@@ -90,6 +90,8 @@ model User {
   ASOZSystemRequestNumber String?
   /// Дата и время последней смены пароля
   lastUpdatePasswordDate  DateTime      @default(now())
+  /// Признак временного пароля
+  isTemporaryPassword     Boolean       @default(true)
   /// Объект с данными об организации, в которой состоит пользователь
   organisation            Organisation? @relation(fields: [organisationId], references: [id])
   /// Ссылка на отдел, в котором состоит пользователь
@@ -430,6 +432,10 @@ enum UserRole {
   USER
   /// Оператор-технолог
   TECHNOLOGY_OPERATOR
+  /// Разработчик
+  DEVELOPER
+  /// Администратор пользователей
+  USER_ADMIN
 }
 
 enum ParticipantRole {

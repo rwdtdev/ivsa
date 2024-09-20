@@ -8,7 +8,7 @@ export const getRegisteredParticipants = (participants: ParticipantWithUser[]) =
     .map(({ user }) => ({
       tabelNumber: user.tabelNumber,
       expiresAt: toUTCDatetime(user.expiresAt),
-      isRecused: user.status === UserStatus.RECUSED,
+      isRecused: false,
       isBlocked:
         user.status === UserStatus.BLOCKED || user.expiresAt.getTime() < Date.now()
     }));

@@ -146,21 +146,6 @@ export function fetchUsersTableColumnDefs(): ColumnDef<UserView, unknown>[] {
             </div>
           );
         }
-
-        if (status === UserStatus.RECUSED) {
-          return (
-            <div className='relative inline-block align-middle'>
-              <WarnComponent />
-              <Badge
-                variant='secondary'
-                className='pointer-events-none bg-gray-200 py-1 hover:bg-gray-200'
-              >
-                {UserStatuses[status]}
-              </Badge>
-              <WarnComponent className='absolute bottom-0.5 ml-2' />
-            </div>
-          );
-        }
       }
     },
     {

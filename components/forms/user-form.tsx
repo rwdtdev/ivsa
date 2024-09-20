@@ -39,7 +39,6 @@ import {
   unblockUserAction,
   updateUserAction
 } from '@/app/actions/server/users';
-import _ from 'underscore';
 import { Popover, PopoverContent, PopoverTrigger } from '@radix-ui/react-popover';
 import { CalendarIcon } from 'lucide-react';
 import { Calendar } from '@/components/ui/calendar';
@@ -74,7 +73,7 @@ export function UserForm({
     ? 'Информация о пользователе успешно обновлена.'
     : 'Пользователь успешно добавлен.';
 
-  const defaultValues: Partial<UserFormData> = initialData
+  const defaultValues: UserFormData = initialData
     ? initialData
     : {
         username: '',
@@ -278,10 +277,10 @@ export function UserForm({
                       </SelectTrigger>
                     </FormControl>
                     <SelectContent>
-                      {Object.keys(_.pick(UserRole, UserRole.ADMIN, UserRole.USER)).map(
+                      {[UserRole.ADMIN, UserRole.USER, UserRole.TECHNOLOGY_OPERATOR].map(
                         (role, idx) => (
                           <SelectItem key={idx} value={role}>
-                            {UserRoles[role as keyof typeof UserRole]}
+                            {UserRoles[role]}
                           </SelectItem>
                         )
                       )}
@@ -463,9 +462,6 @@ export function UserForm({
                       />
                     </PopoverContent>
                   </Popover>
-                  {/* <FormDescription>
-                    Your date of birth is used to calculate your age.
-                  </FormDescription> */}
                   <FormMessage />
                 </FormItem>
               )}

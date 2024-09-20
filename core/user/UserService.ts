@@ -1,9 +1,8 @@
 import bcrypt from 'bcryptjs';
-import moment from 'moment';
 import prisma from '@/core/prisma';
-import { ClientUser, UserUpdateData, UsersGetData } from './types';
+import { UserUpdateData, UsersGetData } from './types';
 import { PaginatedResponse } from '@/types';
-import { PrismaClient, User, UserStatus } from '@prisma/client';
+import { Prisma, PrismaClient, User, UserStatus } from '@prisma/client';
 import { exclude } from '@/utils/exclude';
 import { UserView } from '@/types/user';
 import { TransactionSession } from '@/types/prisma';
@@ -83,13 +82,13 @@ export class UserService {
     };
   }
 
-  async getByTabelNumber(tabelNumber: string): Promise<ClientUser | null> {
+  async getByTabelNumber(tabelNumber: string): Promise<UserView | null> {
     const user = await prisma.user.findFirst({ where: { tabelNumber } });
 
     return user;
   }
 
-  async getById(id: string): Promise<ClientUser> {
+  async getById(id: string): Promise<UserView> {
     const user = await this.prisma.user.findFirst({ where: { id } });
 
     if (!user) {
@@ -101,8 +100,7 @@ export class UserService {
     return user;
   }
 
-  async getBy(query: Partial<ClientUser>): Promise<ClientUser> {
-    // @ts-expect-error types
+  async getBy(query: Prisma.UserWhereInput): Promise<UserView> {
     const user = await this.prisma.user.findFirst({ where: query });
 
     if (!user) throw new UserNotFoundError();
@@ -178,23 +176,13 @@ export class UserService {
     };
   }
 
-  // TODO REMOVE AFTER TESTING
-  async create(data: any): Promise<ClientUser> {
+  async create(data: Prisma.UserCreateInput): Promise<User> {
     if (data.password) {
       const salt = await bcrypt.genSalt(10);
       const passwordHash = await bcrypt.hash(data.password, salt);
       data.password = passwordHash;
       data.passwordHashes = [passwordHash];
       data.lastUpdatePasswordDate = new Date();
-    }
-
-    const current = moment();
-
-    data.createdAt = current.toDate();
-    data.updatedAt = current.toDate();
-    // Make configurable when needed
-    if (!data.expiresAt) {
-      data.expiresAt = current.add(1, 'year').toDate();
     }
 
     const newUser = await this.prisma.user.create({ data });
@@ -227,10 +215,10 @@ export class UserService {
     return updatedUsers;
   }
 
-  async update(id: string, data: UserUpdateData): Promise<ClientUser> {
+  async update(id: string, data: UserUpdateData): Promise<UserView> {
     await this.assertExist(id);
 
-    const updateData: Partial<Omit<User, 'id' | 'createdAt'>> = {
+    const updateData: Prisma.UserUpdateInput = {
       updatedAt: new Date()
     };
 
@@ -274,15 +262,6 @@ export class UserService {
     }
     if (data.tabelNumber) {
       updateData.tabelNumber = data.tabelNumber;
-    }
-    if (data.name) {
-      updateData.name = data.name;
-    }
-    if (data.organisationId) {
-      updateData.organisationId = data.organisationId;
-    }
-    if (data.departmentId) {
-      updateData.departmentId = data.departmentId;
     }
     if (data.expiresAt) {
       updateData.expiresAt = dateTimeToGMT(data.expiresAt);

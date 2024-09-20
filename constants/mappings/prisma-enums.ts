@@ -1,6 +1,12 @@
-export const UserRoles = {
+import { UserRole } from '@prisma/client';
+
+export const UserRoles: Record<keyof typeof UserRole, string> = {
   ADMIN: 'Администратор',
   USER: 'Пользователь',
+  TECHNOLOGY_OPERATOR: 'Оператор-технолог'
+} as const;
+
+export const ParticipantRoles = {
   CHAIRMAN: 'Председатель',
   PARTICIPANT: 'Участник комиссии',
   FINANCIALLY_RESPONSIBLE_PERSON: 'МОЛ',
@@ -13,8 +19,7 @@ export const UserRoles = {
 
 export const UserStatuses = {
   ACTIVE: 'Активен',
-  BLOCKED: 'Заблокирован',
-  RECUSED: 'Освобожден от\u00A0должности'
+  BLOCKED: 'Заблокирован'
 };
 
 export const UserStatus = {

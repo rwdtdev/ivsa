@@ -7,7 +7,7 @@ import { Button } from '@/components/ui/button';
 import { Card, CardContent } from '@/components/ui/card';
 import { P } from '@/components/ui/typography/p';
 import { DATE_FORMAT } from '@/constants/date';
-import { Inventory, Participant, User, UserRole } from '@prisma/client';
+import { Inventory, Participant, ParticipantRole, User } from '@prisma/client';
 import moment from 'moment';
 import { useState } from 'react';
 import {
@@ -18,7 +18,6 @@ import {
   SelectTrigger,
   SelectValue
 } from '@/components/ui/select';
-import { UserRoles } from '@/constants/mappings/prisma-enums';
 import { setInventoryVideographer } from '@/app/actions/server/inventories';
 
 type Props = {
@@ -97,12 +96,12 @@ export function InventoryInfoCard({
                   .filter(
                     ({ role, user }) =>
                       user &&
-                      (role === UserRole.FINANCIALLY_RESPONSIBLE_PERSON ||
-                        role === UserRole.PARTICIPANT)
+                      (role === ParticipantRole.FINANCIALLY_RESPONSIBLE_PERSON ||
+                        role === ParticipantRole.PARTICIPANT)
                   )
                   .map((participant) => (
                     <SelectItem key={participant.id} value={participant.user.id}>
-                      {UserRoles[participant.role]}. {participant.user.name},
+                      {ParticipantRole[participant.role]}. {participant.user.name},
                       {participant.tabelNumber}
                     </SelectItem>
                   ))}

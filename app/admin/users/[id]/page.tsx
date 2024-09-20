@@ -15,7 +15,7 @@ export default async function UpdateUserPage({ params }: { params: { id: string 
   if (!user) {
     return <div>нет такого пользователя</div>;
   }
-  const omitKeys = ['password'];
+  const omitKeys = ['password', 'passwordHashes'];
 
   if (user.departmentId === null) omitKeys.push('departmentId');
   if (user.organisationId === null) omitKeys.push('organisationId');

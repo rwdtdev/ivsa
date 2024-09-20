@@ -1,7 +1,7 @@
 import _ from 'underscore';
 import prisma from '@/core/prisma';
 import { TransactionSession } from '@/types/prisma';
-import { PrismaClient, UserRole } from '@prisma/client';
+import { ParticipantRole, PrismaClient, UserRole } from '@prisma/client';
 import {
   EventView,
   EventWithIncludeFileds,
@@ -87,7 +87,7 @@ export class EventService {
         tabelNumber: (user && user.tabelNumber) || participant.tabelNumber,
         role:
           SoiParticipantRoles[participant.roleId as keyof typeof SoiParticipantRoles] ||
-          UserRole.PARTICIPANT
+          ParticipantRole.PARTICIPANT
       };
     });
 

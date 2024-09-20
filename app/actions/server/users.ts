@@ -10,7 +10,6 @@ import { UserService } from '@/core/user/UserService';
 import { UserView } from '@/types/user';
 import { PaginatedResponse } from '@/types';
 import { ActionStatus, ActionType, User, UserRole, UserStatus } from '@prisma/client';
-import { UserCreateData } from '@/core/user/types';
 import { UserManager } from '@/core/user/UserManager';
 import { IvaService } from '@/core/iva/IvaService';
 import { DepartmentService } from '@/core/department/DepartmentService';
@@ -208,7 +207,6 @@ export async function getUsersAction(
 
 export async function IsBlocked(username: string) {
   const userService = new UserService();
-
   const user = await userService.getBy({ username });
 
   return user.status === UserStatus.BLOCKED;

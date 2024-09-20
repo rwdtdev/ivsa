@@ -46,10 +46,12 @@ import { cn } from '@/lib/utils';
 import { format } from 'date-fns';
 import { ru } from 'date-fns/locale';
 import Link from 'next/link';
+import _ from 'underscore';
 
 interface UserFormProps {
   userId?: string;
-  initialData: (UserFormData & { createdAt: Date }) | undefined;
+  // initialData: (UserFormData & { createdAt: Date }) | undefined;
+  initialData: any | undefined;
   organisations: Organisation[];
   departments: Department[];
   generatedPassword?: string;

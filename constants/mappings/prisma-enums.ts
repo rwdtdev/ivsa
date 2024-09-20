@@ -2,8 +2,10 @@ import { UserRole } from '@prisma/client';
 
 export const UserRoles: Record<keyof typeof UserRole, string> = {
   ADMIN: 'Администратор',
+  USER_ADMIN: 'Администратор пользователей',
   USER: 'Пользователь',
-  TECHNOLOGY_OPERATOR: 'Оператор-технолог'
+  TECHNOLOGY_OPERATOR: 'Оператор-технолог',
+  DEVELOPER: 'Разработчик'
 } as const;
 
 export const ParticipantRoles = {

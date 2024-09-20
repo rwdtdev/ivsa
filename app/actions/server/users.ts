@@ -21,6 +21,7 @@ import { getUnknownErrorText } from '@/lib/helpers';
 import { getMonitoringInitData } from '@/lib/getMonitoringInitData';
 import { MonitoringDetails } from '@/core/action/types';
 import { UserRoles } from '@/constants/mappings/prisma-enums';
+import { UserCreateData } from '@/core/user/types';
 
 const cache = new Cache({ checkperiod: 120 });
 

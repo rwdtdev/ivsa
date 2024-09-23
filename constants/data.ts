@@ -1,6 +1,6 @@
 import { NavItem } from '@/types';
 
-export const dictionaryItems: NavItem[] = [
+export const navItems: NavItem[] = [
   {
     title: 'Журнал событий',
     href: '/admin',

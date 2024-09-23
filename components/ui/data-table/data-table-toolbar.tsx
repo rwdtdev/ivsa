@@ -16,7 +16,7 @@ import {
   EventsTableColumnNames,
   UsersTableColumnNames
 } from '@/constants/mappings/tables-column-names';
-import { ActionType, Inventory } from '@prisma/client';
+import { ActionType, Inventory, UserRole } from '@prisma/client';
 import { ConfirmModalDialogToolbarBtn } from '@/components/modal/confirm-modal-dialog-toolbar-btn';
 import { DatePickerUsersExpiresAt } from '@/components/date-picker-users-expiresat';
 import { TableType } from './data-table';
@@ -49,7 +49,6 @@ export function DataTableToolbar<TData>({
   inventories
 }: DataTableToolbarProps<TData>) {
   const session = useSession();
-  console.log('🚀 ~ session:', session);
   const [query, setQuery] = React.useState('');
   const [isFiltered, setFiltered] = React.useState(false);
   const debounceValue = useDebounce(query, 300);
@@ -57,6 +56,7 @@ export function DataTableToolbar<TData>({
   const searchParams = useSearchParams();
   const pathname = usePathname();
   const [isPending, startTransition] = React.useTransition();
+  const userRole = session.data?.user.role;
   const isUsersTable = tableType === 'usersTable';
   const isInventoriesTable = tableType === 'inventoriesTable';
   const isMonitoringTable = tableType === 'monitoringTable';
@@ -236,22 +236,24 @@ export function DataTableToolbar<TData>({
             Удалить
           </Button>
         ) :  */}
-        {isUsersTable && table.getSelectedRowModel().rows.length === 0 && (
-          <Link aria-label='Create new row' href={'/admin/users/new'}>
-            <div
-              className={cn(
-                buttonVariants({
-                  variant: 'outline',
-                  size: 'sm',
-                  className: 'h-8 bg-gray-100'
-                })
-              )}
-            >
-              <PlusCircledIcon className='mr-2 size-4' aria-hidden='true' />
-              Добавить
-            </div>
-          </Link>
-        )}
+        {isUsersTable &&
+          userRole === UserRole.USER_ADMIN &&
+          table.getSelectedRowModel().rows.length === 0 && (
+            <Link aria-label='Create new row' href={'/admin/users/new'}>
+              <div
+                className={cn(
+                  buttonVariants({
+                    variant: 'outline',
+                    size: 'sm',
+                    className: 'h-8 bg-gray-100'
+                  })
+                )}
+              >
+                <PlusCircledIcon className='mr-2 size-4' aria-hidden='true' />
+                Добавить
+              </div>
+            </Link>
+          )}
         {isMonitoringTable && (
           <>
             {/* <Button

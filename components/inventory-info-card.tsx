@@ -38,7 +38,7 @@ export function InventoryInfoCard({
   locatorIvaLink,
   participants
 }: Props) {
-  console.log('🚀 ~ participants:', participants);
+  // console.log('🚀 ~ participants:', participants);
   const [address, setAddress] = useState(inventory.address);
   const [videographerId, setVideographerId] = useState(inventory.videographerId);
 

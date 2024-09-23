@@ -21,7 +21,9 @@ import { format } from 'date-fns';
 
 const emptyCell = '';
 
-export function fetchUsersTableColumnDefs(): ColumnDef<UserView, unknown>[] {
+export function fetchUsersTableColumnDefs(
+  userRole: UserRole | undefined
+): ColumnDef<UserView, unknown>[] {
   return [
     {
       id: 'id',
@@ -31,26 +33,28 @@ export function fetchUsersTableColumnDefs(): ColumnDef<UserView, unknown>[] {
     {
       id: 'select',
       accessorKey: 'select',
-      header: ({ table }) => (
-        <Checkbox
-          checked={
-            table.getIsAllPageRowsSelected() ||
-            (table.getIsSomePageRowsSelected() && 'indeterminate')
-          }
-          onCheckedChange={(value) => table.toggleAllPageRowsSelected(!!value)}
-          aria-label='Select all'
-        />
-      ),
-      cell: ({ row }) => (
-        <Checkbox
-          // style={{ marginLeft: 8 }}
-          checked={row.getIsSelected()}
-          onCheckedChange={(value) => {
-            row.toggleSelected(!!value);
-          }}
-          aria-label='Select row'
-        />
-      ),
+      header: ({ table }) =>
+        userRole === UserRole.USER_ADMIN ? (
+          <Checkbox
+            checked={
+              table.getIsAllPageRowsSelected() ||
+              (table.getIsSomePageRowsSelected() && 'indeterminate')
+            }
+            onCheckedChange={(value) => table.toggleAllPageRowsSelected(!!value)}
+            aria-label='Select all'
+          />
+        ) : null,
+      cell: ({ row }) =>
+        userRole === UserRole.USER_ADMIN ? (
+          <Checkbox
+            // style={{ marginLeft: 8 }}
+            checked={row.getIsSelected()}
+            onCheckedChange={(value) => {
+              row.toggleSelected(!!value);
+            }}
+            aria-label='Select row'
+          />
+        ) : null,
       enableSorting: false,
       enableHiding: false
     },
@@ -201,7 +205,8 @@ export function fetchUsersTableColumnDefs(): ColumnDef<UserView, unknown>[] {
     {
       id: 'actions',
       enableHiding: false,
-      cell: ({ row }) => <UserTableRowMenu data={row.original} />
+      cell: ({ row }) =>
+        userRole === UserRole.USER_ADMIN ? <UserTableRowMenu data={row.original} /> : null
     }
   ];
 }

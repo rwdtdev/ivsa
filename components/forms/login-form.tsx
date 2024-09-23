@@ -1,6 +1,6 @@
 'use client';
 import { SubmitHandler, useForm } from 'react-hook-form';
-import { useSearchParams } from 'next/navigation';
+// import { useSearchParams } from 'next/navigation';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { useToast } from '@/components/ui/use-toast';
 import {
@@ -34,10 +34,10 @@ import { ActionStatus } from '@prisma/client';
 
 export default function LoginForm() {
   const { toast } = useToast();
-  const searchParams = useSearchParams();
-  const previousURL = searchParams.get('callbackUrl');
-  const redirectPath = (previousURL && new URL(previousURL).pathname) || '/';
-  console.log('🚀 ~ redirectPath:', redirectPath);
+  // const searchParams = useSearchParams();
+  // const previousURL = searchParams.get('callbackUrl');
+  // const redirectPath = (previousURL && new URL(previousURL).pathname) || '/';
+  // console.log('🚀 ~ redirectPath:', redirectPath);
 
   /**
    * @TODO How to add debounce to form inputs for disabling instantly validation

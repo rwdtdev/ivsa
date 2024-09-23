@@ -119,6 +119,9 @@ export class UserManager {
     const monitorInitData = await getMonitoringInitData();
     const actionService = new ActionService();
     try {
+      if (monitorInitData.session?.user.role !== UserRole.USER_ADMIN) {
+        throw new Error('Недостаточно прав для блокировки пользователя');
+      }
       await this.userService.assertExist(id);
       const user = await this.userService.getById(id);
 
@@ -140,16 +143,18 @@ export class UserManager {
         }
       });
     } catch (error) {
-      actionService.add({
-        ip: monitorInitData.ip,
-        initiator: monitorInitData.initiator,
-        type,
-        status: ActionStatus.ERROR,
-        details: {
-          editedUserId: id,
-          error: error
-        }
-      });
+      if (error instanceof Error) {
+        actionService.add({
+          ip: monitorInitData.ip,
+          initiator: monitorInitData.initiator,
+          type,
+          status: ActionStatus.ERROR,
+          details: {
+            editedUserId: id,
+            error: error.message
+          }
+        });
+      }
       throw new BlockIvaUserError({
         detail: `Problems occurred during block user with id (${id}) in IVA R. ${error}`
       });

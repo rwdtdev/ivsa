@@ -3,7 +3,7 @@ import Image from 'next/image';
 import Link from 'next/link';
 import { UserNav } from './user-nav';
 import { DashboardNav } from '../dashboard-nav';
-import { dictionaryItems } from '@/constants/data';
+import { navItems } from '@/constants/data';
 import { UserRole } from '@prisma/client';
 import { Separator } from '../ui/separator';
 import { useSession } from 'next-auth/react';
@@ -11,8 +11,14 @@ import { usePathname } from 'next/navigation';
 
 export default function Header({ title }: { title: string }) {
   const session = useSession();
-  const isAdmin = session?.data?.user.role === UserRole.ADMIN;
+  const userRole = session?.data?.user.role;
+  const isRoleUser = session?.data?.user.role === UserRole.USER;
   const pathname = usePathname();
+  let navItemsMod = navItems;
+
+  if (userRole === UserRole.ADMIN || userRole === UserRole.USER_ADMIN) {
+    navItemsMod = navItems.filter((item) => item.label !== 'events');
+  }
 
   return (
     <header className='supports-backdrop-blur:bg-background/60 top-0 z-20 border-b bg-slate-50 shadow-sm backdrop-blur'>
@@ -40,7 +46,7 @@ export default function Header({ title }: { title: string }) {
           </div>
           <h2 className='hidden text-xl font-semibold lg:block'>{title}</h2>
         </div>
-        {isAdmin && <DashboardNav items={dictionaryItems} />}
+        {userRole && !isRoleUser && <DashboardNav items={navItemsMod} />}
         {session && (
           <div className='flex items-center gap-2'>
             <UserNav />

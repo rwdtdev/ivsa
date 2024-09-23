@@ -24,8 +24,11 @@ export async function middleware(request: NextRequest) {
 
   const isApiEndpoint = pathname.startsWith('/api');
   const isAuthEndpoint = pathname.startsWith('/api/auth');
+  const isHomePath = pathname === '/';
   const isLoginPath = pathname.startsWith('/login');
   const isAdminPath = pathname.startsWith('/admin');
+  // const isAddNewUserPath = pathname === '/admin/users/new';
+  const isEditOrNewUserPath = pathname.startsWith('/admin/users/');
 
   if (isPreflight) {
     const preflightHeaders = {
@@ -88,8 +91,19 @@ export async function middleware(request: NextRequest) {
     return NextResponse.redirect(new URL('/', request.url));
   }
 
-  if (isAdminPath && jwt?.user.role !== UserRole.ADMIN) {
+  if (isAdminPath && jwt?.user.role === UserRole.USER) {
     return NextResponse.redirect(new URL('/', request.url));
+  }
+
+  if (
+    isHomePath &&
+    (jwt?.user.role === UserRole.USER_ADMIN || jwt?.user.role === UserRole.ADMIN)
+  ) {
+    return NextResponse.redirect(new URL('/admin', request.url));
+  }
+
+  if (isEditOrNewUserPath && jwt?.user.role !== UserRole.USER_ADMIN) {
+    return NextResponse.redirect(new URL('/admin', request.url));
   }
 
   return response;

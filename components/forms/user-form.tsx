@@ -279,13 +279,17 @@ export function UserForm({
                       </SelectTrigger>
                     </FormControl>
                     <SelectContent>
-                      {[UserRole.ADMIN, UserRole.USER, UserRole.TECHNOLOGY_OPERATOR].map(
-                        (role, idx) => (
-                          <SelectItem key={idx} value={role}>
-                            {UserRoles[role]}
-                          </SelectItem>
-                        )
-                      )}
+                      {[
+                        UserRole.USER,
+                        UserRole.ADMIN,
+                        UserRole.USER_ADMIN,
+                        UserRole.TECHNOLOGY_OPERATOR,
+                        UserRole.DEVELOPER
+                      ].map((role, idx) => (
+                        <SelectItem key={idx} value={role}>
+                          {UserRoles[role]}
+                        </SelectItem>
+                      ))}
                     </SelectContent>
                   </Select>
                   <FormMessage />

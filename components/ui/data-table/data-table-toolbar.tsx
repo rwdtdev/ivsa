@@ -1,5 +1,4 @@
 'use client';
-
 import * as React from 'react';
 import Link from 'next/link';
 import type { DataTableFilterableColumn, DataTableSearchableColumn } from '@/types';
@@ -25,6 +24,7 @@ import InventorySelectMenu from '@/components/inventory-select-menu';
 import { blockUserAction, unblockUserAction } from '@/app/actions/server/users';
 import { PrintBtn } from '@/components/print-btn';
 import { ExportToXlsxBtn } from '@/components/export-to-xlsx-btn';
+import { useSession } from 'next-auth/react';
 
 interface DataTableToolbarProps<TData> {
   table: Table<TData>;
@@ -34,7 +34,6 @@ interface DataTableToolbarProps<TData> {
   columnNames: typeof UsersTableColumnNames | typeof EventsTableColumnNames | {};
   withSearch?: boolean;
   newRowLink?: string;
-  deleteRowsAction?: React.MouseEventHandler<HTMLButtonElement>;
   isUsersTable?: boolean;
   tableType?: TableType;
   inventories?: Inventory[];
@@ -46,11 +45,11 @@ export function DataTableToolbar<TData>({
   columnNames = {},
   datePickers = [],
   withSearch = false,
-  newRowLink,
-  deleteRowsAction,
   tableType,
   inventories
 }: DataTableToolbarProps<TData>) {
+  const session = useSession();
+  console.log('🚀 ~ session:', session);
   const [query, setQuery] = React.useState('');
   const [isFiltered, setFiltered] = React.useState(false);
   const debounceValue = useDebounce(query, 300);
@@ -218,7 +217,8 @@ export function DataTableToolbar<TData>({
           />
         )}
 
-        {deleteRowsAction && table.getSelectedRowModel().rows.length > 0 ? (
+        {/*         {
+        deleteRowsAction && table.getSelectedRowModel().rows.length > 0 ? (
           <Button
             aria-label='Delete selected rows'
             variant='outline'
@@ -235,8 +235,9 @@ export function DataTableToolbar<TData>({
             <TrashIcon className='mr-2 size-4' aria-hidden='true' />
             Удалить
           </Button>
-        ) : newRowLink && isUsersTable ? (
-          <Link aria-label='Create new row' href={newRowLink}>
+        ) :  */}
+        {isUsersTable && table.getSelectedRowModel().rows.length === 0 && (
+          <Link aria-label='Create new row' href={'/admin/users/new'}>
             <div
               className={cn(
                 buttonVariants({
@@ -250,7 +251,7 @@ export function DataTableToolbar<TData>({
               Добавить
             </div>
           </Link>
-        ) : null}
+        )}
         {isMonitoringTable && (
           <>
             {/* <Button

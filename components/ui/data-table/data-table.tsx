@@ -135,8 +135,8 @@ export function DataTable<TData, TValue>({
               columnNames={columnNames}
               filterableColumns={filterableColumns}
               searchableColumns={searchableColumns}
-              newRowLink='/admin/users/new'
-              deleteRowsAction={deleteRowsAction}
+              // newRowLink='/admin/users/new'
+              // deleteRowsAction={deleteRowsAction}
               tableType={tableType}
               inventories={inventories}
             />

@@ -39,7 +39,7 @@ export function UsersTable({ users }: UsersTableProps) {
       filterableColumns={filterableColumns(/* departments, organisations */)}
       // floatingBarContent={TasksTableFloatingBarContent(dataTable)}
       // deleteRowsAction={(event) => deleteSelectedRows(dataTable, event)}
-      deleteRowsAction={(event) => console.log('deleteRowsAction', dataTable, event)}
+      // deleteRowsAction={(event) => console.log('deleteRowsAction', dataTable, event)}
       tableType='usersTable'
     />
   );

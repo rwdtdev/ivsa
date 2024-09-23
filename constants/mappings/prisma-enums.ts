@@ -5,7 +5,8 @@ export const UserRoles: Record<keyof typeof UserRole, string> = {
   USER_ADMIN: 'Администратор пользователей',
   USER: 'Пользователь',
   TECHNOLOGY_OPERATOR: 'Оператор-технолог',
-  DEVELOPER: 'Разработчик'
+  DEVELOPER: 'Разработчик',
+  USER_ADMIN: 'Администратор пользователей'
 } as const;
 
 export const ParticipantRoles = {
@@ -15,8 +16,7 @@ export const ParticipantRoles = {
   ACCOUNTANT: 'Бухгалтер',
   INSPECTOR: 'Проверяющий',
   MANAGER: 'Руководитель',
-  ACCOUNTANT_ACCEPTOR: 'Акцепт-бухгалтер',
-  ENGINEER: 'Оператор-технолог'
+  ACCOUNTANT_ACCEPTOR: 'Акцепт-бухгалтер'
 } as const;
 
 export const UserStatuses = {

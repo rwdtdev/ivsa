@@ -453,8 +453,6 @@ enum ParticipantRole {
   MANAGER
   /// Акцепт-бухгалтер
   ACCOUNTANT_ACCEPTOR
-  /// Оператор-технолог
-  ENGINEER
 }
 
 enum InventoryStatus {

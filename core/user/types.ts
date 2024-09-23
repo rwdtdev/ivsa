@@ -11,6 +11,7 @@ export type UserCreateData = Omit<
   | 'passwordHashes'
   | 'refreshToken'
   | 'ivaProfileId'
+  | 'isTemporaryPassword'
   | 'lastUpdatePasswordDate'
 >;
 

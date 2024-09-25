@@ -20,6 +20,7 @@ export const actionTypesMapper = {
     'Блокировка пользователя из-за превышения попыток ввода пароля',
   [ActionType.ADMIN_USER_PASSWORD_RESET]: 'Сброс пароля пользователя администратором',
   [ActionType.ADMIN_USER_BLOCK]: 'Блокировка пользователя администратором',
+  [ActionType.ADMIN_USER_UNBLOCK]: 'Разблокировка пользователя администратором',
 
   /* ----Системные события---- */
   [ActionType.SYSTEM_MOVE_RESOURCES_TO_OPERATIVE_STORAGE_START]:

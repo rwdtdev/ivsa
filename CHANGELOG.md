@@ -1,3 +1,15 @@
+# [1.9.0](https://rwdt1.gitlab.yandexcloud.net/rwdt/services/asvi/compare/1.8.0...1.9.0) (2024-09-25)
+
+
+### Bug Fixes
+
+* actions ([1304587](https://rwdt1.gitlab.yandexcloud.net/rwdt/services/asvi/commit/13045879fadf5e59b266845d7fe3589f3a272ade))
+
+
+### Features
+
+* импорт подразделений, правки валидации форм ([11e4f2a](https://rwdt1.gitlab.yandexcloud.net/rwdt/services/asvi/commit/11e4f2a2c066c358c8079f674aa435d5335c757a))
+
 # [1.8.0](https://rwdt1.gitlab.yandexcloud.net/rwdt/services/asvi/compare/1.7.6...1.8.0) (2024-09-16)
 
 

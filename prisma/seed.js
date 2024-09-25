@@ -93,7 +93,7 @@ class SeedSingleton {
           email: process.env.ADMIN_EMAIL,
           password: adminPassword,
           passwordHashes: [adminPassword],
-          role: UserRole.ADMIN,
+          role: UserRole.USER_ADMIN,
           tabelNumber: '0000000000000000000000000000',
           phone: '+7 (000) 000-00-00',
           ivaProfileId: process.env.ADMIN_IVA_PROFILE_ID,

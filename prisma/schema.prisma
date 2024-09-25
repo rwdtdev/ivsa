@@ -352,6 +352,58 @@ model Action {
   @@map("actions")
 }
 
+model DivisionHierarchy {
+  /// Внутренний идентификатор иерархии
+  id                     String                  @id @default(uuid())
+  /// Внешний идентификатор иерархии
+  hierId                 String
+  /// Идентификатор сессии, в рамках которого добавляются ноды к иерархии, если приходит для этой иерархии другой идентификатор сессии, значит нужно очистить узлы и принимать их список заново
+  sessionId              String
+  /// Количестве частей (списков) с узлами иерархии в рамках сессии
+  parts                  Int
+  /// Короткое название иерархии
+  titleSh                String
+  /// Подробное описание иерархии
+  titleMd                String
+  /// Длинный заголовок иерархии
+  titleLn                String
+  /// Список узлов иерархии
+  divisionHierarchyNodes DivisionHierarchyNode[]
+  /// Дата и время создания записи
+  createdAt              DateTime                @default(now())
+  /// Дата и время модификации записи
+  updatedAt              DateTime                @updatedAt
+}
+
+model DivisionHierarchyNode {
+  /// Внешний идентификатор узла иерархии
+  id                  String            @id
+  /// Название
+  name                String
+  /// Идентификатор родительского узла (подразделения)
+  parentId            String
+  /// Дата и время начала действия
+  from                DateTime          @db.Timestamptz()
+  /// Дата и время окончания действия
+  to                  DateTime          @db.Timestamptz()
+  /// Уровень, на котором находится иерархия
+  level               Int
+  /// Классификация нода
+  divType             String
+  /// Короткое название иерархии
+  titleSh             String
+  /// Подробное описание иерархии
+  titleMd             String
+  /// Длинный заголовок иерархии
+  titleLn             String
+  /// Код/номер балансовой единицы
+  bukrs               String
+  /// Объект с данными об иерархии
+  divisionHierarchy   DivisionHierarchy @relation(fields: [divisionHierarchyId], references: [id])
+  /// Идентификатор иерархии в которую включен узел
+  divisionHierarchyId String
+}
+
 enum ActionType {
   /// Пользовательские события
   /// Создание пользователя в системе
@@ -378,6 +430,8 @@ enum ActionType {
   ADMIN_USER_PASSWORD_RESET
   /// Блокировка пользователя администратором
   ADMIN_USER_BLOCK
+  /// Разблокировка пользователя администратором
+  ADMIN_USER_UNBLOCK
 
   /// Системные события
   /// Начало переноса обработанных видео-ресурсов и метаданных в Оперативное хранилище

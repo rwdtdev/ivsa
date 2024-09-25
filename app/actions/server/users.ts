@@ -35,9 +35,23 @@ export async function createUserAction(formData: UserFormData): Promise<any> {
   );
   const actionService = new ActionService();
   const { ip, initiator, initiatorName } = await getMonitoringInitData();
+
   try {
-    // TODO Refactor type casting
-    await userManager.createUser(formData as UserCreateData);
+    await userManager.createUser({
+      name: formData.name,
+      username: formData.username,
+      email: formData.email,
+      phone: formData.phone,
+      departmentId: formData.departmentId || null,
+      organisationId: formData.organisationId || null,
+      role: formData.role,
+      status: formData.status,
+      tabelNumber: formData.tabelNumber,
+      password: formData.password as string,
+      expiresAt: formData.expiresAt,
+      ASOZSystemRequestNumber: formData.ASOZSystemRequestNumber
+    });
+
     await actionService.add({
       ip,
       initiator,

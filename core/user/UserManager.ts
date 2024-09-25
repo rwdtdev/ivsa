@@ -151,7 +151,7 @@ export class UserManager {
           status: ActionStatus.ERROR,
           details: {
             editedUserId: id,
-            error: error.message
+            error: `Problems occurred during block user with id (${id}) in IVA R. ${error.message}`
           }
         });
       }
@@ -162,6 +162,8 @@ export class UserManager {
   }
 
   async unblockUser(id: string) {
+    const monitorInitData = await getMonitoringInitData();
+    const actionService = new ActionService();
     try {
       await this.userService.assertExist(id);
       const user = await this.userService.getById(id);
@@ -172,6 +174,17 @@ export class UserManager {
 
       await this.ivaService.unblockUser(user.ivaProfileId);
       await this.userService.update(id, { status: UserStatus.ACTIVE });
+      actionService.add({
+        ip: monitorInitData.ip,
+        initiator: monitorInitData.initiator,
+        type: ActionType.ADMIN_USER_BLOCK,
+        status: ActionStatus.SUCCESS,
+        details: {
+          adminUsername: monitorInitData.initiator,
+          editedUserUsername: user.username,
+          editedUserName: user.name
+        }
+      });
     } catch (error) {
       throw new UnblockIvaUserError({
         detail: `Problems occurred during unblock user with id (${id}) in IVA R. ${error}`

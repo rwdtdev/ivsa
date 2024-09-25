@@ -1,3 +1,10 @@
+## [1.9.2](https://rwdt1.gitlab.yandexcloud.net/rwdt/services/asvi/compare/1.9.1...1.9.2) (2024-09-25)
+
+
+### Bug Fixes
+
+* blocked user in login form ([5113ed4](https://rwdt1.gitlab.yandexcloud.net/rwdt/services/asvi/commit/5113ed4e2a48edbdd7973825d0c250046acc15f8))
+
 ## [1.9.1](https://rwdt1.gitlab.yandexcloud.net/rwdt/services/asvi/compare/1.9.0...1.9.1) (2024-09-25)
 
 

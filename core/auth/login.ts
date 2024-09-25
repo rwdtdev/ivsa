@@ -6,7 +6,7 @@ import { UnauthorizedError } from '@/lib/problem-json';
 import { blockUserAction } from '@/app/actions/server/users';
 import { ActionType } from '@prisma/client';
 
-let globalCounter = 1;
+let globalCounter = 0;
 
 export const login = async ({ username, password }: UserCredentials) => {
   if (!username || !password) {
@@ -40,7 +40,7 @@ export const login = async ({ username, password }: UserCredentials) => {
 
       return { ...session, accessToken, refreshToken };
     } else {
-      if (globalCounter === 5) {
+      if (globalCounter >= 4) {
         await blockUserAction({
           id: user.id,
           type: ActionType.USER_BLOCK_BY_LIMIT_LOGIN_ATTEMPTS

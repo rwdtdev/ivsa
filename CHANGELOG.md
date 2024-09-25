@@ -1,3 +1,14 @@
+## [1.9.1](https://rwdt1.gitlab.yandexcloud.net/rwdt/services/asvi/compare/1.9.0...1.9.1) (2024-09-25)
+
+
+### Bug Fixes
+
+* db structure ([99259a6](https://rwdt1.gitlab.yandexcloud.net/rwdt/services/asvi/commit/99259a64c5b8c6e9bbbd3f08552bdb1773da7fb5))
+* error, division participant roleas and system ([c002d0f](https://rwdt1.gitlab.yandexcloud.net/rwdt/services/asvi/commit/c002d0fc713426e1efd0736a585154801241a12b))
+* remoe recused statuse ([96713d4](https://rwdt1.gitlab.yandexcloud.net/rwdt/services/asvi/commit/96713d4448b1750d5b1fd133ddad6760a5ba08e8))
+* remove recused ([bfe338b](https://rwdt1.gitlab.yandexcloud.net/rwdt/services/asvi/commit/bfe338bebcfb144fee9131405fdd19be88d9a937))
+* roles ([da79bbd](https://rwdt1.gitlab.yandexcloud.net/rwdt/services/asvi/commit/da79bbd780a69f03532bed335541398273eb6d6e))
+
 # [1.9.0](https://rwdt1.gitlab.yandexcloud.net/rwdt/services/asvi/compare/1.8.0...1.9.0) (2024-09-25)
 
 

@@ -1,3 +1,12 @@
+## [1.9.3](https://rwdt1.gitlab.yandexcloud.net/rwdt/services/asvi/compare/1.9.2...1.9.3) (2024-09-25)
+
+
+### Bug Fixes
+
+* counter ([ae573ca](https://rwdt1.gitlab.yandexcloud.net/rwdt/services/asvi/commit/ae573ca1c8697a511e009c762bd3a575137b67de))
+* counter ([9777380](https://rwdt1.gitlab.yandexcloud.net/rwdt/services/asvi/commit/9777380d11563214bbb0f8c9250f01e1913ec1e4))
+* counter ([86d821b](https://rwdt1.gitlab.yandexcloud.net/rwdt/services/asvi/commit/86d821bcc73ed1664e90c66d9189d66989448ae7))
+
 ## [1.9.2](https://rwdt1.gitlab.yandexcloud.net/rwdt/services/asvi/compare/1.9.1...1.9.2) (2024-09-25)
 
 

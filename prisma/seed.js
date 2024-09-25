@@ -1,89 +1,10 @@
-const _ = require('underscore');
-const { faker } = require('@faker-js/faker');
-const { PrismaClient, UserRole, UserStatus } = require('@prisma/client');
+const moment = require('moment');
+const { PrismaClient, UserRole } = require('@prisma/client');
 const { hashSync } = require('bcryptjs');
 const { loadEnvConfig } = require('@next/env');
-const {
-  fakeUser,
-  fakeOrganisation,
-  fakeDepartment,
-  fakeEvent,
-  fakeInventory
-} = require('./fixtures/fake-data');
-const { random, keys } = require('underscore');
+
 // load process.env.DATABASE_URL from .env.local
 loadEnvConfig(process.cwd());
-
-const password = hashSync('123456', 10);
-
-const numberOfOrganisations = 2;
-const numberOfDepartments = 2;
-const numberOfUsers = 5;
-
-const roles = {
-  '01': UserRole.CHAIRMAN,
-  '02': UserRole.PARTICIPANT,
-  '04': UserRole.FINANCIALLY_RESPONSIBLE_PERSON,
-  '05': UserRole.INSPECTOR,
-  '06': UserRole.ACCOUNTANT,
-  '07': UserRole.MANAGER
-};
-
-const createOrganisations = (n) =>
-  Array.from(Array(n).keys())
-    .reverse()
-    .map((_, index) => ({ ...fakeOrganisation(), name: `Организация ${index}` }));
-
-const createDepartments = (n, organisationId) =>
-  Array.from(Array(n).keys())
-    .reverse()
-    .map((_, index) => ({ ...fakeDepartment(index), organisationId }));
-
-const createUsers = (n, departmentId, organisationId) =>
-  Array.from(Array(n).keys())
-    .reverse()
-    .map(() => ({
-      ...fakeUser(),
-      organisationId,
-      departmentId,
-      password,
-      passwordHashes: [password]
-    }));
-
-const createInventories = (n, eventId) =>
-  Array.from(Array(n).keys())
-    .reverse()
-    .map(() => ({ ...fakeInventory(), eventId }));
-
-const createEvents = (users) => {
-  let counter = 0;
-  const events = [];
-
-  while (counter <= users.length / 2) {
-    const firstUser = users[random(users.length - 1)];
-    const anotherUser = users[random(users.length - 1)];
-
-    console.log(users.length);
-
-    if (firstUser.id !== anotherUser.id) {
-      events.push({
-        ...fakeEvent(),
-        participants: [firstUser, anotherUser].map((user) => ({
-          tabelNumber: user.tabelNumber,
-          role: roles[faker.helpers.arrayElement(keys(roles))]
-        }))
-      });
-    }
-
-    counter++;
-  }
-
-  events.push({ ...fakeEvent() });
-  events.push({ ...fakeEvent() });
-  events.push({ ...fakeEvent() });
-
-  return events;
-};
 
 class SeedSingleton {
   constructor(prisma, isInternalClient) {
@@ -133,7 +54,18 @@ class SeedSingleton {
   }
 
   async truncateAllTables() {
-    const tables = ['users', 'departments', 'organisations', 'events'];
+    const tables = [
+      'users',
+      'departments',
+      'organisations',
+      'events',
+      'inventories',
+      'participants',
+      'inventory_locations',
+      'inventory_resources',
+      'inventory_objects',
+      'actions'
+    ];
 
     console.log('Truncating tables ...');
 
@@ -145,97 +77,33 @@ class SeedSingleton {
     console.log('Tables Truncated.');
   }
 
-  // just require file, or fn will be called 2 times
-  // without exception handling here
   async seed() {
     console.log('Start seeding ...');
     console.log('DATABASE_URL:', process.env.DATABASE_URL, '\n');
 
-    const createdUsers = [];
-
-    // await this.deleteAllTables();
     await this.truncateAllTables();
 
-    const organisations = createOrganisations(numberOfOrganisations);
+    const adminPassword = hashSync(process.env.ADMIN_PASSWORD, 10);
 
-    for (const organisation of organisations) {
-      const createdOrganisation = await this.prisma.organisation.create({
-        data: organisation
-      });
-      console.log(`Created organisation: ${createdOrganisation.name}`);
-
-      const departments = createDepartments(numberOfDepartments, createdOrganisation.id);
-
-      for (const department of departments) {
-        const createdDepartment = await this.prisma.department.create({
-          data: department
-        });
-        console.log(`Created organisation department: ${createdDepartment.name}`);
-
-        const users = createUsers(
-          numberOfUsers,
-          createdDepartment.id,
-          createdOrganisation.id
-        );
-
-        for (const user of users) {
-          const createdUser = await this.prisma.user.create({ data: user });
-          createdUsers.push(createdUser);
-          console.log(`Created department user: ${createdUser.name}`);
-        }
-      }
-    }
-
-    const adminPassword = hashSync('admin', 10);
-
-    await this.prisma.user.create({
-      data: {
-        ...fakeUser(),
-        name: 'Администратор системы',
-        username: 'admin',
-        email: 'admin@email.com',
-        password: adminPassword,
-        passwordHashes: [adminPassword],
-        role: UserRole.ADMIN,
-        status: UserStatus.ACTIVE,
-        departmentId: null,
-        organisationId: null
-      }
-    });
-    console.log('Created Admin');
-
-    // Create events
-    const events = createEvents(createdUsers);
-
-    for (const event of events) {
-      const createdEvent = await this.prisma.event.create({
+    try {
+      await this.prisma.user.create({
         data: {
-          ...event,
-          ...(event.participants &&
-            event.participants.length > 0 && {
-            participants: {
-              create: event.participants.filter(_.identity)
-            }
-          })
+          name: 'Администратор системы',
+          username: process.env.ADMIN_USERNAME,
+          email: process.env.ADMIN_EMAIL,
+          password: adminPassword,
+          passwordHashes: [adminPassword],
+          role: UserRole.USER_ADMIN,
+          tabelNumber: '0000000000000000000000000000',
+          phone: '+7 (000) 000-00-00',
+          ivaProfileId: process.env.ADMIN_IVA_PROFILE_ID,
+          expiresAt: moment().add(1, 'year').toDate()
         }
       });
-
-      const inventories = createInventories(random(13), createdEvent.id);
-
-      for (const inventory of inventories) {
-        const createdInventory = await this.prisma.inventory.create({
-          data: inventory,
-          include: {
-            participants: true
-          }
-        });
-        console.log(
-          `Created inventory: ${createdInventory.id} for event: ${createdEvent.id}, withParticipants: ${!!createdInventory.participants.length} `
-        );
-      }
+      console.log('Administrator created');
+    } catch (err) {
+      console.error('Error while seeding. Cannot create admin: ', err);
     }
-
-    console.log('Seeding finished.');
   }
 
   async run() {
@@ -256,3 +124,8 @@ class SeedSingleton {
 }
 
 module.exports = { SeedSingleton };
+
+const client = new PrismaClient();
+const seedSingleTon = new SeedSingleton(client, true);
+
+seedSingleTon.run();

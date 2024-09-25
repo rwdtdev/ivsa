@@ -69,9 +69,9 @@ model User {
   /// Список последних 5ти захешированных паролей пользователя, разделенных ","
   passwordHashes          String[]
   /// Роль
-  role                    UserRole
+  role                    UserRole      @default(USER)
   /// Статус
-  status                  UserStatus
+  status                  UserStatus    @default(ACTIVE)
   /// Дата и время создания записи
   createdAt               DateTime      @default(now())
   /// Дата и время модификации записи
@@ -90,22 +90,25 @@ model User {
   ASOZSystemRequestNumber String?
   /// Дата и время последней смены пароля
   lastUpdatePasswordDate  DateTime      @default(now())
+  /// Признак временного пароля
+  isTemporaryPassword     Boolean       @default(true)
   /// Объект с данными об организации, в которой состоит пользователь
   organisation            Organisation? @relation(fields: [organisationId], references: [id])
   /// Ссылка на отдел, в котором состоит пользователь
   departmentId            String?
   /// Объект с данными об отделе, в котором состоит пользователь
   department              Department?   @relation(fields: [departmentId], references: [id])
-  /// Список описей и событий инвентаризаций, в которых пользователь является участником
-  participants            Participant[]
-  Inventory               Inventory[]
+
+  participants Participant[]
+  inventories  Inventory[]
+  locations    InventoryLocation[]
 
   @@map("users")
 }
 
 model Event {
-  /// Идентификатор события в формате cUID
-  id                     String         @id @default(cuid())
+  /// Идентификатор события в формате UUID
+  id                     String         @id @default(uuid())
   /// Идентификатор распоряжения
   commandId              String
   /// Номер распоряжения
@@ -147,32 +150,32 @@ model Event {
 }
 
 model Participant {
-  id          String     @id @default(cuid())
+  id          String          @id @default(uuid())
   /// Идентификатор события
   eventId     String
   /// Объект с данными о событии, с которым связана опись
-  event       Event      @relation(fields: [eventId], references: [id])
+  event       Event           @relation(fields: [eventId], references: [id])
   /// Идентификатор описи
   inventoryId String?
   /// Объект с данными об описи
-  inventory   Inventory? @relation(fields: [inventoryId], references: [id])
+  inventory   Inventory?      @relation(fields: [inventoryId], references: [id])
   /// Идентификатор пользователя в виде табельного номера
   tabelNumber String
   /// Имя участника имя пользователя
   name        String?
   /// Объект с данными о пользователе
-  user        User?      @relation(fields: [userId], references: [id])
+  user        User?           @relation(fields: [userId], references: [id])
   /// Идентификатор пользователя
   userId      String?
   /// Роль участника
-  role        UserRole
+  role        ParticipantRole @default(PARTICIPANT)
 
   @@unique([eventId, inventoryId, tabelNumber])
   @@map("participants")
 }
 
 model Inventory {
-  /// Внешний Идентификаторр описи из Soi
+  /// Внешний Идентификаторр описи из SOI
   id                  String              @id
   /// Идентификатор события к которому привязана опись
   eventId             String
@@ -213,8 +216,9 @@ model Inventory {
   /// Указанный вручную адрес места проведения инвентаризации
   address             String?
   /// Выбранный председателем участник конференции, который выполняет видеофиксацию с моб. устройства
-  videographer        User?               @relation(fields: [videographerId], references: [id])
   videographerId      String?
+  /// Объект с данными о проводящем видеофиксацию
+  videographer        User?               @relation(fields: [videographerId], references: [id])
 
   @@map("inventories")
 }
@@ -236,31 +240,50 @@ model InventoryLocation {
   inventory   Inventory          @relation(fields: [inventoryId], references: [id])
   /// Идентификатор ресурса к которому относятся метаданные
   resourceId  String?
+  /// Объект с данными о ресурсе
   resource    InventoryResource? @relation(fields: [resourceId], references: [id])
   /// Дата и время создания записи
   createdAt   DateTime           @default(now())
   /// Идентификатор пользователя, от которого пришли метаданные
   userId      String?
+  /// Объект с данными о пользователе
+  user        User?              @relation(fields: [userId], references: [id])
 
   @@map("inventory_locations")
 }
 
 model InventoryObject {
-  id                 String    @id @default(cuid())
+  /// Идентификатор ТМЦ
+  id                 String    @id @default(uuid())
+  /// Идентификатор описи
   inventoryId        String
+  /// Объект с данными об описи
   inventory          Inventory @relation(fields: [inventoryId], references: [id])
+  /// Номер описи
   inventoryNumber    String?
+  /// Адрес места локации
   location           String?
+  /// Серийный номер
   serialNumber       String?
+  /// Сетевой номер
   networkNumber      String?
+  /// Номер паспорта
   passportNumber     String?
+  /// Количество
   quantity           Int?
+  /// Состояние
   state              String?
+  /// Название
   name               String?
+  /// Код единицы измерения
   unitCode           String?
+  /// Название единицы измерения
   unitName           String?
+  /// Номер партии
   batchNumber        String?
+  /// Местоположения
   placement          String?
+  /// Номенклатурный номер
   nomenclatureNumber String?
   /// Дата и время создания записи
   createdAt          DateTime  @default(now())
@@ -281,8 +304,10 @@ model InventoryResource {
   startAt       DateTime?             @db.Timestamptz()
   /// Дата-время конца видео. Применимо только для ресурсов типа VIDEO
   endAt         DateTime?             @db.Timestamptz()
-  /// Связь с инвентаризационной описью, которой пренадлежит ресурс
+  /// Идентификатор описи
   inventoryId   String
+  /// Объект с информацией об описи
+  inventory     Inventory             @relation(fields: [inventoryId], references: [id])
   /// Ссылка в ASVI для получения этого ресурса через API (Опционально для разных типов ресусра)
   url           String?
   /// Ссылка на видео файл s3-хранилище. (Ссылка изменяется по мере переноса файла из ОП в АХ)
@@ -301,7 +326,6 @@ model InventoryResource {
   duration      Float?
   /// Список геолокационных данных, которые связаны с этим ресурсом
   locations     InventoryLocation[]
-  inventory     Inventory             @relation(fields: [inventoryId], references: [id])
 
   @@unique([name, inventoryId, ivaId])
   @@map("inventory_resources")
@@ -310,15 +334,74 @@ model InventoryResource {
 model Action {
   /// Идентификатор действия
   id        String       @id @default(uuid())
+  /// Уникальный идентификатор запроса
   requestId String?
+  /// Время, когда произошло действие
   actionAt  DateTime     @default(now()) @db.Timestamptz()
+  /// Тип события
   type      ActionType
+  /// Статус события
   status    ActionStatus
+  /// Инициатор действия
   initiator String
+  /// IP-адрес инициатора
   ip        String?
+  /// JSON-объект с доп. информацией и данными о действии
   details   Json?
 
   @@map("actions")
+}
+
+model DivisionHierarchy {
+  /// Внутренний идентификатор иерархии
+  id                     String                  @id @default(uuid())
+  /// Внешний идентификатор иерархии
+  hierId                 String
+  /// Идентификатор сессии, в рамках которого добавляются ноды к иерархии, если приходит для этой иерархии другой идентификатор сессии, значит нужно очистить узлы и принимать их список заново
+  sessionId              String
+  /// Количестве частей (списков) с узлами иерархии в рамках сессии
+  parts                  Int
+  /// Короткое название иерархии
+  titleSh                String
+  /// Подробное описание иерархии
+  titleMd                String
+  /// Длинный заголовок иерархии
+  titleLn                String
+  /// Список узлов иерархии
+  divisionHierarchyNodes DivisionHierarchyNode[]
+  /// Дата и время создания записи
+  createdAt              DateTime                @default(now())
+  /// Дата и время модификации записи
+  updatedAt              DateTime                @updatedAt
+}
+
+model DivisionHierarchyNode {
+  /// Внешний идентификатор узла иерархии
+  id                  String            @id
+  /// Название
+  name                String
+  /// Идентификатор родительского узла (подразделения)
+  parentId            String
+  /// Дата и время начала действия
+  from                DateTime          @db.Timestamptz()
+  /// Дата и время окончания действия
+  to                  DateTime          @db.Timestamptz()
+  /// Уровень, на котором находится иерархия
+  level               Int
+  /// Классификация нода
+  divType             String
+  /// Короткое название иерархии
+  titleSh             String
+  /// Подробное описание иерархии
+  titleMd             String
+  /// Длинный заголовок иерархии
+  titleLn             String
+  /// Код/номер балансовой единицы
+  bukrs               String
+  /// Объект с данными об иерархии
+  divisionHierarchy   DivisionHierarchy @relation(fields: [divisionHierarchyId], references: [id])
+  /// Идентификатор иерархии в которую включен узел
+  divisionHierarchyId String
 }
 
 enum ActionType {
@@ -347,6 +430,8 @@ enum ActionType {
   ADMIN_USER_PASSWORD_RESET
   /// Блокировка пользователя администратором
   ADMIN_USER_BLOCK
+  /// Разблокировка пользователя администратором
+  ADMIN_USER_UNBLOCK
 
   /// Системные события
   /// Начало переноса обработанных видео-ресурсов и метаданных в Оперативное хранилище
@@ -376,7 +461,9 @@ enum ActionType {
 }
 
 enum ActionStatus {
+  /// Действие выполнено успешно
   SUCCESS
+  /// При выполнении действия произошла ошибка
   ERROR
 }
 
@@ -390,8 +477,6 @@ enum UserStatus {
   ACTIVE
   /// Заблокирован
   BLOCKED
-  /// Освобожден от должности
-  RECUSED
 }
 
 enum UserRole {
@@ -399,6 +484,15 @@ enum UserRole {
   ADMIN
   /// Пользователь
   USER
+  /// Оператор-технолог
+  TECHNOLOGY_OPERATOR
+  /// Разработчик
+  DEVELOPER
+  /// Администратор пользователей
+  USER_ADMIN
+}
+
+enum ParticipantRole {
   /// Председатель
   CHAIRMAN
   /// Участник комиссии
@@ -413,8 +507,6 @@ enum UserRole {
   MANAGER
   /// Акцепт-бухгалтер
   ACCOUNTANT_ACCEPTOR
-  /// Оператор-технолог
-  ENGINEER
 }
 
 enum InventoryStatus {
@@ -452,7 +544,10 @@ enum ResourceProcessStatus {
 }
 
 enum ConferenseRole {
+  /// Докладчик, организатор конференции
   SPEAKER
+  /// Модератор
   MODERATOR
+  /// Участник конференции
   ATTENDEE
 }

@@ -2,7 +2,7 @@ import _ from 'underscore';
 import prisma from '@/core/prisma';
 import { SoiParticipantRoles } from '@/constants/mappings/soi';
 import { TransactionSession } from '@/types/prisma';
-import { PrismaClient, UserRole } from '@prisma/client';
+import { ParticipantRole, PrismaClient } from '@prisma/client';
 import { ContainAlreadyExistParticipantsError } from './errors';
 import { ParticipantsData } from '@/app/api/events/[eventId]/validation';
 
@@ -68,7 +68,7 @@ export class ParticipantService {
         tabelNumber: (user && user.tabelNumber) || participant.tabelNumber,
         role:
           SoiParticipantRoles[participant.roleId as keyof typeof SoiParticipantRoles] ||
-          UserRole.PARTICIPANT
+          ParticipantRole.PARTICIPANT
       };
     });
 

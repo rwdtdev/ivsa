@@ -50,20 +50,11 @@ export function fakeUser() {
     role: faker.helpers.arrayElement([
       UserRole.ADMIN,
       UserRole.USER,
-      UserRole.CHAIRMAN,
-      UserRole.PARTICIPANT,
-      UserRole.FINANCIALLY_RESPONSIBLE_PERSON,
-      UserRole.ACCOUNTANT,
-      UserRole.INSPECTOR,
-      UserRole.MANAGER,
-      UserRole.ACCOUNTANT_ACCEPTOR,
-      UserRole.ENGINEER
+      UserRole.TECHNOLOGY_OPERATOR,
+      UserRole.USER_ADMIN,
+      UserRole.DEVELOPER
     ] as const),
-    status: faker.helpers.arrayElement([
-      UserStatus.ACTIVE,
-      UserStatus.BLOCKED,
-      UserStatus.RECUSED
-    ] as const),
+    status: faker.helpers.arrayElement([UserStatus.ACTIVE, UserStatus.BLOCKED] as const),
     updatedAt: faker.date.anytime(),
     tabelNumber: faker.string.numeric(8),
     ivaProfileId: faker.string.uuid(),

@@ -119,9 +119,6 @@ export class UserManager {
     const monitorInitData = await getMonitoringInitData();
     const actionService = new ActionService();
     try {
-      if (monitorInitData.session?.user.role !== UserRole.USER_ADMIN) {
-        throw new Error('Недостаточно прав для блокировки пользователя');
-      }
       await this.userService.assertExist(id);
       const user = await this.userService.getById(id);
 
@@ -131,7 +128,7 @@ export class UserManager {
 
       await this.ivaService.blockUser(user.ivaProfileId);
       await this.userService.update(id, { status: UserStatus.BLOCKED });
-      actionService.add({
+      await actionService.add({
         ip: monitorInitData.ip,
         initiator: monitorInitData.initiator,
         type,
@@ -144,7 +141,7 @@ export class UserManager {
       });
     } catch (error) {
       if (error instanceof Error) {
-        actionService.add({
+        await actionService.add({
           ip: monitorInitData.ip,
           initiator: monitorInitData.initiator,
           type,
@@ -174,7 +171,7 @@ export class UserManager {
 
       await this.ivaService.unblockUser(user.ivaProfileId);
       await this.userService.update(id, { status: UserStatus.ACTIVE });
-      actionService.add({
+      await actionService.add({
         ip: monitorInitData.ip,
         initiator: monitorInitData.initiator,
         type: ActionType.ADMIN_USER_UNBLOCK,

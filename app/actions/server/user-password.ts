@@ -97,7 +97,7 @@ export async function setActiveAndSendRecoveryLinkAction(userId: string, email: 
     const { ip, initiator } = await getMonitoringInitData();
     const user = await userService.getById(userId);
     const actionService = new ActionService();
-    actionService.add({
+    await actionService.add({
       ip,
       initiator,
       type: ActionType.ADMIN_USER_PASSWORD_RESET,

@@ -13,6 +13,7 @@ type IvaRequestOptions = {
   data?: Record<string, any>;
   query?: Record<string, any>;
   method?: string;
+  headers?: Record<string, any>;
 };
 
 export class IvaService {
@@ -76,7 +77,8 @@ export class IvaService {
         method: options?.method ?? 'GET',
         headers: {
           ...(options?.data && { 'Content-Type': 'application/json' }),
-          Authorization: `Bearer ${token}`
+          Authorization: `Bearer ${token}`,
+          ...(options?.headers && options.headers)
         },
         ...(options?.data && { body: JSON.stringify({ ...options.data }) })
       });

@@ -73,8 +73,6 @@ export default function LoginForm() {
 
     const isBlocked = await IsBlocked(data.username); // move isBlock check after IsAuthenticated otherwise throw error if no user
 
-    console.log(isBlocked)
-
     if (isBlocked) {
       toast({
         title: 'Ошибка',

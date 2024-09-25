@@ -3,7 +3,7 @@ import { getInventoryByIdAction } from '@/app/actions/server/inventories';
 import { VideosTable } from '@/components/tables/videos-table';
 import { authConfig } from '@/lib/auth-options';
 import { SearchParams } from '@/types';
-import { UserRole } from '@prisma/client';
+import { ParticipantRole } from '@prisma/client';
 import { getServerSession } from 'next-auth';
 
 interface Props {
@@ -24,7 +24,7 @@ export default async function VideoList({ params: { inventoryId, eventId } }: Pr
   const participant = event.participants.find(
     (participant) => participant.userId === session?.user.id
   );
-  const isUserChairman = participant?.role === UserRole.CHAIRMAN;
+  const isUserChairman = participant?.role === ParticipantRole.CHAIRMAN;
   return (
     <div className='flex grow flex-col overflow-hidden'>
       <VideosTable

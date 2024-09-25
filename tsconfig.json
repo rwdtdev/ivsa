@@ -30,7 +30,8 @@
     "**/*.ts",
     "**/*.tsx",
     ".next/types/**/*.ts",
-    "postcss.config.cts"
+    "postcss.config.cts",
+    "prisma/seed.js"
   ],
   "exclude": ["node_modules", "docs", "dist", "prisma"]
 }

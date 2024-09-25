@@ -1,6 +1,5 @@
 'use client';
 import { setActiveAndSendRecoveryLinkAction } from '@/app/actions/server/user-password';
-import { updateUserAction } from '@/app/actions/server/users';
 import { Button } from '@/components/ui/button';
 import {
   DropdownMenu,
@@ -9,10 +8,8 @@ import {
   DropdownMenuLabel,
   DropdownMenuTrigger
 } from '@/components/ui/dropdown-menu';
-import { UserFormData } from '@/lib/form-validation-schemas/user-form-schema';
 import { UserView } from '@/types/user';
-import { UserStatus } from '@prisma/client';
-import { Edit, MoreHorizontal, Bell /* , UserRoundX */ } from 'lucide-react';
+import { Edit, MoreHorizontal, Bell } from 'lucide-react';
 import { useRouter } from 'next/navigation';
 import { useState } from 'react';
 import {
@@ -31,18 +28,10 @@ interface Props {
 }
 
 export function UserTableRowMenu({ data }: Props) {
-  const [openRecuseUser, setOpenRecuseUser] = useState(false);
   const [openResetPassword, setOpenResetPassword] = useState(false);
 
   const router = useRouter();
 
-  const onConfirmRecuseUser = async () => {
-    // setLoading(true);
-    await updateUserAction(data.id, { status: UserStatus.RECUSED } as UserFormData);
-    // };
-    // setLoading(false);
-    setOpenRecuseUser(false);
-  };
 
   const onConfirmResetPassword = async () => {
     // setLoading(true);
@@ -77,30 +66,6 @@ export function UserTableRowMenu({ data }: Props) {
           </AlertDialogFooter>
         </AlertDialogContent>
       </AlertDialog>
-      <AlertDialog open={openRecuseUser}>
-        <AlertDialogContent>
-          <AlertDialogHeader>
-            <AlertDialogTitle>Освободить от должности </AlertDialogTitle>
-            <AlertDialogTitle> {data.name}?</AlertDialogTitle>
-            <AlertDialogDescription>
-              Это действие нельзя будет отменить
-            </AlertDialogDescription>
-          </AlertDialogHeader>
-          <AlertDialogFooter>
-            <AlertDialogCancel onClick={() => setOpenRecuseUser(false)}>
-              Отменить
-            </AlertDialogCancel>
-            <AlertDialogAction
-              className='bg-red-600'
-              onClick={() => {
-                onConfirmRecuseUser();
-              }}
-            >
-              Продолжить
-            </AlertDialogAction>
-          </AlertDialogFooter>
-        </AlertDialogContent>
-      </AlertDialog>
       {/*  */}
       <DropdownMenu>
         <DropdownMenuTrigger asChild>
@@ -117,9 +82,6 @@ export function UserTableRowMenu({ data }: Props) {
           <DropdownMenuItem onClick={() => setOpenResetPassword(true)}>
             <Bell className='mr-2 h-4 w-4' /> Сбросить пароль
           </DropdownMenuItem>
-          {/* <DropdownMenuItem onClick={() => setOpenRecuseUser(true)}>
-            <UserRoundX className='mr-2 h-4 w-4' /> Освободить от должности
-          </DropdownMenuItem> */}
         </DropdownMenuContent>
       </DropdownMenu>
     </>

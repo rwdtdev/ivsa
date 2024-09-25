@@ -3,7 +3,7 @@
 import { ColumnDef, HeaderContext } from '@tanstack/react-table';
 import { DataTableColumnHeader } from '@/components/ui/data-table/data-table-column-header';
 import { EventView } from '@/core/event/types';
-import { BriefingStatus, EventStatus, UserRole } from '@prisma/client';
+import { BriefingStatus, EventStatus, ParticipantRole, UserRole } from '@prisma/client';
 import {
   BriefingStatuses,
   EventStatuses,
@@ -123,7 +123,7 @@ export function fetchEventsTableColumnDefs(): ColumnDef<EventView, unknown>[] {
         const participantsRolesCounts = participants
           .map(({ role }) => role)
           .reduce(
-            (acc: Record<string, number>, cur: UserRole) => (
+            (acc: Record<string, number>, cur: ParticipantRole) => (
               (acc[cur] = acc[cur] + 1 || 1), acc
             ),
             {}

@@ -1,7 +1,7 @@
 import * as z from 'zod';
 
 export const LoginFormSchema = z.object({
-  username: z.string().min(2, {
+  username: z.string().trim().toLowerCase().min(2, {
     message: 'Имя пользователя должно содержать не менее 2-ух символов.'
   }),
   password: z.string().min(3, {

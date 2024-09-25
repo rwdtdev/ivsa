@@ -6,7 +6,7 @@ import { UnauthorizedError } from '@/lib/problem-json';
 import { blockUserAction } from '@/app/actions/server/users';
 import { ActionType } from '@prisma/client';
 
-let globalCounter = 0;
+let globalCounter = 1;
 
 export const login = async ({ username, password }: UserCredentials) => {
   if (!username || !password) {

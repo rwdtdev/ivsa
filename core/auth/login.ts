@@ -41,7 +41,7 @@ export const login = async ({ username, password }: UserCredentials) => {
       return { ...session, accessToken, refreshToken };
     } else {
       if (globalCounter >= 4) {
-        blockUserAction({
+        await blockUserAction({
           id: user.id,
           type: ActionType.USER_BLOCK_BY_LIMIT_LOGIN_ATTEMPTS
         });

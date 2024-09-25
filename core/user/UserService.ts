@@ -132,6 +132,21 @@ export class UserService {
       }
     }
 
+    if (!searchTerm && conditions.length === 0) {
+      return {
+        items: [],
+        pagination: {
+          total: 1,
+          pagesCount: 1,
+          currentPage: 1,
+          perPage: 10,
+          from: 1,
+          to: 1,
+          hasMore: false
+        }
+      };
+    }
+
     const where = {
       where: {
         ...(searchTerm && {

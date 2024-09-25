@@ -34,9 +34,7 @@ export default function Header({ title }: { title: string }) {
               style={{ width: '50px', height: '30px' }}
             />
             {pathname === '/login' ? (
-              <h1 className='pl-4 text-xl font-semibold'>
-                АС{'\u00A0'}видеоинвентаризации
-              </h1>
+              <h1 className='pl-4 text-xl font-semibold'>АС{'\u00A0'}ВИ</h1>
             ) : (
               <h1 className='pl-4 text-xl font-semibold'>АС{'\u00A0'}ВИ</h1>
             )}

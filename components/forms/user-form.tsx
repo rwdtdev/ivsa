@@ -274,7 +274,7 @@ export function UserForm({
                       <SelectTrigger>
                         <SelectValue
                           defaultValue={field.value}
-                          placeholder='Выберете роль'
+                          placeholder='Выберите роль'
                         />
                       </SelectTrigger>
                     </FormControl>
@@ -311,7 +311,7 @@ export function UserForm({
                     <FormControl>
                       <SelectTrigger>
                         <SelectValue
-                          placeholder='Выберете организацию'
+                          placeholder='Выберите организацию'
                           defaultValue={field.value}
                         />
                       </SelectTrigger>
@@ -343,7 +343,7 @@ export function UserForm({
                     <FormControl>
                       <SelectTrigger>
                         <SelectValue
-                          placeholder='Выберете отдел'
+                          placeholder='Выберите отдел'
                           defaultValue={field.value}
                         />
                       </SelectTrigger>

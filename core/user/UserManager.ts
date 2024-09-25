@@ -177,7 +177,7 @@ export class UserManager {
       actionService.add({
         ip: monitorInitData.ip,
         initiator: monitorInitData.initiator,
-        type: ActionType.ADMIN_USER_BLOCK,
+        type: ActionType.ADMIN_USER_UNBLOCK,
         status: ActionStatus.SUCCESS,
         details: {
           adminUsername: monitorInitData.initiator,

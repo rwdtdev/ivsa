@@ -19,6 +19,7 @@ import {
   SelectValue
 } from '@/components/ui/select';
 import { setInventoryVideographer } from '@/app/actions/server/inventories';
+import { ParticipantRoles } from '@/constants/mappings/prisma-enums';
 
 type Props = {
   inventory: Inventory;
@@ -101,7 +102,7 @@ export function InventoryInfoCard({
                   )
                   .map((participant) => (
                     <SelectItem key={participant.id} value={participant.user.id}>
-                      {ParticipantRole[participant.role]}. {participant.user.name},
+                      {ParticipantRoles[participant.role]}. {participant.user.name},
                       {participant.tabelNumber}
                     </SelectItem>
                   ))}

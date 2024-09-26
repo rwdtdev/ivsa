@@ -3,11 +3,11 @@
 import { ColumnDef, HeaderContext } from '@tanstack/react-table';
 import { DataTableColumnHeader } from '@/components/ui/data-table/data-table-column-header';
 import { EventView } from '@/core/event/types';
-import { BriefingStatus, EventStatus, ParticipantRole, UserRole } from '@prisma/client';
+import { BriefingStatus, EventStatus, ParticipantRole } from '@prisma/client';
 import {
   BriefingStatuses,
   EventStatuses,
-  UserRoles
+  ParticipantRoles
 } from '@/constants/mappings/prisma-enums';
 import { BriefingStatusBadge, EventStatusBadge } from '@/components/event-status-badge';
 import { DataTableFilterableColumn } from '@/types';
@@ -134,7 +134,7 @@ export function fetchEventsTableColumnDefs(): ColumnDef<EventView, unknown>[] {
           <ul>
             {Object.entries(participantsRolesCounts).map(([key, value]) => (
               <li key={key}>
-                {UserRoles[key as UserRole]} ({value})
+                {ParticipantRoles[key as ParticipantRole]} ({value})
               </li>
             ))}
           </ul>

@@ -82,8 +82,8 @@ export class DivisionHierarchyService {
         const isFullfilledHierarchy = newHierarchy.partNum > existHierarchy.parts;
 
         if (isFullfilledHierarchy) {
-          throw new DivisionHierarchyErrors.AlreadyHaveMaximumNodes({
-            detail: `Hierarchy ${existHierarchy.hierId} already have maximum ${existHierarchy.parts} parts`
+          throw new DivisionHierarchyErrors.AlreadyHaveMaximumPartitions({
+            detail: `Hierarchy ${existHierarchy.hierId} already fullfilled. Current part ${newHierarchy.partNum}, maximum ${existHierarchy.parts} parts`
           });
         }
 

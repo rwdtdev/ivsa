@@ -1,3 +1,11 @@
+## [1.9.4](https://rwdt1.gitlab.yandexcloud.net/rwdt/services/asvi/compare/1.9.3...1.9.4) (2024-09-26)
+
+
+### Bug Fixes
+
+* hier ([4858c4a](https://rwdt1.gitlab.yandexcloud.net/rwdt/services/asvi/commit/4858c4adb92588b4ff52acf5e70a9c7754601cd2))
+* hierarchy ([a244c71](https://rwdt1.gitlab.yandexcloud.net/rwdt/services/asvi/commit/a244c718f3330737d1a8e0ee72f7f69d94114721))
+
 ## [1.9.3](https://rwdt1.gitlab.yandexcloud.net/rwdt/services/asvi/compare/1.9.2...1.9.3) (2024-09-25)
 
 

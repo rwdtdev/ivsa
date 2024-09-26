@@ -1,3 +1,10 @@
+## [1.9.5](https://rwdt1.gitlab.yandexcloud.net/rwdt/services/asvi/compare/1.9.4...1.9.5) (2024-09-26)
+
+
+### Bug Fixes
+
+* change eventId validation to uuid ([8ddf6ce](https://rwdt1.gitlab.yandexcloud.net/rwdt/services/asvi/commit/8ddf6cee97216674fc2534ee85a8a8186bca7d4e))
+
 ## [1.9.4](https://rwdt1.gitlab.yandexcloud.net/rwdt/services/asvi/compare/1.9.3...1.9.4) (2024-09-26)
 
 

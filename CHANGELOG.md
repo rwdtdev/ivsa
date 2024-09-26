@@ -1,3 +1,45 @@
+## [1.9.5](https://rwdt1.gitlab.yandexcloud.net/rwdt/services/asvi/compare/1.9.4...1.9.5) (2024-09-26)
+
+
+### Bug Fixes
+
+* change eventId validation to uuid ([8ddf6ce](https://rwdt1.gitlab.yandexcloud.net/rwdt/services/asvi/commit/8ddf6cee97216674fc2534ee85a8a8186bca7d4e))
+
+## [1.9.4](https://rwdt1.gitlab.yandexcloud.net/rwdt/services/asvi/compare/1.9.3...1.9.4) (2024-09-26)
+
+
+### Bug Fixes
+
+* hier ([4858c4a](https://rwdt1.gitlab.yandexcloud.net/rwdt/services/asvi/commit/4858c4adb92588b4ff52acf5e70a9c7754601cd2))
+* hierarchy ([a244c71](https://rwdt1.gitlab.yandexcloud.net/rwdt/services/asvi/commit/a244c718f3330737d1a8e0ee72f7f69d94114721))
+
+## [1.9.3](https://rwdt1.gitlab.yandexcloud.net/rwdt/services/asvi/compare/1.9.2...1.9.3) (2024-09-25)
+
+
+### Bug Fixes
+
+* counter ([ae573ca](https://rwdt1.gitlab.yandexcloud.net/rwdt/services/asvi/commit/ae573ca1c8697a511e009c762bd3a575137b67de))
+* counter ([9777380](https://rwdt1.gitlab.yandexcloud.net/rwdt/services/asvi/commit/9777380d11563214bbb0f8c9250f01e1913ec1e4))
+* counter ([86d821b](https://rwdt1.gitlab.yandexcloud.net/rwdt/services/asvi/commit/86d821bcc73ed1664e90c66d9189d66989448ae7))
+
+## [1.9.2](https://rwdt1.gitlab.yandexcloud.net/rwdt/services/asvi/compare/1.9.1...1.9.2) (2024-09-25)
+
+
+### Bug Fixes
+
+* blocked user in login form ([5113ed4](https://rwdt1.gitlab.yandexcloud.net/rwdt/services/asvi/commit/5113ed4e2a48edbdd7973825d0c250046acc15f8))
+
+## [1.9.1](https://rwdt1.gitlab.yandexcloud.net/rwdt/services/asvi/compare/1.9.0...1.9.1) (2024-09-25)
+
+
+### Bug Fixes
+
+* db structure ([99259a6](https://rwdt1.gitlab.yandexcloud.net/rwdt/services/asvi/commit/99259a64c5b8c6e9bbbd3f08552bdb1773da7fb5))
+* error, division participant roleas and system ([c002d0f](https://rwdt1.gitlab.yandexcloud.net/rwdt/services/asvi/commit/c002d0fc713426e1efd0736a585154801241a12b))
+* remoe recused statuse ([96713d4](https://rwdt1.gitlab.yandexcloud.net/rwdt/services/asvi/commit/96713d4448b1750d5b1fd133ddad6760a5ba08e8))
+* remove recused ([bfe338b](https://rwdt1.gitlab.yandexcloud.net/rwdt/services/asvi/commit/bfe338bebcfb144fee9131405fdd19be88d9a937))
+* roles ([da79bbd](https://rwdt1.gitlab.yandexcloud.net/rwdt/services/asvi/commit/da79bbd780a69f03532bed335541398273eb6d6e))
+
 # [1.9.0](https://rwdt1.gitlab.yandexcloud.net/rwdt/services/asvi/compare/1.8.0...1.9.0) (2024-09-25)
 
 

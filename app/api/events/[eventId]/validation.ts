@@ -1,7 +1,7 @@
 import { EventStatus } from '@prisma/client';
 import { z } from 'zod';
 
-const eventIdSchema = z.string().trim().min(1).cuid();
+const eventIdSchema = z.string().trim().min(1).uuid();
 
 export const RemoveEventPathParamsSchema = z.object({ eventId: eventIdSchema });
 

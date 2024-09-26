@@ -79,22 +79,11 @@ export class DivisionHierarchyService {
       const isSameSession = existHierarchy.sessionId === newHierarchy.sessionId;
 
       if (isSameSession) {
-        const isFullfilledHierarchy =
-          existHierarchy.divisionHierarchyNodes.length === existHierarchy.parts;
+        const isFullfilledHierarchy = newHierarchy.partNum > existHierarchy.parts;
 
         if (isFullfilledHierarchy) {
-          throw new DivisionHierarchyErrors.AlreadyHaveMaximumNodes({
-            detail: `Hierarchy ${existHierarchy.hierId} already have maximum ${existHierarchy.parts} nodes`
-          });
-        }
-
-        const isWillBeOverflowedByNodesCount =
-          existHierarchy.divisionHierarchyNodes.length + newHierarchyNodes.length >
-          existHierarchy.parts;
-
-        if (isWillBeOverflowedByNodesCount) {
-          throw new DivisionHierarchyErrors.WillBeOverflowMaximumNodes({
-            detail: `Hierarchy ${existHierarchy.hierId} will be overflowed by the number of nodes. Maximum ${existHierarchy.parts}, current ${existHierarchy.divisionHierarchyNodes.length}`
+          throw new DivisionHierarchyErrors.AlreadyHaveMaximumPartitions({
+            detail: `Hierarchy ${existHierarchy.hierId} already fullfilled. Current part ${newHierarchy.partNum}, maximum ${existHierarchy.parts} parts`
           });
         }
 
@@ -107,7 +96,7 @@ export class DivisionHierarchyService {
 
         if (isContaintDuplicateNodes) {
           throw new DivisionHierarchyErrors.AlreadyContainNodes({
-            detail: `Hierarchy ${existHierarchy.hierId} already contains the nodes`
+            detail: `Hierarchy ${existHierarchy.hierId} already contains duplicated nodes`
           });
         }
 

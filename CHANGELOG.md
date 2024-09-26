@@ -1,3 +1,10 @@
+## [1.9.6](https://rwdt1.gitlab.yandexcloud.net/rwdt/services/asvi/compare/1.9.5...1.9.6) (2024-09-26)
+
+
+### Bug Fixes
+
+* ParticipantRole(s) ([d309fce](https://rwdt1.gitlab.yandexcloud.net/rwdt/services/asvi/commit/d309fce309889f10775cf4620a889e8566775f64))
+
 ## [1.9.5](https://rwdt1.gitlab.yandexcloud.net/rwdt/services/asvi/compare/1.9.4...1.9.5) (2024-09-26)
 
 

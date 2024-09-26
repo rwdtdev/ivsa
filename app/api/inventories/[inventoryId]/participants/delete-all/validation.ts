@@ -5,5 +5,5 @@ export const PathParamsSchema = z.object({
 });
 
 export const QueryParamsSchema = z.object({
-  eventId: z.string().trim().min(1).cuid()
+  eventId: z.string().trim().min(1).uuid()
 });

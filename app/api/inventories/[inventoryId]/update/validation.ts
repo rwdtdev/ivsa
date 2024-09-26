@@ -36,7 +36,7 @@ const partialInventoryDataSchema = z
   .strict();
 
 export const UpdateInventorySchema = z
-  .object({ eventId: z.string().trim().min(1).cuid() })
+  .object({ eventId: z.string().trim().min(1).uuid() })
   .merge(partialInventoryDataSchema.partial())
   .superRefine((data, ctx) => {
     if (data.inventoryCode && data.inventoryObjects) {

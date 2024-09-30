@@ -1,5 +1,6 @@
 import { User, UserRole, UserStatus } from '@prisma/client';
 import { SortOrder } from '@/constants/data';
+import { AccountExpiration } from '@/constants/mappings/prisma-enums';
 
 export type UserView = Omit<User, 'password' | 'passwordHashes'>;
 
@@ -29,6 +30,7 @@ export type UsersGetData = Partial<{
   filter: {
     statuses?: UserStatus[];
     roles?: UserRole[];
+    expires?: (keyof typeof AccountExpiration)[];
     organisationsIds?: string[];
     departmentsIds?: string[];
   };

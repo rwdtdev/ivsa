@@ -109,7 +109,7 @@ export function DataTable<TData, TValue>({
   advancedFilter = false,
   floatingBarContent,
   withSelectedRows = false,
-  deleteRowsAction,
+  // deleteRowsAction,
   tableType,
   inventories
 }: DataTableProps<TData, TValue>) {

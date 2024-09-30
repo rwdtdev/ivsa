@@ -16,5 +16,6 @@ export const searchParamsSchema = z.object({
   organisation: z.string().optional(),
   from: z.string().optional(),
   to: z.string().optional(),
-  briefingStatus: z.string().optional()
+  briefingStatus: z.string().optional(),
+  expiresAt: z.string().optional()
 });

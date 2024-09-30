@@ -139,6 +139,18 @@ export class UserService {
       if (filter.statuses) {
         conditions.push({ status: { in: filter.statuses } });
       }
+      if (filter.expires) {
+        const expiresConditions: { expiresAt: { lt?: Date; gte?: Date } }[] = [];
+        filter.expires.forEach((item) => {
+          if (item === 'EXPIRED') {
+            expiresConditions.push({ expiresAt: { lt: new Date() } });
+          }
+          if (item === 'VALID') {
+            expiresConditions.push({ expiresAt: { gte: new Date() } });
+          }
+        });
+        conditions.push({ OR: expiresConditions });
+      }
       if (filter.organisationsIds) {
         conditions.push({ organisationId: { in: filter.organisationsIds } });
       }

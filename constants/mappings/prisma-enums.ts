@@ -28,6 +28,11 @@ export const UserStatus = {
   blocked: 'blocked'
 };
 
+export const AccountExpiration = {
+  VALID: 'Действует',
+  EXPIRED: 'Истек'
+};
+
 export const EventStatuses = {
   ACTIVE: 'Активна',
   REMOVED: 'Удалена'

@@ -20,7 +20,7 @@ import { ActionService } from '@/core/action/ActionService';
 import { getUnknownErrorText } from '@/lib/helpers';
 import { getMonitoringInitData } from '@/lib/getMonitoringInitData';
 import { MonitoringDetails } from '@/core/action/types';
-import { UserRoles } from '@/constants/mappings/prisma-enums';
+import { AccountExpiration, UserRoles } from '@/constants/mappings/prisma-enums';
 
 const cache = new Cache({ checkperiod: 120 });
 
@@ -175,8 +175,17 @@ export async function getUsersAction(
 > {
   noStore();
   try {
-    const { page, per_page, status, role, search, organisation, department, sort } =
-      searchParamsSchema.parse(searchParams);
+    const {
+      page,
+      per_page,
+      status,
+      role,
+      expiresAt,
+      search,
+      organisation,
+      department,
+      sort
+    } = searchParamsSchema.parse(searchParams);
 
     // Fallback page for invalid page numbers
     const pageAsNumber = Number(page);
@@ -196,6 +205,7 @@ export async function getUsersAction(
 
     const statuses = (status?.split('.') as UserStatus[]) ?? [];
     const roles = (role?.split('.') as UserRole[]) ?? [];
+    const expires = (expiresAt?.split('.') as (keyof typeof AccountExpiration)[]) ?? [];
     const organisationsIds = (organisation?.split('.') as string[]) ?? [];
     const departmentsIds = (department?.split('.') as string[]) ?? [];
 
@@ -208,6 +218,7 @@ export async function getUsersAction(
       filter: {
         ...(statuses.length > 0 && { statuses }),
         ...(roles.length > 0 && { roles }),
+        ...(expires.length > 0 && { expires }),
         ...(organisationsIds.length > 0 && { organisationsIds }),
         ...(departmentsIds.length > 0 && { departmentsIds })
       },
@@ -228,7 +239,6 @@ export async function getUsersAction(
 export async function IsBlocked(username: string) {
   const userService = new UserService();
   const user = await userService.getBy({ username });
-
   return user.status === UserStatus.BLOCKED;
 }
 
@@ -237,6 +247,12 @@ export async function isHaveTemporaryPassword(username: string) {
   const user = await userService.getBy({ username });
 
   return user.isTemporaryPassword;
+}
+
+export async function IsAccountExpires(username: string) {
+  const userService = new UserService();
+  const user = await userService.getBy({ username });
+  return new Date(user.expiresAt).getTime() < new Date().getTime();
 }
 
 export async function blockUserAction({ id, type }: { id: string; type: ActionType }) {

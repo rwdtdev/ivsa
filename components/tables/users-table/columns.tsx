@@ -5,7 +5,11 @@ import { ColumnDef } from '@tanstack/react-table';
 import { UserTableRowMenu } from './user-table-row-menu';
 import { Badge } from '@/components/ui/badge';
 import { Checkbox } from '@/components/ui/checkbox';
-import { UserRoles, UserStatuses } from '@/constants/mappings/prisma-enums';
+import {
+  AccountExpiration,
+  UserRoles,
+  UserStatuses
+} from '@/constants/mappings/prisma-enums';
 import { UserRole, UserStatus } from '@prisma/client';
 import { AlertTriangleIcon } from 'lucide-react';
 import {
@@ -258,6 +262,18 @@ export const filterableColumns = () /*   departments: Department[],
 
       return {
         label: value[0]?.toUpperCase() + value.slice(1),
+        value: key
+      };
+    })
+  },
+  {
+    id: 'expiresAt',
+    title: `Срок\u00A0действ.\u00A0уч.зап.`,
+    options: _.keys(AccountExpiration).map((key) => {
+      const value = AccountExpiration[key as keyof typeof AccountExpiration];
+
+      return {
+        label: value,
         value: key
       };
     })

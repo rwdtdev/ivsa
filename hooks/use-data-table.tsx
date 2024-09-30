@@ -78,7 +78,7 @@ export function useDataTable<TData, TValue>({
 
   // Search params
   const page = searchParams?.get('page') ?? '1';
-  const search = searchParams?.get('search') ;
+  const search = searchParams?.get('search');
   const pageAsNumber = Number(page);
   const fallbackPage = isNaN(pageAsNumber) || pageAsNumber < 1 ? 1 : pageAsNumber;
   const per_page = searchParams?.get('per_page') || perPage || '10';
@@ -282,7 +282,7 @@ export function useDataTable<TData, TValue>({
       columnFilters
     },
     enableRowSelection: true,
-    //@ts-expect-error
+    //@ts-expect-error 'Property 'id' does not exist on type 'TData'.ts(2339)' - god know why (i don`t)
     getRowId: (row) => row.id,
     onRowSelectionChange: setRowSelection,
     onPaginationChange: setPagination,

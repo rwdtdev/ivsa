@@ -1,5 +1,5 @@
 import _ from 'underscore';
-import { UserCreateData, UserView } from './types';
+import { UserCreateData, UserUpdateData, UserView } from './types';
 import { DepartmentService } from '../department/DepartmentService';
 import { IvaService } from '../iva/IvaService';
 import { OrganisationService } from '../organisation/OrganisationService';
@@ -12,7 +12,8 @@ import {
   UnblockIvaUserError,
   BlockIvaUserError,
   CreateIvaUserError,
-  UserNotRegisteredInIvaError
+  UserNotRegisteredInIvaError,
+  Iva
 } from './errors';
 import { getMonitoringInitData } from '@/lib/getMonitoringInitData';
 import { ActionService } from '../action/ActionService';
@@ -111,6 +112,45 @@ export class UserManager {
         throw new CreateIvaUserError({
           detail: `Problems occurred during the user (${username}:${tabelNumber}) save process in ASVI.`
         });
+      }
+    });
+  }
+
+  async updateUser(id: string, data: UserUpdateData): Promise<UserView> {
+    return await doTransaction(async (session: TransactionSession) => {
+      const userService = this.userService.withSession(session);
+
+      try {
+        const user = await userService.getById(id);
+
+        if (data.email) {
+          await userService.assertNotExistWithEmail(data.email);
+        }
+        if (data.username) {
+          await userService.assertNotExistWithUsername(data.username);
+        }
+        if (data.tabelNumber) {
+          await userService.assertNotExistWithTabelNumber(data.tabelNumber);
+        }
+
+        if (
+          user.ivaProfileId &&
+          data &&
+          (data.username || data.password || data.phone || data.email)
+        ) {
+          try {
+            await this.ivaService.updateUser(
+              user.ivaProfileId,
+              _.pick(data, 'username', 'password', 'phone', 'email')
+            );
+          } catch (err) {
+            throw new Iva.UpdateUserError();
+          }
+        }
+
+        return await userService.update(user.id, data);
+      } catch (err) {
+        throw err;
       }
     });
   }

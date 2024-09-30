@@ -5,6 +5,7 @@ import {
   ResetPasswordFormSchema
 } from '@/lib/form-validation-schemas/reset-password-schema';
 import { UserService } from '@/core/user/UserService';
+import bcrypt from 'bcryptjs';
 
 export async function updateUserPassword(data: ResetPasswordFormData, username: string) {
   const result = ResetPasswordFormSchema.safeParse(data);
@@ -24,5 +25,41 @@ export async function updateUserPassword(data: ResetPasswordFormData, username: 
   } catch (err) {
     console.log(err);
     return false;
+  }
+}
+
+export async function setPermanentUserPassword(
+  data: ResetPasswordFormData,
+  userId: string
+): Promise<{ success: boolean; error: string | null }> {
+  const { password } = data;
+  const userService = new UserService();
+
+  try {
+    const { passwordHashes } = await userService.getPasswordHashesById(userId);
+
+    const isPasswordMatch = passwordHashes.some((hash) =>
+      bcrypt.compareSync(password, hash)
+    );
+
+    if (isPasswordMatch) {
+      return {
+        success: false,
+        error: 'Пароль совпадает с одним из предыдущих'
+      };
+    }
+
+    await userService.update(userId, {
+      password,
+      isTemporaryPassword: false
+    });
+
+    return { success: true, error: null };
+  } catch (err: Error | any) {
+    console.log(err);
+    return {
+      success: false,
+      error: err.message
+    };
   }
 }

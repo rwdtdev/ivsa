@@ -100,6 +100,21 @@ export class UserService {
     return user;
   }
 
+  async getPasswordHashesById(id: string) {
+    const user = await this.prisma.user.findFirst({ where: { id } });
+
+    if (!user) {
+      throw new UserNotFoundError({
+        detail: `User with id (${id}) not found.`
+      });
+    }
+
+    return {
+      password: user.password,
+      passwordHashes: user.passwordHashes
+    };
+  }
+
   async getBy(query: Prisma.UserWhereInput): Promise<UserView> {
     const user = await this.prisma.user.findFirst({ where: query });
 
@@ -283,6 +298,9 @@ export class UserService {
     }
     if (data.ASOZSystemRequestNumber) {
       updateData.ASOZSystemRequestNumber = data.ASOZSystemRequestNumber;
+    }
+    if (data.isTemporaryPassword !== undefined) {
+      updateData.isTemporaryPassword = data.isTemporaryPassword;
     }
 
     const updatedUser = await prisma.user.update({

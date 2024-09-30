@@ -1,3 +1,10 @@
+## [1.9.7](https://rwdt1.gitlab.yandexcloud.net/rwdt/services/asvi/compare/1.9.6...1.9.7) (2024-09-30)
+
+
+### Bug Fixes
+
+* редактирование пользователя в ИВЕ, форма с временным паролем ([583af5a](https://rwdt1.gitlab.yandexcloud.net/rwdt/services/asvi/commit/583af5a9ad6e796feafdc9aaa6015317924108ee))
+
 ## [1.9.6](https://rwdt1.gitlab.yandexcloud.net/rwdt/services/asvi/compare/1.9.5...1.9.6) (2024-09-26)
 
 

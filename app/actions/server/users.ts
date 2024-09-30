@@ -222,8 +222,13 @@ export async function getUsersAction(
 export async function IsBlocked(username: string) {
   const userService = new UserService();
   const user = await userService.getBy({ username });
-
   return user.status === UserStatus.BLOCKED;
+}
+
+export async function IsAccountExpires(username: string) {
+  const userService = new UserService();
+  const user = await userService.getBy({ username });
+  return new Date(user.expiresAt).getTime() < new Date().getTime();
 }
 
 export async function blockUserAction({ id, type }: { id: string; type: ActionType }) {

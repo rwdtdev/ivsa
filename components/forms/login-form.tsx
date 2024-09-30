@@ -29,7 +29,7 @@ import {
   LoginFormSchema
 } from '@/lib/form-validation-schemas/login-form-schema';
 import { PasswordInput } from '../password-input';
-import { IsBlocked, loginAction } from '@/app/actions/server/users';
+import { IsAccountExpires, IsBlocked, loginAction } from '@/app/actions/server/users';
 import { ActionStatus } from '@prisma/client';
 
 export default function LoginForm() {
@@ -89,6 +89,26 @@ export default function LoginForm() {
       });
       return;
     }
+
+    const isAccountExpires = await IsAccountExpires(data.username);
+
+    if (isAccountExpires) {
+      toast({
+        title: 'Ошибка',
+        description: (
+          <pre className='mt-2 w-[340px] rounded-md bg-red-200 p-4'>
+            <p className='text-black'>Срок действия аккаунта истек.</p>
+            <p className='text-black'>Обратитесь к администратору системы.</p>
+          </pre>
+        )
+      });
+      await loginAction({
+        status: ActionStatus.ERROR,
+        details: { error: 'Срок действия аккаунта истек' }
+      });
+      return;
+    }
+
     loginAction({ status: ActionStatus.SUCCESS });
     window.location.replace('/');
   };

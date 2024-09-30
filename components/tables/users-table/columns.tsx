@@ -160,7 +160,31 @@ export function fetchUsersTableColumnDefs(
       ),
       cell: ({ row }) =>
         // <div style={{ padding: 10 }}>{format(row.original.expiresAt, 'dd.MM.yyyy')}</div>
-        format(row.original.expiresAt, 'dd.MM.yyyy')
+        {
+          if (row.original.expiresAt.getTime() >= new Date().getTime()) {
+            return (
+              <div className='relative inline-block align-middle'>
+                <Badge
+                  variant='secondary'
+                  className='pointer-events-none bg-green-200 py-1 hover:bg-green-200'
+                >
+                  {format(row.original.expiresAt, 'dd.MM.yyyy')}
+                </Badge>
+              </div>
+            );
+          } else {
+            return (
+              <div className='relative inline-block align-middle'>
+                <Badge
+                  variant='secondary'
+                  className='pointer-events-none bg-red-200 py-1 hover:bg-red-200'
+                >
+                  {format(row.original.expiresAt, 'dd.MM.yyyy')}
+                </Badge>
+              </div>
+            );
+          }
+        }
     },
     {
       id: 'tabelNumber',

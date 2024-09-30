@@ -1,3 +1,10 @@
+## [1.9.8](https://rwdt1.gitlab.yandexcloud.net/rwdt/services/asvi/compare/1.9.7...1.9.8) (2024-09-30)
+
+
+### Bug Fixes
+
+* style ([e07fcf2](https://rwdt1.gitlab.yandexcloud.net/rwdt/services/asvi/commit/e07fcf255c3ed5c0ef45585f391f2aebbda6b5ca))
+
 ## [1.9.7](https://rwdt1.gitlab.yandexcloud.net/rwdt/services/asvi/compare/1.9.6...1.9.7) (2024-09-30)
 
 

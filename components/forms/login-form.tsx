@@ -58,9 +58,10 @@ export default function LoginForm() {
       /** @TODO Add errors dict for toasts */
       toast({
         title: 'Ошибка',
+        variant: 'destructive',
         description: (
-          <pre className='mt-2 w-[340px] rounded-md bg-red-200 p-4'>
-            <p className='text-black'>Неверный логин или пароль</p>
+          <pre className=''>
+            <p className='text-white'>Неверный логин или пароль</p>
           </pre>
         )
       });
@@ -76,10 +77,11 @@ export default function LoginForm() {
     if (isBlocked) {
       toast({
         title: 'Ошибка',
+        variant: 'destructive',
         description: (
-          <pre className='mt-2 w-[340px] rounded-md bg-red-200 p-4'>
-            <p className='text-black'>Пользователь заблокирован.</p>
-            <p className='text-black'>Обратитесь к администратору системы.</p>
+          <pre>
+            <p className='text-white'>Пользователь заблокирован.</p>
+            <p className='text-white'>Обратитесь к администратору системы.</p>
           </pre>
         )
       });
@@ -95,10 +97,12 @@ export default function LoginForm() {
     if (isAccountExpires) {
       toast({
         title: 'Ошибка',
+        variant: 'destructive',
         description: (
-          <pre className='mt-2 w-[340px] rounded-md bg-red-200 p-4'>
-            <p className='text-black'>Срок действия аккаунта истек.</p>
-            <p className='text-black'>Обратитесь к администратору системы.</p>
+          // <pre className='mt-2 w-[340px] rounded-md bg-red-200 p-4'>
+          <pre>
+            <p className='text-white'>Срок действия аккаунта истек.</p>
+            <p className='text-white'>Обратитесь к администратору системы.</p>
           </pre>
         )
       });

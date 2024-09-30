@@ -1,10 +1,7 @@
-import { Logger } from './lib/logger';
 import { isAuthorized } from './lib/auth';
 import { NextResponse, NextRequest } from 'next/server';
 import { getToken } from 'next-auth/jwt';
 import { UserRole, UserStatus } from '@prisma/client';
-
-const logger = new Logger({ name: 'HTTP' });
 
 const corsOptions = {
   'Access-Control-Allow-Methods': 'GET, POST, PUT, DELETE, OPTIONS',
@@ -85,6 +82,10 @@ export async function middleware(request: NextRequest) {
 
   if (!jwt?.user && !isLoginPath) {
     return NextResponse.redirect(new URL('/login', request.url));
+  }
+
+  if (jwt?.user && jwt?.user.isTemporaryPassword) {
+    return NextResponse.redirect(new URL('/change-password', request.url));
   }
 
   if (pathname === '/events') {

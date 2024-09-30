@@ -1,6 +1,7 @@
 import { makeErrorDictionary } from '@/lib/problem-json';
 
 export const {
+  Iva,
   BlockIvaUserError,
   UnblockIvaUserError,
   UserNotFoundError,
@@ -10,6 +11,14 @@ export const {
   UserWithUsernameAlreadyExistError,
   UserWithTabelNumberAlreadyExistError
 } = makeErrorDictionary()({
+  Iva: {
+    UpdateUserError: {
+      type: 'urn:problem-type:iva-update-user-error',
+      title: 'Произошла ошибка',
+      status: 400,
+      userMessage: 'Ошибка при обновлении данных о пользователе в IVA R'
+    }
+  },
   UnblockIvaUserError: {
     type: 'urn:problem-type:unblock-iva-user-error',
     title: 'Произошла ошибка',

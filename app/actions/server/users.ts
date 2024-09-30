@@ -91,7 +91,13 @@ export async function updateUserAction(
   types: ActionType[]
 ) {
   const actionService = new ActionService();
-  const userService = new UserService();
+  const userManager = new UserManager(
+    new IvaService(),
+    new UserService(),
+    new DepartmentService(),
+    new ParticipantService(),
+    new OrganisationService()
+  );
   const { ip, initiator } = await getMonitoringInitData();
 
   try {
@@ -102,7 +108,7 @@ export async function updateUserAction(
       cache.del(cacheKey);
     }
 
-    const user = await userService.update(id, formData);
+    const user = await userManager.updateUser(id, formData);
 
     await Promise.all(
       types.map((type) => {
@@ -224,6 +230,13 @@ export async function IsBlocked(username: string) {
   const user = await userService.getBy({ username });
 
   return user.status === UserStatus.BLOCKED;
+}
+
+export async function isHaveTemporaryPassword(username: string) {
+  const userService = new UserService();
+  const user = await userService.getBy({ username });
+
+  return user.isTemporaryPassword;
 }
 
 export async function blockUserAction({ id, type }: { id: string; type: ActionType }) {

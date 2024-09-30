@@ -10,7 +10,7 @@ export const SetUserPasswordFormSchema = z
     password: z
       .string({ required_error: 'Не может быть пустым' })
       .min(12, {
-        message: 'Не менее 12-ти мимволов'
+        message: 'Не менее 12-ти символов'
       })
       .max(32, { message: 'Не более 32 символов' })
       .refine(isHaveUppercase, 'Должен содержать заглавный символ')

@@ -11,7 +11,7 @@ import { Avatar, AvatarFallback } from '@/components/ui/avatar';
 import { P } from '@/components/ui/typography/p';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { DATE_FORMAT } from '@/constants/date';
-import { BriefingStatusBadge, EventStatusBadge } from '@/components/event-status-badge';
+import { BriefingStatusBadge, EventStatusBadge, InventoryStatusBadge } from '@/components/event-status-badge';
 import { ScrollArea } from '@/components/ui/scroll-area';
 import Loading from '@/app/loading';
 import { REGION_CODES, RegionCode } from '@/constants/mappings/region-codes';
@@ -196,10 +196,11 @@ export default function EventPage() {
                         <li key={inventory.id} className='border-b-[1px]'>
                           <Link
                             href={`/events/${inventory.eventId}/inventories/${inventory.id}`}
-                            className='block px-2 text-sm leading-10 hover:bg-slate-100'
+                            className='block px-2 text-sm leading-10 hover:bg-slate-100 flex items-center gap-2'
                           >
                             Комплексная опись № {inventory.number} от{' '}
                             {moment(inventory.date).format(DATE_FORMAT)}
+                            <InventoryStatusBadge status={inventory.status} removedOnly />
                           </Link>
                         </li>
                       );

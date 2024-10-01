@@ -1,3 +1,10 @@
+## [1.9.13](https://rwdt1.gitlab.yandexcloud.net/rwdt/services/asvi/compare/1.9.12...1.9.13) (2024-10-01)
+
+
+### Bug Fixes
+
+* fictive commit ([53edb62](https://rwdt1.gitlab.yandexcloud.net/rwdt/services/asvi/commit/53edb6239b7af56037735b859b4a424d13101d20))
+
 ## [1.9.12](https://rwdt1.gitlab.yandexcloud.net/rwdt/services/asvi/compare/1.9.11...1.9.12) (2024-10-01)
 
 

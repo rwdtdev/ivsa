@@ -1,3 +1,11 @@
+## [1.9.12](https://rwdt1.gitlab.yandexcloud.net/rwdt/services/asvi/compare/1.9.11...1.9.12) (2024-10-01)
+
+
+### Bug Fixes
+
+* rm console.log ([628e9af](https://rwdt1.gitlab.yandexcloud.net/rwdt/services/asvi/commit/628e9af3bc780acb8d36eb590dd91b72f8f7c140))
+* user manager ([d0a9006](https://rwdt1.gitlab.yandexcloud.net/rwdt/services/asvi/commit/d0a9006ce0a4454e583eb964f1a293921039fa78))
+
 ## [1.9.11](https://rwdt1.gitlab.yandexcloud.net/rwdt/services/asvi/compare/1.9.10...1.9.11) (2024-10-01)
 
 

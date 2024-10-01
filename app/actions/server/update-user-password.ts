@@ -41,7 +41,7 @@ export async function setPermanentUserPassword(
   const userService = new UserService();
   const userManager = new UserManager(
     new IvaService(),
-    new UserService(),
+    userService,
     new DepartmentService(),
     new ParticipantService(),
     new OrganisationService()

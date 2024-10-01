@@ -17,6 +17,7 @@ import {
 } from './errors';
 import { getMonitoringInitData } from '@/lib/getMonitoringInitData';
 import { ActionService } from '../action/ActionService';
+import { IvaUserUpdData } from '../iva/types';
 
 export class UserManager {
   private ivaService: IvaService;
@@ -135,14 +136,22 @@ export class UserManager {
       if (
         user.ivaProfileId &&
         data &&
-        (data.username || data.password || data.phone || data.email)
+        (data.username || data.name || data.password || data.phone || data.email)
       ) {
+        const updData: IvaUserUpdData = { userType: 'USER' };
+        if (data.username) updData.login = data.username;
+        if (data.name) updData.name = data.username;
+        if (data.email) updData.email = { value: data.email };
+        if (data.phone) updData.phone = { value: data.phone };
+        if (data.password) updData.password = data.password;
         try {
           await this.ivaService.updateUser(
             user.ivaProfileId,
-            _.pick(data, 'username', 'password', 'phone', 'email')
+            // _.pick(data, 'username', 'password', 'phone', 'email', 'name')
+            updData
           );
         } catch (err) {
+          console.log('тут ощибка!!');
           throw new Iva.UpdateUserError();
         }
       }

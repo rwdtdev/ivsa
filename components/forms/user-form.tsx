@@ -64,7 +64,6 @@ export function UserForm({
   departments,
   generatedPassword
 }: UserFormProps) {
-  console.log('🚀 ~ initialData:', initialData);
   const { toast } = useToast();
   const [loading, setLoading] = useState(false);
 

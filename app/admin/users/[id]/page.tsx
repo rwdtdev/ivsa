@@ -9,7 +9,7 @@ import { getDepartmentsAction } from '@/app/actions/server/departments';
 export default async function UpdateUserPage({ params }: { params: { id: string } }) {
   const userId = params.id;
   const user = await getUserByIdAction(userId);
-  console.log('🚀 ~ UpdateUserPage ~ user:', user);
+
   const organisations = await getOrganisationsAction();
   const departments = await getDepartmentsAction();
 
@@ -22,7 +22,6 @@ export default async function UpdateUserPage({ params }: { params: { id: string 
   if (user.organisationId === null) omitKeys.push('organisationId');
 
   const userInitialData = _.omit(user, omitKeys);
-  console.log('🚀 ~ UpdateUserPage ~ userInitialData:', userInitialData);
 
   const breadcrumbItems = [
     { title: 'Пользователи', link: '/admin/users' },

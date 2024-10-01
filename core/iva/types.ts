@@ -22,6 +22,15 @@ export type IvaUserCreateData = {
   isConferenceCreationEnabled?: boolean;
 };
 
+export type IvaUserUpdData = {
+  userType: 'USER' | 'ADMIN';
+  login?: string;
+  name?: string;
+  email?: { value: string };
+  phone?: { value: string };
+  password?: string;
+};
+
 // @TODO need types for room features?
 
 export type ParticipantRole = 'ATTENDEE' | 'INTERPRETER' | 'SPEAKER' | 'MODERATOR';

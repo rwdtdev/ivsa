@@ -14,6 +14,8 @@ import { TransactionSession } from '@/types/prisma';
 import { ActionService } from '@/core/action/ActionService';
 import { getUnknownErrorText } from '@/lib/helpers';
 import { getMonitoringInitData } from '@/lib/getMonitoringInitData';
+import { generatePasswordAsync } from '@/utils/password-generator';
+import { toast } from '@/components/ui/use-toast';
 
 export async function sendRecoveryLinkAction(data: ForgotPasswordFormData) {
   const result = ForgotPasswordFormSchema.safeParse(data);
@@ -76,38 +78,60 @@ export async function sendRecoveryLinkAction(data: ForgotPasswordFormData) {
   }
 }
 
-export async function setActiveAndSendRecoveryLinkAction(userId: string, email: string) {
+export async function resetUserPassword(userId: string, email: string) {
   const userService = new UserService();
+  const actionService = new ActionService();
+  const temporaryPassword = await generatePasswordAsync();
 
-  await doTransaction(async (session: TransactionSession) => {
+  return await doTransaction(async (session: TransactionSession) => {
     const userServiceWithSession = userService.withSession(session);
-
-    await userServiceWithSession.assertExist(userId);
-    await userServiceWithSession.setNewStatus(userId, UserStatus.ACTIVE);
-
-    const token = jwt.sign({ email, userId }, JwtSecret, { expiresIn: '15m' });
-
-    await transporter.sendMail({
-      from: process.env.TRANSPORT_FROM,
-      to: email,
-      subject: 'Восстановление пароля',
-      text: `Ссылка для восстановления пароля: ${process.env.NEXTAUTH_URL}/forgot-password/${token}`
-    });
 
     const { ip, initiator } = await getMonitoringInitData();
     const user = await userService.getById(userId);
-    const actionService = new ActionService();
-    await actionService.add({
-      ip,
-      initiator,
-      type: ActionType.ADMIN_USER_PASSWORD_RESET,
-      status: ActionStatus.SUCCESS,
-      details: {
-        username: user.username,
-        name: user.name
-      }
-    });
-  });
 
-  revalidatePath('/admin/users');
+    await userServiceWithSession.update(userId, {
+      password: temporaryPassword,
+      isTemporaryPassword: true,
+      status: UserStatus.ACTIVE
+    });
+
+    const mailResponse = await transporter.sendMail({
+      from: process.env.TRANSPORT_FROM,
+      to: email,
+      subject: 'Сброс пароля администратором системы АС ВИ',
+      html: `
+        <div>
+          <p>Ваш пароль был сброшен администратором системы АС ВИ.</p>
+          <p>Временный пароль для входа в систему: <b style="font-size: 12pt;">${temporaryPassword}</b></p>
+        </div>
+      `
+    });
+
+    if (mailResponse.messageId) {
+      actionService.add({
+        ip,
+        initiator,
+        type: ActionType.ADMIN_USER_PASSWORD_RESET,
+        status: ActionStatus.SUCCESS,
+        details: {
+          username: user.username,
+          name: user.name
+        }
+      });
+
+      return true;
+    } else {
+      actionService.add({
+        ip,
+        initiator,
+        type: ActionType.ADMIN_USER_PASSWORD_RESET,
+        status: ActionStatus.ERROR,
+        details: {
+          username: user.username,
+          name: user.name
+        }
+      });
+      return false;
+    }
+  });
 }

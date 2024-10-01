@@ -1,5 +1,5 @@
 'use client';
-import { setActiveAndSendRecoveryLinkAction } from '@/app/actions/server/user-password';
+import { resetUserPassword } from '@/app/actions/server/user-password';
 import { Button } from '@/components/ui/button';
 import {
   DropdownMenu,
@@ -22,6 +22,7 @@ import {
   AlertDialogHeader,
   AlertDialogTitle
 } from '@/components/ui/alert-dialog';
+import { useToast } from '@/components/ui/use-toast';
 
 interface Props {
   data: UserView;
@@ -29,14 +30,26 @@ interface Props {
 
 export function UserTableRowMenu({ data }: Props) {
   const [openResetPassword, setOpenResetPassword] = useState(false);
-
   const router = useRouter();
-
+  const { toast } = useToast();
 
   const onConfirmResetPassword = async () => {
-    // setLoading(true);
-    await setActiveAndSendRecoveryLinkAction(data.id, data.email);
-    // setLoading(false);
+    const isSucessfullyReset = await resetUserPassword(data.id, data.email);
+
+    if (isSucessfullyReset) {
+      toast({
+        title: 'Пароль был сброшен',
+        description: `Временный пароль был отправлен пользователю на почту ${data.email}.`,
+        variant: 'success'
+      });
+    } else {
+      toast({
+        title: 'Ошибка',
+        variant: 'destructive',
+        description: 'При сбросе пароля произошла ошибка.'
+      });
+    }
+
     setOpenResetPassword(false);
   };
 

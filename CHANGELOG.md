@@ -1,3 +1,10 @@
+## [1.9.11](https://rwdt1.gitlab.yandexcloud.net/rwdt/services/asvi/compare/1.9.10...1.9.11) (2024-10-01)
+
+
+### Bug Fixes
+
+* use user manager instead of user service ([d181094](https://rwdt1.gitlab.yandexcloud.net/rwdt/services/asvi/commit/d18109452d5d4097407c932d31edfedc0aa3a78e))
+
 ## [1.9.10](https://rwdt1.gitlab.yandexcloud.net/rwdt/services/asvi/compare/1.9.9...1.9.10) (2024-10-01)
 
 

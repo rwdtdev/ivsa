@@ -6,6 +6,11 @@ import {
 } from '@/lib/form-validation-schemas/reset-password-schema';
 import { UserService } from '@/core/user/UserService';
 import bcrypt from 'bcryptjs';
+import { UserManager } from '@/core/user/UserManager';
+import { IvaService } from '@/core/iva/IvaService';
+import { DepartmentService } from '@/core/department/DepartmentService';
+import { ParticipantService } from '@/core/participant/ParticipantService';
+import { OrganisationService } from '@/core/organisation/OrganisationService';
 
 export async function updateUserPassword(data: ResetPasswordFormData, username: string) {
   const result = ResetPasswordFormSchema.safeParse(data);
@@ -34,6 +39,13 @@ export async function setPermanentUserPassword(
 ): Promise<{ success: boolean; error: string | null }> {
   const { password } = data;
   const userService = new UserService();
+  const userManager = new UserManager(
+    new IvaService(),
+    new UserService(),
+    new DepartmentService(),
+    new ParticipantService(),
+    new OrganisationService()
+  );
 
   try {
     const { passwordHashes } = await userService.getPasswordHashesById(userId);
@@ -49,7 +61,7 @@ export async function setPermanentUserPassword(
       };
     }
 
-    await userService.update(userId, {
+    await userManager.updateUser(userId, {
       password,
       isTemporaryPassword: false
     });
@@ -59,7 +71,7 @@ export async function setPermanentUserPassword(
     console.log(err);
     return {
       success: false,
-      error: err.message
+      error: err.message || err.userMessage
     };
   }
 }

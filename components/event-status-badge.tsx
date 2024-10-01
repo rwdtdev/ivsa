@@ -1,6 +1,10 @@
 import { cn } from '@/lib/utils';
 import { BriefingStatus, EventStatus, InventoryStatus } from '@prisma/client';
-import { BriefingStatuses, EventStatuses, InventoryStatuses } from '@/constants/mappings/prisma-enums';
+import {
+  BriefingStatuses,
+  EventStatuses,
+  InventoryStatuses
+} from '@/constants/mappings/prisma-enums';
 import { Badge } from './ui/badge';
 import {
   CheckCircledIcon,
@@ -29,22 +33,22 @@ export const EventStatusBadge = ({ status }: { status?: EventStatus }) => {
   );
 };
 
-export const InventoryStatusBadge = ({ status }: { status?: InventoryStatus }) => {
+export const InventoryStatusBadge = ({ status, removedOnly = false }: { status?: InventoryStatus, removedOnly?: boolean}) => {
   if (!status) return null;
+
+  if (removedOnly && status !== InventoryStatus.REMOVED) return null;
 
   const text = InventoryStatuses[status];
 
-  let Icon = null;
   let classNames = 'bg-gray-200 hover:bg-gray-200';
 
   if (status === InventoryStatus.REMOVED) {
-    Icon = CrossCircledIcon;
     classNames = 'bg-red-200 hover:bg-red-200';
   }
 
   return (
     <Badge variant='secondary' className={cn('pointer-events-none py-1', classNames)}>
-      {Icon && <Icon className='mr-1' />} {text}
+      {text}
     </Badge>
   );
 };

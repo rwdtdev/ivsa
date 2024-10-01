@@ -1,3 +1,26 @@
+## [1.9.10](https://rwdt1.gitlab.yandexcloud.net/rwdt/services/asvi/compare/1.9.9...1.9.10) (2024-10-01)
+
+
+### Bug Fixes
+
+* add email to actions ([3dd33f6](https://rwdt1.gitlab.yandexcloud.net/rwdt/services/asvi/commit/3dd33f666c84f0f84d4f575abc051612238fea35))
+* forgot password ([45de7fb](https://rwdt1.gitlab.yandexcloud.net/rwdt/services/asvi/commit/45de7fb64dcfbb974baf0da4491a2875a7a97e41))
+
+## [1.9.9](https://rwdt1.gitlab.yandexcloud.net/rwdt/services/asvi/compare/1.9.8...1.9.9) (2024-10-01)
+
+
+### Bug Fixes
+
+* mail auth ([4c2b98c](https://rwdt1.gitlab.yandexcloud.net/rwdt/services/asvi/commit/4c2b98cfbfef55464ce41d593dc0c08d33c9259c))
+* reset user password ([e25e48c](https://rwdt1.gitlab.yandexcloud.net/rwdt/services/asvi/commit/e25e48c5612788bb286d6359ee6f76bcc24b7826))
+
+## [1.9.8](https://rwdt1.gitlab.yandexcloud.net/rwdt/services/asvi/compare/1.9.7...1.9.8) (2024-09-30)
+
+
+### Bug Fixes
+
+* style ([e07fcf2](https://rwdt1.gitlab.yandexcloud.net/rwdt/services/asvi/commit/e07fcf255c3ed5c0ef45585f391f2aebbda6b5ca))
+
 ## [1.9.7](https://rwdt1.gitlab.yandexcloud.net/rwdt/services/asvi/compare/1.9.6...1.9.7) (2024-09-30)
 
 

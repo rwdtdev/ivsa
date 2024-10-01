@@ -102,7 +102,7 @@ export function InventoryInfoCard({
                   )
                   .map((participant) => (
                     <SelectItem key={participant.id} value={participant.user.id}>
-                      {ParticipantRoles[participant.role]}. {participant.user.name},
+                      {ParticipantRoles[participant.role]}. {participant.user.name},{' '}
                       {participant.tabelNumber}
                     </SelectItem>
                   ))}

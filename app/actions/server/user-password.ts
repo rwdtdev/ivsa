@@ -25,7 +25,7 @@ export async function sendRecoveryLinkAction(data: ForgotPasswordFormData) {
   if (!result.success) {
     actionService.add({
       ip,
-      initiator: initiator,
+      initiator,
       type: ActionType.USER_REQUEST_PASSWORD_RESET,
       status: ActionStatus.ERROR,
       details: {
@@ -59,19 +59,25 @@ export async function sendRecoveryLinkAction(data: ForgotPasswordFormData) {
     if (mailResponse.messageId) {
       actionService.add({
         ip,
-        initiator: initiator,
+        initiator: user.username,
         type: ActionType.USER_REQUEST_PASSWORD_RESET,
-        status: ActionStatus.SUCCESS
+        status: ActionStatus.SUCCESS,
+        details: {
+          email: user.email,
+          name: user.name
+        }
       });
 
       return true;
     } else {
       actionService.add({
         ip,
-        initiator: initiator,
+        initiator: user.username,
         type: ActionType.USER_REQUEST_PASSWORD_RESET,
         status: ActionStatus.ERROR,
         details: {
+          name: user.name,
+          email: user.email,
           error: `Возникла ошибка при отправке временного пароля на почту пользователя с адресом ${email}`
         }
       });

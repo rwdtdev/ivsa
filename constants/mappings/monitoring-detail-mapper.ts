@@ -7,6 +7,7 @@ export const monitoringDetailMapper = {
   username: 'Логин пользователя',
   userStatus: 'Статус пользователя',
   name: 'ФИО пользователя',
+  email: 'Электронная почта пользователя',
   adminDepartment: 'Отдел администратора',
   adminUsername: 'Логин администратора',
   adminName: 'ФИО администратора',

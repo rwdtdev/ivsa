@@ -122,7 +122,8 @@ export async function updateUserAction(
             editedUserName: user.name,
             ASOZNumber: formData.ASOZSystemRequestNumber,
             roleAfter:
-              type === ActionType.USER_CHANGE_ROLE ? UserRoles[formData.role] : undefined
+              type === ActionType.USER_CHANGE_ROLE ? UserRoles[formData.role] : undefined,
+            updatedFields: formData
           }
         });
       })

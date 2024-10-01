@@ -120,38 +120,34 @@ export class UserManager {
     return await doTransaction(async (session: TransactionSession) => {
       const userService = this.userService.withSession(session);
 
-      try {
-        const user = await userService.getById(id);
+      const user = await userService.getById(id);
 
-        if (data.email) {
-          await userService.assertNotExistWithEmail(data.email);
-        }
-        if (data.username) {
-          await userService.assertNotExistWithUsername(data.username);
-        }
-        if (data.tabelNumber) {
-          await userService.assertNotExistWithTabelNumber(data.tabelNumber);
-        }
-
-        if (
-          user.ivaProfileId &&
-          data &&
-          (data.username || data.password || data.phone || data.email)
-        ) {
-          try {
-            await this.ivaService.updateUser(
-              user.ivaProfileId,
-              _.pick(data, 'username', 'password', 'phone', 'email')
-            );
-          } catch (err) {
-            throw new Iva.UpdateUserError();
-          }
-        }
-
-        return await userService.update(user.id, data);
-      } catch (err) {
-        throw err;
+      if (data.email) {
+        await userService.assertNotExistWithEmail(data.email);
       }
+      if (data.username) {
+        await userService.assertNotExistWithUsername(data.username);
+      }
+      if (data.tabelNumber) {
+        await userService.assertNotExistWithTabelNumber(data.tabelNumber);
+      }
+
+      if (
+        user.ivaProfileId &&
+        data &&
+        (data.username || data.password || data.phone || data.email)
+      ) {
+        try {
+          await this.ivaService.updateUser(
+            user.ivaProfileId,
+            _.pick(data, 'username', 'password', 'phone', 'email')
+          );
+        } catch (err) {
+          throw new Iva.UpdateUserError();
+        }
+      }
+
+      return await userService.update(user.id, data);
     });
   }
 

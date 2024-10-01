@@ -64,6 +64,7 @@ export function UserForm({
   departments,
   generatedPassword
 }: UserFormProps) {
+  console.log('🚀 ~ initialData:', initialData);
   const { toast } = useToast();
   const [loading, setLoading] = useState(false);
 
@@ -141,9 +142,14 @@ export function UserForm({
       actionTypes.push(ActionType.USER_EDIT);
     }
 
+    // pick and upd only changed fields
+    const dirtyFields = Object.keys(form.formState.dirtyFields) as Array<
+      keyof typeof data
+    >;
+
     const result =
       initialData && userId
-        ? await updateUserAction(userId, data, actionTypes)
+        ? await updateUserAction(userId, _.pick(data, dirtyFields), actionTypes)
         : await createUserAction(data);
 
     if (result && result.error) {
@@ -416,7 +422,7 @@ export function UserForm({
                       <FormControl>
                         <Button
                           variant={'outline'}
-                          className='flex-grow pl-3 text-left font-normal'
+                          className='pl-3 text-left font-normal'
                           disabled
                         >
                           {format(field.value, 'dd.MM.yyyy')}
@@ -441,7 +447,7 @@ export function UserForm({
                         <Button
                           variant={'outline'}
                           className={cn(
-                            'flex-grow pl-3 text-left font-normal',
+                            'pl-3 text-left font-normal',
                             !field.value && 'text-muted-foreground'
                           )}
                         >

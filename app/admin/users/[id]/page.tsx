@@ -9,6 +9,7 @@ import { getDepartmentsAction } from '@/app/actions/server/departments';
 export default async function UpdateUserPage({ params }: { params: { id: string } }) {
   const userId = params.id;
   const user = await getUserByIdAction(userId);
+  console.log('🚀 ~ UpdateUserPage ~ user:', user);
   const organisations = await getOrganisationsAction();
   const departments = await getDepartmentsAction();
 
@@ -21,6 +22,7 @@ export default async function UpdateUserPage({ params }: { params: { id: string 
   if (user.organisationId === null) omitKeys.push('organisationId');
 
   const userInitialData = _.omit(user, omitKeys);
+  console.log('🚀 ~ UpdateUserPage ~ userInitialData:', userInitialData);
 
   const breadcrumbItems = [
     { title: 'Пользователи', link: '/admin/users' },
@@ -33,7 +35,12 @@ export default async function UpdateUserPage({ params }: { params: { id: string 
       <main className='flex-1 space-y-4 px-8 pb-8'>
         <BreadCrumb items={breadcrumbItems} />
         <div className='rounded-md border p-4 shadow-mod-1'>
-          <UserForm userId={userId} initialData={userInitialData} organisations={organisations} departments={departments} />
+          <UserForm
+            userId={userId}
+            initialData={userInitialData}
+            organisations={organisations}
+            departments={departments}
+          />
         </div>
       </main>
     </>

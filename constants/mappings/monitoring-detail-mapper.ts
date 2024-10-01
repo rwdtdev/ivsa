@@ -3,6 +3,7 @@ export const monitoringDetailMapper = {
   inventoryCode: 'Код формы описи',
   inventoryNumber: 'Номер описи',
   tabelNumbers: 'Проверяемые табельные номера',
+  tabelNumber: 'Табельный номер',
   conferenceId: 'ID конференции',
   username: 'Логин пользователя',
   userStatus: 'Статус пользователя',
@@ -27,12 +28,18 @@ export const monitoringDetailMapper = {
   orderDate: 'Дата приказа',
   orderNumber: 'Номер приказа',
   ASOZNumber: 'Номер заявки АС ОЗ',
+  ASOZSystemRequestNumber: 'Номер заявки АС ОЗ',
   videoFileName: 'Название видео-файла',
   hashFileName: 'Название hash-файла',
   subtitlesFileName: 'Название файла мета-данных',
   videoFileSize: 'размер видео-файла',
   hashFileSize: 'размер hash-файла',
-  editedUserId: 'ID редактируемого пользователя'
+  editedUserId: 'ID редактируемого пользователя',
+  status: 'Статус',
+  updatedFields: 'Обновленные поля',
+  role: 'Роли',
+  expiresAt: 'Действует до'
+
   // ------------
   // createdUser: 'Созданный пользователь',
   // editedUser: 'Редактируемый пользователь',

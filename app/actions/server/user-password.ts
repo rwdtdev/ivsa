@@ -9,13 +9,12 @@ import { JwtSecret } from '@/constants/jwt';
 import { transporter } from '@/lib/smtp-transporter';
 import { ActionStatus, ActionType, UserStatus } from '@prisma/client';
 import { doTransaction } from '@/lib/prisma-transaction';
-import { revalidatePath } from 'next/cache';
 import { TransactionSession } from '@/types/prisma';
 import { ActionService } from '@/core/action/ActionService';
 import { getUnknownErrorText } from '@/lib/helpers';
 import { getMonitoringInitData } from '@/lib/getMonitoringInitData';
 import { generatePasswordAsync } from '@/utils/password-generator';
-import { toast } from '@/components/ui/use-toast';
+import { revalidatePath } from 'next/cache';
 
 export async function sendRecoveryLinkAction(data: ForgotPasswordFormData) {
   const result = ForgotPasswordFormSchema.safeParse(data);
@@ -106,6 +105,8 @@ export async function resetUserPassword(userId: string, email: string) {
         </div>
       `
     });
+
+    revalidatePath('/admin/users');
 
     if (mailResponse.messageId) {
       actionService.add({

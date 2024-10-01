@@ -151,7 +151,6 @@ export class UserManager {
             updData
           );
         } catch (err) {
-          console.log('тут ощибка!!');
           throw new Iva.UpdateUserError();
         }
       }

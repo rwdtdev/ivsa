@@ -46,7 +46,6 @@ export async function exportMonitoringToXlsx(data: Data) {
   ];
 
   data.forEach((item) => {
-    console.log('!!', objToString(item.details));
     worksheet.addRow({
       dateTime: format(item.actionAt, 'dd.MM.yyyy HH:mm'),
       ip: item.ip,

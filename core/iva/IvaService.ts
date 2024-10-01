@@ -74,11 +74,6 @@ export class IvaService {
     }
 
     try {
-      console.log(
-        '🚀 ~ IvaService ~ response ~ options?.data:',
-        options?.data,
-        JSON.stringify({ ...options?.data })
-      );
       const response = await fetch(url.toString(), {
         method: options?.method ?? 'GET',
         headers: {
@@ -88,14 +83,8 @@ export class IvaService {
         },
         ...(options?.data && { body: JSON.stringify({ ...options.data }) })
       });
-      console.log(
-        '🚀 ~ IvaService ~ response ~ response:',
-        response
-        // await response.json()
-      );
 
       if (!response.ok) {
-        console.log('3!!!!');
         throw new IvaRequestError({ detail: await response.text() });
       }
 
@@ -120,13 +109,11 @@ export class IvaService {
               break;
           }
 
-          console.log('0!!!');
           throw error;
         }
-        console.log('1!!!');
+
         return data;
       } else {
-        console.log('2!!!');
         throw new IvaRequestError({ detail: 'Iva response is not have json format' });
       }
     } catch (error) {

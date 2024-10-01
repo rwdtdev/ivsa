@@ -60,7 +60,7 @@ const ForgotPasswordForm = () => {
       <CardHeader>
         <CardTitle>Восстановление пароля</CardTitle>
         <CardDescription>
-          На указанный адрес электронной почты будет выслана ссылка восстановления пароля
+          На указанный адрес электронной почты будет выслан временный пароль для входа в систему
         </CardDescription>
       </CardHeader>
       <CardContent>
@@ -71,7 +71,7 @@ const ForgotPasswordForm = () => {
               name='email'
               render={({ field }) => (
                 <FormItem>
-                  <FormLabel>Адрес электронной почты (E-mail)</FormLabel>
+                  <FormLabel>Адрес электронной почты (e-mail)</FormLabel>
                   <FormControl>
                     <Input autoFocus {...field} ref={emailInputRef} />
                   </FormControl>
@@ -97,9 +97,14 @@ const ForgotPasswordForm = () => {
       <CardHeader>
         <CardTitle>Отправлено</CardTitle>
         <CardDescription>
-          Ссылка для восстановления пароля успешно отправлена.
+          Временный пароль для входа в систему успешно отправлен.
         </CardDescription>
       </CardHeader>
+      <CardContent>
+        <Button className='w-full' onClick={() => router.push('/login')}>
+          Войти
+        </Button>
+      </CardContent>
     </Card>
   );
 };

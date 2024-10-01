@@ -1,11 +1,10 @@
 'use server';
-import jwt from 'jsonwebtoken';
+
 import {
   ForgotPasswordFormData,
   ForgotPasswordFormSchema
 } from '@/lib/form-validation-schemas/forgot-password-schema';
 import { UserService } from '@/core/user/UserService';
-import { JwtSecret } from '@/constants/jwt';
 import { transporter } from '@/lib/smtp-transporter';
 import { ActionStatus, ActionType, UserStatus } from '@prisma/client';
 import { doTransaction } from '@/lib/prisma-transaction';
@@ -17,13 +16,14 @@ import { generatePasswordAsync } from '@/utils/password-generator';
 import { revalidatePath } from 'next/cache';
 
 export async function sendRecoveryLinkAction(data: ForgotPasswordFormData) {
-  const result = ForgotPasswordFormSchema.safeParse(data);
   const userService = new UserService();
   const actionService = new ActionService();
+
   const { ip, initiator } = await getMonitoringInitData();
+  const result = ForgotPasswordFormSchema.safeParse(data);
 
   if (!result.success) {
-    await actionService.add({
+    actionService.add({
       ip,
       initiator: initiator,
       type: ActionType.USER_REQUEST_PASSWORD_RESET,
@@ -36,45 +36,49 @@ export async function sendRecoveryLinkAction(data: ForgotPasswordFormData) {
     return false;
   }
 
-  try {
+  const temporaryPassword = await generatePasswordAsync();
+
+  return await doTransaction(async (session: TransactionSession) => {
+    const userServiceWithSession = userService.withSession(session);
+
     const { email } = result.data;
     const user = await userService.getBy({ email });
-    const token = jwt.sign({ username: user.username }, JwtSecret, { expiresIn: '15m' });
 
-    await transporter.sendMail({
+    await userServiceWithSession.update(user.id, {
+      password: temporaryPassword,
+      isTemporaryPassword: true
+    });
+
+    const mailResponse = await transporter.sendMail({
       from: process.env.TRANSPORT_FROM,
-      to: user.email,
-      subject: 'Восстановление пароля',
-      text: `Ссылка для восстановления пароля: ${process.env.NEXTAUTH_URL}/forgot-password/${token}`
+      to: email,
+      subject: 'Восстановление пароля в системе АС ВИ',
+      html: `<p>Временный пароль для входа в систему: <b style="font-size: 12pt;">${temporaryPassword}</b></p>`
     });
 
-    await actionService.add({
-      ip,
-      initiator,
-      type: ActionType.USER_REQUEST_PASSWORD_RESET,
-      status: ActionStatus.SUCCESS,
-      details: {
-        emailInput: user.email,
-        username: user.username,
-        name: user.name
-      }
-    });
+    if (mailResponse.messageId) {
+      actionService.add({
+        ip,
+        initiator: initiator,
+        type: ActionType.USER_REQUEST_PASSWORD_RESET,
+        status: ActionStatus.SUCCESS
+      });
 
-    return true;
-  } catch (err) {
-    await actionService.add({
-      ip,
-      initiator,
-      type: ActionType.USER_REQUEST_PASSWORD_RESET,
-      status: ActionStatus.ERROR,
-      details: {
-        emailInput: data.email,
-        error: getUnknownErrorText(err)
-      }
-    });
+      return true;
+    } else {
+      actionService.add({
+        ip,
+        initiator: initiator,
+        type: ActionType.USER_REQUEST_PASSWORD_RESET,
+        status: ActionStatus.ERROR,
+        details: {
+          error: `Возникла ошибка при отправке временного пароля на почту пользователя с адресом ${email}`
+        }
+      });
 
-    return false;
-  }
+      return false;
+    }
+  });
 }
 
 export async function resetUserPassword(userId: string, email: string) {

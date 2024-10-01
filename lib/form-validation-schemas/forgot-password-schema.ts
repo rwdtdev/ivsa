@@ -3,6 +3,8 @@ import * as z from 'zod';
 export const ForgotPasswordFormSchema = z.object({
   email: z
     .string({ required_error: 'Не может быть пустым' })
+    .trim()
+    .toLowerCase()
     .min(1, {
       message: 'Не может быть пустым'
     })

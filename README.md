@@ -6,7 +6,7 @@
 Сервис автоматизации видеинвентаризаций с приминением программного обеспечения IVA R (АС
 ВИ)
 
-- [Спецификация Openapi-3.0 ](./docs/openapi.yaml)
+- [Спецификация Openapi-3.0](./docs/openapi.yaml)
 - [Публичная спецификация Openapi-3.0](./docs/openapi-public.yaml)
 - [Публичная спецификация IVA R](./docs/openapi-iva.yaml)
 

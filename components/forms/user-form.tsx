@@ -1,5 +1,5 @@
 'use client';
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { useForm } from 'react-hook-form';
 import { Input } from '@/components/ui/input';
@@ -47,6 +47,8 @@ import { format } from 'date-fns';
 import { ru } from 'date-fns/locale';
 import Link from 'next/link';
 import _ from 'underscore';
+import { fakeDepartmentData } from '@/app/admin/users/[id]/fakeDepartmentData';
+import DepartmentSelectDialog from '../department-select-dialog/department-select-dialog';
 
 interface UserFormProps {
   userId?: string;
@@ -168,6 +170,14 @@ export function UserForm({
 
     setLoading(false);
   };
+
+  useEffect(() => {
+    (async () => {
+      // const res = await fetch('/api/division-hierarchies').then((res2) => res2.json());
+      const res = fakeDepartmentData;
+      console.log('🚀 ~ useEffect ~ res:', res);
+    })();
+  }, []);
 
   return (
     <>
@@ -477,6 +487,11 @@ export function UserForm({
                 </FormItem>
               )}
             />
+            <FormItem className='flex flex-col'>
+              <FormLabel className='mb-2 block'>Отдел</FormLabel>
+              <DepartmentSelectDialog />
+              <FormMessage />
+            </FormItem>
           </div>
           <div className='flex justify-end'>
             <Link href={'/admin/users'}>

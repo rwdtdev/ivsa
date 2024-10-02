@@ -1,5 +1,5 @@
 'use client';
-import { useEffect, useState } from 'react';
+import { useState } from 'react';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { useForm } from 'react-hook-form';
 import { Input } from '@/components/ui/input';
@@ -47,7 +47,7 @@ import { format } from 'date-fns';
 import { ru } from 'date-fns/locale';
 import Link from 'next/link';
 import _ from 'underscore';
-import { fakeDepartmentData } from '@/app/admin/users/[id]/fakeDepartmentData';
+// import { fakeDepartmentData } from '@/app/admin/users/[id]/fakeDepartmentData';
 import DepartmentSelectDialog from '../department-select-dialog/department-select-dialog';
 
 interface UserFormProps {
@@ -62,8 +62,8 @@ interface UserFormProps {
 export function UserForm({
   initialData,
   userId,
-  organisations,
-  departments,
+  // organisations,
+  // departments,
   generatedPassword
 }: UserFormProps) {
   const { toast } = useToast();
@@ -170,14 +170,6 @@ export function UserForm({
 
     setLoading(false);
   };
-
-  useEffect(() => {
-    (async () => {
-      // const res = await fetch('/api/division-hierarchies').then((res2) => res2.json());
-      const res = fakeDepartmentData;
-      console.log('🚀 ~ useEffect ~ res:', res);
-    })();
-  }, []);
 
   return (
     <>
@@ -311,7 +303,7 @@ export function UserForm({
                 </FormItem>
               )}
             />
-            <FormField
+            {/* <FormField
               control={form.control}
               name='organisationId'
               render={({ field }) => (
@@ -374,7 +366,7 @@ export function UserForm({
                   <FormMessage />
                 </FormItem>
               )}
-            />
+            /> */}
             <FormField
               control={form.control}
               name='status'
@@ -487,11 +479,20 @@ export function UserForm({
                 </FormItem>
               )}
             />
-            <FormItem className='flex flex-col'>
-              <FormLabel className='mb-2 block'>Отдел</FormLabel>
-              <DepartmentSelectDialog />
-              <FormMessage />
-            </FormItem>
+            <FormField
+              control={form.control}
+              name='departmentId'
+              render={({ field }) => (
+                <FormItem className='flex flex-col'>
+                  <FormLabel className='mb-2 block'>Отдел</FormLabel>
+                  <DepartmentSelectDialog
+                    departmentId={field.value}
+                    setDepartmentId={form.setValue}
+                  />
+                  <FormMessage />
+                </FormItem>
+              )}
+            />
           </div>
           <div className='flex justify-end'>
             <Link href={'/admin/users'}>

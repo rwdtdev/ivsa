@@ -44,11 +44,7 @@ class SeedSingleton {
   async deleteAllTables() {
     console.log('Deleting tables ...');
 
-    await this.prisma.$transaction([
-      this.prisma.users.deleteMany(),
-      this.prisma.departments.deleteMany(),
-      this.prisma.organisations.deleteMany()
-    ]);
+    await this.prisma.$transaction([this.prisma.users.deleteMany()]);
 
     console.log('Tables deleted.');
   }
@@ -56,8 +52,6 @@ class SeedSingleton {
   async truncateAllTables() {
     const tables = [
       'users',
-      'departments',
-      'organisations',
       'events',
       'inventories',
       'participants',

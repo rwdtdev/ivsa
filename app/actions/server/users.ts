@@ -12,7 +12,6 @@ import { PaginatedResponse } from '@/types';
 import { ActionStatus, ActionType, User, UserRole, UserStatus } from '@prisma/client';
 import { UserManager } from '@/core/user/UserManager';
 import { IvaService } from '@/core/iva/IvaService';
-import { DepartmentService } from '@/core/department/DepartmentService';
 import { ParticipantService } from '@/core/participant/ParticipantService';
 import { SortOrder } from '@/constants/data';
 import { ActionService } from '@/core/action/ActionService';
@@ -27,7 +26,6 @@ export async function createUserAction(formData: UserFormData): Promise<any> {
   const userManager = new UserManager(
     new IvaService(),
     new UserService(),
-    new DepartmentService(),
     new ParticipantService()
   );
   const actionService = new ActionService();
@@ -39,8 +37,7 @@ export async function createUserAction(formData: UserFormData): Promise<any> {
       username: formData.username,
       email: formData.email,
       phone: formData.phone,
-      departmentId: formData.departmentId || null,
-      organisationId: formData.organisationId || null,
+      divisionId: formData.divisionId || null,
       role: formData.role,
       status: formData.status,
       tabelNumber: formData.tabelNumber,
@@ -92,7 +89,6 @@ export async function updateUserAction(
   const userManager = new UserManager(
     new IvaService(),
     new UserService(),
-    new DepartmentService(),
     new ParticipantService()
   );
   const { ip, initiator } = await getMonitoringInitData();
@@ -257,7 +253,6 @@ export async function blockUserAction({ id, type }: { id: string; type: ActionTy
   const userManager = new UserManager(
     new IvaService(),
     new UserService(),
-    new DepartmentService(),
     new ParticipantService()
   );
 
@@ -274,7 +269,6 @@ export async function unblockUserAction(id: string) {
   const userManager = new UserManager(
     new IvaService(),
     new UserService(),
-    new DepartmentService(),
     new ParticipantService()
   );
 

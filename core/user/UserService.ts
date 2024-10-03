@@ -195,10 +195,6 @@ export class UserService {
     // @ts-expect-error types
     const users = await prisma.user.findMany({
       ...where,
-      include: {
-        department: true,
-        organisation: true
-      },
       skip: (page - 1) * limit,
       take: limit,
       orderBy: { [sort.by || 'name']: sort?.direction || 'asc' }

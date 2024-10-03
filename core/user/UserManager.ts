@@ -1,6 +1,5 @@
 import _ from 'underscore';
 import { UserCreateData, UserUpdateData, UserView } from './types';
-import { DepartmentService } from '../department/DepartmentService';
 import { IvaService } from '../iva/IvaService';
 import { ParticipantService } from '../participant/ParticipantService';
 import { UserService } from './UserService';
@@ -21,18 +20,15 @@ import { IvaUserUpdData } from '../iva/types';
 export class UserManager {
   private ivaService: IvaService;
   private userService: UserService;
-  private departmentService: DepartmentService;
   private participantService: ParticipantService;
 
   constructor(
     ivaService: IvaService,
     userService: UserService,
-    departmentService: DepartmentService,
     participantService: ParticipantService
   ) {
     this.ivaService = ivaService;
     this.userService = userService;
-    this.departmentService = departmentService;
     this.participantService = participantService;
   }
 
@@ -42,8 +38,6 @@ export class UserManager {
       username,
       email,
       phone,
-      departmentId,
-      organisationId,
       role,
       status,
       tabelNumber,
@@ -55,15 +49,10 @@ export class UserManager {
     return await doTransaction(async (session: TransactionSession) => {
       const userService = this.userService.withSession(session);
       const participantService = this.participantService.withSession(session);
-      const departmentService = this.departmentService.withSession(session);
 
       await userService.assertNotExistWithEmail(email);
       await userService.assertNotExistWithUsername(username);
       await userService.assertNotExistWithTabelNumber(tabelNumber);
-
-      if (departmentId) {
-        await departmentService.assertExist(departmentId, 400);
-      }
 
       const ivaResponse = await this.ivaService.createUser({
         login: username,

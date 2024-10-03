@@ -27,8 +27,6 @@ import {
 } from '@/lib/form-validation-schemas/user-form-schema';
 import {
   ActionType,
-  Department,
-  Organisation,
   UserRole,
   UserStatus
 } from '@prisma/client';
@@ -52,16 +50,12 @@ interface UserFormProps {
   userId?: string;
   // initialData: (UserFormData & { createdAt: Date }) | undefined;
   initialData: any | undefined;
-  organisations: Organisation[];
-  departments: Department[];
   generatedPassword?: string;
 }
 
 export function UserForm({
   initialData,
   userId,
-  organisations,
-  departments,
   generatedPassword
 }: UserFormProps) {
   const { toast } = useToast();
@@ -293,70 +287,6 @@ export function UserForm({
                       ].map((role, idx) => (
                         <SelectItem key={idx} value={role}>
                           {UserRoles[role]}
-                        </SelectItem>
-                      ))}
-                    </SelectContent>
-                  </Select>
-                  <FormMessage />
-                </FormItem>
-              )}
-            />
-            <FormField
-              control={form.control}
-              name='organisationId'
-              render={({ field }) => (
-                <FormItem>
-                  <FormLabel>Организация</FormLabel>
-                  <Select
-                    disabled={loading}
-                    onValueChange={field.onChange}
-                    value={field.value}
-                    defaultValue={field.value}
-                  >
-                    <FormControl>
-                      <SelectTrigger>
-                        <SelectValue
-                          placeholder='Выберите организацию'
-                          defaultValue={field.value}
-                        />
-                      </SelectTrigger>
-                    </FormControl>
-                    <SelectContent>
-                      {organisations.map((organisation: Organisation, idx: number) => (
-                        <SelectItem key={idx} value={organisation.id}>
-                          {organisation.name}
-                        </SelectItem>
-                      ))}
-                    </SelectContent>
-                  </Select>
-                  <FormMessage />
-                </FormItem>
-              )}
-            />
-            <FormField
-              control={form.control}
-              name='departmentId'
-              render={({ field }) => (
-                <FormItem>
-                  <FormLabel>Отдел</FormLabel>
-                  <Select
-                    disabled={loading}
-                    onValueChange={field.onChange}
-                    value={field.value}
-                    defaultValue={field.value}
-                  >
-                    <FormControl>
-                      <SelectTrigger>
-                        <SelectValue
-                          placeholder='Выберите отдел'
-                          defaultValue={field.value}
-                        />
-                      </SelectTrigger>
-                    </FormControl>
-                    <SelectContent>
-                      {departments.map((department: Department, idx: number) => (
-                        <SelectItem key={idx} value={department.id}>
-                          {department.name}
                         </SelectItem>
                       ))}
                     </SelectContent>

@@ -36,8 +36,7 @@ export const refresh = async (refreshToken?: string): Promise<string> => {
           role: user.role,
           phone: user.phone,
           status: user.status,
-          organisationId: user.organisationId,
-          departmentId: user.departmentId
+          divisionId: user.divisionId
         } as UserSession;
 
         return generateAccessToken(session);

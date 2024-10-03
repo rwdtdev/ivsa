@@ -18,8 +18,7 @@ export const UserFormSchema = z.object({
     .min(1, { message: 'Не может быть пустым' })
     .min(10, { message: 'Не менее 10 символов' })
     .trim(),
-  organisationId: z.string().optional(),
-  departmentId: z.string().optional(),
+  divisionId: z.string().optional(),
   email: z
     .string()
     .min(1, { message: 'Не может быть пустым' })

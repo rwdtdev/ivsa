@@ -2,7 +2,6 @@ import _ from 'underscore';
 import { UserCreateData, UserUpdateData, UserView } from './types';
 import { DepartmentService } from '../department/DepartmentService';
 import { IvaService } from '../iva/IvaService';
-import { OrganisationService } from '../organisation/OrganisationService';
 import { ParticipantService } from '../participant/ParticipantService';
 import { UserService } from './UserService';
 import { doTransaction } from '@/lib/prisma-transaction';
@@ -24,20 +23,17 @@ export class UserManager {
   private userService: UserService;
   private departmentService: DepartmentService;
   private participantService: ParticipantService;
-  private organisationService: OrganisationService;
 
   constructor(
     ivaService: IvaService,
     userService: UserService,
     departmentService: DepartmentService,
-    participantService: ParticipantService,
-    organisationService: OrganisationService
+    participantService: ParticipantService
   ) {
     this.ivaService = ivaService;
     this.userService = userService;
     this.departmentService = departmentService;
     this.participantService = participantService;
-    this.organisationService = organisationService;
   }
 
   async createUser(data: UserCreateData): Promise<UserView> {
@@ -60,15 +56,10 @@ export class UserManager {
       const userService = this.userService.withSession(session);
       const participantService = this.participantService.withSession(session);
       const departmentService = this.departmentService.withSession(session);
-      const organisationService = this.organisationService.withSession(session);
 
       await userService.assertNotExistWithEmail(email);
       await userService.assertNotExistWithUsername(username);
       await userService.assertNotExistWithTabelNumber(tabelNumber);
-
-      if (organisationId) {
-        await organisationService.assertExist(organisationId, 400);
-      }
 
       if (departmentId) {
         await departmentService.assertExist(departmentId, 400);

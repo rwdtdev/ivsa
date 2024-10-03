@@ -14,7 +14,6 @@ import { UserManager } from '@/core/user/UserManager';
 import { IvaService } from '@/core/iva/IvaService';
 import { DepartmentService } from '@/core/department/DepartmentService';
 import { ParticipantService } from '@/core/participant/ParticipantService';
-import { OrganisationService } from '@/core/organisation/OrganisationService';
 import { SortOrder } from '@/constants/data';
 import { ActionService } from '@/core/action/ActionService';
 import { getUnknownErrorText } from '@/lib/helpers';
@@ -29,8 +28,7 @@ export async function createUserAction(formData: UserFormData): Promise<any> {
     new IvaService(),
     new UserService(),
     new DepartmentService(),
-    new ParticipantService(),
-    new OrganisationService()
+    new ParticipantService()
   );
   const actionService = new ActionService();
   const { ip, initiator, initiatorName } = await getMonitoringInitData();
@@ -95,8 +93,7 @@ export async function updateUserAction(
     new IvaService(),
     new UserService(),
     new DepartmentService(),
-    new ParticipantService(),
-    new OrganisationService()
+    new ParticipantService()
   );
   const { ip, initiator } = await getMonitoringInitData();
 
@@ -261,8 +258,7 @@ export async function blockUserAction({ id, type }: { id: string; type: ActionTy
     new IvaService(),
     new UserService(),
     new DepartmentService(),
-    new ParticipantService(),
-    new OrganisationService()
+    new ParticipantService()
   );
 
   try {
@@ -279,8 +275,7 @@ export async function unblockUserAction(id: string) {
     new IvaService(),
     new UserService(),
     new DepartmentService(),
-    new ParticipantService(),
-    new OrganisationService()
+    new ParticipantService()
   );
 
   try {

@@ -1,10 +1,23 @@
+import _ from 'underscore';
 import { CreateDivisionHierarchyDTO } from '@/app/api/division-hierarchies/dtos/create-division-hierarchy.dto';
 import prisma from '@/core/prisma';
 import { NotFoundError } from '@/lib/problem-json';
 import { TransactionSession } from '@/types/prisma';
 import { DivisionHierarchy, DivisionHierarchyNode, PrismaClient } from '@prisma/client';
-import _ from 'underscore';
 import { DivisionHierarchyErrors } from './errors';
+
+function makeTree(list: DivisionHierarchyNode[], item?: DivisionHierarchyNode): any {
+  if (!item) {
+    item = list.find((item) => item.parentId === '0');
+  }
+
+  return {
+    ..._.omit(item, 'divisionHierarchyId'),
+    nodes: list
+      .filter((node) => node.parentId === item?.id)
+      .map((node) => makeTree(list, node))
+  } as DivisionHierarchyNode & { nodes: DivisionHierarchyNode[] };
+}
 
 const addHierarchyId =
   (divisionHierarchyId: string) =>
@@ -36,10 +49,19 @@ export class DivisionHierarchyService {
   }
 
   async getAll(): Promise<DivisionHierarchy[]> {
-    return this.prisma.divisionHierarchy.findMany({
-      include: {
-        divisionHierarchyNodes: true
-      }
+    const divisionHierarchies = await this.prisma.divisionHierarchy.findMany({
+      include: { divisionHierarchyNodes: true }
+    });
+
+    return divisionHierarchies.map((divisionHierarchy) => {
+      const rootNodes = divisionHierarchy.divisionHierarchyNodes.filter(
+        (rootNode) => rootNode.divisionHierarchyId === divisionHierarchy.id
+      );
+
+      return {
+        ..._.omit(divisionHierarchy, 'divisionHierarchyNodes'),
+        nodes: makeTree(rootNodes)
+      };
     });
   }
 

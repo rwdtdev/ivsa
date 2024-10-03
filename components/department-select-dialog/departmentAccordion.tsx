@@ -11,10 +11,14 @@ type AccordionData = {
 type Props = {
   departmentId?: string;
   /* eslint-disable no-unused-vars */
-  setDepartmentId: (key: keyof UserFormData, value: string) => void;
+  setDepartmentId: (
+    key: keyof UserFormData,
+    value: string,
+    { shouldDirty }: { shouldDirty: boolean }
+  ) => void;
 };
 
-export function Accordion({ departmentId, setDepartmentId }: Props) {
+export function DepartmentAccordion({ departmentId, setDepartmentId }: Props) {
   const renderNestedLevels = (data: AccordionData[]) => {
     return data.map((item) => (
       <SubLevelComp
@@ -27,16 +31,7 @@ export function Accordion({ departmentId, setDepartmentId }: Props) {
     ));
   };
 
-  return (
-    <>
-      {/* <div className='relative h-full border border-red-600'> */}
-      {/* <ScrollArea className='border border-green-600'> */}
-      {renderNestedLevels(accordionData)}
-      {/* <ScrollBar orientation='vertical' />
-        </ScrollArea> */}
-      {/* </div> */}
-    </>
-  );
+  return <>{renderNestedLevels(accordionData)}</>;
 }
 
 type SubLevelCompArgs = {
@@ -44,7 +39,11 @@ type SubLevelCompArgs = {
   /* eslint-disable no-unused-vars */
   renderNestedLevels: (data: AccordionData[]) => JSX.Element[];
   departmentId?: string;
-  setDepartmentId: (key: keyof UserFormData, value: string) => void;
+  setDepartmentId: (
+    key: keyof UserFormData,
+    value: string,
+    { shouldDirty }: { shouldDirty: boolean }
+  ) => void;
 };
 
 function SubLevelComp({
@@ -54,10 +53,6 @@ function SubLevelComp({
   setDepartmentId
 }: SubLevelCompArgs) {
   const [isOpen, setIsOpen] = useState(false);
-
-  //   const toggle = () => {
-  //     setselected(selected === '' ? 'active' : '');
-  //   };
 
   const hasChidlren = (item: AccordionData) => {
     return Array.isArray(item.children) && item.children.length > 0;
@@ -69,19 +64,14 @@ function SubLevelComp({
         className='flex cursor-pointer items-center'
         onClick={() => {
           if (hasChidlren(item)) {
-            // toggle();
             setIsOpen(!isOpen);
           } else {
-            console.log('!!!', item.id, item.titleLn);
-            setDepartmentId('departmentId', item.id);
+            setDepartmentId('departmentId', item.id, { shouldDirty: true });
           }
         }}
       >
         {hasChidlren(item) ? (
-          <span className='mr-2 text-lg font-normal'>
-            {/* {selected === 'active' ? '-' : '+'} */}
-            {isOpen ? '-' : '+'}
-          </span>
+          <span className='mr-2 text-lg font-normal'>{isOpen ? '-' : '+'}</span>
         ) : (
           <span
             className={`mr-2 h-2.5 w-2.5 shrink-0 rounded-full border ${departmentId === item.id ? 'border-red-600 bg-red-600' : 'border-black'} `}

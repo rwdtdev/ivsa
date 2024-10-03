@@ -1,21 +1,28 @@
 'use client';
 import {
   Dialog,
+  DialogClose,
   DialogContent,
   DialogDescription,
+  DialogFooter,
   DialogHeader,
   DialogTitle,
   DialogTrigger
 } from '@/components/ui/dialog';
-import { Accordion } from './departmentAccordion';
+import { DepartmentAccordion } from './departmentAccordion';
 import { ScrollArea, ScrollBar } from '@/components/ui/scroll-area';
 import { useEffect } from 'react';
 import { UserFormData } from '@/lib/form-validation-schemas/user-form-schema';
+import { Button } from '../ui/button';
 
 type Props = {
   departmentId?: string;
   /* eslint-disable no-unused-vars */
-  setDepartmentId: (key: keyof UserFormData, value: string) => void;
+  setDepartmentId: (
+    key: keyof UserFormData,
+    value: string,
+    { shouldDirty }: { shouldDirty: boolean }
+  ) => void;
 };
 
 export default function DepartmentSelectDialog({ departmentId, setDepartmentId }: Props) {
@@ -29,7 +36,7 @@ export default function DepartmentSelectDialog({ departmentId, setDepartmentId }
 
   return (
     <Dialog>
-      <DialogTrigger className='rounded-md border px-3 py-2 text-start text-sm'>
+      <DialogTrigger className='rounded-md border px-3 py-2 text-start text-sm shadow-sm'>
         {departmentId ? departmentId : 'Выберите отдел'}
       </DialogTrigger>
       <DialogContent className='flex h-[95%] max-w-2xl flex-col'>
@@ -41,9 +48,17 @@ export default function DepartmentSelectDialog({ departmentId, setDepartmentId }
           </DialogDescription>
         </DialogHeader>
         <ScrollArea className='h-full'>
-          <Accordion departmentId={departmentId} setDepartmentId={setDepartmentId} />
+          <DepartmentAccordion
+            departmentId={departmentId}
+            setDepartmentId={setDepartmentId}
+          />
           <ScrollBar orientation='vertical' />
         </ScrollArea>
+        <DialogFooter>
+          <DialogClose asChild>
+            <Button type='button'>Закрыть</Button>
+          </DialogClose>
+        </DialogFooter>
       </DialogContent>
     </Dialog>
   );

@@ -126,7 +126,9 @@ export function UserForm({
           'phone',
           'expiresAt',
           'status',
-          'tabelNumber' //departmentId, organisationId
+          'tabelNumber',
+          'departmentId'
+          // , organisationId
         ),
         _.pick(
           data,
@@ -136,7 +138,9 @@ export function UserForm({
           'phone',
           'expiresAt',
           'status',
-          'tabelNumber' //departmentId, organisationId
+          'tabelNumber',
+          'departmentId'
+          // , organisationId
         )
       )
     ) {
@@ -335,38 +339,7 @@ export function UserForm({
                 </FormItem>
               )}
             />
-            <FormField
-              control={form.control}
-              name='departmentId'
-              render={({ field }) => (
-                <FormItem>
-                  <FormLabel>Отдел</FormLabel>
-                  <Select
-                    disabled={loading}
-                    onValueChange={field.onChange}
-                    value={field.value}
-                    defaultValue={field.value}
-                  >
-                    <FormControl>
-                      <SelectTrigger>
-                        <SelectValue
-                          placeholder='Выберите отдел'
-                          defaultValue={field.value}
-                        />
-                      </SelectTrigger>
-                    </FormControl>
-                    <SelectContent>
-                      {departments.map((department: Department, idx: number) => (
-                        <SelectItem key={idx} value={department.id}>
-                          {department.name}
-                        </SelectItem>
-                      ))}
-                    </SelectContent>
-                  </Select>
-                  <FormMessage />
-                </FormItem>
-              )}
-            /> */}
+         */}
             <FormField
               control={form.control}
               name='status'

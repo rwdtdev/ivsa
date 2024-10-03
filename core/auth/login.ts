@@ -26,8 +26,7 @@ export const login = async ({ username, password }: UserCredentials) => {
         role: user.role,
         phone: user.phone,
         status: user.status,
-        organisationId: user.organisationId,
-        departmentId: user.departmentId,
+        divisionId: user.divisionId,
         isTemporaryPassword: user.isTemporaryPassword
       } as UserSession;
 

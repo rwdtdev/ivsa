@@ -3,17 +3,13 @@ import { getErrorResponse } from '@/lib/helpers';
 import { UserManager } from '@/core/user/UserManager';
 import { IvaService } from '@/core/iva/IvaService';
 import { UserService } from '@/core/user/UserService';
-import { DepartmentService } from '@/core/department/DepartmentService';
 import { ParticipantService } from '@/core/participant/ParticipantService';
-import { OrganisationService } from '@/core/organisation/OrganisationService';
 
 export async function POST(req: NextRequest) {
   const userManager = new UserManager(
     new IvaService(),
     new UserService(),
-    new DepartmentService(),
-    new ParticipantService(),
-    new OrganisationService()
+    new ParticipantService()
   );
 
   try {
@@ -31,9 +27,7 @@ export async function GET(req: NextRequest) {
   const userManager = new UserManager(
     new IvaService(),
     new UserService(),
-    new DepartmentService(),
-    new ParticipantService(),
-    new OrganisationService()
+    new ParticipantService()
   );
 
   try {

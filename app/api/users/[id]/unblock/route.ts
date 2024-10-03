@@ -1,6 +1,4 @@
-import { DepartmentService } from '@/core/department/DepartmentService';
 import { IvaService } from '@/core/iva/IvaService';
-import { OrganisationService } from '@/core/organisation/OrganisationService';
 import { ParticipantService } from '@/core/participant/ParticipantService';
 import { UserManager } from '@/core/user/UserManager';
 import { UserService } from '@/core/user/UserService';
@@ -16,9 +14,7 @@ export async function POST(req: NextRequest, context: IContext) {
   const userManager = new UserManager(
     new IvaService(),
     new UserService(),
-    new DepartmentService(),
-    new ParticipantService(),
-    new OrganisationService()
+    new ParticipantService()
   );
 
   try {

@@ -1,8 +1,6 @@
 import _ from 'underscore';
 import { UserCreateData, UserUpdateData, UserView } from './types';
-import { DepartmentService } from '../department/DepartmentService';
 import { IvaService } from '../iva/IvaService';
-import { OrganisationService } from '../organisation/OrganisationService';
 import { ParticipantService } from '../participant/ParticipantService';
 import { UserService } from './UserService';
 import { doTransaction } from '@/lib/prisma-transaction';
@@ -22,22 +20,16 @@ import { IvaUserUpdData } from '../iva/types';
 export class UserManager {
   private ivaService: IvaService;
   private userService: UserService;
-  private departmentService: DepartmentService;
   private participantService: ParticipantService;
-  private organisationService: OrganisationService;
 
   constructor(
     ivaService: IvaService,
     userService: UserService,
-    departmentService: DepartmentService,
-    participantService: ParticipantService,
-    organisationService: OrganisationService
+    participantService: ParticipantService
   ) {
     this.ivaService = ivaService;
     this.userService = userService;
-    this.departmentService = departmentService;
     this.participantService = participantService;
-    this.organisationService = organisationService;
   }
 
   async createUser(data: UserCreateData): Promise<UserView> {
@@ -46,8 +38,6 @@ export class UserManager {
       username,
       email,
       phone,
-      departmentId,
-      organisationId,
       role,
       status,
       tabelNumber,
@@ -59,20 +49,10 @@ export class UserManager {
     return await doTransaction(async (session: TransactionSession) => {
       const userService = this.userService.withSession(session);
       const participantService = this.participantService.withSession(session);
-      const departmentService = this.departmentService.withSession(session);
-      const organisationService = this.organisationService.withSession(session);
 
       await userService.assertNotExistWithEmail(email);
       await userService.assertNotExistWithUsername(username);
       await userService.assertNotExistWithTabelNumber(tabelNumber);
-
-      if (organisationId) {
-        await organisationService.assertExist(organisationId, 400);
-      }
-
-      if (departmentId) {
-        await departmentService.assertExist(departmentId, 400);
-      }
 
       const ivaResponse = await this.ivaService.createUser({
         login: username,

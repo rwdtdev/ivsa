@@ -8,9 +8,7 @@ import { UserService } from '@/core/user/UserService';
 import bcrypt from 'bcryptjs';
 import { UserManager } from '@/core/user/UserManager';
 import { IvaService } from '@/core/iva/IvaService';
-import { DepartmentService } from '@/core/department/DepartmentService';
 import { ParticipantService } from '@/core/participant/ParticipantService';
-import { OrganisationService } from '@/core/organisation/OrganisationService';
 
 export async function updateUserPassword(data: ResetPasswordFormData, username: string) {
   const result = ResetPasswordFormSchema.safeParse(data);
@@ -42,9 +40,7 @@ export async function setPermanentUserPassword(
   const userManager = new UserManager(
     new IvaService(),
     userService,
-    new DepartmentService(),
-    new ParticipantService(),
-    new OrganisationService()
+    new ParticipantService()
   );
 
   try {

@@ -13,55 +13,15 @@ datasource db {
   url      = env("DATABASE_URL")
 }
 
-model Organisation {
-  /// Идентификатор отдела в формате cUID
-  id          String       @id @default(cuid())
-  /// Название организации
-  name        String       @unique
-  /// Описание организации
-  description String
-  /// Список отделов модели {Department}, входящих в организацию
-  Department  Department[]
-  /// Список пользователей модели {User}, входящих в организацию
-  User        User[]
-  /// Дата и время создания записи
-  createdAt   DateTime     @default(now())
-  /// Дата и время модификации записи
-  updatedAt   DateTime     @updatedAt
-
-  @@map("organisations")
-}
-
-model Department {
-  /// Идентификатор отдела в формате cUID
-  id             String        @id @default(cuid())
-  /// Название отдела
-  name           String        @unique
-  /// Описание отдела
-  description    String?
-  /// Ссылка на организацию, в которую входит отдел в формате cUID
-  organisationId String?
-  /// Объект с данными об организации, в которую входит отдел
-  organisation   Organisation? @relation(fields: [organisationId], references: [id])
-  /// Дата и время создания записи
-  createdAt      DateTime      @default(now())
-  /// Дата и время модификации записи
-  updatedAt      DateTime      @updatedAt
-  /// Список пользователей, входящих в отдел
-  users          User[]
-
-  @@map("departments")
-}
-
 model User {
   /// Идентификатор пользователя в формате cUID
-  id                      String        @id @default(cuid())
+  id                      String     @id @default(cuid())
   /// ФИО
   name                    String
   /// Логин для входа в систему
-  username                String        @unique
+  username                String     @unique
   /// Адрес электронной почты
-  email                   String        @unique
+  email                   String     @unique
   /// Номер телефона
   phone                   String
   /// Хэш пароля
@@ -69,35 +29,29 @@ model User {
   /// Список последних 5ти захешированных паролей пользователя, разделенных ","
   passwordHashes          String[]
   /// Роль
-  role                    UserRole      @default(USER)
+  role                    UserRole   @default(USER)
   /// Статус
-  status                  UserStatus    @default(ACTIVE)
+  status                  UserStatus @default(ACTIVE)
   /// Дата и время создания записи
-  createdAt               DateTime      @default(now())
+  createdAt               DateTime   @default(now())
   /// Дата и время модификации записи
-  updatedAt               DateTime      @updatedAt
+  updatedAt               DateTime   @updatedAt
   /// Дата и время окончания действия аккаунта
   expiresAt               DateTime
   /// Табельный номер
-  tabelNumber             String        @unique
+  tabelNumber             String     @unique
   /// Внешний идентификатор в системе IVA R
-  ivaProfileId            String?       @unique
-  /// Ссылка на организацию, в которой состоит пользователь
-  organisationId          String?
+  ivaProfileId            String?    @unique
   /// Токен для обновления accessToken-а в сессии пользователя
   refreshToken            String?
   /// Номер заявки в системе АС ОЗ
   ASOZSystemRequestNumber String?
   /// Дата и время последней смены пароля
-  lastUpdatePasswordDate  DateTime      @default(now())
+  lastUpdatePasswordDate  DateTime   @default(now())
   /// Признак временного пароля
-  isTemporaryPassword     Boolean       @default(true)
-  /// Объект с данными об организации, в которой состоит пользователь
-  organisation            Organisation? @relation(fields: [organisationId], references: [id])
+  isTemporaryPassword     Boolean    @default(true)
   /// Ссылка на отдел, в котором состоит пользователь
-  departmentId            String?
-  /// Объект с данными об отделе, в котором состоит пользователь
-  department              Department?   @relation(fields: [departmentId], references: [id])
+  divisionId              String?
 
   participants Participant[]
   inventories  Inventory[]
@@ -373,6 +327,8 @@ model DivisionHierarchy {
   createdAt              DateTime                @default(now())
   /// Дата и время модификации записи
   updatedAt              DateTime                @updatedAt
+
+  @@map("division_hierarchies")
 }
 
 model DivisionHierarchyNode {
@@ -402,6 +358,8 @@ model DivisionHierarchyNode {
   divisionHierarchy   DivisionHierarchy @relation(fields: [divisionHierarchyId], references: [id])
   /// Идентификатор иерархии в которую включен узел
   divisionHierarchyId String
+
+  @@map("division_hierarchies_nodes")
 }
 
 enum ActionType {

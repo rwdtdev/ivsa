@@ -25,13 +25,7 @@ import {
   UserFormData,
   UserFormSchema
 } from '@/lib/form-validation-schemas/user-form-schema';
-import {
-  ActionType,
-  Department,
-  Organisation,
-  UserRole,
-  UserStatus
-} from '@prisma/client';
+import { ActionType, UserRole, UserStatus } from '@prisma/client';
 import { PasswordInput } from '../password-input';
 import {
   blockUserAction,
@@ -54,18 +48,10 @@ interface UserFormProps {
   userId?: string;
   // initialData: (UserFormData & { createdAt: Date }) | undefined;
   initialData: any | undefined;
-  organisations: Organisation[];
-  departments: Department[];
   generatedPassword?: string;
 }
 
-export function UserForm({
-  initialData,
-  userId,
-  // organisations,
-  // departments,
-  generatedPassword
-}: UserFormProps) {
+export function UserForm({ initialData, userId, generatedPassword }: UserFormProps) {
   const { toast } = useToast();
   const [loading, setLoading] = useState(false);
 
@@ -307,39 +293,6 @@ export function UserForm({
                 </FormItem>
               )}
             />
-            {/* <FormField
-              control={form.control}
-              name='organisationId'
-              render={({ field }) => (
-                <FormItem>
-                  <FormLabel>Организация</FormLabel>
-                  <Select
-                    disabled={loading}
-                    onValueChange={field.onChange}
-                    value={field.value}
-                    defaultValue={field.value}
-                  >
-                    <FormControl>
-                      <SelectTrigger>
-                        <SelectValue
-                          placeholder='Выберите организацию'
-                          defaultValue={field.value}
-                        />
-                      </SelectTrigger>
-                    </FormControl>
-                    <SelectContent>
-                      {organisations.map((organisation: Organisation, idx: number) => (
-                        <SelectItem key={idx} value={organisation.id}>
-                          {organisation.name}
-                        </SelectItem>
-                      ))}
-                    </SelectContent>
-                  </Select>
-                  <FormMessage />
-                </FormItem>
-              )}
-            />
-         */}
             <FormField
               control={form.control}
               name='status'

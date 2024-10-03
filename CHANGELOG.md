@@ -1,3 +1,10 @@
+## [1.9.14](https://rwdt1.gitlab.yandexcloud.net/rwdt/services/asvi/compare/1.9.13...1.9.14) (2024-10-03)
+
+
+### Bug Fixes
+
+* s3 client ([ee9be95](https://rwdt1.gitlab.yandexcloud.net/rwdt/services/asvi/commit/ee9be9580ef279292fd3070e84ac9566b942b550))
+
 ## [1.9.13](https://rwdt1.gitlab.yandexcloud.net/rwdt/services/asvi/compare/1.9.12...1.9.13) (2024-10-01)
 
 

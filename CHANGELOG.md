@@ -1,3 +1,10 @@
+## [1.9.15](https://rwdt1.gitlab.yandexcloud.net/rwdt/services/asvi/compare/1.9.14...1.9.15) (2024-10-03)
+
+
+### Bug Fixes
+
+* s3 sbercloud ([f29c78b](https://rwdt1.gitlab.yandexcloud.net/rwdt/services/asvi/commit/f29c78b80f636f6b000c3ab81cc6bec8da718188))
+
 ## [1.9.14](https://rwdt1.gitlab.yandexcloud.net/rwdt/services/asvi/compare/1.9.13...1.9.14) (2024-10-03)
 
 

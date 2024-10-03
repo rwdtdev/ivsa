@@ -25,6 +25,20 @@ export class S3Client {
   private eventEmitter: EventEmitter;
   protected s3: Client;
 
+  static parseUrl(url: string) {
+    if (!url.startsWith('http')) {
+      throw new Error('Invalid protocol!');
+    }
+
+    const { protocol, hostname, port } = new URL(url);
+
+    return {
+      endPoint: hostname,
+      port: parseInt(port) || (protocol === 'https:' ? 443 : 80),
+      useSSL: protocol === 'https:'
+    };
+  }
+
   static prepareConfig(config: Record<string, any>) {
     const buckets = { ...config.bucket };
 
@@ -43,8 +57,11 @@ export class S3Client {
           ? true
           : config.calculateStatsOnDelete,
       folderFormat: config.folderFormat || FOLDER_FORMAT,
-      minio: {
+      s3Client: {
         region: config.region || 'us-east-1',
+        accessKey: config['access-key'] || config.accessKey,
+        secretKey: config['secret-key'] || config.secretKey,
+        ...S3Client.parseUrl(config.url),
         ...(config.transport && { transport: config.transport }),
         ...(config.sessionToken && { sessionToken: config.sessionToken }),
         ...(config.partSize && { partSize: config.partSize }),
@@ -56,9 +73,10 @@ export class S3Client {
   }
 
   constructor(config: Record<string, any>, logger: Logger, eventEmitter: EventEmitter) {
-    this.config = config;
+    this.config = S3Client.prepareConfig(config);
     this.logger = logger;
     this.eventEmitter = eventEmitter;
+    this.s3 = null;
   }
 
   emit(event, opts) {
@@ -189,7 +207,7 @@ export class S3Client {
     let result;
     if (!this.config.autoCreateBucket) {
       this.emit(S3_EVENTS.S3_INIT_SUCCESS);
-      this.logger.log('was successfuly initialised');
+      this.logger.info(`Connection to ${this.constructor.name} established`);
       return;
     }
 
@@ -203,10 +221,10 @@ export class S3Client {
         })
       );
       this.emit(S3_EVENTS.S3_INIT_SUCCESS);
-      this.logger.log('was successfuly initialised');
+      this.logger.info(`Connection to ${this.constructor.name} established`);
     } catch (err) {
       this.emit(S3_EVENTS.S3_INIT_ERROR);
-      this.logger.log('initialisation failed');
+      this.logger.info(`Connection to ${this.constructor.name} failed. ${err}`);
     }
 
     return result;
@@ -291,7 +309,7 @@ export class S3Client {
     throw new Error('Method "deleteBatch" must be implemented');
   }
 
-  bucketExists() {
+  bucketExists(bucket) {
     throw new Error('Method "bucketExists" must be implemented');
   }
 
@@ -299,5 +317,9 @@ export class S3Client {
     // Закоммитил для работы просмотра видео инвентаризации
     // Раскомитить после имплементации
     throw new Error('Method "statObject" must be implemented');
+  }
+
+  listObjectsV2(bucket, prefix, recursive, startAfter) {
+    throw new Error('Method "listObjectsV2" must be implemented');
   }
 }

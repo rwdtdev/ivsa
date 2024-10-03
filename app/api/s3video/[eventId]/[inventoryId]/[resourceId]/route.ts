@@ -2,7 +2,6 @@ import { NextRequest } from 'next/server';
 import { getErrorResponse } from '@/lib/helpers';
 import { S3ClientProvider } from '@/utils/s3-client/s3-client-provider';
 import { Logger } from '@/lib/logger';
-import { isS3ClientMinio } from '@/utils/s3-client/isS3ClientMinio';
 
 interface IContext {
   params: { eventId: string; inventoryId: string; resourceId: string };
@@ -29,40 +28,34 @@ export async function GET(req: NextRequest, context: IContext) {
       new Logger({ name: 's3-client' })
     );
 
-    if (isS3ClientMinio(s3Client)) {
-      const filePath = s3Client.makeFilePath(
-        `asvi/${eventId}/${inventoryId}/${resourceId}.mp4`
-      );
+    const filePath = s3Client.makeFilePath(
+      `asvi/${eventId}/${inventoryId}/${resourceId}.mp4`
+    );
 
-      const stats = await s3Client.getObjectStats(filePath);
+    const stats = await s3Client.getObjectStats(filePath);
 
-      if (!stats) {
-        throw new Error('error in s3Client.getObjectStats(filePath)');
-      }
-
-      const videoSize = stats.size;
-      const start = Number(range?.replace(/\D/g, ''));
-      const end = Math.min(start + 1000_000, videoSize - 1);
-
-      const stream = await s3Client.getAsStreamWithRange(filePath, start, end);
-      if (!stream) {
-        throw new Error('error in s3Client.getAsStreamWithRange(filePath, start, end)');
-      }
-      const contentLength = String(end - start + 1);
-      return new Response(stream, {
-        status: 206,
-        headers: {
-          'Content-Range': `bytes ${start}-${end}/${videoSize}`,
-          'Accept-Ranges': 'bytes',
-          'Content-Length': contentLength,
-          'Content-Type': 'video/mp4'
-        }
-      });
-    } else {
-      throw new Error(
-        'getAsStremWithRange & getObjectStats methods for S3ClientSbercloud must be implemented'
-      );
+    if (!stats) {
+      throw new Error('error in s3Client.getObjectStats(filePath)');
     }
+
+    const videoSize = stats.size;
+    const start = Number(range?.replace(/\D/g, ''));
+    const end = Math.min(start + 1000_000, videoSize - 1);
+
+    const stream = await s3Client.getAsStreamWithRange(filePath, start, end);
+    if (!stream) {
+      throw new Error('error in s3Client.getAsStreamWithRange(filePath, start, end)');
+    }
+    const contentLength = String(end - start + 1);
+    return new Response(stream, {
+      status: 206,
+      headers: {
+        'Content-Range': `bytes ${start}-${end}/${videoSize}`,
+        'Accept-Ranges': 'bytes',
+        'Content-Length': contentLength,
+        'Content-Type': 'video/mp4'
+      }
+    });
   } catch (error) {
     return getErrorResponse(error, req);
   }

@@ -2,7 +2,6 @@ import { NextRequest } from 'next/server';
 import { getErrorResponse } from '@/lib/helpers';
 import { S3ClientProvider } from '@/utils/s3-client/s3-client-provider';
 import { Logger } from '@/lib/logger';
-import { isS3ClientMinio } from '@/utils/s3-client/isS3ClientMinio';
 
 interface IContext {
   params: { eventId: string; inventoryId: string; resourceId: string };
@@ -26,25 +25,17 @@ export async function GET(req: NextRequest, context: IContext) {
       new Logger({ name: 's3-client' })
     );
 
-    if (isS3ClientMinio(s3Client)) {
-      const stream = await s3Client.getAsStream(
-        s3Client.makeFilePath(
-          `asvi/${eventId}/${inventoryId}/${resourceId}_subtitles.vtt`
-        )
-      );
+    const stream = await s3Client.getAsStream(
+      s3Client.makeFilePath(`asvi/${eventId}/${inventoryId}/${resourceId}_subtitles.vtt`)
+    );
 
-      // @ts-expect-error stream types
-      return new Response(stream, {
-        status: 200,
-        headers: {
-          'Content-Type': 'text/plain'
-        }
-      });
-    } else {
-      throw new Error(
-        'getAsStrem & getObjectStats methods for S3ClientSbercloud must be implemented'
-      );
-    }
+    // @ts-expect-error stream types
+    return new Response(stream, {
+      status: 200,
+      headers: {
+        'Content-Type': 'text/plain'
+      }
+    });
   } catch (error) {
     return getErrorResponse(error, req);
   }

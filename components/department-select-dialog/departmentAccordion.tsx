@@ -2,12 +2,6 @@ import { DivisionHierarchyNodeWithNodes } from '@/core/division-hierarchy/types'
 import { UserFormData } from '@/lib/form-validation-schemas/user-form-schema';
 import { useState } from 'react';
 
-export type AccordionData = {
-  id: string;
-  titleLn: string;
-  nodes?: AccordionData[];
-};
-
 type Props = {
   divisionId?: string;
   /* eslint-disable no-unused-vars */

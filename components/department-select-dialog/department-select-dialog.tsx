@@ -11,47 +11,78 @@ import {
 } from '@/components/ui/dialog';
 import { DepartmentAccordion } from './departmentAccordion';
 import { ScrollArea, ScrollBar } from '@/components/ui/scroll-area';
-import { useEffect } from 'react';
+import { useEffect, useState } from 'react';
 import { UserFormData } from '@/lib/form-validation-schemas/user-form-schema';
 import { Button } from '../ui/button';
+import {
+  getDivisionById,
+  getDivisionHierarchies
+} from '@/app/actions/server/division-hierarchies';
+import {
+  // DivisionHierarchyNodeWithNodes,
+  DivisionHierarchyWithNodes
+} from '@/core/division-hierarchy/types';
+import { DivisionHierarchyNode } from '@prisma/client';
+// import { DivisionHierarchyNode } from '@prisma/client';
 
 type Props = {
-  departmentId?: string;
+  divisionId?: string;
   /* eslint-disable no-unused-vars */
-  setDepartmentId: (
+  formSetDepartmentId: (
     key: keyof UserFormData,
     value: string,
     { shouldDirty }: { shouldDirty: boolean }
   ) => void;
 };
 
-export default function DepartmentSelectDialog({ departmentId, setDepartmentId }: Props) {
+export default function DepartmentSelectDialog({
+  divisionId,
+  formSetDepartmentId
+}: Props) {
+  const [divisionsData, setDivisionsData] = useState<DivisionHierarchyWithNodes[]>([]);
+
+  const [division, setDivision] = useState<DivisionHierarchyNode | null>(null);
+
   useEffect(() => {
     (async () => {
-      const res = await fetch('/api/division-hierarchies').then((res2) => res2.json());
-      // const res = fakeDepartmentData;
+      if (divisionId) {
+        const res = await getDivisionById(divisionId);
+        console.log('🚀 ~ division:', res);
+        setDivision(res);
+      }
+    })();
+  }, [divisionId]);
+
+  useEffect(() => {
+    (async () => {
+      const res = await getDivisionHierarchies();
       console.log('🚀 ~ useEffect ~ res:', res);
+      setDivisionsData(res);
     })();
   }, []);
 
   return (
     <Dialog>
       <DialogTrigger className='rounded-md border px-3 py-2 text-start text-sm shadow-sm'>
-        {departmentId ? departmentId : 'Выберите отдел'}
+        {division ? division.titleSh : 'Выберите отдел'}
       </DialogTrigger>
       <DialogContent className='flex h-[95%] max-w-2xl flex-col'>
         <DialogHeader>
-          <DialogTitle>{departmentId ? departmentId : 'Выберите отдел'}</DialogTitle>
-          <DialogDescription>
-            {/* This action cannot be undone. This will permanently delete your account and
-            remove your data from our servers. */}
-          </DialogDescription>
+          <DialogTitle>{division ? division.titleSh : 'Выберите отдел'}</DialogTitle>
+          <DialogDescription></DialogDescription>
+          {/* без DialogDescription консоль браузера сыплет ошибки */}
         </DialogHeader>
         <ScrollArea className='h-full'>
-          <DepartmentAccordion
-            departmentId={departmentId}
-            setDepartmentId={setDepartmentId}
-          />
+          {divisionsData.length
+            ? divisionsData.map((item) => (
+                <DepartmentAccordion
+                  key={item.id}
+                  divisionId={divisionId}
+                  formSetDepartmentId={formSetDepartmentId}
+                  divisionsData={item.nodes}
+                />
+              ))
+            : 'данные загружаются...'}
           <ScrollBar orientation='vertical' />
         </ScrollArea>
         <DialogFooter>

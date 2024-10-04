@@ -9,3 +9,9 @@ export const getDivisionHierarchies = async () => {
 
   return divisionHierarchies;
 };
+
+export const getDivisionById = async (id: string) => {
+  const divisionHierarchyService = new DivisionHierarchyService();
+  const res = await divisionHierarchyService.getDivisionNodeById(id);
+  return res;
+};

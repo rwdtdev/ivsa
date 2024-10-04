@@ -73,6 +73,7 @@ export function UserForm({ initialData, userId, generatedPassword }: UserFormPro
         email: '',
         tabelNumber: '',
         phone: '',
+        divisionId: '',
         ASOZSystemRequestNumber: '',
         role: UserRole.USER,
         createdAt: new Date(),
@@ -113,7 +114,7 @@ export function UserForm({ initialData, userId, generatedPassword }: UserFormPro
           'expiresAt',
           'status',
           'tabelNumber',
-          'departmentId'
+          'divisionId'
           // , organisationId
         ),
         _.pick(
@@ -125,7 +126,7 @@ export function UserForm({ initialData, userId, generatedPassword }: UserFormPro
           'expiresAt',
           'status',
           'tabelNumber',
-          'departmentId'
+          'divisionId'
           // , organisationId
         )
       )
@@ -407,13 +408,13 @@ export function UserForm({ initialData, userId, generatedPassword }: UserFormPro
             />
             <FormField
               control={form.control}
-              name='departmentId'
+              name='divisionId'
               render={({ field }) => (
                 <FormItem className='flex flex-col'>
                   <FormLabel className='mb-2 block'>Отдел</FormLabel>
                   <DepartmentSelectDialog
-                    departmentId={field.value}
-                    setDepartmentId={form.setValue}
+                    divisionId={field.value}
+                    formSetDepartmentId={form.setValue}
                   />
                   <FormMessage />
                 </FormItem>

@@ -310,9 +310,9 @@ export class UserService {
     if (data.isTemporaryPassword !== undefined) {
       updateData.isTemporaryPassword = data.isTemporaryPassword;
     }
-    // if (data.departmentId) {
-    //   updateData.departmentId = data.departmentId;
-    // }
+    if (data.divisionId) {
+      updateData.divisionId = data.divisionId;
+    }
 
     const updatedUser = await prisma.user.update({
       where: { id },

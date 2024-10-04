@@ -1,43 +1,48 @@
-import { accordionData } from '@/app/admin/users/[id]/fakeDepartmentData';
+import { DivisionHierarchyNodeWithNodes } from '@/core/division-hierarchy/types';
 import { UserFormData } from '@/lib/form-validation-schemas/user-form-schema';
 import { useState } from 'react';
 
-type AccordionData = {
+export type AccordionData = {
   id: string;
   titleLn: string;
-  children?: AccordionData[];
+  nodes?: AccordionData[];
 };
 
 type Props = {
-  departmentId?: string;
+  divisionId?: string;
   /* eslint-disable no-unused-vars */
-  setDepartmentId: (
+  formSetDepartmentId: (
     key: keyof UserFormData,
     value: string,
     { shouldDirty }: { shouldDirty: boolean }
   ) => void;
+  divisionsData: DivisionHierarchyNodeWithNodes[];
 };
 
-export function DepartmentAccordion({ departmentId, setDepartmentId }: Props) {
-  const renderNestedLevels = (data: AccordionData[]) => {
+export function DepartmentAccordion({
+  divisionId,
+  formSetDepartmentId,
+  divisionsData
+}: Props) {
+  const renderNestedLevels = (data: DivisionHierarchyNodeWithNodes[]) => {
     return data.map((item) => (
       <SubLevelComp
         key={item.id}
         item={item}
         renderNestedLevels={renderNestedLevels}
-        departmentId={departmentId}
-        setDepartmentId={setDepartmentId}
+        departmentId={divisionId}
+        setDepartmentId={formSetDepartmentId}
       />
     ));
   };
 
-  return <>{renderNestedLevels(accordionData)}</>;
+  return <>{renderNestedLevels(divisionsData)}</>;
 }
 
 type SubLevelCompArgs = {
-  item: AccordionData;
+  item: DivisionHierarchyNodeWithNodes;
   /* eslint-disable no-unused-vars */
-  renderNestedLevels: (data: AccordionData[]) => JSX.Element[];
+  renderNestedLevels: (data: DivisionHierarchyNodeWithNodes[]) => JSX.Element[];
   departmentId?: string;
   setDepartmentId: (
     key: keyof UserFormData,
@@ -54,8 +59,8 @@ function SubLevelComp({
 }: SubLevelCompArgs) {
   const [isOpen, setIsOpen] = useState(false);
 
-  const hasChidlren = (item: AccordionData) => {
-    return Array.isArray(item.children) && item.children.length > 0;
+  const hasChildren = (item: DivisionHierarchyNodeWithNodes) => {
+    return Array.isArray(item.nodes) && item.nodes.length > 0;
   };
 
   return (
@@ -63,27 +68,27 @@ function SubLevelComp({
       <p
         className='flex cursor-pointer items-center'
         onClick={() => {
-          if (hasChidlren(item)) {
+          if (hasChildren(item)) {
             setIsOpen(!isOpen);
           } else {
-            setDepartmentId('departmentId', item.id, { shouldDirty: true });
+            setDepartmentId('divisionId', item.id, { shouldDirty: true });
           }
         }}
       >
-        {hasChidlren(item) ? (
+        {hasChildren(item) ? (
           <span className='mr-2 text-lg font-normal'>{isOpen ? '-' : '+'}</span>
         ) : (
           <span
             className={`mr-2 h-2.5 w-2.5 shrink-0 rounded-full border ${departmentId === item.id ? 'border-red-600 bg-red-600' : 'border-black'} `}
           ></span>
         )}
-        <span className={`${departmentId === item.id ? 'text-red-600' : ''}`}>
+        <span className={`text-sm ${departmentId === item.id ? 'text-red-600' : ''}`}>
           {item.titleLn}
         </span>
       </p>
       {isOpen && (
         <div style={{ marginLeft: '20px' }}>
-          {hasChidlren(item) && renderNestedLevels(item.children!)}
+          {hasChildren(item) && renderNestedLevels(item.nodes)}
         </div>
       )}
     </div>

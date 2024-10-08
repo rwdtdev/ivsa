@@ -12,12 +12,12 @@ export default function IvaLocatorBtn({ locatorIvaLink }: Props) {
     <>
       <Button className='mb-4 w-full rounded-xl p-0' asChild>
         <a href={locatorIvaStart} className='block w-full py-8'>
-          Запустить сбор гео-данных <br /> и перейти в видео-конференцию
+          Запустить сбор мета-данных <br /> и перейти в видео-конференцию
         </a>
       </Button>
       <Button className='mb-4 h-12 w-full rounded-xl p-0' variant='destructive'>
         <a href={locatorStop} className='w-full p-4'>
-          Остановить сбор гео-данных
+          Остановить сбор мета-данных
         </a>
       </Button>
     </>

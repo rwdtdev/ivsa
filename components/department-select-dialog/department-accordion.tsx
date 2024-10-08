@@ -73,11 +73,18 @@ function SubLevelComp({
           <span className='mr-2 text-lg font-normal'>{isOpen ? '-' : '+'}</span>
         ) : (
           <span
-            className={`mr-2 h-2.5 w-2.5 shrink-0 rounded-full border ${departmentId === item.id ? 'border-red-600 bg-red-600' : 'border-black'} `}
+            className={`mr-2 h-2.5 w-2.5 shrink-0 rounded-full border ${departmentId === item.id ? 'border-green-600 bg-green-600' : 'border-black'} `}
           ></span>
         )}
-        <span className={`text-sm ${departmentId === item.id ? 'text-red-600' : ''}`}>
+        <span
+          className={`text-sm ${departmentId === item.id ? 'text-green-600' : ''}`}
+          onClick={() => {
+            console.log(item.id);
+          }}
+        >
           {item.titleLn}
+          {/* {'<><>'}
+          {divisionTypes[item.divType as keyof typeof divisionTypes]} */}
         </span>
       </p>
       {isOpen && (

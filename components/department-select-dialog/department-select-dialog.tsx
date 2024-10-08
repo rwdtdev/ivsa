@@ -9,7 +9,7 @@ import {
   DialogTitle,
   DialogTrigger
 } from '@/components/ui/dialog';
-import { DepartmentAccordion } from './departmentAccordion';
+import { DepartmentAccordion } from './department-accordion';
 import { ScrollArea, ScrollBar } from '@/components/ui/scroll-area';
 import { useEffect, useState } from 'react';
 import { UserFormData } from '@/lib/form-validation-schemas/user-form-schema';
@@ -17,12 +17,14 @@ import { Button } from '../ui/button';
 import {
   getDivisionById,
   getDivisionHierarchies
+  // getDivisionsByTitle
 } from '@/app/actions/server/division-hierarchies';
 import {
   // DivisionHierarchyNodeWithNodes,
   DivisionHierarchyWithNodes
 } from '@/core/division-hierarchy/types';
 import { DivisionHierarchyNode } from '@prisma/client';
+import React from 'react';
 // import { DivisionHierarchyNode } from '@prisma/client';
 
 type Props = {
@@ -40,8 +42,9 @@ export default function DepartmentSelectDialog({
   formSetDepartmentId
 }: Props) {
   const [divisionsData, setDivisionsData] = useState<DivisionHierarchyWithNodes[]>([]);
-
   const [division, setDivision] = useState<DivisionHierarchyNode | null>(null);
+  // const [inputValue, setInputValue] = useState('');
+  // const [searchRes, setSearchRes] = useState<DivisionHierarchyNode[]>([]);
 
   useEffect(() => {
     (async () => {
@@ -56,7 +59,7 @@ export default function DepartmentSelectDialog({
   useEffect(() => {
     (async () => {
       const res = await getDivisionHierarchies();
-      console.log('🚀 ~ useEffect ~ res:', res);
+      // console.log('🚀 ~ useEffect ~ res:', res);
       setDivisionsData(res);
     })();
   }, []);
@@ -72,6 +75,34 @@ export default function DepartmentSelectDialog({
           <DialogDescription></DialogDescription>
           {/* без DialogDescription консоль браузера сыплет ошибки */}
         </DialogHeader>
+        {/* <form
+          className='flex w-full items-center space-x-2'
+          onSubmit={async (e) => {
+            e.preventDefault();
+            console.log('e:', e, e.target[0].value);
+            const res = await getDivisionsByTitle(e.target[0].value);
+            console.log('🚀 ~ onSubmit={ ~ res:', res);
+            setSearchRes(res || []);
+          }}
+        >
+          <Input
+            type=''
+            placeholder='введите название отдела'
+            value={inputValue}
+            onChange={(e) => {
+              setInputValue(e.target.value);
+            }}
+          />
+          <Button type='submit'>Найти</Button>
+        </form>
+        {searchRes.length && (
+          <ul>
+            {searchRes.map((item) => (
+              <li key={item.id}>- {item.titleLn}</li>
+            ))}
+          </ul>
+        )}
+        или выберите из списка */}
         <ScrollArea className='h-full'>
           {divisionsData.length
             ? divisionsData.map((item) => (

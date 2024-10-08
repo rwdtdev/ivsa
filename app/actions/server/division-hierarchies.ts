@@ -15,3 +15,9 @@ export const getDivisionById = async (id: string) => {
   const res = await divisionHierarchyService.getDivisionNodeById(id);
   return res;
 };
+
+export const getDivisionsByTitle = async (title: string) => {
+  const divisionHierarchyService = new DivisionHierarchyService();
+  const res = await divisionHierarchyService.getDivisionNodesByTitle(title);
+  return res;
+};

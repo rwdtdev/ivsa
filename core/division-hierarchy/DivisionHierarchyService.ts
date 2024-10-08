@@ -10,12 +10,12 @@ import { DivisionHierarchyNodeWithNodes, DivisionHierarchyWithNodes } from './ty
 function makeTree(list: DivisionHierarchyNode[], item?: DivisionHierarchyNode): any {
   if (!item) {
     item = list.find((item) => item.parentId === '00006417');
-
     return [
       {
         ..._.omit(item, 'divisionHierarchyId'),
         nodes: list
           .filter((node) => node.parentId === item?.id)
+          .sort((a, b) => a.titleLn.localeCompare(b.titleLn))
           .map((node) => makeTree(list, node))
       }
     ] as DivisionHierarchyNodeWithNodes[];
@@ -24,7 +24,9 @@ function makeTree(list: DivisionHierarchyNode[], item?: DivisionHierarchyNode): 
   return {
     ..._.omit(item, 'divisionHierarchyId'),
     nodes: list
+      // .filter((node) => node.parentId === item?.id)
       .filter((node) => node.parentId === item?.id)
+      .sort((a, b) => a.titleLn.localeCompare(b.titleLn))
       .map((node) => makeTree(list, node))
   } as DivisionHierarchyNodeWithNodes;
 }
@@ -60,7 +62,11 @@ export class DivisionHierarchyService {
 
   async getAll(): Promise<DivisionHierarchyWithNodes[]> {
     const divisionHierarchies = await this.prisma.divisionHierarchy.findMany({
-      include: { divisionHierarchyNodes: true }
+      include: {
+        divisionHierarchyNodes: {
+          where: { from: { lte: new Date() }, to: { gte: new Date() } }
+        }
+      }
     });
 
     return divisionHierarchies.map((divisionHierarchy) => {
@@ -94,6 +100,20 @@ export class DivisionHierarchyService {
   async getDivisionNodeById(id: string): Promise<DivisionHierarchyNode | null> {
     return this.prisma.divisionHierarchyNode.findUnique({
       where: { id }
+    });
+  }
+
+  async getDivisionNodesByTitle(title: string): Promise<DivisionHierarchyNode[] | null> {
+    return this.prisma.divisionHierarchyNode.findMany({
+      where: {
+        from: { lte: new Date() },
+        to: { gte: new Date() },
+        OR: [
+          { titleLn: { contains: title, mode: 'insensitive' } },
+          { titleMd: { contains: title, mode: 'insensitive' } },
+          { titleSh: { contains: title, mode: 'insensitive' } }
+        ]
+      }
     });
   }
 

@@ -1,10 +1,35 @@
+import _ from 'underscore';
 import { CreateDivisionHierarchyDTO } from '@/app/api/division-hierarchies/dtos/create-division-hierarchy.dto';
 import prisma from '@/core/prisma';
 import { NotFoundError } from '@/lib/problem-json';
 import { TransactionSession } from '@/types/prisma';
 import { DivisionHierarchy, DivisionHierarchyNode, PrismaClient } from '@prisma/client';
-import _ from 'underscore';
 import { DivisionHierarchyErrors } from './errors';
+import { DivisionHierarchyNodeWithNodes, DivisionHierarchyWithNodes } from './types';
+
+function makeTree(list: DivisionHierarchyNode[], item?: DivisionHierarchyNode): any {
+  if (!item) {
+    item = list.find((item) => item.parentId === '00006417');
+    return [
+      {
+        ..._.omit(item, 'divisionHierarchyId'),
+        nodes: list
+          .filter((node) => node.parentId === item?.id)
+          .sort((a, b) => a.titleLn.localeCompare(b.titleLn))
+          .map((node) => makeTree(list, node))
+      }
+    ] as DivisionHierarchyNodeWithNodes[];
+  }
+
+  return {
+    ..._.omit(item, 'divisionHierarchyId'),
+    nodes: list
+      // .filter((node) => node.parentId === item?.id)
+      .filter((node) => node.parentId === item?.id)
+      .sort((a, b) => a.titleLn.localeCompare(b.titleLn))
+      .map((node) => makeTree(list, node))
+  } as DivisionHierarchyNodeWithNodes;
+}
 
 const addHierarchyId =
   (divisionHierarchyId: string) =>
@@ -35,11 +60,24 @@ export class DivisionHierarchyService {
     }
   }
 
-  async getAll(): Promise<DivisionHierarchy[]> {
-    return this.prisma.divisionHierarchy.findMany({
+  async getAll(): Promise<DivisionHierarchyWithNodes[]> {
+    const divisionHierarchies = await this.prisma.divisionHierarchy.findMany({
       include: {
-        divisionHierarchyNodes: true
+        divisionHierarchyNodes: {
+          where: { from: { lte: new Date() }, to: { gte: new Date() } }
+        }
       }
+    });
+
+    return divisionHierarchies.map((divisionHierarchy) => {
+      const rootNodes = divisionHierarchy.divisionHierarchyNodes.filter(
+        (rootNode) => rootNode.divisionHierarchyId === divisionHierarchy.id
+      );
+
+      return {
+        ..._.omit(divisionHierarchy, 'divisionHierarchyNodes'),
+        nodes: makeTree(rootNodes)
+      };
     });
   }
 
@@ -54,6 +92,28 @@ export class DivisionHierarchyService {
     return this.prisma.divisionHierarchy.findFirst({
       where: { id },
       include: { divisionHierarchyNodes: true }
+    });
+  }
+
+  /* getDivisionNodeById работает только если все id в DivisionHierarchyNode
+  уникальны. По-хорошему надо использовать getById но в User мы пока храним только divisionId из DivisionHierarchyNode и не храним id DivisionHierarchy */
+  async getDivisionNodeById(id: string): Promise<DivisionHierarchyNode | null> {
+    return this.prisma.divisionHierarchyNode.findUnique({
+      where: { id }
+    });
+  }
+
+  async getDivisionNodesByTitle(title: string): Promise<DivisionHierarchyNode[] | null> {
+    return this.prisma.divisionHierarchyNode.findMany({
+      where: {
+        from: { lte: new Date() },
+        to: { gte: new Date() },
+        OR: [
+          { titleLn: { contains: title, mode: 'insensitive' } },
+          { titleMd: { contains: title, mode: 'insensitive' } },
+          { titleSh: { contains: title, mode: 'insensitive' } }
+        ]
+      }
     });
   }
 

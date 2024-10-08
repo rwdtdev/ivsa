@@ -25,13 +25,7 @@ import {
   UserFormData,
   UserFormSchema
 } from '@/lib/form-validation-schemas/user-form-schema';
-import {
-  ActionType,
-  Department,
-  Organisation,
-  UserRole,
-  UserStatus
-} from '@prisma/client';
+import { ActionType, UserRole, UserStatus } from '@prisma/client';
 import { PasswordInput } from '../password-input';
 import {
   blockUserAction,
@@ -47,23 +41,17 @@ import { format } from 'date-fns';
 import { ru } from 'date-fns/locale';
 import Link from 'next/link';
 import _ from 'underscore';
+// import { fakeDepartmentData } from '@/app/admin/users/[id]/fakeDepartmentData';
+import DepartmentSelectDialog from '../department-select-dialog/department-select-dialog';
 
 interface UserFormProps {
   userId?: string;
   // initialData: (UserFormData & { createdAt: Date }) | undefined;
   initialData: any | undefined;
-  organisations: Organisation[];
-  departments: Department[];
   generatedPassword?: string;
 }
 
-export function UserForm({
-  initialData,
-  userId,
-  organisations,
-  departments,
-  generatedPassword
-}: UserFormProps) {
+export function UserForm({ initialData, userId, generatedPassword }: UserFormProps) {
   const { toast } = useToast();
   const [loading, setLoading] = useState(false);
 
@@ -85,6 +73,7 @@ export function UserForm({
         email: '',
         tabelNumber: '',
         phone: '',
+        divisionId: '',
         ASOZSystemRequestNumber: '',
         role: UserRole.USER,
         createdAt: new Date(),
@@ -124,7 +113,9 @@ export function UserForm({
           'phone',
           'expiresAt',
           'status',
-          'tabelNumber' //departmentId, organisationId
+          'tabelNumber',
+          'divisionId'
+          // , organisationId
         ),
         _.pick(
           data,
@@ -134,7 +125,9 @@ export function UserForm({
           'phone',
           'expiresAt',
           'status',
-          'tabelNumber' //departmentId, organisationId
+          'tabelNumber',
+          'divisionId'
+          // , organisationId
         )
       )
     ) {
@@ -303,70 +296,6 @@ export function UserForm({
             />
             <FormField
               control={form.control}
-              name='organisationId'
-              render={({ field }) => (
-                <FormItem>
-                  <FormLabel>Организация</FormLabel>
-                  <Select
-                    disabled={loading}
-                    onValueChange={field.onChange}
-                    value={field.value}
-                    defaultValue={field.value}
-                  >
-                    <FormControl>
-                      <SelectTrigger>
-                        <SelectValue
-                          placeholder='Выберите организацию'
-                          defaultValue={field.value}
-                        />
-                      </SelectTrigger>
-                    </FormControl>
-                    <SelectContent>
-                      {organisations.map((organisation: Organisation, idx: number) => (
-                        <SelectItem key={idx} value={organisation.id}>
-                          {organisation.name}
-                        </SelectItem>
-                      ))}
-                    </SelectContent>
-                  </Select>
-                  <FormMessage />
-                </FormItem>
-              )}
-            />
-            <FormField
-              control={form.control}
-              name='departmentId'
-              render={({ field }) => (
-                <FormItem>
-                  <FormLabel>Отдел</FormLabel>
-                  <Select
-                    disabled={loading}
-                    onValueChange={field.onChange}
-                    value={field.value}
-                    defaultValue={field.value}
-                  >
-                    <FormControl>
-                      <SelectTrigger>
-                        <SelectValue
-                          placeholder='Выберите отдел'
-                          defaultValue={field.value}
-                        />
-                      </SelectTrigger>
-                    </FormControl>
-                    <SelectContent>
-                      {departments.map((department: Department, idx: number) => (
-                        <SelectItem key={idx} value={department.id}>
-                          {department.name}
-                        </SelectItem>
-                      ))}
-                    </SelectContent>
-                  </Select>
-                  <FormMessage />
-                </FormItem>
-              )}
-            />
-            <FormField
-              control={form.control}
               name='status'
               render={({ field }) => (
                 <FormItem>
@@ -473,6 +402,20 @@ export function UserForm({
                       />
                     </PopoverContent>
                   </Popover>
+                  <FormMessage />
+                </FormItem>
+              )}
+            />
+            <FormField
+              control={form.control}
+              name='divisionId'
+              render={({ field }) => (
+                <FormItem className='flex flex-col'>
+                  <FormLabel className='mb-2 block'>Отдел</FormLabel>
+                  <DepartmentSelectDialog
+                    divisionId={field.value}
+                    formSetDepartmentId={form.setValue}
+                  />
                   <FormMessage />
                 </FormItem>
               )}

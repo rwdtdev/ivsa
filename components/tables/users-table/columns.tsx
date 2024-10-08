@@ -208,28 +208,6 @@ export function fetchUsersTableColumnDefs(
         <div style={{ padding: 10 }}>{row.getValue('ASOZSystemRequestNumber')}</div>
       )
     },
-    // @TODO: disable while not exist data dictionaries with organisations and departments
-    // {
-    //   id: 'organisation',
-    //   accessorKey: 'organisation',
-    //   header: ({ column }) => (
-    //     <DataTableColumnHeader column={column} title='Организация' />
-    //   ),
-    //   cell: ({ row }) => {
-    //     const organisation = row.original.organisation;
-
-    //     return organisation ? organisation.name : emptyCell;
-    //   }
-    // },
-    // {
-    //   id: 'department',
-    //   accessorKey: 'department',
-    //   header: ({ column }) => <DataTableColumnHeader column={column} title='Отдел' />,
-    //   cell: ({ row }) => {
-    //     const department = row.original.department;
-    //     return department ? department.name : emptyCell;
-    //   }
-    // },
     {
       id: 'actions',
       enableHiding: false,
@@ -239,9 +217,7 @@ export function fetchUsersTableColumnDefs(
   ];
 }
 
-export const filterableColumns = () /*   departments: Department[],
-  organisations: Organisation[] */
-: DataTableFilterableColumn<UserView>[] => [
+export const filterableColumns = (): DataTableFilterableColumn<UserView>[] => [
   {
     id: 'status',
     title: 'Статус',
@@ -278,20 +254,4 @@ export const filterableColumns = () /*   departments: Department[],
       };
     })
   }
-  // {
-  //   id: 'department',
-  //   title: 'Отдел',
-  //   options: departments.map((department) => ({
-  //     label: department.name[0]?.toUpperCase() + department.name.slice(1),
-  //     value: department.id
-  //   }))
-  // },
-  // {
-  //   id: 'organisation',
-  //   title: 'Организация',
-  //   options: organisations.map((organisation) => ({
-  //     label: organisation.name[0]?.toUpperCase() + organisation.name.slice(1),
-  //     value: organisation.id
-  //   }))
-  // }
 ];

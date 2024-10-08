@@ -2,13 +2,10 @@
 
 import { PaginatedResponse } from '@/types';
 import { UserView } from '@/types/user';
-import { Department, Organisation } from '@prisma/client';
 import React, { createContext } from 'react';
 
 type DataContextType = {
   users: PaginatedResponse<UserView>;
-  departments: Department[];
-  organisations: Organisation[];
 };
 
 export const DataContext = createContext<DataContextType>({
@@ -23,9 +20,7 @@ export const DataContext = createContext<DataContextType>({
       to: 0,
       hasMore: false
     }
-  },
-  departments: [],
-  organisations: []
+  }
 });
 
 export default function DataProvider({

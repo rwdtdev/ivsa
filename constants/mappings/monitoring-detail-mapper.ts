@@ -39,7 +39,8 @@ export const monitoringDetailMapper = {
   status: 'Статус',
   updatedFields: 'Обновленные поля',
   role: 'Роли',
-  expiresAt: 'Действует до'
+  expiresAt: 'Действует до',
+  divisionId: 'id отдела'
 
   // ------------
   // createdUser: 'Созданный пользователь',

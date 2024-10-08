@@ -1,5 +1,9 @@
 import { DivisionHierarchy, DivisionHierarchyNode } from '@prisma/client';
 
 export type DivisionHierarchyWithNodes = DivisionHierarchy & {
-  divisionHierarchyNodes: DivisionHierarchyNode;
+  nodes: DivisionHierarchyNodeWithNodes[];
+};
+
+export type DivisionHierarchyNodeWithNodes = DivisionHierarchyNode & {
+  nodes: DivisionHierarchyNodeWithNodes[];
 };

@@ -1,5 +1,3 @@
-import { getDepartmentsAction } from '@/app/actions/server/departments';
-import { getOrganisationsAction } from '@/app/actions/server/organisations';
 import BreadCrumb from '@/components/breadcrumb';
 import { UserForm } from '@/components/forms/user-form';
 
@@ -16,8 +14,6 @@ const breadcrumbItems = [
 ];
 
 export default async function NewUserPage() {
-  const organisations = await getOrganisationsAction();
-  const departments = await getDepartmentsAction();
   const generatedPassword = await generatePasswordAsync();
 
   return (
@@ -28,8 +24,6 @@ export default async function NewUserPage() {
         <div className='rounded-md border p-4 shadow-mod-1'>
           <UserForm
             initialData={undefined}
-            organisations={organisations}
-            departments={departments}
             generatedPassword={generatedPassword}
           />
         </div>

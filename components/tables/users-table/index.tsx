@@ -29,7 +29,7 @@ export function UsersTable({ users }: UsersTableProps) {
     columns,
     pageCount: pagination.pagesCount,
     // searchableColumns: searchableColumns
-    filterableColumns: filterableColumns(/* departments, organisations */)
+    filterableColumns: filterableColumns()
   });
 
   return (
@@ -39,7 +39,7 @@ export function UsersTable({ users }: UsersTableProps) {
       withSearch
       withSelectedRows
       columnNames={UsersTableColumnNames}
-      filterableColumns={filterableColumns(/* departments, organisations */)}
+      filterableColumns={filterableColumns()}
       // floatingBarContent={TasksTableFloatingBarContent(dataTable)}
       // deleteRowsAction={(event) => deleteSelectedRows(dataTable, event)}
       // deleteRowsAction={(event) => console.log('deleteRowsAction', dataTable, event)}

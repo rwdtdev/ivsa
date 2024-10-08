@@ -1,3 +1,18 @@
+# [1.10.0](https://rwdt1.gitlab.yandexcloud.net/rwdt/services/asvi/compare/1.9.15...1.10.0) (2024-10-08)
+
+
+### Bug Fixes
+
+* hier tree ([1b87b23](https://rwdt1.gitlab.yandexcloud.net/rwdt/services/asvi/commit/1b87b23e405d4487743f282be5101d2af85b91f0))
+* minor improvement ([506d5cf](https://rwdt1.gitlab.yandexcloud.net/rwdt/services/asvi/commit/506d5cf88fbf9f568139d9673ad01cd422f46acf))
+* refactor ([29415ff](https://rwdt1.gitlab.yandexcloud.net/rwdt/services/asvi/commit/29415ffa06536c91d8ea4107ea8eff24252015d0))
+
+
+### Features
+
+* finished field division in UserForm ([b402f65](https://rwdt1.gitlab.yandexcloud.net/rwdt/services/asvi/commit/b402f650c04c7605d88153bea16d5a451b1230dc))
+* select division process ([d8a6f83](https://rwdt1.gitlab.yandexcloud.net/rwdt/services/asvi/commit/d8a6f83d89313c717058b6be26c894f6f9a6a3ca))
+
 ## [1.9.15](https://rwdt1.gitlab.yandexcloud.net/rwdt/services/asvi/compare/1.9.14...1.9.15) (2024-10-03)
 
 

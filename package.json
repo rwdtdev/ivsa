@@ -1,6 +1,6 @@
 {
   "name": "@rwdt/asvi",
-  "version": "1.9.15",
+  "version": "1.10.0",
   "private": true,
   "description": "ASVI",
   "scripts": {

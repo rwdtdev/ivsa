@@ -14,7 +14,7 @@ const NodeSchema = z
     dateto: isoDatetimeSchema,
     tlevel: z.string().trim(),
     divtype: z.string().trim(),
-    title_sh: z.string().trim().min(1),
+    title_sh: z.string().trim(),
     title_md: z.string().trim(),
     title_ln: z.string().trim(),
     bukrs: z.string()
@@ -27,7 +27,7 @@ export const CreateDivisionHierarchySchema = z
     part_num: z.string().trim().min(1),
     parts: z.string().trim().min(1),
     hierid: z.string().trim().min(1),
-    title_sh: z.string().trim().min(1),
+    title_sh: z.string().trim(),
     title_md: z.string().trim(),
     title_ln: z.string().trim(),
     hier_nodes: z.array(NodeSchema).default([])

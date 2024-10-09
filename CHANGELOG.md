@@ -1,3 +1,10 @@
+## [1.10.1](https://rwdt1.gitlab.yandexcloud.net/rwdt/services/asvi/compare/1.10.0...1.10.1) (2024-10-09)
+
+
+### Bug Fixes
+
+* validation ([3ab8ca8](https://rwdt1.gitlab.yandexcloud.net/rwdt/services/asvi/commit/3ab8ca8b5e6b0fe5d13b97744bdb8a4177f9be21))
+
 # [1.10.0](https://rwdt1.gitlab.yandexcloud.net/rwdt/services/asvi/compare/1.9.15...1.10.0) (2024-10-08)
 
 

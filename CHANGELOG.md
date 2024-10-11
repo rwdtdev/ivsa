@@ -1,3 +1,11 @@
+## [1.10.2](https://rwdt1.gitlab.yandexcloud.net/rwdt/services/asvi/compare/1.10.1...1.10.2) (2024-10-11)
+
+
+### Bug Fixes
+
+* add log ([e7f1ecc](https://rwdt1.gitlab.yandexcloud.net/rwdt/services/asvi/commit/e7f1ecce38fd2d31f5c6be9612108d6d4fefa985))
+* console on InventoryId page ([e041687](https://rwdt1.gitlab.yandexcloud.net/rwdt/services/asvi/commit/e0416870d7c47e847c7fef64d05daf6a96efedc4))
+
 ## [1.10.1](https://rwdt1.gitlab.yandexcloud.net/rwdt/services/asvi/compare/1.10.0...1.10.1) (2024-10-09)
 
 

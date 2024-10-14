@@ -74,7 +74,7 @@ export function InventoryInfoCard({
           </span>{' '}
           {!isUserChairman &&
             participants.find(
-              (participant) => participant.user.id === inventory.videographerId
+              (participant) => participant.user?.id === inventory.videographerId
             )?.user.name}
         </P>
         {isUserChairman && (

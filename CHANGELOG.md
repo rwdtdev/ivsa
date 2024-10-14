@@ -1,3 +1,10 @@
+## [1.10.3](https://rwdt1.gitlab.yandexcloud.net/rwdt/services/asvi/compare/1.10.2...1.10.3) (2024-10-14)
+
+
+### Bug Fixes
+
+* nullable participant.user in inventory-info-card ([9fff70f](https://rwdt1.gitlab.yandexcloud.net/rwdt/services/asvi/commit/9fff70fa96a93fa262ca6f3867e5a821ac19bd41))
+
 ## [1.10.2](https://rwdt1.gitlab.yandexcloud.net/rwdt/services/asvi/compare/1.10.1...1.10.2) (2024-10-11)
 
 

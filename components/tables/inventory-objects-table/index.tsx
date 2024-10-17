@@ -8,23 +8,26 @@ import { ColumnDef } from '@tanstack/react-table';
 import { InventoryObjectsTableColumnNames } from '@/constants/mappings/tables-column-names';
 import { Inventory, InventoryObject } from '@prisma/client';
 import { PaginatedInventoryObject } from '@/app/actions/server/inventoryObjects';
-import { InventoryCode } from '@/core/inventory/types';
+import { useSession } from 'next-auth/react';
+// import { InventoryCode } from '@/core/inventory/types';
 
 interface InventoryObjectsTableProps {
-  inventoryCode: InventoryCode;
+  inventory: Inventory;
   inventoryObjects: PaginatedInventoryObject;
   inventories: Inventory[];
 }
 
 export function InventoryObjectsTable({
   inventoryObjects,
-  inventoryCode,
+  inventory,
   inventories
 }: InventoryObjectsTableProps) {
+  const session = useSession();
+  console.log('🚀 ~ session:', session);
   const { items, pagination } = inventoryObjects;
 
   const columns = React.useMemo<ColumnDef<InventoryObject, unknown>[]>(
-    () => fetchInventoryObjectsTableColumnDefs(inventoryCode),
+    () => fetchInventoryObjectsTableColumnDefs(inventory, session?.data?.user?.id),
     []
   );
 

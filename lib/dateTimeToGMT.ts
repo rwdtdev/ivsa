@@ -2,6 +2,10 @@ export function dateTimeToGMT(date: Date | undefined) {
   return date ? new Date(date.getTime() - date.getTimezoneOffset() * 60000) : undefined;
 }
 
+export function dateTimeToGMTStrict(date: Date) {
+  return new Date(date.getTime() - date.getTimezoneOffset() * 60000);
+}
+
 /* 
 при работе с datePicker при выборе даты (без выбора времени) создается объект Date 
 с временем 00:00:00 в timezone арма (например мск: utc +3 часа) и переводится в дату-время в timezone unc+0. 

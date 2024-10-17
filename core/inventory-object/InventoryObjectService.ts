@@ -87,4 +87,81 @@ export class InventoryObjectService {
       }
     };
   }
+
+  async setTimeOnVideo(id: string): Promise<InventoryObject> {
+    const updatedInventoryObject = await this.prisma.inventoryObject.update({
+      where: { id },
+      data: {
+        onVideoAt: new Date()
+      }
+    });
+
+    return updatedInventoryObject;
+  }
+
+  async updTimeOnVideo({
+    id,
+    hours,
+    minutes
+  }: {
+    id: string;
+    hours: string;
+    minutes: string;
+  }): Promise<InventoryObject> {
+    const inventoryObject = await this.prisma.inventoryObject.findUnique({
+      where: { id }
+    });
+
+    inventoryObject?.onVideoAt?.setHours(Number(hours), Number(minutes));
+
+    const updatedInventoryObject = await this.prisma.inventoryObject.update({
+      where: { id },
+      data: { ...inventoryObject }
+    });
+    return updatedInventoryObject;
+  }
+  async updVideosDate({
+    id,
+    selectedDate
+  }: {
+    id: string;
+    selectedDate: Date;
+  }): Promise<InventoryObject> {
+    const inventoryObject = await this.prisma.inventoryObject.findUnique({
+      where: { id }
+    });
+
+    inventoryObject?.onVideoAt?.setMonth(selectedDate.getMonth(), selectedDate.getDate());
+
+    const updatedInventoryObject = await this.prisma.inventoryObject.update({
+      where: { id },
+      data: { ...inventoryObject }
+    });
+    return updatedInventoryObject;
+  }
+
+  async updIsConditionOk(
+    id: string,
+    isConditionOk: boolean | null
+  ): Promise<InventoryObject> {
+    const updatedInventoryObject = await this.prisma.inventoryObject.update({
+      where: { id },
+      data: {
+        isConditionOk
+      }
+    });
+
+    return updatedInventoryObject;
+  }
+
+  async updComments(id: string, comments: string): Promise<InventoryObject> {
+    const updatedInventoryObject = await this.prisma.inventoryObject.update({
+      where: { id },
+      data: {
+        comments
+      }
+    });
+
+    return updatedInventoryObject;
+  }
 }

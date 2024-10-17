@@ -62,3 +62,9 @@ export const setInventoryVideographer = async (id: string, videographerId: strin
 
   return await inventoryService.update(id, { videographerId });
 };
+
+export const setInventoryInspector = async (id: string, inspectorId: string) => {
+  const inventoryService = new InventoryService();
+
+  return await inventoryService.update(id, { inspectorId });
+};

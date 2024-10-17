@@ -173,6 +173,8 @@ model Inventory {
   videographerId      String?
   /// Объект с данными о проводящем видеофиксацию
   videographer        User?               @relation(fields: [videographerId], references: [id])
+  /// Идентификатор пользователя, который указывает время, когда было найдено ТМЦ на видео, указывает состояние ТМЦ
+  inspectorId         String?
 
   @@map("inventories")
 }
@@ -243,6 +245,12 @@ model InventoryObject {
   createdAt          DateTime  @default(now())
   /// Дата и время модификации записи
   updatedAt          DateTime  @updatedAt
+  /// Время на видео, когда появляется тмц
+  onVideoAt          DateTime? @db.Timestamptz()
+  /// Состояние исправно / неисправно 
+  isConditionOk      Boolean?
+  /// Комментарии о состоянии 
+  comments           String?
 
   @@map("inventory_objects")
 }

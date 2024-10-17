@@ -40,7 +40,11 @@ export const InventoryObjectsTableColumnNames = {
   unitCode: 'Код ед. измерения',
   unitName: 'Единица измерения',
   batchNumber: 'Номер партии',
-  placement: 'Местоположение'
+  placement: 'Местоположение',
+  videosDate: 'Дата видео',
+  onVideoAt: 'Время на\u00A0видео',
+  isConditionOk: 'Состояние',
+  comments: 'Комментарии'
 };
 
 export const SystemEventsTableColumnNames = {

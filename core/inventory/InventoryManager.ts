@@ -84,7 +84,8 @@ export class InventoryManager {
         shortName: InventoryCodes[data.inventoryCode].shortName,
         number: data.inventoryNumber,
         date: data.inventoryDate ? new Date(data.inventoryDate) : null,
-        isProcessed: false
+        isProcessed: false,
+        inspectorId: null
       });
 
       if (inventoryObjects && inventory) {

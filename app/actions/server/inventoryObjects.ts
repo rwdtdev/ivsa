@@ -6,7 +6,7 @@ import { EventView } from '@/core/event/types';
 import { PaginatedResponse } from '@/types';
 import { SearchParams } from '@/types';
 import { InventoryObject } from '@prisma/client';
-import { unstable_noStore as noStore } from 'next/cache';
+import { unstable_noStore as noStore, revalidatePath } from 'next/cache';
 import { InventoryObjectService } from '@/core/inventory-object/InventoryObjectService';
 import { SortOrder } from '@/constants/data';
 
@@ -32,7 +32,8 @@ export async function getInventoryObjectsByInventoryIdAction(
     const [sortBy, sortDirection] = (sort?.split('.') as [
       keyof InventoryObject,
       SortOrder
-    ]) ?? ['name', 'asc'];
+    ]) ?? ['id', 'asc'];
+    // ]) ?? ['serialNumber', 'asc'];
 
     const inventoryObjectService = new InventoryObjectService();
 
@@ -64,5 +65,72 @@ export const getEventByIdAction = async (id: string): Promise<EventView | null> 
   } catch (err) {
     console.error(err);
     return null;
+  }
+};
+
+export const setTimeOnVideo = async (id: string) => {
+  try {
+    const inventoryObjectService = new InventoryObjectService();
+    await inventoryObjectService.setTimeOnVideo(id);
+    revalidatePath('/events/[id]/inventories/[id]/itemslist', 'page');
+  } catch (err) {
+    console.error(err);
+  }
+};
+
+export const updTimeOnVideo = async ({
+  id,
+  hours,
+  minutes
+}: {
+  id: string;
+  hours: string;
+  minutes: string;
+}) => {
+  try {
+    const inventoryObjectService = new InventoryObjectService();
+    await inventoryObjectService.updTimeOnVideo({ id, hours, minutes });
+    revalidatePath('/events/[id]/inventories/[id]/itemslist', 'page');
+  } catch (err) {
+    console.error(err);
+  }
+};
+
+export const updVideosDate = async ({
+  id,
+  selectedDate
+}: {
+  id: string;
+  selectedDate: Date;
+}) => {
+  try {
+    const inventoryObjectService = new InventoryObjectService();
+    await inventoryObjectService.updVideosDate({
+      id,
+      selectedDate
+    });
+    revalidatePath('/events/[id]/inventories/[id]/itemslist', 'page');
+  } catch (err) {
+    console.error(err);
+  }
+};
+
+export const updIsConditionOk = async (id: string, isConditionOk: boolean | null) => {
+  try {
+    const inventoryObjectService = new InventoryObjectService();
+    await inventoryObjectService.updIsConditionOk(id, isConditionOk);
+    revalidatePath('/events/[id]/inventories/[id]/itemslist', 'page');
+  } catch (err) {
+    console.error(err);
+  }
+};
+
+export const updComments = async (id: string, comments: string) => {
+  try {
+    const inventoryObjectService = new InventoryObjectService();
+    await inventoryObjectService.updComments(id, comments);
+    revalidatePath('/events/[id]/inventories/[id]/itemslist', 'page');
+  } catch (err) {
+    console.error(err);
   }
 };

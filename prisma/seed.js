@@ -91,7 +91,8 @@ class SeedSingleton {
           tabelNumber: '0000000000000000000000000000',
           phone: '+7 (000) 000-00-00',
           ivaProfileId: process.env.ADMIN_IVA_PROFILE_ID,
-          expiresAt: moment().add(1, 'year').toDate()
+          expiresAt: moment().add(1, 'year').toDate(),
+          isTemporaryPassword: false
         }
       });
       console.log('Administrator created');

@@ -18,7 +18,7 @@ import {
   SelectTrigger,
   SelectValue
 } from '@/components/ui/select';
-import { setInventoryVideographer } from '@/app/actions/server/inventories';
+import { setInventoryInspector, setInventoryVideographer } from '@/app/actions/server/inventories';
 import { ParticipantRoles } from '@/constants/mappings/prisma-enums';
 
 type Props = {
@@ -42,6 +42,8 @@ export function InventoryInfoCard({
   // console.log('🚀 ~ participants:', participants);
   const [address, setAddress] = useState(inventory.address);
   const [videographerId, setVideographerId] = useState(inventory.videographerId);
+  const [inspectorId, setInspectorId] = useState(inventory.inspectorId);
+
 
   return (
     <Card className='mb-5 flex grow pb-4 pt-3 lg:mb-0 lg:mr-5'>
@@ -66,49 +68,89 @@ export function InventoryInfoCard({
         <P className='text-sm'>
           <span className='font-semibold'>Код:</span> {inventory.code}
         </P>
-        <P className='mb-2 text-sm'>
-          <span
-            className={`font-semibold ${videographerId || !isUserChairman ? '' : 'text-red-600'}`}
-          >
-            Участник проводящий видеофиксацию:
-          </span>{' '}
-          {!isUserChairman &&
-            participants.find(
-              (participant) => participant.user?.id === inventory.videographerId
-            )?.user.name}
-        </P>
-        {isUserChairman && (
-          <Select
-            onValueChange={async (videographerId) => {
-              const res = await setInventoryVideographer(inventory.id, videographerId);
 
-              setVideographerId(res.videographerId);
-            }}
-            defaultValue={inventory.videographerId ? inventory.videographerId : undefined}
-          >
-            <SelectTrigger
-              className={`w-auto min-w-48 self-start ${videographerId ? '' : 'border-rose-700'}`}
+        {isUserChairman && (
+          <>
+            <P className='mb-2 text-sm'>
+              <span
+                className={`font-semibold ${inspectorId || !isUserChairman ? '' : 'text-red-600'}`}
+              >
+                Участник, ответственный за отметку активов:
+              </span>{' '}
+              {!isUserChairman &&
+                participants.find(
+                  (participant) => participant.user?.id === inventory.inspectorId
+                )?.user.name}
+            </P>
+            <Select
+              onValueChange={async (inspectorId) => {
+                const res = await setInventoryInspector(inventory.id, inspectorId);
+
+                setInspectorId(res.inspectorId);
+              }}
+              defaultValue={inventory.inspectorId || undefined}
             >
-              <SelectValue placeholder='Выберите участника' />
-            </SelectTrigger>
-            <SelectContent>
-              <SelectGroup>
-                {participants
-                  .filter(
-                    ({ role, user }) =>
-                      user &&
-                      (role === ParticipantRole.FINANCIALLY_RESPONSIBLE_PERSON ||
-                        role === ParticipantRole.PARTICIPANT)
-                  )
-                  .map((participant) => (
-                    <SelectItem key={participant.id} value={participant.user.id}>
-                      {ParticipantRoles[participant.role]}. {participant.user.name},{' '}
-                      {participant.tabelNumber}
-                    </SelectItem>
-                  ))}
-              </SelectGroup>
-            </SelectContent>
-          </Select>
+              <SelectTrigger
+                className={`w-auto min-w-48 self-start ${inspectorId ? '' : 'border-rose-700'}`}
+              >
+                <SelectValue placeholder='Выберите участника' />
+              </SelectTrigger>
+              <SelectContent>
+                <SelectGroup>
+                  {participants
+                    .filter(({ user }) => !!user)
+                    .map((participant) => (
+                      <SelectItem key={participant.id} value={participant.user.id}>
+                        {ParticipantRoles[participant.role]}. {participant.user.name},{' '}
+                        {participant.tabelNumber}
+                      </SelectItem>
+                    ))}
+                </SelectGroup>
+              </SelectContent>
+            </Select>
+            <P className='mb-2 text-sm'>
+              <span
+                className={`font-semibold ${videographerId || !isUserChairman ? '' : 'text-red-600'}`}
+              >
+                Участник проводящий видеофиксацию:
+              </span>{' '}
+              {!isUserChairman &&
+                participants.find(
+                  (participant) => participant.user?.id === inventory.inspectorId
+                )?.user.name}
+            </P>
+            <Select
+              onValueChange={async (videographerId) => {
+                const res = await setInventoryVideographer(inventory.id, videographerId);
+
+                setVideographerId(res.videographerId);
+              }}
+              defaultValue={inventory.videographerId || undefined}
+            >
+              <SelectTrigger
+                className={`w-auto min-w-48 self-start ${videographerId ? '' : 'border-rose-700'}`}
+              >
+                <SelectValue placeholder='Выберите участника' />
+              </SelectTrigger>
+              <SelectContent>
+                <SelectGroup>
+                  {participants
+                    .filter(
+                      ({ role, user }) =>
+                        user &&
+                        (role === ParticipantRole.FINANCIALLY_RESPONSIBLE_PERSON ||
+                          role === ParticipantRole.PARTICIPANT)
+                    )
+                    .map((participant) => (
+                      <SelectItem key={participant.id} value={participant.user.id}>
+                        {ParticipantRoles[participant.role]}. {participant.user.name},{' '}
+                        {participant.tabelNumber}
+                      </SelectItem>
+                    ))}
+                </SelectGroup>
+              </SelectContent>
+            </Select>
+          </>
         )}
 
         {isUserChairman ? (

@@ -2,7 +2,7 @@ import { getEventByIdAction } from '@/app/actions/server/events';
 import { getInventoryById } from '@/app/actions/server/getInventoryById';
 import { getInventoryObjectsByInventoryIdAction } from '@/app/actions/server/inventoryObjects';
 import { InventoryObjectsTable } from '@/components/tables/inventory-objects-table';
-import { InventoryCode } from '@/core/inventory/types';
+// import { InventoryCode } from '@/core/inventory/types';
 import { SearchParams } from '@/types';
 
 interface Props {
@@ -33,7 +33,7 @@ export default async function InventoryItemsList({
     <div className='flex grow flex-col overflow-hidden'>
       {inventoryObjects && events && (
         <InventoryObjectsTable
-          inventoryCode={inventory.code as InventoryCode}
+          inventory={inventory}
           inventoryObjects={inventoryObjects}
           inventories={complexAndLocalInventories}
         />

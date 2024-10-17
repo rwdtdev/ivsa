@@ -1,3 +1,10 @@
+# [1.11.0](https://rwdt1.gitlab.yandexcloud.net/rwdt/services/asvi/compare/1.10.3...1.11.0) (2024-10-17)
+
+
+### Features
+
+* отметка даты и времени на видео ([d5d8f3a](https://rwdt1.gitlab.yandexcloud.net/rwdt/services/asvi/commit/d5d8f3acb64e116151c250f79b4380a103b6b913))
+
 ## [1.10.3](https://rwdt1.gitlab.yandexcloud.net/rwdt/services/asvi/compare/1.10.2...1.10.3) (2024-10-14)
 
 

@@ -10,7 +10,7 @@ export async function POST(req: NextRequest) {
   try {
     const params = CreateDivisionHierarchySchema.parse(await req.json());
 
-    const response = await doTransaction(async (session: TransactionSession) => {
+    await doTransaction(async (session: TransactionSession) => {
       const divisionHierarchyService = new DivisionHierarchyService(session);
 
       return await divisionHierarchyService.create(
@@ -18,7 +18,7 @@ export async function POST(req: NextRequest) {
       );
     });
 
-    return NextResponse.json(response, { status: 201 });
+    return new Response(null, { status: 201 });
   } catch (error) {
     return getErrorResponse(error, req);
   }

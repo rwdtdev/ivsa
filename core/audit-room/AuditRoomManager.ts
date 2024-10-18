@@ -27,6 +27,7 @@ import { EventService } from '../event/EventService';
 import { ParticipantWithUser } from '../event/types';
 import { getRegisteredParticipants } from '@/lib/helpers/responses';
 import { generatePassword } from '@/utils/generate-password';
+import { transporter } from '@/lib/smtp-transporter';
 
 export class AuditRoomManager {
   private ivaService: IvaService;
@@ -177,6 +178,17 @@ export class AuditRoomManager {
         auditRoomInviteLink: link,
         auditSessionId: conference.conferenceSessionId
       });
+
+      registeredAndNotBlockedParticipants.forEach(
+        async (participant: ParticipantWithUser) => {
+          transporter.sendMail({
+            from: process.env.TRANSPORT_FROM,
+            to: participant.user.email,
+            subject: `Видеоинвентаризация по описи №${inventoryNumber}`,
+            html: `<p>Ссылка для подключения к конференции: <b style="font-size: 12pt;">${link}</b></p>`
+          });
+        }
+      );
 
       return {
         auditId: conference.conferenceSessionId,

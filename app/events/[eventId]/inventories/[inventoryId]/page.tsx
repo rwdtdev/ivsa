@@ -31,7 +31,6 @@ export default async function InventoryPage({ params: { inventoryId, eventId } }
   if (!event) {
     return <div>Нет такого события</div>;
   }
-  console.log('session?.user', session?.user);
 
   const participant = event.participants.find(
     (participant) => participant.userId === session?.user.id

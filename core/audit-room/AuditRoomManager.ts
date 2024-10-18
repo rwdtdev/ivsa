@@ -204,6 +204,9 @@ export class AuditRoomManager {
           detail: `Audit room with id (${inventoryId}) is not opened`
         });
       }
+
+      await this.closeConference(inventory.auditSessionId);
+      await inventoryService.update(inventoryId, { status: InventoryStatus.CLOSED });
     });
   }
 

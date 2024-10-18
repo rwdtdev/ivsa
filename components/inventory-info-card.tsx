@@ -179,27 +179,29 @@ export function InventoryInfoCard({
           </P>
         )}
 
-        <div className='mt-auto sm:mt-4'>
-          {isAndroid ? (
-            <IvaLocatorBtn locatorIvaLink={locatorIvaLink} />
-          ) : !inventory.auditRoomInviteLink ? (
-            <span className='border-grey-600 rounded-md border p-2'>
-              ссылка на видеоконференцию отсутствует
-            </span>
-          ) : isUserChairman ? (
-            <IvaChairmanDialogBtn
-              auditRoomInviteLink={inventory.auditRoomInviteLink}
-              address={address}
-              videographerId={videographerId}
-            />
-          ) : (
-            <Button>
-              <a href={inventory.auditRoomInviteLink} target='_blank'>
-                Перейти в видеоконференцию
-              </a>
-            </Button>
-          )}
-        </div>
+        {inventory.status === InventoryStatus.AVAILABLE && (
+          <div className='mt-auto sm:mt-4'>
+            {isAndroid ? (
+              <IvaLocatorBtn locatorIvaLink={locatorIvaLink} />
+            ) : !inventory.auditRoomInviteLink ? (
+              <span className='border-grey-600 rounded-md border p-2'>
+                ссылка на видеоконференцию отсутствует
+              </span>
+            ) : isUserChairman ? (
+              <IvaChairmanDialogBtn
+                auditRoomInviteLink={inventory.auditRoomInviteLink}
+                address={address}
+                videographerId={videographerId}
+              />
+            ) : (
+              <Button>
+                <a href={inventory.auditRoomInviteLink} target='_blank'>
+                  Перейти в видеоконференцию
+                </a>
+              </Button>
+            )}
+          </div>
+        )}
       </CardContent>
     </Card>
   );

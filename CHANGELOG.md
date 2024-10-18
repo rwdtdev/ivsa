@@ -1,3 +1,10 @@
+## [1.11.1](https://rwdt1.gitlab.yandexcloud.net/rwdt/services/asvi/compare/1.11.0...1.11.1) (2024-10-18)
+
+
+### Bug Fixes
+
+* закрытие комнаты инвентаризации ([7bba2f2](https://rwdt1.gitlab.yandexcloud.net/rwdt/services/asvi/commit/7bba2f2fc461eeff8d65b33cdf0f5c7d3295d64b))
+
 # [1.11.0](https://rwdt1.gitlab.yandexcloud.net/rwdt/services/asvi/compare/1.10.3...1.11.0) (2024-10-17)
 
 

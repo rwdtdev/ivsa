@@ -43,6 +43,7 @@ export function VideosDateCell({ id, dateTime, inventory, userId }: Props) {
             locale={ru}
             selected={selectedDate}
             onSelect={setSelectedDate}
+            disabled={{ after: new Date() }}
           />
           <PopoverClose asChild>
             <div className='flex'>

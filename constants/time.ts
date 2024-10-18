@@ -22,8 +22,7 @@ export const hoursSet = [
   '20',
   '21',
   '22',
-  '23',
-  '24'
+  '23'
 ];
 
 export const minutesSet = [
@@ -86,6 +85,5 @@ export const minutesSet = [
   '56',
   '57',
   '58',
-  '59',
-  '60'
+  '59'
 ];

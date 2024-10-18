@@ -23,7 +23,6 @@ export function InventoryObjectsTable({
   inventories
 }: InventoryObjectsTableProps) {
   const session = useSession();
-  console.log('🚀 ~ session:', session);
   const { items, pagination } = inventoryObjects;
 
   const columns = React.useMemo<ColumnDef<InventoryObject, unknown>[]>(

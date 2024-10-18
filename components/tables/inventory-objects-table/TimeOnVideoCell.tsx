@@ -7,7 +7,6 @@ import {
 } from '@/components/ui/popover';
 import { hoursSet, minutesSet } from '@/constants/time';
 import { ScrollArea } from '@/components/ui/scroll-area';
-import { format } from 'date-fns';
 import { Button } from '@/components/ui/button';
 import { setTimeOnVideo, updTimeOnVideo } from '@/app/actions/server/inventoryObjects';
 import { Inventory, InventoryStatus } from '@prisma/client';
@@ -23,20 +22,24 @@ type Props = {
 export function TimeOnVideoCell({ id, dateTime, inventory, userId }: Props) {
   const [selectedTime, setSelectedTime] = useState(() => {
     if (dateTime) {
-      const hours =
-        dateTime?.getHours() < 10
-          ? '0' + String(dateTime?.getHours())
-          : String(dateTime?.getHours());
-      const minutes =
-        dateTime?.getMinutes() < 10
-          ? '0' + String(dateTime?.getMinutes())
-          : String(dateTime?.getMinutes());
+      // const hours =
+      //   dateTime?.getHours() < 10
+      //     ? '0' + String(dateTime?.getHours())
+      //     : String(dateTime?.getHours());
+      // const minutes =
+      //   dateTime?.getMinutes() < 10
+      //     ? '0' + String(dateTime?.getMinutes())
+      //     : String(dateTime?.getMinutes());
+
+      const hours = dateTime.toISOString().slice(-13, -11);
+      const minutes = dateTime.toISOString().slice(-10, -8);
       return { hours, minutes };
     } else {
       return { hours: '00', minutes: '00' };
     }
   });
-  const dpData = dateTime ? format(dateTime, ' HH:mm') : '--:--';
+  // const dpData = dateTime ? format(dateTime, ' HH:mm') : '--:--';
+  const dpData = dateTime ? dateTime.toISOString().slice(-13, -8) : '--:--';
 
   if (
     inventory.status !== InventoryStatus.AVAILABLE ||
@@ -44,14 +47,16 @@ export function TimeOnVideoCell({ id, dateTime, inventory, userId }: Props) {
   ) {
     return <div className='text-center'>{dpData}</div>;
   } else if (dateTime) {
-    const hours =
-      dateTime?.getHours() < 10
-        ? '0' + String(dateTime?.getHours())
-        : String(dateTime?.getHours());
-    const minutes =
-      dateTime?.getMinutes() < 10
-        ? '0' + String(dateTime?.getMinutes())
-        : String(dateTime?.getMinutes());
+    // const hours =
+    //   dateTime?.getHours() < 10
+    //     ? '0' + String(dateTime?.getHours())
+    //     : String(dateTime?.getHours());
+    // const minutes =
+    //   dateTime?.getMinutes() < 10
+    //     ? '0' + String(dateTime?.getMinutes())
+    //     : String(dateTime?.getMinutes());
+    const hours = dateTime.toISOString().slice(-13, -11);
+    const minutes = dateTime.toISOString().slice(-10, -8);
     return (
       <div className='flex'>
         <Popover>

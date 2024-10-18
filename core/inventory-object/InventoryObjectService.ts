@@ -4,6 +4,7 @@ import { InventoryObject, PrismaClient } from '@prisma/client';
 import { InventoryObjectCreateData } from './types';
 import { InventoryObjectsGetData } from '../event/types';
 import { PaginatedResponse } from '@/types';
+import { dateTimeToGMT } from '@/lib/dateTimeToGMT';
 
 const defaultLimit = 100;
 
@@ -114,10 +115,16 @@ export class InventoryObjectService {
 
     inventoryObject?.onVideoAt?.setHours(Number(hours), Number(minutes));
 
+    if (inventoryObject) {
+      inventoryObject.onVideoAt =
+        dateTimeToGMT(inventoryObject?.onVideoAt || undefined) || null;
+    }
+
     const updatedInventoryObject = await this.prisma.inventoryObject.update({
       where: { id },
       data: { ...inventoryObject }
     });
+
     return updatedInventoryObject;
   }
   async updVideosDate({

@@ -19,8 +19,7 @@ import {
 } from '@/lib/form-validation-schemas/inventory-address-schema';
 import { Button } from '../ui/button';
 import { updateInventoryAddress } from '@/app/actions/server/inventories';
-import { Inventory } from '@prisma/client';
-// import { Loader2 } from 'lucide-react';
+import { Inventory, InventoryStatus } from '@prisma/client';
 
 type Props = {
   inventory: Inventory;
@@ -30,7 +29,6 @@ type Props = {
 
 export default function InventoryAddressForm({ inventory, address, setAddress }: Props) {
   const [isFormEdit, setIsFormEdit] = useState(false);
-  // const [isDataSending, setIsDataSending] = useState(false);
   const inputRef = useRef(null);
   const { toast } = useToast();
 
@@ -42,11 +40,8 @@ export default function InventoryAddressForm({ inventory, address, setAddress }:
   });
 
   const processForm: SubmitHandler<InventoryAddressFormData> = async (data) => {
-    console.log('submit! data:', data);
-    // setIsDataSending(true);
     try {
       const res = await updateInventoryAddress(inventory.id, data.address);
-      // setIsDataSending(false);
       if (!res) {
         toast({
           title: 'Ошибка',
@@ -93,12 +88,13 @@ export default function InventoryAddressForm({ inventory, address, setAddress }:
                   />
                 </FormControl>
                 {isFormEdit ? (
-                  <Button type='submit' /* disabled={isDataSending} */ className=''>
+                  <Button type='submit' disabled={inventory.status !== InventoryStatus.AVAILABLE} className=''>
                     Применить
                   </Button>
                 ) : (
                   <Button
                     type='button'
+                    disabled={inventory.status !== InventoryStatus.AVAILABLE}
                     onClick={(e) => {
                       e.preventDefault();
                       setIsFormEdit(true);

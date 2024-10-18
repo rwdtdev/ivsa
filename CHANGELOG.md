@@ -1,3 +1,11 @@
+## [1.11.4](https://rwdt1.gitlab.yandexcloud.net/rwdt/services/asvi/compare/1.11.3...1.11.4) (2024-10-18)
+
+
+### Bug Fixes
+
+* hide button to entry in conference if inventory is not available ([fc7ef5f](https://rwdt1.gitlab.yandexcloud.net/rwdt/services/asvi/commit/fc7ef5fa9e42bcb764bb80facaa8f419849cbb32))
+* remove session log ([c4cceb8](https://rwdt1.gitlab.yandexcloud.net/rwdt/services/asvi/commit/c4cceb8f50f7cee3ff008f4066948680a78235f4))
+
 ## [1.11.3](https://rwdt1.gitlab.yandexcloud.net/rwdt/services/asvi/compare/1.11.2...1.11.3) (2024-10-18)
 
 

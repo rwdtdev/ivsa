@@ -1,7 +1,7 @@
 'use client';
 import { setTimeOnVideo, updVideosDate } from '@/app/actions/server/inventoryObjects';
 import { Button } from '@/components/ui/button';
-import { Inventory } from '@prisma/client';
+import { Inventory, InventoryStatus } from '@prisma/client';
 import { format } from 'date-fns';
 import {
   Popover,
@@ -26,7 +26,10 @@ export function VideosDateCell({ id, dateTime, inventory, userId }: Props) {
     dateTime || undefined
   );
   const dpData = dateTime ? format(dateTime, 'dd.MM.yyyy ') : '--.--.----';
-  if (inventory.isProcessed || userId !== inventory.inspectorId) {
+  if (
+    inventory.status !== InventoryStatus.AVAILABLE ||
+    userId !== inventory.inspectorId
+  ) {
     return <div className='text-center'>{dpData}</div>;
   } else if (dateTime) {
     return (

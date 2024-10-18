@@ -10,7 +10,7 @@ import { ScrollArea } from '@/components/ui/scroll-area';
 import { format } from 'date-fns';
 import { Button } from '@/components/ui/button';
 import { setTimeOnVideo, updTimeOnVideo } from '@/app/actions/server/inventoryObjects';
-import { Inventory } from '@prisma/client';
+import { Inventory, InventoryStatus } from '@prisma/client';
 import { useState } from 'react';
 
 type Props = {
@@ -38,7 +38,10 @@ export function TimeOnVideoCell({ id, dateTime, inventory, userId }: Props) {
   });
   const dpData = dateTime ? format(dateTime, ' HH:mm') : '--:--';
 
-  if (inventory.isProcessed || userId !== inventory.inspectorId) {
+  if (
+    inventory.status !== InventoryStatus.AVAILABLE ||
+    userId !== inventory.inspectorId
+  ) {
     return <div className='text-center'>{dpData}</div>;
   } else if (dateTime) {
     const hours =

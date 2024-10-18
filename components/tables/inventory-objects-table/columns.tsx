@@ -1,7 +1,7 @@
 'use client';
 import { ColumnDef } from '@tanstack/react-table';
 import { DataTableColumnHeader } from '@/components/ui/data-table/data-table-column-header';
-import { Inventory, InventoryObject } from '@prisma/client';
+import { Inventory, InventoryObject, InventoryStatus } from '@prisma/client';
 import {
   InventoryObjectsTableColumnNames,
   makeColumnsNames
@@ -13,13 +13,9 @@ import {
   TooltipProvider,
   TooltipTrigger
 } from '@/components/ui/tooltip';
-// import { format } from 'date-fns';
+
 import { Button } from '@/components/ui/button';
-import {
-  // setTimeOnVideo,
-  updComments,
-  updIsConditionOk
-} from '@/app/actions/server/inventoryObjects';
+import { updComments, updIsConditionOk } from '@/app/actions/server/inventoryObjects';
 import {
   Dialog,
   DialogClose,
@@ -196,25 +192,6 @@ export function fetchInventoryObjectsTableColumnDefs(
           userId={userId}
         />
       )
-      //   {
-      //   const dpData = row.original.onVideoAt
-      //     ? format(row.original.onVideoAt, 'dd.MM.yyyy ')
-      //     : '--.--.----';
-      //   if (inventory.isProcessed) {
-      //     return <div className='text-center'>{dpData}</div>;
-      //   } else {
-      //     return (
-      //       <Button
-      //         className='h-7 w-full text-nowrap'
-      //         onClick={async () => {
-      //           setTimeOnVideo(row.original.id);
-      //         }}
-      //       >
-      //         {dpData}
-      //       </Button>
-      //     );
-      //   }
-      // }
     },
     {
       id: 'onVideoAt',
@@ -232,127 +209,6 @@ export function fetchInventoryObjectsTableColumnDefs(
         />
       )
     },
-    //   {
-    //   const dpData = row.original.onVideoAt
-    //     ? format(row.original.onVideoAt, ' HH:mm')
-    //     : '--:--';
-
-    //   if (inventory.isProcessed) {
-    //     return <div className='text-center'>{dpData}</div>;
-    //   } else if (row.original.onVideoAt) {
-    //     const hours =
-    //       row.original.onVideoAt?.getHours() < 10
-    //         ? '0' + String(row.original.onVideoAt?.getHours())
-    //         : String(row.original.onVideoAt?.getHours());
-    //     const minutes =
-    //       row.original.onVideoAt?.getMinutes() < 10
-    //         ? '0' + String(row.original.onVideoAt?.getMinutes())
-    //         : String(row.original.onVideoAt?.getMinutes());
-    //     return (
-    //       <>
-    //         {/* <input
-    //           type='time'
-    //           id='time'
-    //           className='block w-12 p-2.5 text-sm leading-none text-gray-900 focus:ring-blue-500'
-    //           value={`${hours}:${minutes}`}
-    //           // value={`5:13`}
-    //           onChange={(e) => {
-    //             console.log('e:', e);
-    //           }}
-    //           required
-    //         /> */}
-    //         {/* {hours}:{minutes} */}
-    //         <Popover>
-    //           <PopoverTrigger>
-    //             {hours}:{minutes}
-    //           </PopoverTrigger>
-    //           <PopoverContent className='grid w-40 grid-cols-2'>
-    //             <div className='font-bold'>часы</div>
-    //             <div className='font-bold'>минуты</div>
-    //             <ScrollArea className='h-72 w-16 pl-1 pt-2'>
-    //               {hoursSet.map((hour) => (
-    //                 <>
-    //                   <div
-    //                     key={hour}
-    //                     className='w-8 border-b p-2 text-sm hover:bg-slate-100'
-    //                   >
-    //                     {hour}
-    //                   </div>
-    //                   {/* <Separator className='my-2 w-6' /> */}
-    //                 </>
-    //               ))}
-    //             </ScrollArea>
-    //             <ScrollArea className='h-72 w-16 pl-4 pt-2'>
-    //               {minutesSet.map((min) => (
-    //                 <>
-    //                   <div
-    //                     key={min}
-    //                     className='w-8 border-b p-2 text-sm hover:bg-slate-100'
-    //                   >
-    //                     {min}
-    //                   </div>
-    //                   {/* <Separator className='my-2 w-6' /> */}
-    //                 </>
-    //               ))}
-    //             </ScrollArea>
-    //             <Button className='col-span-2'>Применить</Button>
-    //           </PopoverContent>
-    //         </Popover>
-    //         {/* :
-    //         <Popover>
-    //           <PopoverTrigger>{minutes}</PopoverTrigger>
-    //           <PopoverContent className='w-20'>
-    //             <ScrollArea className='h-72 w-16 rounded-md'>
-    //               minutes
-    //               {minutesSet.map((tag) => (
-    //                 <>
-    //                   <div key={tag} className='text-sm'>
-    //                     {tag}
-    //                   </div>
-    //                   <Separator className='my-2' />
-    //                 </>
-    //               ))}
-    //             </ScrollArea>
-    //           </PopoverContent>
-    //         </Popover> */}
-    //       </>
-    //     );
-    //   } else {
-    //     return (
-    //       <>
-    //         <Button
-    //           className='h-7 w-full text-nowrap'
-    //           onClick={async () => {
-    //             setTimeOnVideo(row.original.id);
-    //           }}
-    //         >
-    //           {dpData}
-    //         </Button>
-    //         {/* <form className='mx-auto max-w-[8rem]'> */}
-    //         {/* <div className='relative'> */}
-    //         {/* <div className='pointer-events-none absolute inset-y-0 end-0 top-0 flex items-center pe-3.5'>
-    //               <svg
-    //                 className='h-4 w-4 text-gray-500 dark:text-gray-400'
-    //                 aria-hidden='true'
-    //                 xmlns='http://www.w3.org/2000/svg'
-    //                 fill='currentColor'
-    //                 viewBox='0 0 24 24'
-    //               >
-    //                 <path
-    //                   fillRule='evenodd'
-    //                   d='M2 12C2 6.477 6.477 2 12 2s10 4.477 10 10-4.477 10-10 10S2 17.523 2 12Zm11-4a1 1 0 1 0-2 0v4a1 1 0 0 0 .293.707l3 3a1 1 0 0 0 1.414-1.414L13 11.586V8Z'
-    //                   clipRule='evenodd'
-    //                 />
-    //               </svg>
-    //             </div> */}
-
-    //         {/* </div> */}
-    //         {/* </form> */}
-    //       </>
-    //     );
-    //   }
-    // }
-    // },
 
     {
       id: 'isConditionOk',
@@ -377,7 +233,10 @@ export function fetchInventoryObjectsTableColumnDefs(
               e === 'undefined' ? null : e === 'isOk' ? true : false
             );
           }}
-          disabled={userId !== inventory.inspectorId}
+          disabled={
+            inventory.status !== InventoryStatus.AVAILABLE ||
+            userId !== inventory.inspectorId
+          }
         >
           <SelectTrigger
             className={` ${
@@ -409,13 +268,18 @@ export function fetchInventoryObjectsTableColumnDefs(
         <Dialog>
           <DialogTrigger
             asChild
-            disabled={!row.original.comments && userId !== inventory.inspectorId}
+            disabled={
+              !row.original.comments &&
+              (userId !== inventory.inspectorId ||
+                inventory.status !== InventoryStatus.AVAILABLE)
+            }
           >
             <Button variant='outline' className='w-full'>
-              {userId !== inventory.inspectorId
+              {userId !== inventory.inspectorId ||
+              inventory.status !== InventoryStatus.AVAILABLE
                 ? row.original.comments
                   ? 'читать'
-                  : 'нет комм-в'
+                  : 'нет комм.'
                 : row.original.comments
                   ? 'редактировать'
                   : 'добавить'}
@@ -433,33 +297,35 @@ export function fetchInventoryObjectsTableColumnDefs(
                 {row.original.name} № {row.original.serialNumber}
               </DialogDescription>
             </DialogHeader>
-            {userId === inventory.inspectorId && (
-              <form
-                onSubmit={async (e) => {
-                  e.preventDefault();
-                  // @ts-expect-error not standard target
-                  updComments(row.original.id, e.target[0].value);
-                }}
-              >
-                <Textarea
-                  placeholder='Напишите ваш комментарий здесь.'
-                  className='mb-5 w-full'
-                  defaultValue={row.original.comments || ''}
-                  rows={10}
-                />
-                <DialogFooter>
-                  <DialogClose asChild>
-                    <Button type='submit' variant='outline'>
-                      Отмена
-                    </Button>
-                  </DialogClose>
-                  <DialogClose asChild>
-                    <Button type='submit'>Сохранить</Button>
-                  </DialogClose>
-                </DialogFooter>
-              </form>
-            )}
-            {userId !== inventory.inspectorId && (
+            {userId === inventory.inspectorId &&
+              inventory.status === InventoryStatus.AVAILABLE && (
+                <form
+                  onSubmit={async (e) => {
+                    e.preventDefault();
+                    // @ts-expect-error not standard target
+                    updComments(row.original.id, e.target[0].value);
+                  }}
+                >
+                  <Textarea
+                    placeholder='Напишите ваш комментарий здесь.'
+                    className='mb-5 w-full'
+                    defaultValue={row.original.comments || ''}
+                    rows={10}
+                  />
+                  <DialogFooter>
+                    <DialogClose asChild>
+                      <Button type='submit' variant='outline'>
+                        Отмена
+                      </Button>
+                    </DialogClose>
+                    <DialogClose asChild>
+                      <Button type='submit'>Сохранить</Button>
+                    </DialogClose>
+                  </DialogFooter>
+                </form>
+              )}
+            {(userId !== inventory.inspectorId ||
+              inventory.status !== InventoryStatus.AVAILABLE) && (
               <Textarea
                 placeholder='Нет комментариев.'
                 className='mb-5 w-full'

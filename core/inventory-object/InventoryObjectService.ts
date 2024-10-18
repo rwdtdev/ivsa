@@ -64,7 +64,7 @@ export class InventoryObjectService {
       }
     };
 
-    // @ts-expect-error types
+    // @ts-expect-error types s
     const totalCount = await prisma.inventoryObject.count({ ...where });
 
     // @ts-expect-error types

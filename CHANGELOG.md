@@ -1,3 +1,10 @@
+## [1.11.5](https://rwdt1.gitlab.yandexcloud.net/rwdt/services/asvi/compare/1.11.4...1.11.5) (2024-10-18)
+
+
+### Bug Fixes
+
+* рассылка письма с сылком приглашением в конференцию ([4dc427b](https://rwdt1.gitlab.yandexcloud.net/rwdt/services/asvi/commit/4dc427bdef9fe2c8f83bd95aa90e51d036f66f4c))
+
 ## [1.11.4](https://rwdt1.gitlab.yandexcloud.net/rwdt/services/asvi/compare/1.11.3...1.11.4) (2024-10-18)
 
 

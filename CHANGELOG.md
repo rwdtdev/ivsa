@@ -1,3 +1,10 @@
+# [1.12.0](https://rwdt1.gitlab.yandexcloud.net/rwdt/services/asvi/compare/1.11.5...1.12.0) (2024-10-18)
+
+
+### Features
+
+* some improvement ([fc2c5ef](https://rwdt1.gitlab.yandexcloud.net/rwdt/services/asvi/commit/fc2c5ef29cff0c08f4488227cdbb7e0d0a607eb5))
+
 ## [1.11.5](https://rwdt1.gitlab.yandexcloud.net/rwdt/services/asvi/compare/1.11.4...1.11.5) (2024-10-18)
 
 

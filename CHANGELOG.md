@@ -1,3 +1,10 @@
+## [1.11.3](https://rwdt1.gitlab.yandexcloud.net/rwdt/services/asvi/compare/1.11.2...1.11.3) (2024-10-18)
+
+
+### Bug Fixes
+
+* disabled UI inventory items list by inventory status ([512e0e1](https://rwdt1.gitlab.yandexcloud.net/rwdt/services/asvi/commit/512e0e1fcb1a65c482b2c790bdbd2d230e947f9c))
+
 ## [1.11.2](https://rwdt1.gitlab.yandexcloud.net/rwdt/services/asvi/compare/1.11.1...1.11.2) (2024-10-18)
 
 

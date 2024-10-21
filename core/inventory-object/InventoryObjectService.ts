@@ -1,4 +1,5 @@
 import prisma from '@/core/prisma';
+import moment from 'moment';
 import { TransactionSession } from '@/types/prisma';
 import { InventoryObject, PrismaClient } from '@prisma/client';
 import { InventoryObjectCreateData } from './types';
@@ -93,7 +94,7 @@ export class InventoryObjectService {
     const updatedInventoryObject = await this.prisma.inventoryObject.update({
       where: { id },
       data: {
-        onVideoAt: new Date()
+        onVideoAt: moment().tz('Europe/Moscow').toDate()
       }
     });
 

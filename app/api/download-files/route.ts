@@ -13,7 +13,7 @@ export async function POST(req: Request) {
       accessKey: process.env.S3_ACCESS_KEY,
       secretKey: process.env.S3_SECRET_KEY,
       timeout: 6000,
-      region: 'us-east-1',
+      region: process.env.S3_REGION,
       bucket: { asvi: process.env.S3_BUCKET_NAME },
       'auto-create-bucket': process.env.S3_AUTO_CREATE_BUCKET === 'true'
     },

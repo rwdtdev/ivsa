@@ -1,3 +1,10 @@
+## [1.12.5](https://rwdt1.gitlab.yandexcloud.net/rwdt/services/asvi/compare/1.12.4...1.12.5) (2024-10-21)
+
+
+### Bug Fixes
+
+* change s3 region ([fcd4fc0](https://rwdt1.gitlab.yandexcloud.net/rwdt/services/asvi/commit/fcd4fc03d28681333c28731775b22677a0b43f30))
+
 ## [1.12.4](https://rwdt1.gitlab.yandexcloud.net/rwdt/services/asvi/compare/1.12.3...1.12.4) (2024-10-21)
 
 

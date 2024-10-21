@@ -1,3 +1,10 @@
+## [1.12.4](https://rwdt1.gitlab.yandexcloud.net/rwdt/services/asvi/compare/1.12.3...1.12.4) (2024-10-21)
+
+
+### Bug Fixes
+
+* setTimeOnVideo ([7c75c6d](https://rwdt1.gitlab.yandexcloud.net/rwdt/services/asvi/commit/7c75c6d615e88145884172c31660a4dc98df9454))
+
 ## [1.12.3](https://rwdt1.gitlab.yandexcloud.net/rwdt/services/asvi/compare/1.12.2...1.12.3) (2024-10-21)
 
 

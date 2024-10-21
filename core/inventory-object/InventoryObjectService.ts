@@ -1,5 +1,5 @@
 import prisma from '@/core/prisma';
-import moment from 'moment';
+import moment from 'moment-timezone';
 import { TransactionSession } from '@/types/prisma';
 import { InventoryObject, PrismaClient } from '@prisma/client';
 import { InventoryObjectCreateData } from './types';

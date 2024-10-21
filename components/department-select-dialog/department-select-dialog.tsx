@@ -28,7 +28,7 @@ import React from 'react';
 // import { DivisionHierarchyNode } from '@prisma/client';
 
 type Props = {
-  divisionId?: string;
+  divisionId: string | null;
   /* eslint-disable no-unused-vars */
   formSetDepartmentId: (
     key: keyof UserFormData,

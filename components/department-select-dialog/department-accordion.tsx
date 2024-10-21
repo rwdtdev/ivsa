@@ -3,7 +3,7 @@ import { UserFormData } from '@/lib/form-validation-schemas/user-form-schema';
 import { useState } from 'react';
 
 type Props = {
-  divisionId?: string;
+  divisionId: string | null;
   /* eslint-disable no-unused-vars */
   formSetDepartmentId: (
     key: keyof UserFormData,
@@ -37,7 +37,7 @@ type SubLevelCompArgs = {
   item: DivisionHierarchyNodeWithNodes;
   /* eslint-disable no-unused-vars */
   renderNestedLevels: (data: DivisionHierarchyNodeWithNodes[]) => JSX.Element[];
-  departmentId?: string;
+  departmentId: string | null;
   setDepartmentId: (
     key: keyof UserFormData,
     value: string,

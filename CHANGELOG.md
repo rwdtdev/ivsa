@@ -1,3 +1,10 @@
+## [1.12.1](https://rwdt1.gitlab.yandexcloud.net/rwdt/services/asvi/compare/1.12.0...1.12.1) (2024-10-21)
+
+
+### Bug Fixes
+
+* department ([6234709](https://rwdt1.gitlab.yandexcloud.net/rwdt/services/asvi/commit/623470951cdd45cf516876cbfed5a4982cff5238))
+
 # [1.12.0](https://rwdt1.gitlab.yandexcloud.net/rwdt/services/asvi/compare/1.11.5...1.12.0) (2024-10-18)
 
 

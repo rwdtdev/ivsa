@@ -1,3 +1,10 @@
+## [1.12.3](https://rwdt1.gitlab.yandexcloud.net/rwdt/services/asvi/compare/1.12.2...1.12.3) (2024-10-21)
+
+
+### Bug Fixes
+
+* use moment-timezone instead of moment ([e64bac7](https://rwdt1.gitlab.yandexcloud.net/rwdt/services/asvi/commit/e64bac7e3946c24675b899f3a9be5e961b2188d2))
+
 ## [1.12.2](https://rwdt1.gitlab.yandexcloud.net/rwdt/services/asvi/compare/1.12.1...1.12.2) (2024-10-21)
 
 

@@ -20,8 +20,8 @@ export async function GET(req: NextRequest, context: IContext) {
         url: process.env.S3_CLIENT_URL,
         accessKey: process.env.S3_ACCESS_KEY,
         secretKey: process.env.S3_SECRET_KEY,
-        timeout: 6000,
-        region: 'us-east-1',
+        timeout: 60000,
+        region: process.env.S3_REGION,
         bucket: { asvi: process.env.S3_BUCKET_NAME },
         'auto-create-bucket': process.env.S3_AUTO_CREATE_BUCKET === 'true'
       },

@@ -1,3 +1,10 @@
+## [1.12.6](https://rwdt1.gitlab.yandexcloud.net/rwdt/services/asvi/compare/1.12.5...1.12.6) (2024-10-23)
+
+
+### Bug Fixes
+
+* add s3 region to env ([ae1507f](https://rwdt1.gitlab.yandexcloud.net/rwdt/services/asvi/commit/ae1507f175648cfb480aa5ae32d4148f9806f6cb))
+
 ## [1.12.5](https://rwdt1.gitlab.yandexcloud.net/rwdt/services/asvi/compare/1.12.4...1.12.5) (2024-10-21)
 
 

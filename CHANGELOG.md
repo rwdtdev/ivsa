@@ -1,3 +1,10 @@
+## [1.12.7](https://rwdt1.gitlab.yandexcloud.net/rwdt/services/asvi/compare/1.12.6...1.12.7) (2024-10-24)
+
+
+### Bug Fixes
+
+* changed docker images ([5210a27](https://rwdt1.gitlab.yandexcloud.net/rwdt/services/asvi/commit/5210a27486197e82b2a0a20b9083ed70636c24a9))
+
 ## [1.12.6](https://rwdt1.gitlab.yandexcloud.net/rwdt/services/asvi/compare/1.12.5...1.12.6) (2024-10-23)
 
 

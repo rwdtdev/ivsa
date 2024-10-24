@@ -1,5 +1,5 @@
 # Stage 1: Build stage
-FROM node:20-alpine AS build
+FROM node:20-bullseye AS build
 
 # Set working directory
 WORKDIR /app
@@ -17,7 +17,7 @@ RUN npm ci
 # Build the Next.js application with lint disabled
 RUN npm run build
 # Stage 2: Production stage
-FROM node:20-alpine AS production
+FROM node:20-bullseye AS production
 
 # Set working directory
 WORKDIR /app

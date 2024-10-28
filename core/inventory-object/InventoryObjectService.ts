@@ -90,6 +90,13 @@ export class InventoryObjectService {
     };
   }
 
+  async getAllByInventoryId(inventoryId: string): Promise<InventoryObject[]> {
+    const inventoryObjects = await this.prisma.inventoryObject.findMany({
+      where: { inventoryId }
+    });
+    return inventoryObjects;
+  }
+
   async setTimeOnVideo(id: string): Promise<InventoryObject> {
     const newDate = new Date();
     newDate.setHours(newDate.getHours() + 3);

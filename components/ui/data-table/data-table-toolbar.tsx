@@ -25,6 +25,7 @@ import { blockUserAction, unblockUserAction } from '@/app/actions/server/users';
 import { PrintBtn } from '@/components/print-btn';
 import { ExportToXlsxBtn } from '@/components/export-to-xlsx-btn';
 import { useSession } from 'next-auth/react';
+import { ExportToXlsxInventoryObjsBtn } from '@/components/export-to-xlsx-inventoryobjs-btn';
 
 interface DataTableToolbarProps<TData> {
   table: Table<TData>;
@@ -185,6 +186,7 @@ export function DataTableToolbar<TData>({
           </Button>
         )}
         {isInventoriesTable && <InventorySelectMenu inventories={inventories} />}
+        {isInventoriesTable && <ExportToXlsxInventoryObjsBtn />}
       </div>
       <div className='flex items-center space-x-2'>
         {isUsersTable && table.getSelectedRowModel().rows.length > 0 && (

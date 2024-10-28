@@ -57,6 +57,14 @@ export async function getInventoryObjectsByInventoryIdAction(
   }
 }
 
+export const getAllInventoryObjectsByInventoryIdAction = async (
+  id: string
+): Promise<InventoryObject[]> => {
+  const inventoryObjectService = new InventoryObjectService();
+
+  return await inventoryObjectService.getAllByInventoryId(id);
+};
+
 export const getEventByIdAction = async (id: string): Promise<EventView | null> => {
   try {
     const eventService = new EventService();

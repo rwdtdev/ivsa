@@ -1,3 +1,4 @@
+import { InventoryWithResources } from '@/app/actions/server/inventories';
 import { InventoryObject } from '@prisma/client';
 import { format } from 'date-fns';
 import * as ExcelJS from 'exceljs';
@@ -5,7 +6,10 @@ import FileSaver from 'file-saver';
 
 const maxRows = 1000;
 
-export async function exportInventoryObjectsToXlsx(allData: InventoryObject[]) {
+export async function exportInventoryObjectsToXlsx([allData, inventory]: [
+  InventoryObject[],
+  InventoryWithResources | null
+]) {
   for (let i = 0; i < Math.ceil(allData.length / maxRows); i++) {
     const data = allData.slice(i * maxRows, i * maxRows + maxRows);
 
@@ -61,7 +65,10 @@ export async function exportInventoryObjectsToXlsx(allData: InventoryObject[]) {
     workbook.xlsx
       .writeBuffer()
       .then((buffer) =>
-        FileSaver.saveAs(new Blob([buffer]), `Мониторинг событий ${Date.now()}-${i}.xlsx`)
+        FileSaver.saveAs(
+          new Blob([buffer]),
+          `Опись №${inventory?.number} от ${format(inventory?.date || '', 'dd.MM.yyyy')} ${inventory?.shortName}-${i}.xlsx`
+        )
       )
       .catch((err) => console.log('Error writing excel export', err));
   }

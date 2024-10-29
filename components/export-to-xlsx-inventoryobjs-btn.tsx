@@ -4,6 +4,7 @@ import { Button } from './ui/button';
 import { useParams } from 'next/navigation';
 import { getAllInventoryObjectsByInventoryIdAction } from '@/app/actions/server/inventoryObjects';
 import { exportInventoryObjectsToXlsx } from '@/lib/exportInventoryObjectsToXlsx';
+import { getInventoryByIdAction } from '@/app/actions/server/inventories';
 
 export function ExportToXlsxInventoryObjsBtn() {
   const { inventoryId }: { inventoryId: string } = useParams();
@@ -13,7 +14,10 @@ export function ExportToXlsxInventoryObjsBtn() {
       size='sm'
       className='h-8'
       onClick={async () => {
-        const res = await getAllInventoryObjectsByInventoryIdAction(inventoryId);
+        const res = await Promise.all([
+          getAllInventoryObjectsByInventoryIdAction(inventoryId),
+          getInventoryByIdAction(inventoryId)
+        ]);
         await exportInventoryObjectsToXlsx(res);
       }}
     >

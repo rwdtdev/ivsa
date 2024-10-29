@@ -1,3 +1,10 @@
+## [1.13.2](https://rwdt1.gitlab.yandexcloud.net/rwdt/services/asvi/compare/1.13.1...1.13.2) (2024-10-29)
+
+
+### Bug Fixes
+
+* metadata statistic logic ([88dde90](https://rwdt1.gitlab.yandexcloud.net/rwdt/services/asvi/commit/88dde90a8df1c9ca8e88f1c0424b27e49d9245ff))
+
 ## [1.13.1](https://rwdt1.gitlab.yandexcloud.net/rwdt/services/asvi/compare/1.13.0...1.13.1) (2024-10-29)
 
 

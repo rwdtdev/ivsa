@@ -1,3 +1,10 @@
+# [1.13.0](https://rwdt1.gitlab.yandexcloud.net/rwdt/services/asvi/compare/1.12.7...1.13.0) (2024-10-29)
+
+
+### Features
+
+* add columns with resource storage type ([a6ba6e0](https://rwdt1.gitlab.yandexcloud.net/rwdt/services/asvi/commit/a6ba6e030d2c8e7937c603ed35761b4315bac5b3))
+
 ## [1.12.7](https://rwdt1.gitlab.yandexcloud.net/rwdt/services/asvi/compare/1.12.6...1.12.7) (2024-10-24)
 
 

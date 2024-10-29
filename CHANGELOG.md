@@ -1,3 +1,17 @@
+# [1.13.0](https://rwdt1.gitlab.yandexcloud.net/rwdt/services/asvi/compare/1.12.7...1.13.0) (2024-10-29)
+
+
+### Features
+
+* add columns with resource storage type ([a6ba6e0](https://rwdt1.gitlab.yandexcloud.net/rwdt/services/asvi/commit/a6ba6e030d2c8e7937c603ed35761b4315bac5b3))
+
+## [1.12.7](https://rwdt1.gitlab.yandexcloud.net/rwdt/services/asvi/compare/1.12.6...1.12.7) (2024-10-24)
+
+
+### Bug Fixes
+
+* changed docker images ([5210a27](https://rwdt1.gitlab.yandexcloud.net/rwdt/services/asvi/commit/5210a27486197e82b2a0a20b9083ed70636c24a9))
+
 ## [1.12.6](https://rwdt1.gitlab.yandexcloud.net/rwdt/services/asvi/compare/1.12.5...1.12.6) (2024-10-23)
 
 

@@ -70,6 +70,16 @@ export function fetchVideosTableColumnDefs(
           )}
         </div>
       )
+    },
+    {
+      id: 'isArchived',
+      accessorKey: 'isArchived',
+      header: 'Место хранения',
+      cell: ({ row }) => {
+        const isArchived = row.original.isArchived;
+
+        return <div>{isArchived ? 'Архивное хранилище' : 'Оперативное хранилище'}</div>
+      }
     }
   ];
 }

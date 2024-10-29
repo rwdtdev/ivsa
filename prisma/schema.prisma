@@ -288,6 +288,8 @@ model InventoryResource {
   duration      Float?
   /// Список геолокационных данных, которые связаны с этим ресурсом
   locations     InventoryLocation[]
+  /// Признак того, что файл был перенесен в архивное хранилище
+  isArchived    Boolean               @default(false)
 
   @@unique([name, inventoryId, ivaId])
   @@map("inventory_resources")

@@ -7,6 +7,7 @@ import { Card, CardContent } from '@/components/ui/card';
 import { ScrollArea } from '@/components/ui/scroll-area';
 import { authConfig } from '@/lib/auth-options';
 import { SearchParams } from '@/types';
+import { InventoryStatus } from '@prisma/client';
 import { getServerSession } from 'next-auth';
 import { headers } from 'next/headers';
 
@@ -62,7 +63,7 @@ export default async function InventoryPage({ params: { inventoryId, eventId } }
             <MetadataStatistic
               initialData={locationsStatistics}
               inventoryId={inventoryId}
-              isInventoryProcessed={inventory.isProcessed}
+              isInventoryProcessed={inventory.status === InventoryStatus.CLOSED || inventory.status === InventoryStatus.REMOVED}
             />
           </CardContent>
         </Card>

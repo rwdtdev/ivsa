@@ -1,3 +1,11 @@
+## [1.13.1](https://rwdt1.gitlab.yandexcloud.net/rwdt/services/asvi/compare/1.13.0...1.13.1) (2024-10-29)
+
+
+### Bug Fixes
+
+* filename inventory objects export to xlsx ([81266aa](https://rwdt1.gitlab.yandexcloud.net/rwdt/services/asvi/commit/81266aa863ab1e0e362184b4052021b94d3b61e3))
+* unauthorize access to events & inventories ([1e049b0](https://rwdt1.gitlab.yandexcloud.net/rwdt/services/asvi/commit/1e049b0576740f99ce310f95a5610abf2ff4ee1e))
+
 # [1.13.0](https://rwdt1.gitlab.yandexcloud.net/rwdt/services/asvi/compare/1.12.7...1.13.0) (2024-10-29)
 
 

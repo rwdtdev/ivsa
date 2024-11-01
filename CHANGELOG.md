@@ -1,3 +1,15 @@
+# [1.14.0](https://rwdt1.gitlab.yandexcloud.net/rwdt/services/asvi/compare/1.13.2...1.14.0) (2024-11-01)
+
+
+### Bug Fixes
+
+* capitalize fn ([3590f2d](https://rwdt1.gitlab.yandexcloud.net/rwdt/services/asvi/commit/3590f2d2531d9749106e79e34523206f28027678))
+
+
+### Features
+
+* новый клиент для работы с s3 storage ([efc5c76](https://rwdt1.gitlab.yandexcloud.net/rwdt/services/asvi/commit/efc5c763cbbb110176d39b088e1b80598d7955b5))
+
 ## [1.13.2](https://rwdt1.gitlab.yandexcloud.net/rwdt/services/asvi/compare/1.13.1...1.13.2) (2024-10-29)
 
 

@@ -23,7 +23,7 @@ export default function DownLoadFilesBtn({ data }: Props) {
     const downloadFileData = {
       s3Url: data.s3Url,
       type,
-      videoFileName: data.name
+      videoFileName: data.name,
     };
     try {
       const res = await fetch('/api/download-files', {

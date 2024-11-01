@@ -18,11 +18,7 @@ export class Logger {
 
   // eslint-disable-next-line @typescript-eslint/ban-types
   _format(...args: unknown[]) {
-    return [
-      `[${Logger.getDate()}]`,
-      `[${this.name}]`,
-      format(...args)
-    ].join(' ');
+    return [`[${Logger.getDate()}]`, `[${this.name}]`, format(...args)].join(' ');
   }
 
   log(...args: unknown[]) {
@@ -39,6 +35,10 @@ export class Logger {
 
   error(...args: unknown[]) {
     console.error(this._format(...args));
+  }
+
+  debug(...args: unknown[]) {
+    console.debug(this._format(...args));
   }
   /* eslint-enable no-console */
 }

@@ -1,3 +1,4 @@
+import { maxRows } from '@/constants/excel';
 import { monitoringDetailMapper } from '@/constants/mappings/monitoring-detail-mapper';
 import { ActionStatus, ActionType, Prisma } from '@prisma/client';
 import { JsonObject, JsonValue } from '@prisma/client/runtime/library';
@@ -14,52 +15,54 @@ type Data = {
   initiator: string;
   ip: string | null;
   details: Prisma.JsonValue | null;
-}[];
+};
 
-export async function exportMonitoringToXlsx(data: Data) {
-  const workbook = new ExcelJS.Workbook();
+export async function exportMonitoringToXlsx(data: Data[]) {
+  for (let i = 0; i < Math.ceil(data.length / maxRows); i++) {
+    const workbook = new ExcelJS.Workbook();
 
-  workbook.views = [
-    {
-      x: 0,
-      y: 0,
-      width: 10000,
-      height: 20000,
-      firstSheet: 0,
-      activeTab: 1,
-      visibility: 'visible'
-    }
-  ];
+    workbook.views = [
+      {
+        x: 0,
+        y: 0,
+        width: 10000,
+        height: 20000,
+        firstSheet: 0,
+        activeTab: 1,
+        visibility: 'visible'
+      }
+    ];
 
-  const worksheet = workbook.addWorksheet('Журнал событий');
+    const worksheet = workbook.addWorksheet('Журнал событий');
 
-  worksheet.columns = [
-    { header: 'Дата Время', key: 'dateTime', width: 20 },
-    { header: 'IP', key: 'ip', width: 20 },
-    { header: 'Инициатор', key: 'initiator', width: 30 },
-    {
-      header: 'Подробности',
-      key: 'details',
-      width: 50,
-      style: { alignment: { wrapText: true } }
-    }
-  ];
+    worksheet.columns = [
+      { header: 'Дата Время', key: 'dateTime', width: 20 },
+      { header: 'IP', key: 'ip', width: 20 },
+      { header: 'Инициатор', key: 'initiator', width: 30 },
+      {
+        header: 'Подробности',
+        key: 'details',
+        width: 50,
+        style: { alignment: { wrapText: true } }
+      }
+    ];
 
-  data.forEach((item) => {
-    worksheet.addRow({
-      dateTime: format(item.actionAt, 'dd.MM.yyyy HH:mm'),
-      ip: item.ip,
-      initiator: item.initiator,
-      details: objToString(item.details)
+    data.forEach((item) => {
+      worksheet.addRow({
+        dateTime: format(item.actionAt, 'dd.MM.yyyy HH:mm'),
+        ip: item.ip,
+        initiator: item.initiator,
+        details: objToString(item.details)
+      });
     });
-  });
 
-  workbook.xlsx
-    .writeBuffer()
-    .then((buffer) =>
-      FileSaver.saveAs(new Blob([buffer]), `Мониторинг событий ${Date.now()}.xlsx`)
-    )
-    .catch((err) => console.log('Error writing excel export', err));
+    workbook.xlsx
+      .writeBuffer()
+      .then((buffer) =>
+        FileSaver.saveAs(new Blob([buffer]), `Мониторинг событий ${Date.now()}-${i}.xlsx`)
+      )
+      .catch((err) => console.log('Error writing Monitoring excel export', err));
+  }
 }
 
 function objToString(obj2: JsonValue) {

@@ -1,3 +1,10 @@
+## [1.14.1](https://rwdt1.gitlab.yandexcloud.net/rwdt/services/asvi/compare/1.14.0...1.14.1) (2024-11-02)
+
+
+### Bug Fixes
+
+* import inventoryObj to excel ([c5aaf58](https://rwdt1.gitlab.yandexcloud.net/rwdt/services/asvi/commit/c5aaf58316ecc3aabdef5891757fc7f9a4584600))
+
 # [1.14.0](https://rwdt1.gitlab.yandexcloud.net/rwdt/services/asvi/compare/1.13.2...1.14.0) (2024-11-01)
 
 
